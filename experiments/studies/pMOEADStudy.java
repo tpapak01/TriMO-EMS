@@ -99,8 +99,8 @@ public class pMOEADStudy extends Experiment {
 
     int numberOfAlgorithms = exp.algorithmNameList_.length;
 
-    exp.experimentBaseDirectory_ = "D:/Sheffield/experiments/" + exp.experimentName_;
-    exp.paretoFrontDirectory_ = "";
+    exp.experimentBaseDirectory_ = "/Users/emine/IdeaProjects/JMETALHOME/src/jmetal/" + exp.experimentName_;
+    exp.paretoFrontDirectory_ = "/Users/emine/IdeaProjects/JMETALHOME/data/paretoFronts/";
 
     exp.algorithmSettings_ = new Settings[numberOfAlgorithms];
 

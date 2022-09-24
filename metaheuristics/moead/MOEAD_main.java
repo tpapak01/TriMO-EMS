@@ -109,7 +109,7 @@ public class MOEAD_main {
     // of CS & EE, University of Essex, 02/2009.
     // http://dces.essex.ac.uk/staff/qzhang/MOEAcompetition/CEC09final/code/ZhangMOEADcode/moead0305.rar
     algorithm.setInputParameter("dataDirectory",
-    "/Users/antelverde/Softw/pruebas/data/MOEAD_parameters/Weight");
+    "/Users/emine/IdeaProjects/JMETALHOME/data/MOEAD_parameters/Weight");
 
     algorithm.setInputParameter("finalSize", 300) ; // used by MOEAD_DRA
 
@@ -139,9 +139,9 @@ public class MOEAD_main {
     
     // Result messages 
     logger_.info("Total execution time: "+estimatedTime + "ms");
-    logger_.info("Objectives values have been writen to file FUN");
+    logger_.info("Objectives values have been written to file FUN");
     population.printObjectivesToFile("FUN");
-    logger_.info("Variables values have been writen to file VAR");
+    logger_.info("Variables values have been written to file VAR");
     population.printVariablesToFile("VAR");      
     
     if (indicators != null) {

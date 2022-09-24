@@ -580,7 +580,7 @@ public class dMOPSO extends Algorithm {
 		else {
 			String dataFileName;
 //			dataDirectory_ = "/home/juanjo/Dropbox/jMetalDropboxJuanjo/MOEAD_parameters/Weight";
-			dataDirectory_ = "/Users/antelverde/Softw/pruebas/data/MOEAD_parameters/Weight";
+			dataDirectory_ = "/Users/emine/IdeaProjects/JMETALHOME/data/MOEAD_parameters/Weight";
 //			dataDirectory_ = "/home/jorgero/moead/weight";
 			dataFileName = "W" + problem_.getNumberOfObjectives() + "D_" +
 					swarmSize_ + ".dat";
