@@ -26,8 +26,11 @@ import jmetal.core.Operator;
 import jmetal.core.Problem;
 import jmetal.core.SolutionSet;
 import jmetal.operators.crossover.CrossoverFactory;
+import jmetal.operators.crossover.SinglePointCrossover;
+import jmetal.operators.mutation.BitFlipMutation;
 import jmetal.operators.mutation.MutationFactory;
 import jmetal.problems.Kursawe;
+import jmetal.problems.MOKP_Problem;
 import jmetal.problems.ProblemFactory;
 import jmetal.qualityIndicator.QualityIndicator;
 import jmetal.util.Configuration;
@@ -87,7 +90,10 @@ public class MOEAD_main {
       indicators = new QualityIndicator(problem, args[1]) ;
     } // if
     else { // Default problem
-      problem = new Kursawe("Real", 3); 
+      //thalis
+      problem = new MOKP_Problem("knapsack_2_500to2");
+      //thalis comment, default option
+      //problem = new Kursawe("Real", 3);
       //problem = new Kursawe("BinaryReal", 3);
       //problem = new Water("Real");
       //problem = new ZDT1("ArrayReal", 100);
@@ -117,17 +123,29 @@ public class MOEAD_main {
     algorithm.setInputParameter("delta", 0.9) ;
     algorithm.setInputParameter("nr", 2) ;
 
-    // Crossover operator 
-    parameters = new HashMap() ;
-    parameters.put("CR", 1.0) ;
-    parameters.put("F", 0.5) ;
-    crossover = CrossoverFactory.getCrossoverOperator("DifferentialEvolutionCrossover", parameters);                   
+    // Crossover operator
+    //thalis
+    parameters = new HashMap();
+    double crossoverProbability = 1.0;
+    parameters.put("probability", crossoverProbability);
+    crossover = new SinglePointCrossover(parameters);
+    //thalis comment
+    //parameters = new HashMap() ;
+    //parameters.put("CR", 1.0) ;
+    //parameters.put("F", 0.5) ;
+    //crossover = CrossoverFactory.getCrossoverOperator("DifferentialEvolutionCrossover", parameters);
     
     // Mutation operator
-    parameters = new HashMap() ;
-    parameters.put("probability", 1.0/problem.getNumberOfVariables()) ;
-    parameters.put("distributionIndex", 20.0) ;
-    mutation = MutationFactory.getMutationOperator("PolynomialMutation", parameters);                    
+    //thalis
+    parameters = new HashMap();
+    double mutationProbability = 0.01;
+    parameters.put("probability", mutationProbability);
+    mutation = new BitFlipMutation(parameters);
+    //thalis comment
+    //parameters = new HashMap() ;
+    //parameters.put("probability", 1.0/problem.getNumberOfVariables()) ;
+    //parameters.put("distributionIndex", 20.0) ;
+    //mutation = MutationFactory.getMutationOperator("PolynomialMutation", parameters);
     
     algorithm.addOperator("crossover",crossover);
     algorithm.addOperator("mutation",mutation);

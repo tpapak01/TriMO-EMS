@@ -26,6 +26,7 @@ import jmetal.encodings.solutionType.BinaryRealSolutionType;
 import jmetal.encodings.solutionType.BinarySolutionType;
 import jmetal.encodings.solutionType.IntSolutionType;
 import jmetal.encodings.variable.Binary;
+import jmetal.encodings.variable.MOKP_BinarySolution;
 import jmetal.util.Configuration;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
@@ -44,6 +45,7 @@ public class SinglePointCrossover extends Crossover {
    */
   private static final List VALID_TYPES = Arrays.asList(BinarySolutionType.class,
   		                                            BinaryRealSolutionType.class,
+                                                    MOKP_BinarySolution.class,
   		                                            IntSolutionType.class) ;
 
   private Double crossoverProbability_ = null;
@@ -84,7 +86,8 @@ public class SinglePointCrossover extends Crossover {
     try {
       if (PseudoRandom.randDouble() < probability) {
         if ((parent1.getType().getClass() == BinarySolutionType.class) ||
-            (parent1.getType().getClass() == BinaryRealSolutionType.class)) {
+            (parent1.getType().getClass() == BinaryRealSolutionType.class ||
+                (parent1.getType().getClass() == MOKP_BinarySolution.class))) {
           //1. Compute the total number of bits
           int totalNumberOfBits = 0;
           for (int i = 0; i < parent1.getDecisionVariables().length; i++) {

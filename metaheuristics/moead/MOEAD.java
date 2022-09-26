@@ -152,20 +152,36 @@ public class MOEAD extends Algorithm {
 
         // STEP 2.2. Reproduction
         Solution child;
-        Solution[] parents = new Solution[3];
+        //thalis
+        Solution[] parents = new Solution[2];
+        //thalis comment
+        //Solution[] parents = new Solution[3];
 
         parents[0] = population_.get(p.get(0));
         parents[1] = population_.get(p.get(1));
-        parents[2] = population_.get(n);
+        //thalis comment
+        //parents[2] = population_.get(n);
 
-        // Apply DE crossover 
-        child = (Solution) crossover_.execute(new Object[]{population_.get(n), parents});
+        //thalis
+        Solution[] childs = (Solution[]) crossover_.execute(parents);
+        double rndSel =  PseudoRandom.randDouble();
+        if (rndSel < 0.5) {
+          child = childs[0];
+        } else
+          child = childs[1];
+        //thalis comment
+        // Apply crossover, DE by default
+        //child = (Solution) crossover_.execute(new Object[]{population_.get(n), parents});
 
         // Apply mutation
         mutation_.execute(child);
 
         // Evaluation
-        problem_.evaluate(child);      
+        problem_.evaluate(child);
+
+        //thalis
+        // Evaluate constraints
+        problem_.evaluateConstraints(child);
         
         evaluations_++;
 
@@ -336,7 +352,7 @@ public class MOEAD extends Algorithm {
   } // updateReference
 
   /**
-   * @param individual
+   * @param indiv
    * @param id
    * @param type
    */

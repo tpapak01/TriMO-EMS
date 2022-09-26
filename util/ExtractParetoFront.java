@@ -33,6 +33,7 @@ public class ExtractParetoFront {
 	String fileName_; 
 	int dimensions_;
 	List<Point> points_ = new LinkedList<Point>();
+	boolean minimization_problem = false;
 
 	private class Point {
 		double [] vector_; 
@@ -118,7 +119,12 @@ public class ExtractParetoFront {
 
 		while (iterator.hasNext()){
 			Point auxPoint = iterator.next();
-			int flag = compare(point,auxPoint);
+			int flag;
+			if (minimization_problem){
+				flag = compareMin(point,auxPoint);
+			} else {
+				flag = compareMax(point, auxPoint);
+			}
 
 			if (flag == -1) {  // A solution in the list is dominated by the new one
 				iterator.remove();
@@ -132,7 +138,7 @@ public class ExtractParetoFront {
 	} // add                   
 
 
-	public int compare(Point one, Point two) {
+	public int compareMin(Point one, Point two) {
 		int flag1 = 0, flag2 = 0;
 		for (int i = 0; i < dimensions_; i++) {
 			if (one.vector_[i] < two.vector_[i])
@@ -144,6 +150,25 @@ public class ExtractParetoFront {
 
 		if (flag1 > flag2) // one dominates
 		return -1;
+
+		if (flag2 > flag1) // two dominates
+			return 1;
+
+		return 0; // both are non dominated
+	}
+
+	public int compareMax(Point one, Point two) {
+		int flag1 = 0, flag2 = 0;
+		for (int i = 0; i < dimensions_; i++) {
+			if (one.vector_[i] < two.vector_[i])
+				flag2 = 1;
+
+			if (one.vector_[i] > two.vector_[i])
+				flag1 = 1;
+		}
+
+		if (flag1 > flag2) // one dominates
+			return -1;
 
 		if (flag2 > flag1) // two dominates
 			return 1;

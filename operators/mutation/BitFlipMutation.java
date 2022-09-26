@@ -26,6 +26,7 @@ import jmetal.encodings.solutionType.BinaryRealSolutionType;
 import jmetal.encodings.solutionType.BinarySolutionType;
 import jmetal.encodings.solutionType.IntSolutionType;
 import jmetal.encodings.variable.Binary;
+import jmetal.encodings.variable.MOKP_BinarySolution;
 import jmetal.util.Configuration;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
@@ -45,6 +46,7 @@ public class BitFlipMutation extends Mutation {
    */
   private static final List VALID_TYPES = Arrays.asList(BinarySolutionType.class,
       BinaryRealSolutionType.class,
+		  MOKP_BinarySolution.class,
       IntSolutionType.class) ;
 
   private Double mutationProbability_ = null ;
@@ -68,7 +70,8 @@ public class BitFlipMutation extends Mutation {
 	public void doMutation(double probability, Solution solution) throws JMException {
 		try {
 			if ((solution.getType().getClass() == BinarySolutionType.class) ||
-					(solution.getType().getClass() == BinaryRealSolutionType.class)) {
+					(solution.getType().getClass() == BinaryRealSolutionType.class) ||
+					(solution.getType().getClass() == MOKP_BinarySolution.class)) {
 				for (int i = 0; i < solution.getDecisionVariables().length; i++) {
 					for (int j = 0; j < ((Binary) solution.getDecisionVariables()[i]).getNumberOfBits(); j++) {
 						if (PseudoRandom.randDouble() < probability) {
