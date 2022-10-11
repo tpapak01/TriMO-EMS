@@ -15,6 +15,7 @@ import jmetal.core.Solution;
 import jmetal.core.Variable;
 import jmetal.encodings.solutionType.BinarySolutionType;
 import jmetal.util.PseudoRandom;
+import jmetal.util.Utils;
 
 
 public class MOKP_BinarySolution extends BinarySolutionType {
@@ -31,10 +32,11 @@ public class MOKP_BinarySolution extends BinarySolutionType {
         this.numberOfItems = numberOfItems;
         this.p = p;
         this.w = w;
-        this.capacity = capacity;     
+        this.capacity = capacity;
+
+        //the below process only seems to play a role in the repair process
         profPerWeight = new double [numberOfItems] ;
         selectIndex = new int [numberOfItems] ;
-                
         for (int j = 0; j < numberOfItems;j++) {
         	profPerWeight[j] = - 1e30;
         	selectIndex[j]   = j;
@@ -53,7 +55,7 @@ public class MOKP_BinarySolution extends BinarySolutionType {
         } // for j
 
         //selectIndex[5]=1 means that item 5 has the lowest value per kilo of all items
-        QuickSort(profPerWeight, selectIndex, 0, numberOfItems-1);
+        Utils.QuickSort(profPerWeight, selectIndex, 0, numberOfItems-1);
         
 //        for(int i = 0; i < numberOfItems ; i++) {
 //        	System.out.println("profPerWeight[i]= " + profPerWeight[i] + ",index[i]=" + selectIndex[i]);
@@ -79,6 +81,7 @@ public class MOKP_BinarySolution extends BinarySolutionType {
 
 
      // Update solution according to probability
+     // replaces mutation operator
 
     public void updateProduct(Solution sol,double [] prob) {    	 
   	  Variable[] vars = sol.getDecisionVariables();
@@ -132,7 +135,8 @@ public class MOKP_BinarySolution extends BinarySolutionType {
 	   	    	  }
 	   	    	  
         	} // for i
-        	
+
+			//Repair seems to take in account the sorting based on value-per-kilo that happened earlier...
         	if (voliatedConstrant == true) {
         		// Repair
         		for (int j = 0; j < numberOfItems; j++){
@@ -150,48 +154,6 @@ public class MOKP_BinarySolution extends BinarySolutionType {
         
     }
 
-    /**
-     * Quick sort procedure (ascending order)
-     * What it actually sorts is the idx array, where
-     * idx[i] shows the hierarchical position of item i,
-     * e.g. idx[5]=1 means that item 5 has the lowest value per kilo of all items
-     *
-     * @param array
-     * @param idx
-     * @param from
-     * @param to
-     */
-    public static void QuickSort(double[] array, int[] idx, int from, int to) {
-        if (from >= to) return;
-
-        if (from < to) {
-            double temp = array[to];
-            int tempIdx = idx[to];
-            int i = from - 1;
-            for (int j = from; j < to; j++) {
-                if (array[j] <= temp) {
-                    i++;
-                    double tempValue = array[j];
-                    array[j] = array[i];
-                    array[i] = tempValue;
-                    int tempIndex = idx[j];
-                    idx[j] = idx[i];
-                    idx[i] = tempIndex;
-                }
-            }
-            array[to] = array[i + 1];
-            array[i + 1] = temp;
-            idx[to] = idx[i + 1];
-            idx[i + 1] = tempIdx;
-
-
-            if (i-1 > from)
-                QuickSort(array, idx, from, i);
-
-            if (to > i + 2)
-                QuickSort(array, idx, i + 1, to);
-        }
-    }
 }
 
 

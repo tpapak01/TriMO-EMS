@@ -29,6 +29,8 @@ import jmetal.operators.crossover.CrossoverFactory;
 import jmetal.operators.crossover.SinglePointCrossover;
 import jmetal.operators.mutation.BitFlipMutation;
 import jmetal.operators.mutation.MutationFactory;
+import jmetal.operators.selection.BinaryTournament;
+import jmetal.operators.selection.Selection;
 import jmetal.problems.Kursawe;
 import jmetal.problems.MOKP_Problem;
 import jmetal.problems.ProblemFactory;
@@ -106,8 +108,28 @@ public class MOEAD_main {
     //algorithm = new MOEAD_DRA(problem);
     
     // Algorithm parameters
-    algorithm.setInputParameter("populationSize",300);
-    algorithm.setInputParameter("maxEvaluations",150000);
+    //thalis
+    int populationSize;
+    if (problem.getNumberOfObjectives() == 2) {
+      populationSize              = 100   ;
+    } else if (problem.getNumberOfObjectives() == 3) {
+      populationSize              = 105   ;
+    } else if (problem.getNumberOfObjectives() == 4) {
+      populationSize              = 120   ;
+    } else if (problem.getNumberOfObjectives() == 6) {
+      populationSize              = 126   ;
+    } else if (problem.getNumberOfObjectives() == 8) {
+      populationSize              = 120   ;
+    } else if (problem.getNumberOfObjectives() == 10) {
+      populationSize              = 220   ;
+    } else {
+      populationSize              = 100   ;
+    }
+    algorithm.setInputParameter("populationSize",populationSize);
+    algorithm.setInputParameter("maxEvaluations",400000);
+    //thalis comment
+    //algorithm.setInputParameter("populationSize",300);
+    //algorithm.setInputParameter("maxEvaluations",150000);
     
     // Directory with the files containing the weight vectors used in 
     // Q. Zhang,  W. Liu,  and H Li, The Performance of a New Version of MOEA/D 
@@ -119,9 +141,16 @@ public class MOEAD_main {
 
     algorithm.setInputParameter("finalSize", 300) ; // used by MOEAD_DRA
 
-    algorithm.setInputParameter("T", 20) ;
-    algorithm.setInputParameter("delta", 0.9) ;
-    algorithm.setInputParameter("nr", 2) ;
+    //thalis
+    algorithm.setInputParameter("T", 10) ;
+    algorithm.setInputParameter("delta", 1.0) ;
+    algorithm.setInputParameter("nr", 10) ;
+    //theta_ = 5.0; // used in PBI
+    //algorithm.setInputParameter("theta", theta_) ;
+    //thalis comment
+    //algorithm.setInputParameter("T", 20) ;
+    //algorithm.setInputParameter("delta", 0.9) ;
+    //algorithm.setInputParameter("nr", 2) ;
 
     // Crossover operator
     //thalis
@@ -136,7 +165,7 @@ public class MOEAD_main {
     //crossover = CrossoverFactory.getCrossoverOperator("DifferentialEvolutionCrossover", parameters);
     
     // Mutation operator
-    //thalis
+    //thalis - authors have replaced this mutation operator with "updateProduct", but not us
     parameters = new HashMap();
     double mutationProbability = 0.01;
     parameters.put("probability", mutationProbability);
@@ -149,7 +178,15 @@ public class MOEAD_main {
     
     algorithm.addOperator("crossover",crossover);
     algorithm.addOperator("mutation",mutation);
-    
+
+    //thalis - extras
+    Selection selection = new BinaryTournament(parameters);
+    algorithm.addOperator("selection",selection);
+    //algorithm.setInputParameter("functionType","TCHE1"); // scalar function type
+    algorithm.setInputParameter("rpType","Ideal"); // reference point z_ type, Ideal or Nadir
+                                                                 // Ideal by default
+    algorithm.setInputParameter("normalize",false);
+
     // Execute the Algorithm
     long initTime = System.currentTimeMillis();
     SolutionSet population = algorithm.execute();

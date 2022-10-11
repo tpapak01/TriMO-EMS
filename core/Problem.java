@@ -81,6 +81,8 @@ public abstract class Problem implements Serializable {
    * Permutation variables)
    */
   protected int    [] length_  ;
+
+  public boolean isMaxmized_;
   
   /**
    * Stores the type of each encodings.variable
@@ -99,6 +101,20 @@ public abstract class Problem implements Serializable {
    */
   public Problem(SolutionType solutionType) {
 	  solutionType_ = solutionType ;
+  } // Problem
+
+  public Problem copyProblem(Problem problem) {
+    this.numberOfVariables_ = problem.numberOfVariables_;
+    this.numberOfObjectives_ = problem.numberOfObjectives_;
+    this.numberOfConstraints_ = problem.numberOfConstraints_;
+    this.problemName_ = problem.problemName_;
+    this.solutionType_ = problem.solutionType_;
+    this.lowerLimit_ = problem.lowerLimit_;
+    this.upperLimit_ = problem.upperLimit_;
+    this.precision_ = problem.precision_;
+    this.length_ = problem.length_;
+    this.isMaxmized_ = problem.isMaxmized();
+    return this;
   } // Problem
         
   /** 
@@ -237,4 +253,12 @@ public abstract class Problem implements Serializable {
     }
     return result;
   } // getNumberOfBits();
+
+  public boolean isMaxmized() {
+    return isMaxmized_;
+  }
+
+  public void setMaxmized_(boolean isMaxmized) {
+    this.isMaxmized_ = isMaxmized;
+  }
 } // Problem

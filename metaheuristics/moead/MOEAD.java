@@ -22,8 +22,11 @@
 package jmetal.metaheuristics.moead;
 
 import jmetal.core.*;
+import jmetal.encodings.variable.MOKP_BinarySolution;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
+import jmetal.util.ranking.NondominatedRanking;
+import jmetal.util.ranking.Ranking;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -173,8 +176,12 @@ public class MOEAD extends Algorithm {
         // Apply crossover, DE by default
         //child = (Solution) crossover_.execute(new Object[]{population_.get(n), parents});
 
-        // Apply mutation
+        // Apply mutation, we keep the original bit fliping for now, not the "updateProduct"
         mutation_.execute(child);
+
+        //thalis
+        // STEP 2.3. Repair.
+        ((MOKP_BinarySolution)(problem_.getSolutionType())).repair(child);
 
         // Evaluation
         problem_.evaluate(child);
@@ -185,7 +192,8 @@ public class MOEAD extends Algorithm {
         
         evaluations_++;
 
-        // STEP 2.3. Repair. Not necessary
+        // STEP 2.3. Repair. Not necessary.
+        // thalis: Actually, in our MOKP case, it is
 
         // STEP 2.4. Update z_
         updateReference(child);
@@ -194,6 +202,44 @@ public class MOEAD extends Algorithm {
         updateProblem(child, n, type);
       } // for 
     } while (evaluations_ < maxEvaluations);
+
+    //thalis
+    // Only feasible solutions
+    SolutionSet feasibleSet = new SolutionSet(population_.size());
+    for (int i = 0; i < population_.size();i++) {
+      if (population_.get(i).getNumberOfViolatedConstraint() == 0
+              && population_.get(i).getOverallConstraintViolation() == 0.0) {
+        feasibleSet.add(new Solution(population_.get(i)));
+      }
+    }
+
+    //thalis
+    // At last remove identical solutions
+    SolutionSet finalSet = new SolutionSet(feasibleSet.size());
+    finalSet.add(feasibleSet.get(0));
+
+    for (int i = 1; i < feasibleSet.size(); i++) {
+
+      Solution sol = feasibleSet.get(i);
+      boolean existEqual = false;
+
+      for (int j = 0; j < finalSet.size();j++) {
+        if (equalSolution(sol, finalSet.get(j))) {
+          existEqual = true;
+          break;
+        }
+      }
+
+      if (existEqual == true) continue;
+
+      finalSet.add(feasibleSet.get(i));
+
+    } // for
+
+    //thalis
+    // Find non-dominated solutions
+    Ranking ranking = new NondominatedRanking(finalSet);
+    System.out.println("# Non-dominated feasible solutions in MOEDA = " + ranking.getSubfront(0).size());
 
     return population_;
   }
@@ -278,7 +324,12 @@ public class MOEAD extends Algorithm {
     for (int i = 0; i < populationSize_; i++) {
       Solution newSolution = new Solution(problem_);
 
+      //thalis
+      ((MOKP_BinarySolution)(problem_.getSolutionType())).repair(newSolution);
+
       problem_.evaluate(newSolution);
+      //thalis
+      problem_.evaluateConstraints(newSolution);
       evaluations_++;
       population_.add(newSolution) ;
     } // for
@@ -427,5 +478,21 @@ public class MOEAD extends Algorithm {
     }
     return fitness;
   } // fitnessEvaluation
+
+  public boolean equalSolution (Solution sol1, Solution sol2) {
+
+    if (sol1.getNumberOfViolatedConstraint() !=sol2.getNumberOfViolatedConstraint()) { // Լ������
+      return false; // ���ز���
+    }
+
+    for (int i = 0; i < sol1.getNumberOfObjectives();i++) {
+      if (sol1.getObjective(i) != sol2.getObjective(i))
+        return false;
+    }
+
+    return true;
+  }
+
+
 } // MOEAD
 
