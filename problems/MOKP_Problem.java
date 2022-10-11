@@ -26,7 +26,7 @@ public class MOKP_Problem extends Problem {
     private int numberOfItems;
     private int [][] p; // profit of items
     private int [][] w; // weight of items
-    private double[] capacity ; // capacity of each  knapsack .
+    private double[] sackCapacity ; // capacity of each  knapsack .
 	
 
   public MOKP_Problem(String problemName) {
@@ -44,10 +44,10 @@ public class MOKP_Problem extends Problem {
       String constrStr = problemName.substring(first_ + 1,second_);  
       this.numberOfConstraints_ = Integer.parseInt(constrStr); // 
 
-      //fills up numberOfItems, p, w, capacity
+      //fills up numberOfItems, p, w, sackCapacity
       //simply read the input textfile
       this.loadProblem(fileName);      
-      this.solutionType_ = new MOKP_BinarySolution(this, numberOfItems,p,w, capacity);
+      this.solutionType_ = new MOKP_BinarySolution(this, numberOfItems,p,w, sackCapacity);
 
   }  // 
 
@@ -65,7 +65,7 @@ public class MOKP_Problem extends Problem {
           this.numberOfObjectives_ = Integer.parseInt(line);
 //      System.out.println(numberOfObjectives_);	  
 
-          capacity = new double[this.numberOfConstraints_];
+          sackCapacity = new double[this.numberOfConstraints_];
 
           p = new int[this.numberOfObjectives_][numberOfItems];
           w = new int[this.numberOfObjectives_][numberOfItems];
@@ -75,7 +75,7 @@ public class MOKP_Problem extends Problem {
               line = in.readLine();
 
               if (i < this.numberOfConstraints_) {
-                  capacity[i] = Double.parseDouble(line);
+                  sackCapacity[i] = Double.parseDouble(line);
 //    		  System.out.println(capacity[i]);	  
               } else {
 //    		  System.out.println(line);	  
@@ -142,9 +142,9 @@ public class MOKP_Problem extends Problem {
 	    		  }
 	    	  }
 	    	  
-	    	  if (sumWeight > capacity[i])  {
+	    	  if (sumWeight > sackCapacity[i])  {
 	    		  numberViolate++;
-	    		  CV = CV + (sumWeight - capacity[i]);
+	    		  CV = CV + (sumWeight - sackCapacity[i]);
 	    	  }
 	    	  
 	    } // for i

@@ -23,16 +23,16 @@ public class MOKP_BinarySolution extends BinarySolutionType {
     private int numberOfItems;
     private int [][] p; // profit of items
     private int [][] w; // weight of items
-    private double[] capacity ; // capacity of each  knapsack .
+    private double[] sackCapacity ; // capacity of each  knapsack .
     private double [] profPerWeight;
     private int [] selectIndex;
     
-    public MOKP_BinarySolution(Problem problem, int numberOfItems, int [][] p, int [][] w, double[] capacity) {
+    public MOKP_BinarySolution(Problem problem, int numberOfItems, int [][] p, int [][] w, double[] sackCapacity) {
         super(problem);       
         this.numberOfItems = numberOfItems;
         this.p = p;
         this.w = w;
-        this.capacity = capacity;
+        this.sackCapacity = sackCapacity;
 
         //the below process only seems to play a role in the repair process
         profPerWeight = new double [numberOfItems] ;
@@ -55,7 +55,8 @@ public class MOKP_BinarySolution extends BinarySolutionType {
         } // for j
 
         //selectIndex[5]=1 means that item 5 has the lowest value per kilo of all items
-        Utils.QuickSort(profPerWeight, selectIndex, 0, numberOfItems-1);
+        //Utils.QuickSort(profPerWeight, selectIndex, 0, numberOfItems-1);
+		Utils.bubbleSort(profPerWeight, selectIndex);
         
 //        for(int i = 0; i < numberOfItems ; i++) {
 //        	System.out.println("profPerWeight[i]= " + profPerWeight[i] + ",index[i]=" + selectIndex[i]);
@@ -67,7 +68,7 @@ public class MOKP_BinarySolution extends BinarySolutionType {
         Variable[] vars = new Variable[problem_.getNumberOfVariables()];
 
         for (int i = 0; i < vars.length; i++) {
-            Binary bin = new Binary(numberOfItems);
+            Binary bin = new Binary(numberOfItems /** problem_.getNumberOfObjectives()*/);
             
             for (int j = 0; j < bin.getNumberOfBits(); j++) {
                 bin.setIth(j, r.nextBoolean());                
@@ -115,29 +116,35 @@ public class MOKP_BinarySolution extends BinarySolutionType {
     public void repair(Solution solution) {
     	Variable[] vars = solution.getDecisionVariables();
         Binary bin = (Binary) vars[0];
-        boolean voliatedConstrant = false;
+        boolean violatedConstraint;
         
         do {
-        	voliatedConstrant = false;
+			violatedConstraint = false;
         	
         	for (int i = 0; i < problem_.getNumberOfConstraints();i++) { // for each constraint
+
+        		  //int startingIndex = i * numberOfItems;
         		
         		  int sumWeight = 0;   	    	  
-	   	    	  for(int j = 0; j < numberOfItems; j++) { // for each bit
+	   	    	  //for(int j = startingIndex; j < startingIndex+numberOfItems; j++) { // for each bit
+				  for(int j = 0; j < numberOfItems; j++) { // for each bit
 	   	    		  if (bin.getIth(j) == true) {
 	   	    			  sumWeight = sumWeight +  w[i][j];
 	   	    		  }
 	   	    	  }
    	    	  
-	   	    	  if (sumWeight > capacity[i])  {	   	  
-		   	    		voliatedConstrant = true;
-		   	    		break;
+	   	    	  if (sumWeight > sackCapacity[i])  {
+					  violatedConstraint = true;
+					  break;
 	   	    	  }
 	   	    	  
         	} // for i
 
 			//Repair seems to take in account the sorting based on value-per-kilo that happened earlier...
-        	if (voliatedConstrant == true) {
+			//I think this tries to fix the solution by flipping a bit from 1 to 0 (included in sack to not included),
+			//but it makes sure it flips the bits with the least impact. Start from those with minimal value-to-weight,
+			//and move on
+        	if (violatedConstraint == true) {
         		// Repair
         		for (int j = 0; j < numberOfItems; j++){
         			int pos = selectIndex[j];
@@ -150,7 +157,7 @@ public class MOKP_BinarySolution extends BinarySolutionType {
         		
         	} // if 
         	
-        } while (voliatedConstrant) ;
+        } while (violatedConstraint) ;
         
     }
 
