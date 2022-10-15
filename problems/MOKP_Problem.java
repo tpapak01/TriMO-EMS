@@ -30,7 +30,7 @@ public class MOKP_Problem extends Problem {
 	
 
   public MOKP_Problem(String problemName) {
-	  this.setMaxmized_(false); // this problem is not to be maximized
+	  this.setMaxmized_(true); // this problem is not to be maximized
 	  this.problemName_ = problemName;
       this.numberOfVariables_ = 1;
 
@@ -114,7 +114,7 @@ public class MOKP_Problem extends Problem {
         	int sum = 0;
         	
         	for(int j = 0; j < numberOfItems; j++) { // for each bit
-        		 if (bin.getIth(j) == false) {
+        		 if (bin.getIth(j) == true) {
         			 sum = sum + p[i][j];
         		 }
         		

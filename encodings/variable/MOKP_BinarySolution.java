@@ -57,10 +57,7 @@ public class MOKP_BinarySolution extends BinarySolutionType {
         //selectIndex[5]=1 means that item 5 has the lowest value per kilo of all items
         //Utils.QuickSort(profPerWeight, selectIndex, 0, numberOfItems-1);
 		Utils.bubbleSort(profPerWeight, selectIndex);
-        
-//        for(int i = 0; i < numberOfItems ; i++) {
-//        	System.out.println("profPerWeight[i]= " + profPerWeight[i] + ",index[i]=" + selectIndex[i]);
-//        }
+
     }    
     
     @Override
@@ -83,36 +80,30 @@ public class MOKP_BinarySolution extends BinarySolutionType {
 
      // Update solution according to probability
      // replaces mutation operator
-
     public void updateProduct(Solution sol,double [] prob) {    	 
-  	  Variable[] vars = sol.getDecisionVariables();
-  	  double updateRate = 0.01;
-//	  System.out.println(updateRate);
+		  Variable[] vars = sol.getDecisionVariables();
+		  double updateRate = 0.01;
 		 
-	  	for (int i = 0; i < vars.length; i++) {			
-	  		Binary bin = ((Binary)vars[i]);
-	  		
-			for (int j = 0; j < numberOfItems; j++){ //
-				
-	        	 if (PseudoRandom.randDouble() < updateRate) {	
+			for (int i = 0; i < vars.length; i++) {
+				Binary bin = ((Binary)vars[i]);
 
-	        		 if (PseudoRandom.randDouble() < prob[j]) {
-	        			 bin.setIth(j, true);
-	        		 } else {
-//	        			 bin.bits_.flip(j);
-	        			 bin.setIth(j, false);
-//	        			 System.out.println( prob[j]);
-	        		 }
+				for (int j = 0; j < numberOfItems; j++){ //
 
-	        	 }
+					 if (PseudoRandom.randDouble() < updateRate) {
+
+						 if (PseudoRandom.randDouble() < prob[j]) {
+							 bin.setIth(j, true);
+						 } else {
+							 bin.setIth(j, false);
+						 }
+
+					 }
+				}
+
 			}
-	        	 
-		}	
-  } // updateProduct
-    
+  	} // updateProduct
 
-     // Repair a solution
-
+	// Repair a solution
     public void repair(Solution solution) {
     	Variable[] vars = solution.getDecisionVariables();
         Binary bin = (Binary) vars[0];

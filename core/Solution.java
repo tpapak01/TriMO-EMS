@@ -52,6 +52,11 @@ public class Solution implements Serializable {
   private final double [] objective_ ;
 
   /**
+   * Stores the normalized objectives values of the solution.
+   */
+  private  double [] normalizedObjective_ ;
+
+  /**
    * Stores the number of objective values of the solution
    */
   private int numberOfObjectives_ ;
@@ -117,6 +122,7 @@ public class Solution implements Serializable {
     type_                         = null ;
     variable_                     = null ;
     objective_                    = null ;
+    normalizedObjective_          = null ;
   } // Solution
 
   /**
@@ -129,6 +135,7 @@ public class Solution implements Serializable {
   public Solution(int numberOfObjectives) {
     numberOfObjectives_ = numberOfObjectives;
     objective_          = new double[numberOfObjectives];
+    normalizedObjective_ = new double[numberOfObjectives];
   }
   
   /** 
@@ -141,6 +148,7 @@ public class Solution implements Serializable {
     type_ = problem.getSolutionType() ;
     numberOfObjectives_ = problem.getNumberOfObjectives() ;
     objective_          = new double[numberOfObjectives_] ;
+    normalizedObjective_ = new double[numberOfObjectives_];
 
     // Setting initial values
     fitness_              = 0.0 ;
@@ -187,11 +195,11 @@ public class Solution implements Serializable {
 
     numberOfObjectives_ = solution.getNumberOfObjectives();
     objective_ = new double[numberOfObjectives_];
+    normalizedObjective_ = new double[numberOfObjectives_];
     for (int i = 0; i < objective_.length;i++) {
       objective_[i] = solution.getObjective(i);
-    } // for
-    //<-
-
+      normalizedObjective_[i] =  solution.getNormalizedObjective(i);
+    }
     variable_ = type_.copyVariables(solution.variable_) ;
     overallConstraintViolation_  = solution.getOverallConstraintViolation();
     numberOfViolatedConstraints_ = solution.getNumberOfViolatedConstraint();
@@ -301,6 +309,31 @@ public class Solution implements Serializable {
   public double getObjective(int i) {
     return objective_[i];
   } // getObjective
+
+  /**
+   * Sets the value of the i-th normalized objective.
+   * @param i The number identifying the objective.
+   * @param value The value to be stored.
+   */
+  public void setNormalizedObjective(int i, double value) {
+    normalizedObjective_[i] = value;
+  } // setNormalizedObjective
+
+  /**
+   * Returns the value of the i-th normalized objective.
+   * @param i The value of the objective.
+   */
+  public double getNormalizedObjective(int i) {
+    return normalizedObjective_[i];
+  } // getNormalizedObjective
+
+  /**
+   * Returns the value of normalized objectives.
+   * @param
+   */
+  public double[] getNormalizedObjectives( ) {
+    return normalizedObjective_;
+  } // getNormalizedObjectives
 
   /**
    * Returns the number of objectives.

@@ -22,15 +22,19 @@
 package jmetal.metaheuristics.moead;
 
 import jmetal.core.*;
+import jmetal.encodings.variable.Binary;
 import jmetal.encodings.variable.MOKP_BinarySolution;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
+import jmetal.util.comparators.DominanceComparator;
+import jmetal.util.comparators.OverallConstraintViolationComparator;
 import jmetal.util.ranking.NondominatedRanking;
 import jmetal.util.ranking.Ranking;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.util.Comparator;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -77,6 +81,11 @@ public class MOEAD extends Algorithm {
 
   String dataDirectory_;
 
+  //thalis
+  private static final Comparator constraint_ = new OverallConstraintViolationComparator();
+  private static final Comparator dominance_ = new DominanceComparator();
+  String rpType_;
+
   /** 
    * Constructor
    * @param problem Problem to solve
@@ -84,7 +93,7 @@ public class MOEAD extends Algorithm {
   public MOEAD(Problem problem) {
     super (problem) ;
 
-    functionType_ = "_TCHE1";
+    functionType_ = "TCHE1";
 
   } // DMOEA
 
@@ -94,6 +103,9 @@ public class MOEAD extends Algorithm {
     evaluations_ = 0;
     maxEvaluations = ((Integer) this.getInputParameter("maxEvaluations")).intValue();
     populationSize_ = ((Integer) this.getInputParameter("populationSize")).intValue();
+    //thalis
+    rpType_ = this.getInputParameter("rpType").toString();
+
     dataDirectory_ = this.getInputParameter("dataDirectory").toString();
     System.out.println("POPSIZE: "+ populationSize_) ;
 
@@ -130,7 +142,10 @@ public class MOEAD extends Algorithm {
     initPopulation();
 
     // STEP 1.3. Initialize z_
-    initIdealPoint();
+    //thalis
+    initialize_RP();
+    //thalis comment
+    //initIdealPoint();
 
     // STEP 2. Update
     do {
@@ -166,12 +181,12 @@ public class MOEAD extends Algorithm {
         //parents[2] = population_.get(n);
 
         //thalis
-        Solution[] childs = (Solution[]) crossover_.execute(parents);
+        Solution[] children = (Solution[]) crossover_.execute(parents);
         double rndSel =  PseudoRandom.randDouble();
         if (rndSel < 0.5) {
-          child = childs[0];
+          child = children[0];
         } else
-          child = childs[1];
+          child = children[1];
         //thalis comment
         // Apply crossover, DE by default
         //child = (Solution) crossover_.execute(new Object[]{population_.get(n), parents});
@@ -188,6 +203,7 @@ public class MOEAD extends Algorithm {
 
         //thalis
         // Evaluate constraints
+        //redundant, but updates certain variables like CV and violatedNum
         problem_.evaluateConstraints(child);
         
         evaluations_++;
@@ -196,11 +212,19 @@ public class MOEAD extends Algorithm {
         // thalis: Actually, in our MOKP case, it is
 
         // STEP 2.4. Update z_
-        updateReference(child);
+        //thalis
+        //same as "updateReference" in original
+        update_RP(child);
+        //thalis comment
+        //updateReference(child);
 
         // STEP 2.5. Update of solutions
         updateProblem(child, n, type);
-      } // for 
+      } // for
+
+      //thalis
+      initialize_RP();
+
     } while (evaluations_ < maxEvaluations);
 
     //thalis
@@ -230,7 +254,7 @@ public class MOEAD extends Algorithm {
         }
       }
 
-      if (existEqual == true) continue;
+      if (existEqual) continue;
 
       finalSet.add(feasibleSet.get(i));
 
@@ -267,14 +291,12 @@ public class MOEAD extends Algorithm {
         InputStreamReader isr = new InputStreamReader(fis);
         BufferedReader br = new BufferedReader(isr);
 
-        int numberOfObjectives = 0;
         int i = 0;
         int j = 0;
         String aux = br.readLine();
         while (aux != null) {
           StringTokenizer st = new StringTokenizer(aux);
           j = 0;
-          numberOfObjectives = st.countTokens();
           while (st.hasMoreTokens()) {
             double value = (new Double(st.nextToken())).doubleValue();
             lambda_[i][j] = value;
@@ -323,17 +345,37 @@ public class MOEAD extends Algorithm {
   public void initPopulation() throws JMException, ClassNotFoundException {
     for (int i = 0; i < populationSize_; i++) {
       Solution newSolution = new Solution(problem_);
+      Variable[] variable = newSolution.getDecisionVariables();
+      Variable mystring = variable[0];
 
       //thalis
       ((MOKP_BinarySolution)(problem_.getSolutionType())).repair(newSolution);
 
       problem_.evaluate(newSolution);
       //thalis
+      //redundant, but updates certain variables like CV and violatedNum
       problem_.evaluateConstraints(newSolution);
       evaluations_++;
       population_.add(newSolution) ;
     } // for
   } // initPopulation
+
+  // initialise the reference point
+  void initialize_RP() {
+    int i;
+    for(i = 0; i < problem_.getNumberOfObjectives(); i++)  {
+      //if Nadir, start big. Else, start small
+      if(rpType_.equalsIgnoreCase("Nadir")) {
+        z_[i] = 1.1;
+      } else if(rpType_.equalsIgnoreCase("Ideal")){
+        z_[i] = -0.1; // This is very important for improving the performance
+      } else {
+        System.out.println("MOEDA.initialize_RP: unknown type " + rpType_);
+        System.exit(-1);
+      }
+
+    }
+  }
 
   /**
    * 
@@ -402,6 +444,25 @@ public class MOEAD extends Algorithm {
     }
   } // updateReference
 
+  // update the reference point
+  void update_RP(Solution ind){
+    int i;
+
+    for(i = 0; i < problem_.getNumberOfObjectives(); i++)   {
+      //if Nadir, make it big. Else, make it small
+      if(rpType_.equalsIgnoreCase("Nadir")) {
+        if(ind.getNormalizedObjective(i) > z_[i])	{
+          z_[i] = ind.getNormalizedObjective(i);
+        }
+      } else {
+        if(ind.getNormalizedObjective(i) < z_[i])	{
+          z_[i] = ind.getNormalizedObjective(i);
+        }
+      }
+
+    }
+  }
+
   /**
    * @param indiv
    * @param id
@@ -432,8 +493,43 @@ public class MOEAD extends Algorithm {
       } else {
         k = perm[i];      // calculate the values of objective function regarding the current subproblem
       }
-      double f1, f2;
 
+      //thalis
+      int flagDominate = constraint_.compare(indiv, population_.get(k)); // 比较约束违反数
+
+      if (flagDominate == 0) { // The same number of Violated Constraints
+        if (problem_.isMaxmized() == false)
+          flagDominate = dominance_.compare(indiv, population_.get(k));
+        else flagDominate = dominance_.compare(population_.get(k), indiv);
+      }
+
+      if (flagDominate == 0) { // Non-dominated
+        double f1, f2;
+
+        f1 = fitnessFunction(population_.get(k), lambda_[k]);
+        f2 = fitnessFunction(indiv, lambda_[k]);
+
+        if (problem_.isMaxmized()) {
+          //if f2 bigger than f1, f2 is better. Correct
+          if (f2 > f1) {
+            flagDominate = 1;
+          }
+        } else {
+          //if f2 smaller than f1, f2 is better. Correct
+          if (f2 < f1) {
+            flagDominate = -1;
+          }
+        } // if
+      }
+
+      if (flagDominate == -1) {// indiv is better
+        population_.replace(k, new Solution(indiv));
+        time++;
+      }
+
+      //thalis comment
+      /*
+      double f1, f2;
       f1 = fitnessFunction(population_.get(k), lambda_[k]);
       f2 = fitnessFunction(indiv, lambda_[k]);
 
@@ -442,6 +538,9 @@ public class MOEAD extends Algorithm {
         //population[k].indiv = indiv;
         time++;
       }
+
+       */
+
       // the maximal number of solutions updated is not allowed to exceed 'limit'
       if (time >= nr_) {
         return;
@@ -453,11 +552,15 @@ public class MOEAD extends Algorithm {
     double fitness;
     fitness = 0.0;
 
-    if (functionType_.equals("_TCHE1")) {
+    if (functionType_.equals("TCHE1")) {
       double maxFun = -1.0e+30;
 
       for (int n = 0; n < problem_.getNumberOfObjectives(); n++) {
         double diff = Math.abs(individual.getObjective(n) - z_[n]);
+
+        if (problem_.isMaxmized()) {
+          diff = z_[n] - individual.getNormalizedObjective(n);
+        }
 
         double feval;
         if (lambda[n] == 0) {
@@ -482,7 +585,7 @@ public class MOEAD extends Algorithm {
   public boolean equalSolution (Solution sol1, Solution sol2) {
 
     if (sol1.getNumberOfViolatedConstraint() !=sol2.getNumberOfViolatedConstraint()) { // Լ������
-      return false; // ���ز���
+      return false;
     }
 
     for (int i = 0; i < sol1.getNumberOfObjectives();i++) {
