@@ -22,6 +22,7 @@
 package jmetal.metaheuristics.singleObjective.geneticAlgorithm;
 
 import jmetal.core.*;
+import jmetal.encodings.variable.MOKP_BinarySolution;
 import jmetal.util.JMException;
 import jmetal.util.comparators.ObjectiveComparator;
 
@@ -31,6 +32,10 @@ import java.util.Comparator;
  * Class implementing a generational genetic algorithm
  */
 public class gGA extends Algorithm {
+
+  private int populationSize;
+  private SolutionSet population;
+  int evaluations;
   
  /**
   *
@@ -47,11 +52,9 @@ public class gGA extends Algorithm {
  * @throws JMException 
   */
   public SolutionSet execute() throws JMException, ClassNotFoundException {
-    int populationSize ;
-    int maxEvaluations ;
-    int evaluations    ;
 
-    SolutionSet population          ;
+    int maxEvaluations ;
+
     SolutionSet offspringPopulation ;
 
     Operator    mutationOperator  ;
@@ -59,7 +62,10 @@ public class gGA extends Algorithm {
     Operator    selectionOperator ;
     
     Comparator  comparator        ;
-    comparator = new ObjectiveComparator(0) ; // Single objective comparator
+    //thalis
+    if (problem_.isMaxmized())
+      comparator = new ObjectiveComparator(0, true) ; // Single objective comparator
+    else comparator = new ObjectiveComparator(0) ; // Single objective comparator
     
     // Read the params
     populationSize = ((Integer)this.getInputParameter("populationSize")).intValue();
@@ -77,13 +83,18 @@ public class gGA extends Algorithm {
     selectionOperator = this.operators_.get("selection");  
 
     // Create the initial population
+    //thalis comment
+    /*
     Solution newIndividual;
     for (int i = 0; i < populationSize; i++) {
       newIndividual = new Solution(problem_);                    
       problem_.evaluate(newIndividual);            
       evaluations++;
       population.add(newIndividual);
-    } //for       
+    } //for
+
+     */
+    initPopulation();
      
     // Sort population
     population.sort(comparator) ;
@@ -105,15 +116,29 @@ public class gGA extends Algorithm {
         parents[1] = (Solution)selectionOperator.execute(population);
  
         // Crossover
-        Solution [] offspring = (Solution []) crossoverOperator.execute(parents);                
+        Solution [] offspring = (Solution []) crossoverOperator.execute(parents);
           
         // Mutation
         mutationOperator.execute(offspring[0]);
         mutationOperator.execute(offspring[1]);
 
+        //thalis
+        ((MOKP_BinarySolution)(problem_.getSolutionType())).repair(offspring[0]);
+        ((MOKP_BinarySolution)(problem_.getSolutionType())).repair(offspring[1]);
+
         // Evaluation of the new individual
         problem_.evaluate(offspring[0]);            
-        problem_.evaluate(offspring[1]);            
+        problem_.evaluate(offspring[1]);
+
+        //thalis
+        problem_.evaluateConstraints(offspring[0]);
+        problem_.evaluateConstraints(offspring[1]);
+
+        if ((offspring[0].getObjective(0) == 10 || offspring[1].getObjective(0) == 10)
+                  && parents[0].getObjective(0) != 10 && parents[1].getObjective(0) != 10
+        ){
+          System.out.println("Proof that crossover and/or mutation works");
+        }
           
         evaluations +=2;
     
@@ -139,4 +164,25 @@ public class gGA extends Algorithm {
     System.out.println("Evaluations: " + evaluations ) ;
     return resultPopulation ;
   } // execute
+
+  /**
+   *
+   */
+  public void initPopulation() throws JMException, ClassNotFoundException {
+    for (int i = 0; i < populationSize; i++) {
+      Solution newSolution = new Solution(problem_);
+
+      //thalis
+      ((MOKP_BinarySolution)(problem_.getSolutionType())).repair(newSolution);
+
+      problem_.evaluate(newSolution);
+      //thalis
+      //redundant, but updates certain variables like CV and violatedNum
+      problem_.evaluateConstraints(newSolution);
+      evaluations++;
+      population.add(newSolution) ;
+    } // for
+  } // initPopulation
+
+
 } // gGA

@@ -26,8 +26,13 @@ import jmetal.core.Operator;
 import jmetal.core.Problem;
 import jmetal.core.SolutionSet;
 import jmetal.operators.crossover.CrossoverFactory;
+import jmetal.operators.crossover.SinglePointCrossover;
+import jmetal.operators.mutation.BitFlipMutation;
 import jmetal.operators.mutation.MutationFactory;
+import jmetal.operators.selection.BinaryTournament;
+import jmetal.operators.selection.Selection;
 import jmetal.operators.selection.SelectionFactory;
+import jmetal.problems.MOKP_Problem;
 import jmetal.problems.singleObjective.OneMax;
 import jmetal.util.JMException;
 
@@ -46,13 +51,18 @@ public class GA_main {
     Algorithm algorithm ;         // The algorithm to use
     Operator  crossover ;         // Crossover operator
     Operator  mutation  ;         // Mutation operator
-    Operator  selection ;         // Selection operator
+    //Operator  selection ;         // Selection operator
             
     //int bits ; // Length of bit string in the OneMax problem
     HashMap  parameters ; // Operator parameters
 
-    int bits = 512 ;
-    problem = new OneMax("Binary", bits);
+
+
+    //thalis
+    problem = new MOKP_Problem("knapsack_1_3to1");
+    //thalis comment
+    //int bits = 512 ;
+    //problem = new OneMax("Binary", bits);
  
     //problem = new Sphere("Real", 10) ;
     //problem = new Easom("Real") ;
@@ -64,8 +74,16 @@ public class GA_main {
     //algorithm = new acGA(problem) ;   // Asynchronous cGA
     
     /* Algorithm parameters*/
-    algorithm.setInputParameter("populationSize",100);
-    algorithm.setInputParameter("maxEvaluations", 25000);
+    algorithm.setInputParameter("populationSize",4); //must be even number
+    algorithm.setInputParameter("maxEvaluations", 2500);
+    //algorithm.setInputParameter("populationSize",100); //must be even number
+    //algorithm.setInputParameter("maxEvaluations", 25000);
+
+
+    //thalis
+    algorithm.setInputParameter("dataDirectory",
+            "/Users/emine/IdeaProjects/JMETALHOME/data/MOEAD_parameters/Weight");
+
     /*
     // Mutation and Crossover for Real codification 
     parameters = new HashMap() ;
@@ -79,18 +97,40 @@ public class GA_main {
     mutation = MutationFactory.getMutationOperator("PolynomialMutation", parameters);                    
     */
     
-    // Mutation and Crossover for Binary codification 
+    // Mutation and Crossover for Binary codification
+    //thalis comment
+    /*
     parameters = new HashMap() ;
     parameters.put("probability", 0.9) ;
-    crossover = CrossoverFactory.getCrossoverOperator("SinglePointCrossover", parameters);                   
+    crossover = CrossoverFactory.getCrossoverOperator("SinglePointCrossover", parameters);
+     */
+    // Crossover operator
+    //thalis
+    parameters = new HashMap();
+    double crossoverProbability = 1.0;
+    parameters.put("probability", crossoverProbability);
+    crossover = new SinglePointCrossover(parameters);
 
+    //thalis comment
+    /*
     parameters = new HashMap() ;
     parameters.put("probability", 1.0/bits) ;
-    mutation = MutationFactory.getMutationOperator("BitFlipMutation", parameters);                    
+    mutation = MutationFactory.getMutationOperator("BitFlipMutation", parameters);
+     */
+    //thalis
+    parameters = new HashMap();
+    double mutationProbability = 0.01;
+    parameters.put("probability", mutationProbability);
+    mutation = new BitFlipMutation(parameters);
     
     /* Selection Operator */
+    //thalis comment
+    /*
     parameters = null ;
-    selection = SelectionFactory.getSelectionOperator("BinaryTournament", parameters) ;                            
+    selection = SelectionFactory.getSelectionOperator("BinaryTournament", parameters) ;
+     */
+    //thalis
+    Selection selection = new BinaryTournament(parameters);
     
     /* Add the operators to the algorithm*/
     algorithm.addOperator("crossover",crossover);
