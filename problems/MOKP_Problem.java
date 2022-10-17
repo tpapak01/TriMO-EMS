@@ -110,16 +110,19 @@ public class MOKP_Problem extends Problem {
 		Variable[] vars = solution.getDecisionVariables();
         Binary bin = (Binary) vars[0];
 
-        for (int i = 0; i < this.numberOfObjectives_; i++) { // for each objective 
-        	int sum = 0;
-        	
-        	for(int j = 0; j < numberOfItems; j++) { // for each bit
-        		 if (bin.getIth(j) == true) {
-        			 sum = sum + p[i][j];
-        		 }
-        		
-        	} // for j
-        	solution.setObjective(i, sum);
+        for (int i = 0; i < this.numberOfObjectives_; i++) { // for each objective
+
+            int startingIndex = i * numberOfItems;
+            int sum = 0;
+
+            int k=0;
+            for(int j = startingIndex; j < startingIndex+numberOfItems; j++) { // for each bit
+                if (bin.getIth(j) == true) {
+                    sum = sum + p[i][k];
+                }
+                k++;
+            } // for j
+            solution.setObjective(i, sum);
         } // for i
         
 	} // evaluate
@@ -134,18 +137,22 @@ public class MOKP_Problem extends Problem {
 	    double CV = 0.0;
 	    
 	    for (int i = 0; i < this.numberOfConstraints_;i++) {
-	    	  int sumWeight = 0; 
+
+            int startingIndex = i * numberOfItems;
+
+            int sumWeight = 0;
+            int k = 0;
+            for(int j = startingIndex; j < startingIndex+numberOfItems; j++) { // for each bit
+                  if (bin.getIth(j) == true) {
+                      sumWeight = sumWeight +  w[i][k];
+                  }
+                  k++;
+            }
 	    	  
-	    	  for(int j = 0; j < numberOfItems; j++) { // for each bit
-	    		  if (bin.getIth(j) == true) {
-	    			  sumWeight = sumWeight +  w[i][j];
-	    		  }
-	    	  }
-	    	  
-	    	  if (sumWeight > sackCapacity[i])  {
-	    		  numberViolate++;
-	    		  CV = CV + (sumWeight - sackCapacity[i]);
-	    	  }
+            if (sumWeight > sackCapacity[i])  {
+                  numberViolate++;
+                  CV = CV + (sumWeight - sackCapacity[i]);
+            }
 	    	  
 	    } // for i
 	    	    	 
