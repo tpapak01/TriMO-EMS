@@ -67,10 +67,10 @@ public class MOKP_Problem extends Problem {
 
           sackCapacity = new double[this.numberOfConstraints_];
 
-          p = new int[this.numberOfObjectives_][numberOfItems];
-          w = new int[this.numberOfObjectives_][numberOfItems];
+          p = new int[this.numberOfConstraints_][numberOfItems];
+          w = new int[this.numberOfConstraints_][numberOfItems];
 
-          for (int i = 0; i < this.numberOfObjectives_; i++) {
+          for (int i = 0; i < this.numberOfConstraints_; i++) {
               //reads line mentioning capacity of bucket, whether existent or 1+e155
               line = in.readLine();
 
@@ -110,10 +110,10 @@ public class MOKP_Problem extends Problem {
 		Variable[] vars = solution.getDecisionVariables();
         Binary bin = (Binary) vars[0];
 
-        for (int i = 0; i < this.numberOfObjectives_; i++) { // for each objective
+        int sum = 0;
+        for (int i = 0; i < this.numberOfConstraints_; i++) { // for each objective
 
             int startingIndex = i * numberOfItems;
-            int sum = 0;
 
             int k=0;
             for(int j = startingIndex; j < startingIndex+numberOfItems; j++) { // for each bit
@@ -122,8 +122,9 @@ public class MOKP_Problem extends Problem {
                 }
                 k++;
             } // for j
-            solution.setObjective(i, sum);
+
         } // for i
+        solution.setObjective(0, sum);
         
 	} // evaluate
        
