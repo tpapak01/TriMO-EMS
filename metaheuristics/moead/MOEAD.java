@@ -345,8 +345,6 @@ public class MOEAD extends Algorithm {
   public void initPopulation() throws JMException, ClassNotFoundException {
     for (int i = 0; i < populationSize_; i++) {
       Solution newSolution = new Solution(problem_);
-      Variable[] variable = newSolution.getDecisionVariables();
-      Variable mystring = variable[0];
 
       //thalis
       ((MOKP_BinarySolution)(problem_.getSolutionType())).repair(newSolution);

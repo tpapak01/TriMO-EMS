@@ -59,7 +59,7 @@ public class GA_main {
 
 
     //thalis
-    problem = new MOKP_Problem("knapsack_1_3to1");
+    problem = new MOKP_Problem("knapsack_2_3to1");
     //thalis comment
     //int bits = 512 ;
     //problem = new OneMax("Binary", bits);
@@ -74,10 +74,10 @@ public class GA_main {
     //algorithm = new acGA(problem) ;   // Asynchronous cGA
     
     /* Algorithm parameters*/
-    algorithm.setInputParameter("populationSize",4); //must be even number
-    algorithm.setInputParameter("maxEvaluations", 2500);
-    //algorithm.setInputParameter("populationSize",100); //must be even number
-    //algorithm.setInputParameter("maxEvaluations", 25000);
+    //algorithm.setInputParameter("populationSize",4); //must be even number
+    //algorithm.setInputParameter("maxEvaluations", 2500);
+    algorithm.setInputParameter("populationSize",100); //must be even number
+    algorithm.setInputParameter("maxEvaluations", 25000);
 
 
     //thalis
