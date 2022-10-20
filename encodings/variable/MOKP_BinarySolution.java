@@ -104,59 +104,6 @@ public class MOKP_BinarySolution extends BinarySolutionType {
 			}
   	} // updateProduct
 
-	// Repair a solution
-    public void repair(Solution solution) {
-    	Variable[] vars = solution.getDecisionVariables();
-        Binary bin = (Binary) vars[0];
-        boolean violatedConstraint;
-        
-        do {
-			violatedConstraint = false;
-
-			int i;
-        	for (i = 0; i < problem_.getNumberOfConstraints();i++) { // for each constraint
-
-        		  int startingIndex = i * numberOfItems;
-        		
-        		  int sumWeight = 0;
-        		  int k = 0;
-	   	    	  for(int j = startingIndex; j < startingIndex+numberOfItems; j++) { // for each bit
-	   	    		  if (bin.getIth(j) == true) {
-	   	    			  sumWeight = sumWeight +  w[i][k];
-	   	    		  }
-	   	    		  k++;
-	   	    	  }
-   	    	  
-	   	    	  if (sumWeight > sackCapacity[i])  {
-					  violatedConstraint = true;
-					  break;
-	   	    	  }
-	   	    	  
-        	} // for i
-
-			//Repair seems to take in account the sorting based on value-per-kilo that happened earlier...
-			//I think this tries to fix the solution by flipping a bit from 1 to 0 (included in sack to not included),
-			//but it makes sure it flips the bits with the least impact. Start from those with minimal value-to-weight,
-			//and move on
-        	if (violatedConstraint == true) {
-        		// Repair
-				int startingIndex = i * numberOfItems;
-
-        		for (int j = startingIndex; j < startingIndex+numberOfItems; j++){
-        			int pos = selectIndex[j];
-        			
-        			if (bin.getIth(pos) == true) {
-        				bin.setIth(pos, false);
-        				break;
-        			}// if
-        		} // for 
-        		
-        	} // if 
-        	
-        } while (violatedConstraint) ;
-        
-    }
-
 }
 
 

@@ -122,17 +122,9 @@ public class gGA extends Algorithm {
         mutationOperator.execute(offspring[0]);
         mutationOperator.execute(offspring[1]);
 
-        //thalis
-        ((MOKP_BinarySolution)(problem_.getSolutionType())).repair(offspring[0]);
-        ((MOKP_BinarySolution)(problem_.getSolutionType())).repair(offspring[1]);
-
         // Evaluation of the new individual
         problem_.evaluate(offspring[0]);            
         problem_.evaluate(offspring[1]);
-
-        //thalis
-        problem_.evaluateConstraints(offspring[0]);
-        problem_.evaluateConstraints(offspring[1]);
 
         if ((offspring[0].getObjective(0) == 10 || offspring[1].getObjective(0) == 10)
                   && parents[0].getObjective(0) != 10 && parents[1].getObjective(0) != 10
@@ -172,13 +164,7 @@ public class gGA extends Algorithm {
     for (int i = 0; i < populationSize; i++) {
       Solution newSolution = new Solution(problem_);
 
-      //thalis
-      ((MOKP_BinarySolution)(problem_.getSolutionType())).repair(newSolution);
-
       problem_.evaluate(newSolution);
-      //thalis
-      //redundant, but updates certain variables like CV and violatedNum
-      problem_.evaluateConstraints(newSolution);
       evaluations++;
       population.add(newSolution) ;
     } // for

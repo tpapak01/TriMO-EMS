@@ -32,7 +32,6 @@ import jmetal.metaheuristics.moead.Utils;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
 import jmetal.util.comparators.DominanceComparator;
-import jmetal.util.comparators.OverallConstraintViolationComparator;
 import jmetal.util.ranking.NondominatedRanking;
 import jmetal.util.ranking.Ranking;
 
@@ -68,7 +67,6 @@ public class MOEDA_MOKP extends Algorithm {
 	Operator localSearch_;
 	
 	String dataDirectory_;
-	private static final Comparator constraint_ = new OverallConstraintViolationComparator();
 	private static final Comparator dominance_ = new DominanceComparator();
 	  
 	//CaptureConvergence captureConvergence_; // our class
@@ -272,13 +270,8 @@ public class MOEDA_MOKP extends Algorithm {
 				((MOKP_BinarySolution)(problem_.getSolutionType())).updateProduct(child, prob);
 				 // --------------------Use crossover and mutation (end)--------------------
 								
-				// STEP 2.3. Repair. 					
-				((MOKP_BinarySolution)(problem_.getSolutionType())).repair(child);
-								
 				// Evaluation
 				problem_.evaluate(child);
-				//redundant, but updates certain variables like CV and violatedNum
-				problem_.evaluateConstraints(child);
 				evaluations_++;		
 				
 				//if (convergenceFlag== true)
@@ -349,10 +342,7 @@ public class MOEDA_MOKP extends Algorithm {
         // Only feasible solutions		 
 		SolutionSet feasibleSet = new SolutionSet(population_.size());		
 		for (int i = 0; i < population_.size();i++) {
-			if (population_.get(i).getNumberOfViolatedConstraint() == 0 
-					&& population_.get(i).getOverallConstraintViolation() == 0.0) {
-				feasibleSet.add(new Solution(population_.get(i)));
-			}
+			feasibleSet.add(new Solution(population_.get(i)));
 		}
 		
         // At last remove identical solutions 
@@ -387,10 +377,6 @@ public class MOEDA_MOKP extends Algorithm {
 	}
 
 	public boolean equalSolution (Solution sol1, Solution sol2) {
-		
-		if (sol1.getNumberOfViolatedConstraint() !=sol2.getNumberOfViolatedConstraint()) { // Լ������
-			return false; // ���ز���
-		}
 		
 		for (int i = 0; i < sol1.getNumberOfObjectives();i++) {
 			if (sol1.getObjective(i) != sol2.getObjective(i))
@@ -645,11 +631,7 @@ public class MOEDA_MOKP extends Algorithm {
 		for (int i = 0; i < populationSize_; i++) {
 			Solution newSolution = new Solution(problem_);
 			
-			((MOKP_BinarySolution)(problem_.getSolutionType())).repair(newSolution);
-			
 			problem_.evaluate(newSolution);
-			//redundant, but updates certain variables like CV and violatedNum
-			problem_.evaluateConstraints(newSolution);
 			evaluations_++;
 			population_.add(newSolution);
 		}
@@ -741,13 +723,12 @@ public class MOEDA_MOKP extends Algorithm {
 				k = perm[i];  // calculate the values of objective function regarding the current subproblem
 			}
 			
-			int flagDominate = constraint_.compare(indiv, population_.get(k)); // 比较约束违反数
-			
-			if (flagDominate == 0) { // The same number of Violated Constraints
-				if (problem_.isMaxmized() == false)
-					flagDominate = dominance_.compare(indiv, population_.get(k));
-				else flagDominate = dominance_.compare(population_.get(k), indiv);
-			}
+			int flagDominate;
+
+			if (problem_.isMaxmized() == false)
+				flagDominate = dominance_.compare(indiv, population_.get(k));
+			else flagDominate = dominance_.compare(population_.get(k), indiv);
+
 			
 			if (flagDominate == 0) { // Non-dominated 
 				double f1, f2;					

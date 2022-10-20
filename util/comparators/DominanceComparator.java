@@ -31,14 +31,12 @@ import java.util.Comparator;
  * dominance checking, as in NSGA-II.
  */
 public class DominanceComparator implements Comparator {
-  IConstraintViolationComparator violationConstraintComparator_ ;
  
   /**
    * Constructor
    */
   public DominanceComparator() {
-    violationConstraintComparator_ = new OverallConstraintViolationComparator(); 
-    //violationConstraintComparator_ = new NumberOfViolatedConstraintComparator(); 
+
   }
 
   /**
@@ -46,7 +44,7 @@ public class DominanceComparator implements Comparator {
    * @param comparator
    */
   public DominanceComparator(IConstraintViolationComparator comparator) {
-    violationConstraintComparator_ = comparator ;
+
   }
  
  /**
@@ -73,18 +71,6 @@ public class DominanceComparator implements Comparator {
     dominate2 = 0 ;
     
     int flag; //stores the result of the comparison
-
-    // Test to determine whether at least a solution violates some constraint
-    if (violationConstraintComparator_.needToCompare(solution1, solution2))
-      return violationConstraintComparator_.compare(solution1, solution2) ;
-    /*
-    if (solution1.getOverallConstraintViolation()!= 
-        solution2.getOverallConstraintViolation() &&
-       (solution1.getOverallConstraintViolation() < 0) ||         
-       (solution2.getOverallConstraintViolation() < 0)){            
-      return (overallConstraintViolationComparator_.compare(solution1,solution2));
-    }
-   */
     
     // Equal number of violated constraints. Applying a dominance Test then
     double value1, value2;

@@ -33,7 +33,7 @@ public class MOKP_Problem extends Problem {
 	
 
   public MOKP_Problem(String problemName,String userPreferenceName) {
-	  this.setMaxmized_(false); // this problem is not to be maximized
+	  this.setMaxmized_(true); // this problem is not to be maximized
 	  this.problemName_ = problemName;
       this.numberOfVariables_ = 1;
 
@@ -141,8 +141,8 @@ public class MOKP_Problem extends Problem {
 		Variable[] vars = solution.getDecisionVariables();
         Binary bin = (Binary) vars[0];
 
-        int result = simple_user_pref_evaluate(bin);
-        //int result = sum_of_profit_evaluate(bin);
+        //int result = simple_user_pref_evaluate(bin);
+        int result = sum_of_profit_evaluate(bin);
 
         solution.setObjective(0, result);
         
@@ -184,39 +184,6 @@ public class MOKP_Problem extends Problem {
         } // for i
         return sum;
     }
-       
-      // Evaluates the constraint overhead of a solution
-      @Override
-	  public void evaluateConstraints(Solution solution) throws JMException {
-		Variable[] vars = solution.getDecisionVariables();
-	    Binary bin = (Binary) vars[0];
-	    
-	    int numberViolate = 0;
-	    double CV = 0.0;
-	    
-	    for (int i = 0; i < this.numberOfConstraints_;i++) {
-
-            int startingIndex = i * numberOfItems;
-
-            int sumWeight = 0;
-            int k = 0;
-            for(int j = startingIndex; j < startingIndex+numberOfItems; j++) { // for each bit
-                  if (bin.getIth(j) == true) {
-                      sumWeight = sumWeight +  w[i][k];
-                  }
-                  k++;
-            }
-	    	  
-            if (sumWeight > sackCapacity[i])  {
-                  numberViolate++;
-                  CV = CV + (sumWeight - sackCapacity[i]);
-            }
-	    	  
-	    } // for i
-	    	    	 
-	    solution.setNumberOfViolatedConstraint(numberViolate);    
-	    solution.setOverallConstraintViolation(CV);
-	  } // evaluateConstraints   
 }
 
 
