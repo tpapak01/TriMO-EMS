@@ -63,11 +63,10 @@ public class MOKP_Problem extends Problem {
           // Read number of items
           line = in.readLine();
           numberOfItems = Integer.parseInt(line);
-//      System.out.println(numberOfItems);	  
+
           //Read number of objectives
           line = in.readLine();
           this.numberOfObjectives_ = Integer.parseInt(line);
-//      System.out.println(numberOfObjectives_);	  
 
           sackCapacity = new double[this.numberOfConstraints_];
 
@@ -141,10 +140,13 @@ public class MOKP_Problem extends Problem {
 		Variable[] vars = solution.getDecisionVariables();
         Binary bin = (Binary) vars[0];
 
-        //int result = simple_user_pref_evaluate(bin);
-        int result = sum_of_profit_evaluate(bin);
-
+        int result;
+        result = simple_user_pref_evaluate(bin);
         solution.setObjective(0, result);
+        result = sum_of_profit_evaluate(bin);
+        solution.setObjective(1, result);
+
+
         
 	} // evaluate
 
@@ -157,7 +159,7 @@ public class MOKP_Problem extends Problem {
             int k=0;
             for(int j = startingIndex; j < startingIndex+numberOfItems; j++) { // for each bit
                 if (bin.getIth(j) != pref[i][k]) {
-                    dissatisfaction++;
+                    dissatisfaction--;
                 }
                 k++;
             } // for j
