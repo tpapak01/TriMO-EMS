@@ -93,7 +93,7 @@ public class MOEAD_main {
     } // if
     else { // Default problem
       //thalis
-      problem = new MOKP_Problem("knapsack_2_3to2");
+      problem = new MOKP_Problem("knapsack_2_3to2", "userpreference_1_3to2");
       //thalis comment, default option
       //problem = new Kursawe("Real", 3);
       //problem = new Kursawe("BinaryReal", 3);

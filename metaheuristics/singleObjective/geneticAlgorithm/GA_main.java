@@ -59,7 +59,7 @@ public class GA_main {
 
 
     //thalis
-    problem = new MOKP_Problem("knapsack_2_3to1");
+    problem = new MOKP_Problem("knapsack_2_3to1", "userpreference_1_3to2");
     //thalis comment
     //int bits = 512 ;
     //problem = new OneMax("Binary", bits);
