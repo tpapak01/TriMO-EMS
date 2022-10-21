@@ -15,50 +15,22 @@ import jmetal.core.Solution;
 import jmetal.core.Variable;
 import jmetal.encodings.solutionType.BinarySolutionType;
 import jmetal.util.PseudoRandom;
-import jmetal.util.Utils;
 
 
 public class MOKP_BinarySolution extends BinarySolutionType {
 	private static Random r = new Random();
     private int numberOfItems;
+    private int numberOfUsers;
     private int [][] p; // profit of items
-    private int [][] w; // weight of items
-    private double[] sackCapacity ; // capacity of each  knapsack .
-    private double [] profPerWeight;
-    private int [] selectIndex;
+    private int [] w; // weight of items
+
     
-    public MOKP_BinarySolution(Problem problem, int numberOfItems, int [][] p, int [][] w, double[] sackCapacity) {
+    public MOKP_BinarySolution(Problem problem, int numberOfItems, int numberOfUsers, int[] w) {
         super(problem);       
         this.numberOfItems = numberOfItems;
+        this.numberOfUsers = numberOfUsers;
         this.p = p;
         this.w = w;
-        this.sackCapacity = sackCapacity;
-
-        //the below process only seems to play a role in the repair process
-        profPerWeight = new double [problem_.getNumberOfConstraints()*numberOfItems] ;
-        selectIndex = new int [problem_.getNumberOfConstraints()*numberOfItems] ;
-
-		for (int i = 0; i < problem_.getNumberOfConstraints();i++) { // for each constraint
-
-			int startingIndex = i * numberOfItems;
-
-			int k = 0;
-			for (int j = startingIndex; j < startingIndex+numberOfItems; j++) {
-				selectIndex[j] = j;
-
-				//for each item, if the profit per kilo (given the specific bucket)
-				//is greater than that for any another bucket, then overwrite the top
-				//value of that item per kilo
-				double val = ((double) p[i][k]) / w[i][k];
-				profPerWeight[j] = val;
-				k++;
-			} // for j
-		}
-
-        //selectIndex[5]=1 means that item 5 has the lowest value per kilo of all items
-        //Utils.QuickSort(profPerWeight, selectIndex, 0, numberOfItems-1);
-		Utils.bubbleSort(profPerWeight, selectIndex);
-
     }    
     
     @Override
@@ -66,13 +38,13 @@ public class MOKP_BinarySolution extends BinarySolutionType {
         Variable[] vars = new Variable[problem_.getNumberOfVariables()];
 
         for (int i = 0; i < vars.length; i++) {
-            Binary bin = new Binary(numberOfItems * problem_.getNumberOfConstraints());
-            
+            Binary bin = new Binary(numberOfUsers * numberOfItems * problem_.getNumberOfConstraints());
+
             for (int j = 0; j < bin.getNumberOfBits(); j++) {
-                bin.setIth(j, r.nextBoolean());                
+                bin.setIth(j, r.nextBoolean());
             }
-           
-            vars[i] = bin;                        
+
+            vars[i] = bin;
         }
         
         return vars;        
@@ -88,7 +60,7 @@ public class MOKP_BinarySolution extends BinarySolutionType {
 			for (int i = 0; i < vars.length; i++) {
 				Binary bin = ((Binary)vars[i]);
 
-				for (int j = 0; j < numberOfItems; j++){ //
+				for (int j = 0; j < bin.numberOfBits_; j++){ //
 
 					 if (PseudoRandom.randDouble() < updateRate) {
 

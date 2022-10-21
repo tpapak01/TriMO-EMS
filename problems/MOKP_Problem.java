@@ -21,14 +21,14 @@ import jmetal.util.JMException;
 public class MOKP_Problem extends Problem {
 
 	private static final long serialVersionUID = 1L;
-    private String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data/"; // The path of the files
+    private String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data - multi user/"; // The path of the files
     private String userPreferencePath = "/Users/emine/IdeaProjects/JMETALHOME/Userpreference_data/"; // The path of the files
     public static String fileName; //
     public static String userPreferencefileName; //
     private int numberOfItems;
-    private int [][] p; // profit of items
-    private int [][] w; // weight of items
-    private boolean [][] pref; // preferece of user: time x device
+    private int numberOfUsers;
+    private int[] w; // weight of items
+    private boolean [][][] pref; // preferences of users: user x time x device
     private double[] sackCapacity ; // capacity of each  knapsack .
 	
 
@@ -37,21 +37,14 @@ public class MOKP_Problem extends Problem {
 	  this.problemName_ = problemName;
       this.numberOfVariables_ = 1;
 
-     
       fileName = problemPath + problemName + ".txt";
       userPreferencefileName = userPreferencePath + userPreferenceName + ".txt";
       System.out.println(fileName);
-      
-      // find the number of constraints
-      int first_ = problemName.indexOf('_');
-      int second_ =  problemName.indexOf('_',first_ +  1);    		  
-      String constrStr = problemName.substring(first_ + 1,second_);  
-      this.numberOfConstraints_ = Integer.parseInt(constrStr); // 
 
       //fills up numberOfItems, p, w, sackCapacity
       //simply read the input textfile
       this.loadProblem(fileName, userPreferencefileName);
-      this.solutionType_ = new MOKP_BinarySolution(this, numberOfItems,p,w, sackCapacity);
+      this.solutionType_ = new MOKP_BinarySolution(this, numberOfItems, numberOfUsers, w);
 
   }  // 
 
@@ -64,42 +57,24 @@ public class MOKP_Problem extends Problem {
           line = in.readLine();
           numberOfItems = Integer.parseInt(line);
 
-          //Read number of objectives
+          //Read number of buckets
           line = in.readLine();
-          this.numberOfObjectives_ = Integer.parseInt(line);
+          this.numberOfConstraints_ = Integer.parseInt(line);
+
+          this.numberOfObjectives_ = 2;
+
+          w = new int[numberOfItems];
+
+          for (int i = 0; i < numberOfItems; i++) {
+              // Read weight for the j-th item
+              line = in.readLine();
+              w[i] = Integer.parseInt(line);
+          }
 
           sackCapacity = new double[this.numberOfConstraints_];
-
-          p = new int[this.numberOfConstraints_][numberOfItems];
-          w = new int[this.numberOfConstraints_][numberOfItems];
-          pref = new boolean[this.numberOfConstraints_][numberOfItems];
-
           for (int i = 0; i < this.numberOfConstraints_; i++) {
-              //reads line mentioning capacity of bucket, whether existent or 1+e155
               line = in.readLine();
-
-              if (i < this.numberOfConstraints_) {
-                  sackCapacity[i] = Double.parseDouble(line);
-//    		  System.out.println(capacity[i]);	  
-              } else {
-//    		  System.out.println(line);	  
-              }
-              int sumProfit = 0;
-
-              for (int j = 0; j < numberOfItems; j++) {
-                  // Read weight for the j-th item
-                  line = in.readLine();
-                  w[i][j] = Integer.parseInt(line);
-//    		  System.out.println(w[i][j]);	
-
-                  // Read profit for the j-th item
-                  line = in.readLine();
-                  p[i][j] = Integer.parseInt(line);
-                  sumProfit = sumProfit + p[i][j];
-//    		  System.out.println(p[i][j]);	    		  
-              }
-
-//    	  System.out.println("sumProfit = " + sumProfit);	
+              sackCapacity[i] = Double.parseDouble(line);
           }
 
           in.close();
@@ -111,26 +86,34 @@ public class MOKP_Problem extends Problem {
       try {
           BufferedReader in = new BufferedReader(new FileReader(userPreferencefileName));
 
-          for (int i = 0; i < this.numberOfConstraints_; i++) {
-              for (int j = 0; j < numberOfItems; j++) {
-                  // Read number of items
-                  Character r = (char) in.read();
-                  int num = Integer.parseInt(r.toString());
-                  if (num == 1)
-                    pref[i][j]=true;
+          String line = in.readLine();
+          numberOfUsers = Integer.parseInt(line);
+          in.readLine();
+
+          pref = new boolean[numberOfUsers][this.numberOfConstraints_][numberOfItems];
+
+          for (int u = 0; u < numberOfUsers; u++) {
+              for (int i = 0; i < this.numberOfConstraints_; i++) {
+                  for (int j = 0; j < numberOfItems; j++) {
+                      // Read number of items
+                      Character r = (char) in.read();
+                      int num = Integer.parseInt(r.toString());
+                      if (num == 1)
+                          pref[u][i][j] = true;
+                  }
+                  in.read();
+                  in.read();
+                  System.out.println();
               }
-              in.read();
-              in.read();
-              System.out.println();
+
+              in.readLine();
+
           }
-
-
 
           in.close();
       } catch (IOException e){
           System.out.println("Error reading MOKP problemFile: " + e.getMessage());
       }
-
 
   }
   
@@ -145,45 +128,59 @@ public class MOKP_Problem extends Problem {
         solution.setObjective(0, result);
         result = sum_of_profit_evaluate(bin);
         solution.setObjective(1, result);
-
-
         
 	} // evaluate
 
     public int simple_user_pref_evaluate(Binary bin) {
-        int dissatisfaction = 0;
-        for (int i = 0; i < this.numberOfConstraints_; i++) { // for each objective
+        int satisfaction = 0;
 
-            int startingIndex = i * numberOfItems;
+        for (int u = 0; u < numberOfUsers; u++) { // for each user
 
-            int k=0;
-            for(int j = startingIndex; j < startingIndex+numberOfItems; j++) { // for each bit
-                if (bin.getIth(j) != pref[i][k]) {
-                    dissatisfaction--;
-                }
-                k++;
-            } // for j
+            int userIndex = u * numberOfUsers;
 
-        } // for i
+            int l = 0;
+            for (int i = userIndex; i < userIndex + this.numberOfConstraints_; i++) { // for each objective
 
-        return dissatisfaction;
+                int itemIndex = i * numberOfItems;
+
+                int k = 0;
+                for (int j = itemIndex; j < itemIndex + numberOfItems; j++) { // for each bit
+                    if (bin.getIth(j) != pref[u][l][k]) {
+                        satisfaction--;
+                    }
+                    k++;
+                } // for j
+                l++;
+            } // for i
+
+        } //for u
+
+        return satisfaction;
     }
 
     public int sum_of_profit_evaluate(Binary bin) throws JMException {
         int sum = 0;
-        for (int i = 0; i < this.numberOfConstraints_; i++) { // for each objective
 
-            int startingIndex = i * numberOfItems;
+        for (int u = 0; u < numberOfUsers; u++) { // for each user
 
-            int k = 0;
-            for (int j = startingIndex; j < startingIndex + numberOfItems; j++) { // for each bit
-                if (bin.getIth(j) == true) {
-                    sum = sum + p[i][k];
-                }
-                k++;
-            } // for j
+            int userIndex = u * numberOfUsers;
 
-        } // for i
+            for (int i = userIndex; i < userIndex + this.numberOfConstraints_; i++) { // for each objective
+
+                int startingIndex = i * numberOfItems;
+
+                int k = 0;
+                for (int j = startingIndex; j < startingIndex + numberOfItems; j++) { // for each bit
+                    if (bin.getIth(j) == true) {
+                        sum = sum + w[k];
+                    }
+                    k++;
+                } // for j
+
+            } // for i
+
+        } // for u
+
         return sum;
     }
 }
