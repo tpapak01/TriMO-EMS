@@ -88,7 +88,7 @@ public class MOKP_BinarySolution extends BinarySolutionType {
 			for (int i = 0; i < vars.length; i++) {
 				Binary bin = ((Binary)vars[i]);
 
-				for (int j = 0; j < numberOfItems; j++){ //
+				for (int j = 0; j < bin.numberOfBits_; j++){ //
 
 					 if (PseudoRandom.randDouble() < updateRate) {
 
