@@ -41,12 +41,6 @@ public class MOKP_Problem extends Problem {
       fileName = problemPath + problemName + ".txt";
       userPreferencefileName = userPreferencePath + userPreferenceName + ".txt";
       System.out.println(fileName);
-      
-      // find the number of constraints
-      int first_ = problemName.indexOf('_');
-      int second_ =  problemName.indexOf('_',first_ +  1);    		  
-      String constrStr = problemName.substring(first_ + 1,second_);  
-      this.numberOfConstraints_ = Integer.parseInt(constrStr); // 
 
       //fills up numberOfItems, p, w, sackCapacity
       //simply read the input textfile
@@ -64,9 +58,11 @@ public class MOKP_Problem extends Problem {
           line = in.readLine();
           numberOfItems = Integer.parseInt(line);
 
-          //Read number of objectives
+          //Read number of buckets
           line = in.readLine();
-          this.numberOfObjectives_ = Integer.parseInt(line);
+          this.numberOfConstraints_ = Integer.parseInt(line);
+
+          this.numberOfObjectives_ = 2;
 
           sackCapacity = new double[this.numberOfConstraints_];
 
