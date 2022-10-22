@@ -29,7 +29,7 @@ public class MOKP_Problem extends Problem {
     private int numberOfUsers;
     private int[] w; // weight of items
     private boolean [][][] pref; // preferences of users: user x time x device
-    private int[] sackCapacity ; // capacity of each  knapsack .
+    private int[] costOfUsage ; // capacity of each  knapsack .
 	
 
   public MOKP_Problem(String problemName,String userPreferenceName) {
@@ -71,10 +71,10 @@ public class MOKP_Problem extends Problem {
               w[i] = Integer.parseInt(line);
           }
 
-          sackCapacity = new int[this.numberOfConstraints_];
+          costOfUsage = new int[this.numberOfConstraints_];
           for (int i = 0; i < this.numberOfConstraints_; i++) {
               line = in.readLine();
-              sackCapacity[i] = Integer.parseInt(line);
+              costOfUsage[i] = Integer.parseInt(line);
           }
 
           in.close();
@@ -123,8 +123,8 @@ public class MOKP_Problem extends Problem {
 		Variable[] vars = solution.getDecisionVariables();
         Binary bin = (Binary) vars[0];
 
-        int result;
-        result = highest_dissatisfaction_evaluate(bin);
+        double result;
+        result = complex_highest_dissatisfaction_evaluate(bin);
         solution.setObjective(0, result);
         result = highest_cost_evaluate(bin);
         solution.setObjective(1, result);
@@ -173,7 +173,7 @@ public class MOKP_Problem extends Problem {
                 int k = 0;
                 for (int j = startingIndex; j < startingIndex + numberOfItems; j++) { // for each bit
                     if (bin.getIth(j) == true) {
-                        sum = sum + w[k] * sackCapacity[l];
+                        sum = sum + w[k] * costOfUsage[l];
                     }
                     k++;
                 } // for j
@@ -185,7 +185,7 @@ public class MOKP_Problem extends Problem {
         return sum;
     }
 
-    public int highest_dissatisfaction_evaluate(Binary bin) {
+    public int simple_highest_dissatisfaction_evaluate(Binary bin) {
         int highest_dissatisfaction = 0;
 
         for (int u = 0; u < numberOfUsers; u++) { // for each user
@@ -232,8 +232,8 @@ public class MOKP_Problem extends Problem {
 
                 int k = 0;
                 for (int j = startingIndex; j < startingIndex + numberOfItems; j++) { // for each bit
-                    if (bin.getIth(j) == true) {
-                        sum = sum + w[k] * sackCapacity[l];
+                    if (bin.getIth(j)) {
+                        sum = sum + w[k] * costOfUsage[l];
                     }
                     k++;
                 } // for j
@@ -246,6 +246,54 @@ public class MOKP_Problem extends Problem {
         } // for u
 
         return highest_cost;
+    }
+
+    public double complex_highest_dissatisfaction_evaluate(Binary bin) {
+        double highest_dissatisfaction = 0;
+
+        for (int u = 0; u < numberOfUsers; u++) { // for each user
+            double dissatisfaction = 0;
+
+            int userIndex = u * numberOfUsers;
+
+            int l = 0;
+            for (int i = userIndex; i < userIndex + this.numberOfConstraints_; i++) { // for each objective
+
+                int itemIndex = i * numberOfItems;
+
+                int k = 0;
+
+                for (int j = itemIndex; j < itemIndex + numberOfItems; j++) { // for each bit
+                    //we only care if we actually wanted a device running at that time
+                    if (pref[u][l][k]) {
+                        //if it is not running, we are dissatisfied. But how much?
+                        if (bin.getIth(j) == false){
+                            double dissatisfaction_amount = 1.0;
+                            //check first neighbours
+                            if ((l-1 >=0 && !pref[u][l-1][k] && j-numberOfItems >=0 && bin.getIth(j-numberOfItems)) ||
+                                    l+1 < this.numberOfConstraints_ && !pref[u][l+1][k] && j+numberOfItems < bin.getNumberOfBits() && bin.getIth(j+numberOfItems)){
+                                dissatisfaction_amount = 0.5;
+                            }
+                            //check second neighbours
+                            else if ((l-2 >=0 && !pref[u][l-2][k] && j-2*numberOfItems >=0 && bin.getIth(j-2*numberOfItems)) ||
+                                    l+2 < this.numberOfConstraints_ && !pref[u][l+2][k] && j+2*numberOfItems < bin.getNumberOfBits() && bin.getIth(j+2*numberOfItems)){
+                                dissatisfaction_amount = 0.75;
+                            }
+                            dissatisfaction += dissatisfaction_amount;
+                        }
+                    }
+                    k++;
+                } // for j
+                l++;
+            } // for i
+
+            if (dissatisfaction > highest_dissatisfaction){
+                highest_dissatisfaction = dissatisfaction;
+            }
+
+        } //for u
+
+        return highest_dissatisfaction;
     }
 }
 
