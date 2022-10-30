@@ -46,8 +46,8 @@ public class ArrayIntSolutionType extends SolutionType {
 	public Variable[] createVariables() {
 		Variable [] variables = new Variable[1];
 		
-    variables[0] = new ArrayInt(problem_.getNumberOfVariables(), problem_);
-    return variables ;
+		variables[0] = new ArrayInt(problem_.getNumberOfVariables(), problem_);
+		return variables ;
 	} // createVariables
 	
 	/**

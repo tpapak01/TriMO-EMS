@@ -125,12 +125,6 @@ public class gGA extends Algorithm {
         // Evaluation of the new individual
         problem_.evaluate(offspring[0]);            
         problem_.evaluate(offspring[1]);
-
-        if ((offspring[0].getObjective(0) == 10 || offspring[1].getObjective(0) == 10)
-                  && parents[0].getObjective(0) != 10 && parents[1].getObjective(0) != 10
-        ){
-          System.out.println("Proof that crossover and/or mutation works");
-        }
           
         evaluations +=2;
     
