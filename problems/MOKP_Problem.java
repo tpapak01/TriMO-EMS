@@ -16,12 +16,13 @@ import jmetal.core.Variable;
 import jmetal.encodings.variable.Binary;
 import jmetal.encodings.variable.MOKP_BinarySolution;
 import jmetal.util.JMException;
+import jmetal.util.wrapper.XReal;
 
 
 public class MOKP_Problem extends Problem {
 
 	private static final long serialVersionUID = 1L;
-    private String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data - multi user/"; // The path of the files
+    private String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data - multi user - bilevel/"; // The path of the files
     private String userPreferencePath = "/Users/emine/IdeaProjects/JMETALHOME/Userpreference_data/"; // The path of the files
     public static String fileName; //
     public static String userPreferencefileName; //
@@ -29,7 +30,7 @@ public class MOKP_Problem extends Problem {
     private int numberOfUsers;
     private int[] w; // weight of items
     private boolean [][][] pref; // preferences of users: user x time x device
-    private int[] costOfUsage ; // capacity of each  knapsack .
+    private XReal costOfUsage ; // capacity of each  knapsack .
 	
 
   public MOKP_Problem(String problemName,String userPreferenceName) {
@@ -71,12 +72,6 @@ public class MOKP_Problem extends Problem {
               w[i] = Integer.parseInt(line);
           }
 
-          costOfUsage = new int[this.numberOfConstraints_];
-          for (int i = 0; i < this.numberOfConstraints_; i++) {
-              line = in.readLine();
-              costOfUsage[i] = Integer.parseInt(line);
-          }
-
           in.close();
       } catch (IOException e){
           System.out.println("Error reading MOKP problemFile: " + e.getMessage());
@@ -116,8 +111,12 @@ public class MOKP_Problem extends Problem {
       }
 
   }
-  
-	@Override
+
+    public void setCostOfUsage(XReal y) throws JMException {
+        costOfUsage = y;
+    }
+
+    @Override
 	public void evaluate(Solution solution) throws JMException {
 		// TODO Auto-generated method stub
 		Variable[] vars = solution.getDecisionVariables();
@@ -158,8 +157,8 @@ public class MOKP_Problem extends Problem {
         return dissatisfaction;
     }
 
-    public int sum_of_cost_evaluate(Binary bin) {
-        int sum = 0;
+    public double sum_of_cost_evaluate(Binary bin) throws JMException {
+        double sum = 0;
 
         for (int u = 0; u < numberOfUsers; u++) { // for each user
 
@@ -173,7 +172,7 @@ public class MOKP_Problem extends Problem {
                 int k = 0;
                 for (int j = startingIndex; j < startingIndex + numberOfItems; j++) { // for each bit
                     if (bin.getIth(j) == true) {
-                        sum = sum + w[k] * costOfUsage[l];
+                        sum = sum + w[k] * costOfUsage.getValue(l);
                     }
                     k++;
                 } // for j
@@ -217,11 +216,11 @@ public class MOKP_Problem extends Problem {
         return highest_dissatisfaction;
     }
 
-    public int highest_cost_evaluate(Binary bin) {
-        int highest_cost = 0;
+    public double highest_cost_evaluate(Binary bin) throws JMException {
+        double highest_cost = 0;
 
         for (int u = 0; u < numberOfUsers; u++) { // for each user
-            int sum = 0;
+            double sum = 0;
 
             int userIndex = u * numberOfUsers;
 
@@ -233,7 +232,7 @@ public class MOKP_Problem extends Problem {
                 int k = 0;
                 for (int j = startingIndex; j < startingIndex + numberOfItems; j++) { // for each bit
                     if (bin.getIth(j)) {
-                        sum = sum + w[k] * costOfUsage[l];
+                        sum = sum + w[k] * costOfUsage.getValue(l);
                     }
                     k++;
                 } // for j
