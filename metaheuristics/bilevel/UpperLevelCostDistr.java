@@ -4,27 +4,21 @@ import jmetal.core.Algorithm;
 import jmetal.core.Operator;
 import jmetal.core.Problem;
 import jmetal.core.SolutionSet;
-import jmetal.metaheuristics.moead.MOEAD;
 import jmetal.metaheuristics.singleObjective.geneticAlgorithm.gGA;
 import jmetal.operators.crossover.SBXCrossover;
-import jmetal.operators.crossover.SinglePointCrossover;
-import jmetal.operators.mutation.BitFlipMutation;
 import jmetal.operators.mutation.UniformMutation;
 import jmetal.operators.selection.BinaryTournament;
 import jmetal.operators.selection.Selection;
 import jmetal.problems.MOKP_Problem;
-import jmetal.problems.MGS;
-import jmetal.qualityIndicator.QualityIndicator;
-import jmetal.util.Configuration;
+import jmetal.problems.CostDistr;
 import jmetal.util.JMException;
-import jmetal.util.wrapper.XReal;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
-public class UpperLevelMGS {
+public class UpperLevelCostDistr {
 
 
     public static Logger logger_;      // Logger object
@@ -52,11 +46,12 @@ public class UpperLevelMGS {
         //int bits ; // Length of bit string in the OneMax problem
         HashMap parameters; // Operator parameters
 
+        String problemName = "knapsack_5_5to2";
         //initialize Lower Level algorithm
-        MOKP_Problem lowerLevelProblem = (MOKP_Problem) LowerLevelMOKP.initializeAlgorithm();
+        MOKP_Problem lowerLevelProblem = (MOKP_Problem) LowerLevelMOKP.initializeAlgorithm(problemName);
 
         //thalis
-        problem = new MGS("fileforREavailableamounts", lowerLevelProblem);
+        problem = new CostDistr(problemName, lowerLevelProblem);
         //thalis comment
         //int bits = 512 ;
         //problem = new OneMax("Binary", bits);

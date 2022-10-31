@@ -28,26 +28,27 @@ import java.io.FileReader;
 import java.io.IOException;
 
 
-public class MGS extends Problem {
+public class CostDistr extends Problem {
 
 	private static final long serialVersionUID = 1L;
-    private String problemPath = ""; // The path of the files
+    private String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data - multi user - bilevel/"; // The path of the files
     private String fileName;
 
     private MOKP_Problem lowerLevelProblem;
     private int[] producedRE;
 
 
-  public MGS(String problemName, MOKP_Problem lowerLevelProblem) {
+  public CostDistr(String problemName, MOKP_Problem lowerLevelProblem) {
 	  this.setMaxmized_(false); // this problem is not to be maximized
 	  this.problemName_ = problemName;
 	  //TODO set this one (numOfVars)
-      this.numberOfVariables_ = 5;
+      this.numberOfVariables_ = lowerLevelProblem.getNumberOfConstraints();
       this.numberOfObjectives_ = 1;
-      this.lowerLimit_ = new double[] {0.0, 0.0, 0.0, 0.0, 0.0};
-      this.upperLimit_ = new double[] {3.0, 3.0, 3.0, 3.0, 3.0};
-      //TODO this one too
-      producedRE = new int[5];
+      this.lowerLimit_ = new double[numberOfVariables_];
+      this.upperLimit_ = new double[numberOfVariables_];
+      for (int i=0; i<upperLimit_.length; i++)
+          upperLimit_[i] = 3.0;
+      producedRE = new int[numberOfVariables_];
       this.lowerLevelProblem = lowerLevelProblem;
 
       fileName = problemPath + problemName + ".txt";
@@ -62,23 +63,26 @@ public class MGS extends Problem {
 
   public void loadProblem(String problemFileName) {
 
-      /*
       try {
           BufferedReader in = new BufferedReader(new FileReader(problemFileName));
           String line;
 
-          // Read number of items
-          line = in.readLine();
+          in.readLine();
+          in.readLine();
+
+          for (int i = 0; i < lowerLevelProblem.getNumberOfItems(); i++) {
+              in.readLine();
+          }
+
+          for (int i = 0; i < lowerLevelProblem.getNumberOfConstraints(); i++) {
+              line = in.readLine();
+              producedRE[i] = Integer.parseInt(line);
+          }
 
           in.close();
       } catch (IOException e){
           System.out.println("Error reading MOKP problemFile: " + e.getMessage());
       }
-
-       */
-
-      for (int i=0; i<producedRE.length; i++)
-          producedRE[i] = 3;
 
   }
   

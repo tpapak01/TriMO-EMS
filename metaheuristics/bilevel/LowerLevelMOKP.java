@@ -2,15 +2,11 @@ package jmetal.metaheuristics.bilevel;
 
 import jmetal.core.*;
 import jmetal.metaheuristics.moead.MOEAD;
-import jmetal.metaheuristics.singleObjective.geneticAlgorithm.gGA;
-import jmetal.operators.crossover.SBXCrossover;
 import jmetal.operators.crossover.SinglePointCrossover;
 import jmetal.operators.mutation.BitFlipMutation;
-import jmetal.operators.mutation.UniformMutation;
 import jmetal.operators.selection.BinaryTournament;
 import jmetal.operators.selection.Selection;
 import jmetal.problems.MOKP_Problem;
-import jmetal.problems.MGS;
 import jmetal.qualityIndicator.QualityIndicator;
 import jmetal.util.Configuration;
 import jmetal.util.JMException;
@@ -28,7 +24,7 @@ public class LowerLevelMOKP {
     public static Problem problem   ;         // The problem to solve
     public static Algorithm algorithm ;         // The algorithm to use
 
-    public static Problem initializeAlgorithm() throws SecurityException, IOException {
+    public static Problem initializeAlgorithm(String problemName) throws SecurityException, IOException {
 
 
         Operator crossover ;         // Crossover operator
@@ -46,7 +42,7 @@ public class LowerLevelMOKP {
         indicators = null ;
 
         //thalis
-        problem = new MOKP_Problem("knapsack_5_5to2"  ,"userpreference_5_5to5");
+        problem = new MOKP_Problem(problemName  ,"userpreference_5_5to5");
         //thalis comment, default option
         //problem = new Kursawe("Real", 3);
         //problem = new Kursawe("BinaryReal", 3);
