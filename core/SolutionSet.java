@@ -233,6 +233,29 @@ public class SolutionSet implements Serializable {
    */
   public void printObjectivesToFile(String path){
     try {
+    /* Open the file */
+    FileOutputStream fos   = new FileOutputStream(path)     ;
+    OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
+    BufferedWriter bw      = new BufferedWriter(osw)        ;
+
+    for (Solution aSolutionsList_ : solutionsList_) {
+      //if (this.vector[i].getFitness()<1.0) {
+      bw.write(aSolutionsList_.toString());
+      bw.newLine();
+      //}
+    }
+
+    /* Close the file */
+    bw.close();
+  }catch (IOException e) {
+    Configuration.logger_.severe("Error acceding to the file");
+    e.printStackTrace();
+  }
+} // printObjectivesToFile
+
+
+  public void printSpentEnergyToFile(String path){
+    try {
       /* Open the file */
       FileOutputStream fos   = new FileOutputStream(path)     ;
       OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
@@ -240,7 +263,7 @@ public class SolutionSet implements Serializable {
 
       for (Solution aSolutionsList_ : solutionsList_) {
         //if (this.vector[i].getFitness()<1.0) {
-        bw.write(aSolutionsList_.toString());
+        bw.write(Arrays.toString(aSolutionsList_.getSpentEnergy()));
         bw.newLine();
         //}
       }
@@ -251,7 +274,7 @@ public class SolutionSet implements Serializable {
       Configuration.logger_.severe("Error acceding to the file");
       e.printStackTrace();
     }
-  } // printObjectivesToFile
+  }
 
   /**
    * Writes the decision encodings.variable values of the <code>Solution</code>

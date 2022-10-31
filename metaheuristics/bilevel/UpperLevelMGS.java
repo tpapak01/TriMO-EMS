@@ -56,7 +56,7 @@ public class UpperLevelMGS {
         MOKP_Problem lowerLevelProblem = (MOKP_Problem) LowerLevelMOKP.initializeAlgorithm();
 
         //thalis
-        problem = new MGS("knapsack_2_3to1", lowerLevelProblem);
+        problem = new MGS("fileforREavailableamounts", lowerLevelProblem);
         //thalis comment
         //int bits = 512 ;
         //problem = new OneMax("Binary", bits);
@@ -149,7 +149,8 @@ public class UpperLevelMGS {
         System.out.println("Variables values have been writen to file VAR");
         population.printVariablesToFile("VAR");
 
-        //SolutionSet setY = lowerLevelEvaluate();
+        population.printSpentEnergyToFile("SPENT");
+
 
     } //main
 

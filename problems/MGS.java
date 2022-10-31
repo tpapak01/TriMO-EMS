@@ -41,11 +41,13 @@ public class MGS extends Problem {
   public MGS(String problemName, MOKP_Problem lowerLevelProblem) {
 	  this.setMaxmized_(false); // this problem is not to be maximized
 	  this.problemName_ = problemName;
-      this.numberOfVariables_ = 5;
+	  //TODO set this one (numOfVars)
+      this.numberOfVariables_ = 2;
       this.numberOfObjectives_ = 1;
-      this.lowerLimit_ = new double[] {0.0, 0.0, 0.0, 0.0, 0.0};
-      this.upperLimit_ = new double[] {3.0, 3.0, 3.0, 3.0, 3.0};
-      producedRE = new int[5];
+      this.lowerLimit_ = new double[] {0.0, 0.0};
+      this.upperLimit_ = new double[] {3.0, 3.0};
+      //TODO this one too
+      producedRE = new int[2];
       this.lowerLevelProblem = lowerLevelProblem;
 
       fileName = problemPath + problemName + ".txt";
@@ -91,38 +93,42 @@ public class MGS extends Problem {
         }
 
 
-        //TODO pick best solution, not simply the first one
-        Solution lowerLevelSol = lowerLevelSolutions.get(0);
+        double best_result = Double.MAX_VALUE;
+        for (int s=0; s<lowerLevelSolutions.size(); s++) {
+            Solution lowerLevelSol = lowerLevelSolutions.get(s);
 
-        //Calculate total energy based on solution picked
-        //only take weight in account, not cost. where 1, add the weight to the total for that bucket
-        double[] spentEnergy = new double[lowerLevelProblem.getNumberOfConstraints()];
-        int[] w = lowerLevelProblem.getWeightOfItems();
-        Variable[] vars = lowerLevelSol.getDecisionVariables();
-        Binary bin = (Binary) vars[0];
+            //Calculate total energy based on solution picked
+            //only take weight in account, not cost. where 1, add the weight to the total for that bucket
+            double[] spentEnergy = new double[lowerLevelProblem.getNumberOfConstraints()];
+            int[] w = lowerLevelProblem.getWeightOfItems();
+            Variable[] vars = lowerLevelSol.getDecisionVariables();
+            Binary bin = (Binary) vars[0];
 
-        for (int u = 0; u < lowerLevelProblem.getNumberOfUsers(); u++) { // for each user
-            int userIndex = u * lowerLevelProblem.getNumberOfUsers();
-            int l = 0;
-            for (int i = userIndex; i < userIndex + lowerLevelProblem.getNumberOfConstraints(); i++) { // for each objective
-                int itemIndex = i * lowerLevelProblem.getNumberOfItems();
-                int k = 0;
-                for (int j = itemIndex; j < itemIndex + lowerLevelProblem.getNumberOfItems(); j++) { // for each bit
-                    if (bin.getIth(j)) {
-                        spentEnergy[l] += w[k];
-                    }
-                    k++;
-                } // for j
-                l++;
-            } // for i
-        } //for u
+            for (int u = 0; u < lowerLevelProblem.getNumberOfUsers(); u++) { // for each user
+                int userIndex = u * lowerLevelProblem.getNumberOfUsers();
+                int l = 0;
+                for (int i = userIndex; i < userIndex + lowerLevelProblem.getNumberOfConstraints(); i++) { // for each objective
+                    int itemIndex = i * lowerLevelProblem.getNumberOfItems();
+                    int k = 0;
+                    for (int j = itemIndex; j < itemIndex + lowerLevelProblem.getNumberOfItems(); j++) { // for each bit
+                        if (bin.getIth(j)) {
+                            spentEnergy[l] += w[k];
+                        }
+                        k++;
+                    } // for j
+                    l++;
+                } // for i
+            } //for u
 
-        //TODO find way to print spentEnergy for best solution
+            //do upper-level evaluation = finding deviation from available RE
+            double result = upperLevel_evaluate(spentEnergy);
+            if (result < best_result){
+                best_result = result;
+                solution.setSpentEnergy(spentEnergy);
+            }
+        }
 
-        //do upper-level evaluation = finding deviation from available RE
-        double result = upperLevel_evaluate(spentEnergy);
-
-        solution.setObjective(0, result);
+        solution.setObjective(0, best_result);
 
 	} // evaluate
 

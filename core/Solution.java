@@ -26,11 +26,20 @@ package jmetal.core;
 import jmetal.encodings.variable.Binary;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * Class representing a solution for a problem.
  */
-public class Solution implements Serializable {  
+public class Solution implements Serializable {
+  private double[] spentEnergy;
+  public double[] getSpentEnergy(){
+    return spentEnergy;
+  }
+  public void setSpentEnergy(double[] spentEnergy){
+    this.spentEnergy = Arrays.copyOf(spentEnergy, spentEnergy.length);
+  }
+
 	/**
 	 * Stores the problem 
 	 */
@@ -210,6 +219,9 @@ public class Solution implements Serializable {
     marked_               = solution.isMarked();
     rank_                 = solution.getRank();
     location_             = solution.getLocation();
+    if (solution.getSpentEnergy() != null){
+      setSpentEnergy(solution.getSpentEnergy());
+    }
   } // Solution
 
   /**
