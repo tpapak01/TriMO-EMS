@@ -22,7 +22,9 @@
 package jmetal.metaheuristics.singleObjective.geneticAlgorithm;
 
 import jmetal.core.*;
+import jmetal.encodings.variable.ArrayReal;
 import jmetal.encodings.variable.MOKP_BinarySolution;
+import jmetal.problems.CostDistr;
 import jmetal.util.JMException;
 import jmetal.util.comparators.ObjectiveComparator;
 
@@ -94,7 +96,10 @@ public class gGA extends Algorithm {
     } //for
 
      */
-    initPopulation();
+
+    //initPopulation();
+    double[] costsToSend = ((CostDistr) problem_).getCostsToSend();
+    initPopulationCostDistr(costsToSend);
      
     // Sort population
     population.sort(comparator) ;
@@ -157,6 +162,28 @@ public class gGA extends Algorithm {
   public void initPopulation() throws JMException, ClassNotFoundException {
     for (int i = 0; i < populationSize; i++) {
       Solution newSolution = new Solution(problem_);
+
+      //TODO don't initialize random cost distributions. Rather, calculate from input of RE, costs per time step, or both
+
+      problem_.evaluate(newSolution);
+      evaluations++;
+      population.add(newSolution) ;
+    } // for
+  } // initPopulation
+
+  public void initPopulationCostDistr(double[] costsToSend) throws JMException, ClassNotFoundException {
+    for (int i = 0; i < populationSize; i++) {
+      Solution newSolution = new Solution(problem_);
+
+      //TODO don't initialize random cost distributions. Rather, calculate from input of RE, costs per time step, or both
+      Variable [] variables = new Variable[1];
+      ArrayReal arrayReal = new ArrayReal(problem_.getNumberOfVariables(), problem_);
+      for (int j=0; j<problem_.getNumberOfVariables(); j++)
+        arrayReal.setValue(j, costsToSend[j]);
+      variables[0] = arrayReal;
+      newSolution.setDecisionVariables(variables);
+
+
 
       problem_.evaluate(newSolution);
       evaluations++;
