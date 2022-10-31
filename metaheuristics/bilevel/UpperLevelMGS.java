@@ -17,6 +17,7 @@ import jmetal.problems.MGS;
 import jmetal.qualityIndicator.QualityIndicator;
 import jmetal.util.Configuration;
 import jmetal.util.JMException;
+import jmetal.util.wrapper.XReal;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -51,8 +52,11 @@ public class UpperLevelMGS {
         //int bits ; // Length of bit string in the OneMax problem
         HashMap parameters; // Operator parameters
 
+        //initialize Lower Level algorithm
+        MOKP_Problem lowerLevelProblem = (MOKP_Problem) LowerLevelMOKP.initializeAlgorithm();
+
         //thalis
-        problem = new MGS("knapsack_2_3to1");
+        problem = new MGS("knapsack_2_3to1", lowerLevelProblem);
         //thalis comment
         //int bits = 512 ;
         //problem = new OneMax("Binary", bits);
@@ -69,8 +73,8 @@ public class UpperLevelMGS {
         /* Algorithm parameters*/
         //algorithm.setInputParameter("populationSize",4); //must be even number
         //algorithm.setInputParameter("maxEvaluations", 2500);
-        algorithm.setInputParameter("populationSize", 500); //must be even number
-        algorithm.setInputParameter("maxEvaluations", 25000);
+        algorithm.setInputParameter("populationSize", 6); //must be even number
+        algorithm.setInputParameter("maxEvaluations", 20);
 
 
         //thalis

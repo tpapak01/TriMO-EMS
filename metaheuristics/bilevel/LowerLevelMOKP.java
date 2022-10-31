@@ -23,14 +23,14 @@ import java.util.logging.Logger;
 
 public class LowerLevelMOKP {
 
-
     public static Logger logger_ ;      // Logger object
     public static FileHandler fileHandler_ ; // FileHandler object
+    public static Problem problem   ;         // The problem to solve
+    public static Algorithm algorithm ;         // The algorithm to use
+
+    public static Problem initializeAlgorithm() throws SecurityException, IOException {
 
 
-    public static SolutionSet evaluate(XReal y) throws JMException, SecurityException, IOException, ClassNotFoundException {
-        Problem problem   ;         // The problem to solve
-        Algorithm algorithm ;         // The algorithm to use
         Operator crossover ;         // Crossover operator
         Operator  mutation  ;         // Mutation operator
 
@@ -47,7 +47,6 @@ public class LowerLevelMOKP {
 
         //thalis
         problem = new MOKP_Problem("knapsack_5_5to2"  ,"userpreference_5_5to5");
-        ((MOKP_Problem) problem).setCostOfUsage(y);
         //thalis comment, default option
         //problem = new Kursawe("Real", 3);
         //problem = new Kursawe("BinaryReal", 3);
@@ -141,26 +140,16 @@ public class LowerLevelMOKP {
         // Ideal by default
         algorithm.setInputParameter("normalize",false);
 
+        return problem;
+    }
+
+
+    public static SolutionSet evaluate(XReal y) throws JMException, SecurityException, ClassNotFoundException {
+
+        ((MOKP_Problem) problem).setCostOfUsage(y);
+
         // Execute the Algorithm
-        long initTime = System.currentTimeMillis();
         SolutionSet population = algorithm.execute();
-        long estimatedTime = System.currentTimeMillis() - initTime;
-
-        // Result messages
-        logger_.info("Total execution time: "+estimatedTime + "ms");
-        logger_.info("Objectives values have been written to file FUN");
-        population.printObjectivesToFile("FUN");
-        logger_.info("Variables values have been written to file VAR");
-        population.printVariablesToFile("VAR");
-
-        if (indicators != null) {
-            logger_.info("Quality indicators") ;
-            logger_.info("Hypervolume: " + indicators.getHypervolume(population)) ;
-            logger_.info("EPSILON    : " + indicators.getEpsilon(population)) ;
-            logger_.info("GD         : " + indicators.getGD(population)) ;
-            logger_.info("IGD        : " + indicators.getIGD(population)) ;
-            logger_.info("Spread     : " + indicators.getSpread(population)) ;
-        } // if
 
         return population;
     }

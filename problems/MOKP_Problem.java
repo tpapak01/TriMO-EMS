@@ -116,6 +116,22 @@ public class MOKP_Problem extends Problem {
         costOfUsage = y;
     }
 
+    public int getNumberOfUsers(){
+      return numberOfUsers;
+    }
+
+    public int getNumberOfItems(){
+        return numberOfItems;
+    }
+
+    public int getNumberOfConstraints(){
+        return this.numberOfConstraints_;
+    }
+
+    public int[] getWeightOfItems(){
+        return w;
+    }
+
     @Override
 	public void evaluate(Solution solution) throws JMException {
 		// TODO Auto-generated method stub
