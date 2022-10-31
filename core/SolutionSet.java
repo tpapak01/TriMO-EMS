@@ -276,6 +276,51 @@ public class SolutionSet implements Serializable {
     }
   }
 
+  public void printLowerLevelVarsToFile(String path){
+    try {
+      /* Open the file */
+      FileOutputStream fos   = new FileOutputStream(path)     ;
+      OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
+      BufferedWriter bw      = new BufferedWriter(osw)        ;
+
+      for (Solution aSolutionsList_ : solutionsList_) {
+        //if (this.vector[i].getFitness()<1.0) {
+        bw.write(aSolutionsList_.getLowerLevelVars().toString());
+        bw.newLine();
+        //}
+      }
+
+      /* Close the file */
+      bw.close();
+    }catch (IOException e) {
+      Configuration.logger_.severe("Error acceding to the file");
+      e.printStackTrace();
+    }
+  }
+
+  public void printLowerLevelObjToFile(String path){
+    try {
+      /* Open the file */
+      FileOutputStream fos   = new FileOutputStream(path)     ;
+      OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
+      BufferedWriter bw      = new BufferedWriter(osw)        ;
+
+      for (Solution aSolutionsList_ : solutionsList_) {
+        //if (this.vector[i].getFitness()<1.0) {
+        bw.write(Arrays.toString(aSolutionsList_.getLowerLevelObj()));
+        bw.newLine();
+        //}
+      }
+
+      /* Close the file */
+      bw.close();
+    }catch (IOException e) {
+      Configuration.logger_.severe("Error acceding to the file");
+      e.printStackTrace();
+    }
+  } // printObjectivesToFile
+
+
   /**
    * Writes the decision encodings.variable values of the <code>Solution</code>
    * solutions objects into the set in a file.

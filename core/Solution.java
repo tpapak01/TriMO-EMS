@@ -39,6 +39,20 @@ public class Solution implements Serializable {
   public void setSpentEnergy(double[] spentEnergy){
     this.spentEnergy = Arrays.copyOf(spentEnergy, spentEnergy.length);
   }
+  private Binary lowerLevelVars;
+  public Binary getLowerLevelVars(){
+    return lowerLevelVars;
+  }
+  public void setLowerLevelVars(Binary vars){
+    this.lowerLevelVars = new Binary(vars);
+  }
+  private double[] lowerLevelObj;
+  public double[] getLowerLevelObj(){
+    return lowerLevelObj;
+  }
+  public void setLowerLevelObj(double[] lowerLevelObj){
+    this.lowerLevelObj = Arrays.copyOf(lowerLevelObj, lowerLevelObj.length);
+  }
 
 	/**
 	 * Stores the problem 
@@ -220,7 +234,13 @@ public class Solution implements Serializable {
     rank_                 = solution.getRank();
     location_             = solution.getLocation();
     if (solution.getSpentEnergy() != null){
-      setSpentEnergy(solution.getSpentEnergy());
+        setSpentEnergy(solution.getSpentEnergy());
+    }
+    if (solution.getLowerLevelVars() != null){
+      setLowerLevelVars(solution.getLowerLevelVars());
+    }
+    if (solution.getLowerLevelObj() != null){
+      setLowerLevelObj(solution.getLowerLevelObj());
     }
   } // Solution
 

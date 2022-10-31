@@ -42,12 +42,12 @@ public class MGS extends Problem {
 	  this.setMaxmized_(false); // this problem is not to be maximized
 	  this.problemName_ = problemName;
 	  //TODO set this one (numOfVars)
-      this.numberOfVariables_ = 2;
+      this.numberOfVariables_ = 5;
       this.numberOfObjectives_ = 1;
-      this.lowerLimit_ = new double[] {0.0, 0.0};
-      this.upperLimit_ = new double[] {3.0, 3.0};
+      this.lowerLimit_ = new double[] {0.0, 0.0, 0.0, 0.0, 0.0};
+      this.upperLimit_ = new double[] {3.0, 3.0, 3.0, 3.0, 3.0};
       //TODO this one too
-      producedRE = new int[2];
+      producedRE = new int[5];
       this.lowerLevelProblem = lowerLevelProblem;
 
       fileName = problemPath + problemName + ".txt";
@@ -125,6 +125,8 @@ public class MGS extends Problem {
             if (result < best_result){
                 best_result = result;
                 solution.setSpentEnergy(spentEnergy);
+                solution.setLowerLevelVars(bin);
+                solution.setLowerLevelObj(new double[] {lowerLevelSol.getObjective(0), lowerLevelSol.getObjective(1)});
             }
         }
 

@@ -150,6 +150,8 @@ public class UpperLevelMGS {
         population.printVariablesToFile("VAR");
 
         population.printSpentEnergyToFile("SPENT");
+        population.printLowerLevelVarsToFile("LL_VAR");
+        population.printLowerLevelObjToFile("LL_FUN");
 
 
     } //main
