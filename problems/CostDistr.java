@@ -37,21 +37,18 @@ public class CostDistr extends Problem {
 
     private MOKP_Problem lowerLevelProblem;
     private int[] producedRE;
-    private double[] costsToSend;
 
 
   public CostDistr(String problemName, MOKP_Problem lowerLevelProblem) {
 	  this.setMaxmized_(false); // this problem is not to be maximized
 	  this.problemName_ = problemName;
-	  //TODO set this one (numOfVars)
       this.numberOfVariables_ = lowerLevelProblem.getNumberOfConstraints();
       this.numberOfObjectives_ = 1;
       this.lowerLimit_ = new double[numberOfVariables_];
       this.upperLimit_ = new double[numberOfVariables_];
       for (int i=0; i<upperLimit_.length; i++)
-          upperLimit_[i] = 1.0;
+          upperLimit_[i] = 20.0;
       producedRE = new int[numberOfVariables_];
-      costsToSend = new double[numberOfVariables_];
       this.lowerLevelProblem = lowerLevelProblem;
 
       fileName = problemPath + problemName + ".txt";
@@ -77,21 +74,9 @@ public class CostDistr extends Problem {
               in.readLine();
           }
 
-          int RE_min = Integer.MAX_VALUE;
-          int RE_max = Integer.MIN_VALUE;
           for (int i = 0; i < lowerLevelProblem.getNumberOfConstraints(); i++) {
               line = in.readLine();
               producedRE[i] = Integer.parseInt(line);
-              if (producedRE[i] < RE_min){
-                  RE_min = producedRE[i];
-              }
-              if (producedRE[i] > RE_max){
-                  RE_max = producedRE[i];
-              }
-          }
-
-          for (int i = 0; i < lowerLevelProblem.getNumberOfConstraints(); i++) {
-              costsToSend[i] = ((double) producedRE[i] - RE_min) / (RE_max - RE_min);
           }
 
           in.close();
@@ -101,9 +86,9 @@ public class CostDistr extends Problem {
 
   }
 
-  public double[] getCostsToSend(){
-      return costsToSend;
-  }
+    public int[] getProducedRE(){
+        return producedRE;
+    }
   
 	@Override
 	public void evaluate(Solution solution) throws JMException {

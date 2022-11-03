@@ -22,8 +22,10 @@
 package jmetal.metaheuristics.moead;
 
 import jmetal.core.*;
+import jmetal.encodings.variable.ArrayReal;
 import jmetal.encodings.variable.Binary;
 import jmetal.encodings.variable.MOKP_BinarySolution;
+import jmetal.problems.MOKP_Problem;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
 import jmetal.util.comparators.DominanceComparator;
@@ -105,7 +107,7 @@ public class MOEAD extends Algorithm {
     rpType_ = this.getInputParameter("rpType").toString();
 
     dataDirectory_ = this.getInputParameter("dataDirectory").toString();
-    System.out.println("POPSIZE: "+ populationSize_) ;
+    //System.out.println("POPSIZE: "+ populationSize_) ;
 
     population_ = new SolutionSet(populationSize_);
     indArray_ = new Solution[problem_.getNumberOfObjectives()];
@@ -329,14 +331,70 @@ public class MOEAD extends Algorithm {
    * 
    */
   public void initPopulation() throws JMException, ClassNotFoundException {
+
+    int numberOfUsers = ((MOKP_Problem) problem_).getNumberOfUsers();
+    int numberOfItems = ((MOKP_Problem) problem_).getNumberOfItems();
+    int numOfBits = numberOfUsers * numberOfItems * problem_.getNumberOfConstraints();
+    Binary binToCopy = new Binary(numOfBits);
+
     for (int i = 0; i < populationSize_; i++) {
       Solution newSolution = new Solution(problem_);
+
+      //TODO same as in gGA, add ready solutions
+      //1) zero devices
+      if (i == 0) {
+        for (int k = 0; k < binToCopy.getNumberOfBits(); k++) {
+          binToCopy.setIth(k, false);
+        }
+        newSolution.setDecisionVariables(updateSolution(binToCopy));
+      }
+
+      //2) all devices
+      if (i == 1) {
+        for (int k = 0; k < binToCopy.getNumberOfBits(); k++) {
+          binToCopy.setIth(k, true);
+        }
+        newSolution.setDecisionVariables(updateSolution(binToCopy));
+      }
+
+      //3) exactly what the users want
+      if (i == 2) {
+        boolean[][][] pref = ((MOKP_Problem) problem_).getUserPreferences();
+
+        for (int u = 0; u < numberOfUsers; u++) { // for each user
+          int userIndex = u * numberOfUsers;
+          int l = 0;
+          for (int p = userIndex; p < userIndex +  problem_.getNumberOfConstraints(); p++) { // for each objective
+            int startingIndex = p * numberOfItems;
+            int k = 0;
+            for (int j = startingIndex; j < startingIndex + numberOfItems; j++) { // for each bit
+              binToCopy.setIth(j, pref[u][l][k]);
+              k++;
+            }
+            l++;
+          } // for p
+        } // for u
+
+        newSolution.setDecisionVariables(updateSolution(binToCopy));
+      }
 
       problem_.evaluate(newSolution);
       evaluations_++;
       population_.add(newSolution) ;
     } // for
   } // initPopulation
+
+  public Variable[] updateSolution(Binary binToCopy) throws JMException {
+    Variable[] vars = new Variable[problem_.getNumberOfVariables()];
+    for (int j = 0; j < vars.length; j++) {
+      Binary bin = new Binary(binToCopy.getNumberOfBits());
+      for (int k = 0; k < bin.getNumberOfBits(); k++) {
+        bin.setIth(k, binToCopy.getIth(k));
+      }
+      vars[j] = bin;
+    }
+    return vars;
+  }
 
   // initialise the reference point
   void initialize_RP() {

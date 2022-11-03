@@ -98,8 +98,8 @@ public class gGA extends Algorithm {
      */
 
     //initPopulation();
-    double[] costsToSend = ((CostDistr) problem_).getCostsToSend();
-    initPopulationCostDistr(costsToSend);
+    int[] producedRE = ((CostDistr) problem_).getProducedRE();
+    initPopulationCostDistr(producedRE);
      
     // Sort population
     population.sort(comparator) ;
@@ -163,33 +163,99 @@ public class gGA extends Algorithm {
     for (int i = 0; i < populationSize; i++) {
       Solution newSolution = new Solution(problem_);
 
-      //TODO don't initialize random cost distributions. Rather, calculate from input of RE, costs per time step, or both
-
       problem_.evaluate(newSolution);
       evaluations++;
       population.add(newSolution) ;
     } // for
   } // initPopulation
 
-  public void initPopulationCostDistr(double[] costsToSend) throws JMException, ClassNotFoundException {
+  public void initPopulationCostDistr(int[] producedRE) throws JMException, ClassNotFoundException {
+    double[] costsToSend = new double[problem_.getNumberOfVariables()];
+    int RE_min = Integer.MAX_VALUE;
+    int RE_max = Integer.MIN_VALUE;
+    for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
+      if (producedRE[j] < RE_min){
+        RE_min = producedRE[j];
+      }
+      if (producedRE[j] > RE_max){
+        RE_max = producedRE[j];
+      }
+    }
+
     for (int i = 0; i < populationSize; i++) {
       Solution newSolution = new Solution(problem_);
 
-      //TODO don't initialize random cost distributions. Rather, calculate from input of RE, costs per time step, or both
-      Variable [] variables = new Variable[1];
-      ArrayReal arrayReal = new ArrayReal(problem_.getNumberOfVariables(), problem_);
-      for (int j=0; j<problem_.getNumberOfVariables(); j++)
-        arrayReal.setValue(j, costsToSend[j]);
-      variables[0] = arrayReal;
-      newSolution.setDecisionVariables(variables);
+      //1) normalized costs to send - MIN MAX = LIMITS (so 0 and 1 exist)
+      if (i == 0) {
+        for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
+          costsToSend[j] = 1 - (((double) producedRE[j] - RE_min) / (RE_max - RE_min));
+        }
+        newSolution.setDecisionVariables(updateSolution(costsToSend));
+      }
 
+      //2) deduct RE from upper limit
+      if (i == 1) {
+        for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
+          costsToSend[j] = problem_.getUpperLimit(j) - producedRE[j];
+        }
+        newSolution.setDecisionVariables(updateSolution(costsToSend));
+      }
 
+      //3) deduct RE from double the upper limit
+      if (i == 2) {
+        for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
+          costsToSend[j] = problem_.getUpperLimit(j)*2 - producedRE[j];
+        }
+        newSolution.setDecisionVariables(updateSolution(costsToSend));
+      }
+
+      //4) deduct RE from triple the upper limit
+      if (i == 3) {
+        for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
+          costsToSend[j] = problem_.getUpperLimit(j)*3 - producedRE[j];
+        }
+        newSolution.setDecisionVariables(updateSolution(costsToSend));
+      }
+
+      //5) deduct RE from quadruple the upper limit
+      if (i == 4) {
+        for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
+          costsToSend[j] = problem_.getUpperLimit(j)*4 - producedRE[j];
+        }
+        newSolution.setDecisionVariables(updateSolution(costsToSend));
+      }
+
+      //6) normalized costs to send, but PERCENTAGE (MIN MAX = LIMITS (so 0 and 100 exist)
+      if (i == 5) {
+        for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
+          costsToSend[j] = (1 - (((double) producedRE[j] - RE_min) / (RE_max - RE_min))) * 100;
+        }
+        newSolution.setDecisionVariables(updateSolution(costsToSend));
+      }
+
+      //7) deduct RE from upper limit, then make PERCENTAGE
+      if (i == 6) {
+        double multiplier = 100 / problem_.getUpperLimit(0);
+        for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
+          costsToSend[j] = (problem_.getUpperLimit(j) - producedRE[j]) * multiplier;
+        }
+        newSolution.setDecisionVariables(updateSolution(costsToSend));
+      }
 
       problem_.evaluate(newSolution);
       evaluations++;
       population.add(newSolution) ;
     } // for
   } // initPopulation
+
+  public Variable[] updateSolution(double[] costsToSend) throws JMException {
+    Variable [] variables = new Variable[1];
+    ArrayReal arrayReal = new ArrayReal(problem_.getNumberOfVariables(), problem_);
+    for (int j=0; j<problem_.getNumberOfVariables(); j++)
+      arrayReal.setValue(j, costsToSend[j]);
+    variables[0] = arrayReal;
+    return variables;
+  }
 
 
 } // gGA

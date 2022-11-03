@@ -132,6 +132,10 @@ public class MOKP_Problem extends Problem {
         return w;
     }
 
+    public boolean[][][] getUserPreferences(){
+      return pref;
+    }
+
     @Override
 	public void evaluate(Solution solution) throws JMException {
 		// TODO Auto-generated method stub
@@ -265,6 +269,7 @@ public class MOKP_Problem extends Problem {
 
     public double complex_highest_dissatisfaction_evaluate(Binary bin) {
         double highest_dissatisfaction = 0;
+        boolean[] used = new boolean[bin.getNumberOfBits()];
 
         for (int u = 0; u < numberOfUsers; u++) { // for each user
             double dissatisfaction = 0;
@@ -284,15 +289,22 @@ public class MOKP_Problem extends Problem {
                         //if it is not running, we are dissatisfied. But how much?
                         if (bin.getIth(j) == false){
                             double dissatisfaction_amount = 1.0;
+
                             //check first neighbours
-                            if ((l-1 >=0 && !pref[u][l-1][k] && j-numberOfItems >=0 && bin.getIth(j-numberOfItems)) ||
-                                    l+1 < this.numberOfConstraints_ && !pref[u][l+1][k] && j+numberOfItems < bin.getNumberOfBits() && bin.getIth(j+numberOfItems)){
+                            if (l-1 >=0 && !pref[u][l-1][k] && bin.getIth(j-numberOfItems) && !used[j-numberOfItems]){
                                 dissatisfaction_amount = 0.5;
+                                used[j-numberOfItems] = true;
+                            } else if (l+1 < this.numberOfConstraints_ && !pref[u][l+1][k] && bin.getIth(j+numberOfItems) && !used[j+numberOfItems]){
+                                dissatisfaction_amount = 0.5;
+                                used[j+numberOfItems] = true;
                             }
                             //check second neighbours
-                            else if ((l-2 >=0 && !pref[u][l-2][k] && j-2*numberOfItems >=0 && bin.getIth(j-2*numberOfItems)) ||
-                                    l+2 < this.numberOfConstraints_ && !pref[u][l+2][k] && j+2*numberOfItems < bin.getNumberOfBits() && bin.getIth(j+2*numberOfItems)){
+                            else if (l-2 >=0 && !pref[u][l-2][k] && bin.getIth(j-2*numberOfItems) && !used[j-2*numberOfItems]){
                                 dissatisfaction_amount = 0.75;
+                                used[j-2*numberOfItems] = true;
+                            } else if (l+2 < this.numberOfConstraints_ && !pref[u][l+2][k] && bin.getIth(j+2*numberOfItems) && !used[j+2*numberOfItems]){
+                                dissatisfaction_amount = 0.75;
+                                used[j+2*numberOfItems] = true;
                             }
                             dissatisfaction += dissatisfaction_amount;
                         }
