@@ -100,8 +100,6 @@ public class CostDistr extends Problem {
             System.out.println("Exception at LowerLevelMOKP.evaluate: " + e.getMessage());
         }
 
-        long start = System.currentTimeMillis();
-
         double best_result = Double.MAX_VALUE;
         int llConstraints = lowerLevelProblem.getNumberOfConstraints();
         int llUsers = lowerLevelProblem.getNumberOfUsers();
@@ -145,9 +143,6 @@ public class CostDistr extends Problem {
         }
 
         solution.setObjective(0, best_result);
-
-        long end = System.currentTimeMillis();
-        System.out.println("6) " + (end - start));
 
 	} // evaluate
 

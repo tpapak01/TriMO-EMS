@@ -21,6 +21,7 @@
 
 package jmetal.metaheuristics.singleObjective.geneticAlgorithm;
 
+import javafx.beans.binding.BooleanExpression;
 import jmetal.core.*;
 import jmetal.encodings.variable.ArrayReal;
 import jmetal.encodings.variable.MOKP_BinarySolution;
@@ -97,14 +98,22 @@ public class gGA extends Algorithm {
 
      */
 
-    //initPopulation();
-    int[] producedRE = ((CostDistr) problem_).getProducedRE();
-    initPopulationCostDistr(producedRE);
+    initPopulation();
+    //int[] producedRE = ((CostDistr) problem_).getProducedRE();
+    //initPopulationCostDistr(producedRE);
      
     // Sort population
     population.sort(comparator) ;
+
+    //used for convergence observation
+    int threshold = 0;
+    //used for solution injection
+    boolean passedOnce = false;
+
     while (evaluations < maxEvaluations) {
-      if ((evaluations % 10) == 0) {
+
+      if (evaluations > threshold) {
+        threshold += 300;
         System.out.println(evaluations + ": " + population.get(0).getObjective(0)) ;
       } //
 
@@ -145,7 +154,29 @@ public class gGA extends Algorithm {
         population.add(offspringPopulation.get(i)) ;
       }
       offspringPopulation.clear();
-      population.sort(comparator) ;
+      population.sort(comparator);
+
+      //solution injection
+      /*
+      if (evaluations > 1500 && !passedOnce){
+        passedOnce = true;
+        population.remove(population.size()-1);
+
+        double[] costsToSend = new double[problem_.getNumberOfVariables()];
+        int[] producedRE = ((CostDistr) problem_).getProducedRE();
+        Solution newSolution = new Solution(problem_);
+        for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
+          costsToSend[j] = 1 - (((double) producedRE[j]) / (20));
+        }
+        newSolution.setDecisionVariables(updateSolution(costsToSend));
+        problem_.evaluate(newSolution);
+
+        population.add(population.size(), newSolution);
+        population.sort(comparator);
+      }
+
+       */
+
     } // while
     
     // Return a population with the best individual
@@ -185,7 +216,6 @@ public class gGA extends Algorithm {
     for (int i = 0; i < populationSize; i++) {
       Solution newSolution = new Solution(problem_);
 
-      /*
       //1) normalized costs to send - MIN MAX = LIMITS (so 0 and 1 exist)
       if (i == 0) {
         for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
@@ -242,8 +272,6 @@ public class gGA extends Algorithm {
         }
         newSolution.setDecisionVariables(updateSolution(costsToSend));
       }
-
-       */
 
       problem_.evaluate(newSolution);
       evaluations++;

@@ -97,6 +97,8 @@ public class MOEAD extends Algorithm {
 
   } // DMOEA
 
+  //public static int execution;
+
   public SolutionSet execute() throws JMException, ClassNotFoundException {
     int maxEvaluations;
 
@@ -146,6 +148,9 @@ public class MOEAD extends Algorithm {
     initialize_RP();
     //thalis comment
     //initIdealPoint();
+
+    //int threshold = 0;
+    //int iteration = 0;
 
     // STEP 2. Update
     do {
@@ -216,7 +221,19 @@ public class MOEAD extends Algorithm {
       //thalis
       initialize_RP();
 
+      /*
+      if (evaluations_ > threshold){
+        threshold += 500;
+        Ranking ranking = new NondominatedRanking(population_);
+        SolutionSet paretoFront = ranking.getSubfront(0);
+        paretoFront.printObjectivesToFile("LowerLevelParetoVisual/" + execution + "_FUN_" + iteration++);
+      }
+
+       */
+
     } while (evaluations_ < maxEvaluations);
+
+    //execution++;
 
     //thalis
     // Only feasible solutions
@@ -256,13 +273,11 @@ public class MOEAD extends Algorithm {
 
     //thalis
     // Find non-dominated solutions
-      /*
-    Ranking ranking = new NondominatedRanking(finalSet);
-    System.out.println("# Non-dominated feasible solutions in MOEDA = " + ranking.getSubfront(0).size());
+    Ranking ranking = new NondominatedRanking(population_);
+    SolutionSet paretoFront = ranking.getSubfront(0);
+    //System.out.println("# Non-dominated feasible solutions in MOEDA = " + paretoFront.size());
 
-       */
-
-    return population_;
+    return paretoFront;
   }
 
  
