@@ -149,8 +149,11 @@ public class MOEAD extends Algorithm {
     //thalis comment
     //initIdealPoint();
 
+    //used for convergence observation
     //int threshold = 0;
     //int iteration = 0;
+    //used for solution injection
+    boolean passedOnce = false;
 
     // STEP 2. Update
     do {
@@ -222,7 +225,7 @@ public class MOEAD extends Algorithm {
       initialize_RP();
 
       /*
-      if (evaluations_ > threshold){
+      if (evaluations_ > threshold && execution < 10){
         threshold += 500;
         Ranking ranking = new NondominatedRanking(population_);
         SolutionSet paretoFront = ranking.getSubfront(0);
@@ -230,6 +233,45 @@ public class MOEAD extends Algorithm {
       }
 
        */
+
+
+      //solution injection
+      if (evaluations_ > 2000 && !passedOnce){
+          passedOnce = true;
+          population_.remove(population_.size()-1);
+
+          Solution newSolution = new Solution(problem_);
+          int numberOfUsers = ((MOKP_Problem) problem_).getNumberOfUsers();
+          int numberOfItems = ((MOKP_Problem) problem_).getNumberOfItems();
+          int numOfConstraints = problem_.getNumberOfConstraints();
+          int numOfBits = numberOfUsers * numberOfItems * numOfConstraints;
+          boolean[][][] pref = ((MOKP_Problem) problem_).getUserPreferences();
+          Variable[] vars = new Variable[problem_.getNumberOfVariables()];
+          for (int v = 0; v < vars.length; v++) {
+              Binary bin = new Binary(numOfBits);
+
+              for (int u = 0; u < numberOfUsers; u++) { // for each user
+                  int userIndex = u * numberOfUsers;
+                  int l = 0;
+                  for (int p = userIndex; p < userIndex +  numOfConstraints; p++) { // for each objective
+                      int startingIndex = p * numberOfItems;
+                      int k = 0;
+                      for (int j = startingIndex; j < startingIndex + numberOfItems; j++) { // for each bit
+                          bin.setIth(j, pref[u][l][k]);
+                          k++;
+                      }
+                      l++;
+                  } // for p
+              } // for u
+
+              vars[v] = bin;
+          }
+
+          newSolution.setDecisionVariables(vars);
+          problem_.evaluate(newSolution);
+
+          population_.add(population_.size(), newSolution);
+        }
 
     } while (evaluations_ < maxEvaluations);
 
@@ -380,6 +422,7 @@ public class MOEAD extends Algorithm {
       }
 
       //3) exactly what the users want
+        /*
       if (i == 2) {
             boolean[][][] pref = ((MOKP_Problem) problem_).getUserPreferences();
             Variable[] vars = new Variable[problem_.getNumberOfVariables()];
@@ -405,6 +448,8 @@ public class MOEAD extends Algorithm {
 
             newSolution.setDecisionVariables(vars);
       }
+
+         */
 
       problem_.evaluate(newSolution);
       evaluations_++;
