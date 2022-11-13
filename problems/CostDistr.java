@@ -47,7 +47,7 @@ public class CostDistr extends Problem {
       this.lowerLimit_ = new double[numberOfVariables_];
       this.upperLimit_ = new double[numberOfVariables_];
       for (int i=0; i<upperLimit_.length; i++)
-          upperLimit_[i] = 20.0;
+          upperLimit_[i] = 1.0;
       producedRE = new int[numberOfVariables_];
       this.lowerLevelProblem = lowerLevelProblem;
 
@@ -100,25 +100,31 @@ public class CostDistr extends Problem {
             System.out.println("Exception at LowerLevelMOKP.evaluate: " + e.getMessage());
         }
 
+        long start = System.currentTimeMillis();
 
         double best_result = Double.MAX_VALUE;
+        int llConstraints = lowerLevelProblem.getNumberOfConstraints();
+        int llUsers = lowerLevelProblem.getNumberOfUsers();
+        int llItems = lowerLevelProblem.getNumberOfItems();
+        int[] w = lowerLevelProblem.getWeightOfItems();
+
         for (int s=0; s<lowerLevelSolutions.size(); s++) {
             Solution lowerLevelSol = lowerLevelSolutions.get(s);
 
             //Calculate total energy based on solution picked
             //only take weight in account, not cost. where 1, add the weight to the total for that bucket
-            double[] spentEnergy = new double[lowerLevelProblem.getNumberOfConstraints()];
-            int[] w = lowerLevelProblem.getWeightOfItems();
+            double[] spentEnergy = new double[llConstraints];
+
             Variable[] vars = lowerLevelSol.getDecisionVariables();
             Binary bin = (Binary) vars[0];
 
-            for (int u = 0; u < lowerLevelProblem.getNumberOfUsers(); u++) { // for each user
-                int userIndex = u * lowerLevelProblem.getNumberOfUsers();
+            for (int u = 0; u < llUsers; u++) { // for each user
+                int userIndex = u * llUsers;
                 int l = 0;
-                for (int i = userIndex; i < userIndex + lowerLevelProblem.getNumberOfConstraints(); i++) { // for each objective
-                    int itemIndex = i * lowerLevelProblem.getNumberOfItems();
+                for (int i = userIndex; i < userIndex + llConstraints; i++) { // for each objective
+                    int itemIndex = i * llItems;
                     int k = 0;
-                    for (int j = itemIndex; j < itemIndex + lowerLevelProblem.getNumberOfItems(); j++) { // for each bit
+                    for (int j = itemIndex; j < itemIndex + llItems; j++) { // for each bit
                         if (bin.getIth(j)) {
                             spentEnergy[l] += w[k];
                         }
@@ -140,9 +146,12 @@ public class CostDistr extends Problem {
 
         solution.setObjective(0, best_result);
 
+        long end = System.currentTimeMillis();
+        System.out.println("6) " + (end - start));
+
 	} // evaluate
 
-    public double upperLevel_evaluate(double[] spentEnergy) throws JMException {
+    public double upperLevel_evaluate(double[] spentEnergy) {
 
         double sum = 0;
         for (int i=0; i<producedRE.length; i++) {

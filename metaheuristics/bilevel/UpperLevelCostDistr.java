@@ -68,8 +68,8 @@ public class UpperLevelCostDistr {
         /* Algorithm parameters*/
         //algorithm.setInputParameter("populationSize",4); //must be even number
         //algorithm.setInputParameter("maxEvaluations", 2500);
-        algorithm.setInputParameter("populationSize", 6); //must be even number
-        algorithm.setInputParameter("maxEvaluations", 20);
+        algorithm.setInputParameter("populationSize", 100); //must be even number
+        algorithm.setInputParameter("maxEvaluations", 5000);
 
 
         //thalis

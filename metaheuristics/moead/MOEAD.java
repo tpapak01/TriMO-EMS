@@ -220,13 +220,17 @@ public class MOEAD extends Algorithm {
 
     //thalis
     // Only feasible solutions
+      /*
     SolutionSet feasibleSet = new SolutionSet(population_.size());
     for (int i = 0; i < population_.size();i++) {
         feasibleSet.add(new Solution(population_.get(i)));
     }
 
+       */
+
     //thalis
     // At last remove identical solutions
+      /*
     SolutionSet finalSet = new SolutionSet(feasibleSet.size());
     finalSet.add(feasibleSet.get(0));
 
@@ -248,10 +252,15 @@ public class MOEAD extends Algorithm {
 
     } // for
 
+       */
+
     //thalis
     // Find non-dominated solutions
+      /*
     Ranking ranking = new NondominatedRanking(finalSet);
     System.out.println("# Non-dominated feasible solutions in MOEDA = " + ranking.getSubfront(0).size());
+
+       */
 
     return population_;
   }
@@ -261,12 +270,13 @@ public class MOEAD extends Algorithm {
    * initUniformWeight
    */
   public void initUniformWeight() {
-    if ((problem_.getNumberOfObjectives() == 2) && (populationSize_ <= 300)) {
+    //if ((problem_.getNumberOfObjectives() == 2) && (populationSize_ <= 300)) {
       for (int n = 0; n < populationSize_; n++) {
         double a = 1.0 * n / (populationSize_ - 1);
         lambda_[n][0] = a;
         lambda_[n][1] = 1 - a;
       } // for
+      /*
     } // if
     else {
       String dataFileName;
@@ -302,7 +312,11 @@ public class MOEAD extends Algorithm {
     } // else
 
     //System.exit(0) ;
+
+       */
   } // initUniformWeight
+
+
   /**
    * 
    */
@@ -334,48 +348,47 @@ public class MOEAD extends Algorithm {
 
     int numberOfUsers = ((MOKP_Problem) problem_).getNumberOfUsers();
     int numberOfItems = ((MOKP_Problem) problem_).getNumberOfItems();
-    int numOfBits = numberOfUsers * numberOfItems * problem_.getNumberOfConstraints();
-    Binary binToCopy = new Binary(numOfBits);
+    int numOfConstraints = problem_.getNumberOfConstraints();
+    int numOfBits = numberOfUsers * numberOfItems * numOfConstraints;
 
     for (int i = 0; i < populationSize_; i++) {
       Solution newSolution = new Solution(problem_);
 
-      //TODO same as in gGA, add ready solutions
       //1) zero devices
       if (i == 0) {
-        for (int k = 0; k < binToCopy.getNumberOfBits(); k++) {
-          binToCopy.setIth(k, false);
-        }
-        newSolution.setDecisionVariables(updateSolution(binToCopy));
+        newSolution.setDecisionVariables(updateSolution(numOfBits, false));
       }
 
       //2) all devices
       if (i == 1) {
-        for (int k = 0; k < binToCopy.getNumberOfBits(); k++) {
-          binToCopy.setIth(k, true);
-        }
-        newSolution.setDecisionVariables(updateSolution(binToCopy));
+        newSolution.setDecisionVariables(updateSolution(numOfBits, true));
       }
 
       //3) exactly what the users want
       if (i == 2) {
-        boolean[][][] pref = ((MOKP_Problem) problem_).getUserPreferences();
+            boolean[][][] pref = ((MOKP_Problem) problem_).getUserPreferences();
+            Variable[] vars = new Variable[problem_.getNumberOfVariables()];
+            for (int v = 0; v < vars.length; v++) {
+                Binary bin = new Binary(numOfBits);
 
-        for (int u = 0; u < numberOfUsers; u++) { // for each user
-          int userIndex = u * numberOfUsers;
-          int l = 0;
-          for (int p = userIndex; p < userIndex +  problem_.getNumberOfConstraints(); p++) { // for each objective
-            int startingIndex = p * numberOfItems;
-            int k = 0;
-            for (int j = startingIndex; j < startingIndex + numberOfItems; j++) { // for each bit
-              binToCopy.setIth(j, pref[u][l][k]);
-              k++;
+                for (int u = 0; u < numberOfUsers; u++) { // for each user
+                  int userIndex = u * numberOfUsers;
+                  int l = 0;
+                  for (int p = userIndex; p < userIndex +  numOfConstraints; p++) { // for each objective
+                    int startingIndex = p * numberOfItems;
+                    int k = 0;
+                    for (int j = startingIndex; j < startingIndex + numberOfItems; j++) { // for each bit
+                        bin.setIth(j, pref[u][l][k]);
+                      k++;
+                    }
+                    l++;
+                  } // for p
+                } // for u
+
+                vars[v] = bin;
             }
-            l++;
-          } // for p
-        } // for u
 
-        newSolution.setDecisionVariables(updateSolution(binToCopy));
+            newSolution.setDecisionVariables(vars);
       }
 
       problem_.evaluate(newSolution);
@@ -384,14 +397,14 @@ public class MOEAD extends Algorithm {
     } // for
   } // initPopulation
 
-  public Variable[] updateSolution(Binary binToCopy) throws JMException {
+  public Variable[] updateSolution(int numOfBits, Boolean val) {
     Variable[] vars = new Variable[problem_.getNumberOfVariables()];
     for (int j = 0; j < vars.length; j++) {
-      Binary bin = new Binary(binToCopy.getNumberOfBits());
-      for (int k = 0; k < bin.getNumberOfBits(); k++) {
-        bin.setIth(k, binToCopy.getIth(k));
-      }
-      vars[j] = bin;
+        Binary bin = new Binary(numOfBits);
+        for (int k = 0; k < numOfBits; k++) {
+            bin.setIth(k, val);
+        }
+        vars[j] = bin;
     }
     return vars;
   }

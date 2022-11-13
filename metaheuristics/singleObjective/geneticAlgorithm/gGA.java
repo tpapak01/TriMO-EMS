@@ -185,6 +185,7 @@ public class gGA extends Algorithm {
     for (int i = 0; i < populationSize; i++) {
       Solution newSolution = new Solution(problem_);
 
+      /*
       //1) normalized costs to send - MIN MAX = LIMITS (so 0 and 1 exist)
       if (i == 0) {
         for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
@@ -241,6 +242,8 @@ public class gGA extends Algorithm {
         }
         newSolution.setDecisionVariables(updateSolution(costsToSend));
       }
+
+       */
 
       problem_.evaluate(newSolution);
       evaluations++;

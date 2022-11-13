@@ -138,7 +138,7 @@ public class MOKP_Problem extends Problem {
 
     @Override
 	public void evaluate(Solution solution) throws JMException {
-		// TODO Auto-generated method stub
+
 		Variable[] vars = solution.getDecisionVariables();
         Binary bin = (Binary) vars[0];
 
@@ -269,7 +269,7 @@ public class MOKP_Problem extends Problem {
 
     public double complex_highest_dissatisfaction_evaluate(Binary bin) {
         double highest_dissatisfaction = 0;
-        boolean[] used = new boolean[bin.getNumberOfBits()];
+        //boolean[] used = new boolean[bin.getNumberOfBits()];
 
         for (int u = 0; u < numberOfUsers; u++) { // for each user
             double dissatisfaction = 0;
@@ -290,6 +290,7 @@ public class MOKP_Problem extends Problem {
                         if (bin.getIth(j) == false){
                             double dissatisfaction_amount = 1.0;
 
+                            /*
                             //check first neighbours
                             if (l-1 >=0 && !pref[u][l-1][k] && bin.getIth(j-numberOfItems) && !used[j-numberOfItems]){
                                 dissatisfaction_amount = 0.5;
@@ -306,6 +307,9 @@ public class MOKP_Problem extends Problem {
                                 dissatisfaction_amount = 0.75;
                                 used[j+2*numberOfItems] = true;
                             }
+
+                             */
+
                             dissatisfaction += dissatisfaction_amount;
                         }
                     }
