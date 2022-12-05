@@ -251,7 +251,7 @@ public class MOEAD extends Algorithm {
               Binary bin = new Binary(numOfBits);
 
               for (int u = 0; u < numberOfUsers; u++) { // for each user
-                  int userIndex = u * numberOfUsers;
+                  int userIndex = u * numOfConstraints;
                   int l = 0;
                   for (int p = userIndex; p < userIndex +  numOfConstraints; p++) { // for each objective
                       int startingIndex = p * numberOfItems;
@@ -430,14 +430,14 @@ public class MOEAD extends Algorithm {
                 Binary bin = new Binary(numOfBits);
 
                 for (int u = 0; u < numberOfUsers; u++) { // for each user
-                  int userIndex = u * numberOfUsers;
+                  int userIndex = u * numOfConstraints;
                   int l = 0;
                   for (int p = userIndex; p < userIndex +  numOfConstraints; p++) { // for each objective
                     int startingIndex = p * numberOfItems;
                     int k = 0;
                     for (int j = startingIndex; j < startingIndex + numberOfItems; j++) { // for each bit
                         bin.setIth(j, pref[u][l][k]);
-                      k++;
+                        k++;
                     }
                     l++;
                   } // for p
@@ -543,10 +543,11 @@ public class MOEAD extends Algorithm {
    * 
    * @param individual
    */
+  //Only at IDEAL point
   void updateReference(Solution individual) {
     for (int n = 0; n < problem_.getNumberOfObjectives(); n++) {
-      if (individual.getObjective(n) < z_[n]) {
-        z_[n] = individual.getObjective(n);
+      if (individual.getNormalizedObjective(n) < z_[n]) {
+        z_[n] = individual.getNormalizedObjective(n);
 
         indArray_[n] = individual;
       }
@@ -664,7 +665,7 @@ public class MOEAD extends Algorithm {
       double maxFun = -1.0e+30;
 
       for (int n = 0; n < problem_.getNumberOfObjectives(); n++) {
-        double diff = Math.abs(individual.getObjective(n) - z_[n]);
+        double diff = Math.abs(individual.getNormalizedObjective(n) - z_[n]);
 
         if (problem_.isMaxmized()) {
           diff = z_[n] - individual.getNormalizedObjective(n);
@@ -693,7 +694,7 @@ public class MOEAD extends Algorithm {
   public boolean equalSolution (Solution sol1, Solution sol2) {
 
     for (int i = 0; i < sol1.getNumberOfObjectives();i++) {
-      if (sol1.getObjective(i) != sol2.getObjective(i))
+      if (sol1.getNormalizedObjective(i) != sol2.getNormalizedObjective(i))
         return false;
     }
 

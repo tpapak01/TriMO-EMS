@@ -104,7 +104,7 @@ public class CostDistr extends Problem {
         int llConstraints = lowerLevelProblem.getNumberOfConstraints();
         int llUsers = lowerLevelProblem.getNumberOfUsers();
         int llItems = lowerLevelProblem.getNumberOfItems();
-        int[] w = lowerLevelProblem.getWeightOfItems();
+        double[] w = lowerLevelProblem.getWeightOfItems();
 
         for (int s=0; s<lowerLevelSolutions.size(); s++) {
             Solution lowerLevelSol = lowerLevelSolutions.get(s);
@@ -117,7 +117,7 @@ public class CostDistr extends Problem {
             Binary bin = (Binary) vars[0];
 
             for (int u = 0; u < llUsers; u++) { // for each user
-                int userIndex = u * llUsers;
+                int userIndex = u * llConstraints;
                 int l = 0;
                 for (int i = userIndex; i < userIndex + llConstraints; i++) { // for each objective
                     int itemIndex = i * llItems;

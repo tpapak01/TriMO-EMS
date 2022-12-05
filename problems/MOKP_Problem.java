@@ -28,7 +28,7 @@ public class MOKP_Problem extends Problem {
     public static String userPreferencefileName; //
     private int numberOfItems;
     private int numberOfUsers;
-    private int[] w; // weight of items
+    private double[] w; // weight of items
     private boolean [][][] pref; // preferences of users: user x time x device
     private XReal costOfUsage ; // capacity of each  knapsack .
 	
@@ -45,7 +45,7 @@ public class MOKP_Problem extends Problem {
       //fills up numberOfItems, p, w, sackCapacity
       //simply read the input textfile
       this.loadProblem(fileName, userPreferencefileName);
-      this.solutionType_ = new MOKP_BinarySolution(this, numberOfItems, numberOfUsers, w);
+      this.solutionType_ = new MOKP_BinarySolution(this, numberOfItems, numberOfUsers);
 
   }  // 
 
@@ -64,12 +64,12 @@ public class MOKP_Problem extends Problem {
 
           this.numberOfObjectives_ = 2;
 
-          w = new int[numberOfItems];
+          w = new double[numberOfItems];
 
           for (int i = 0; i < numberOfItems; i++) {
               // Read weight for the j-th item
               line = in.readLine();
-              w[i] = Integer.parseInt(line);
+              w[i] = Double.parseDouble(line);
           }
 
           in.close();
@@ -128,7 +128,7 @@ public class MOKP_Problem extends Problem {
         return this.numberOfConstraints_;
     }
 
-    public int[] getWeightOfItems(){
+    public double[] getWeightOfItems(){
         return w;
     }
 
@@ -155,7 +155,7 @@ public class MOKP_Problem extends Problem {
 
         for (int u = 0; u < numberOfUsers; u++) { // for each user
 
-            int userIndex = u * numberOfUsers;
+            int userIndex = u * this.numberOfConstraints_;
 
             int l = 0;
             for (int i = userIndex; i < userIndex + this.numberOfConstraints_; i++) { // for each objective
@@ -182,7 +182,7 @@ public class MOKP_Problem extends Problem {
 
         for (int u = 0; u < numberOfUsers; u++) { // for each user
 
-            int userIndex = u * numberOfUsers;
+            int userIndex = u * this.numberOfConstraints_;
 
             int l = 0;
             for (int i = userIndex; i < userIndex + this.numberOfConstraints_; i++) { // for each objective
@@ -210,7 +210,7 @@ public class MOKP_Problem extends Problem {
         for (int u = 0; u < numberOfUsers; u++) { // for each user
             int dissatisfaction = 0;
 
-            int userIndex = u * numberOfUsers;
+            int userIndex = u * this.numberOfConstraints_;
 
             int l = 0;
             for (int i = userIndex; i < userIndex + this.numberOfConstraints_; i++) { // for each objective
@@ -242,7 +242,7 @@ public class MOKP_Problem extends Problem {
         for (int u = 0; u < numberOfUsers; u++) { // for each user
             double sum = 0;
 
-            int userIndex = u * numberOfUsers;
+            int userIndex = u * this.numberOfConstraints_;
 
             int l = 0;
             for (int i = userIndex; i < userIndex + this.numberOfConstraints_; i++) { // for each objective
@@ -274,7 +274,7 @@ public class MOKP_Problem extends Problem {
         for (int u = 0; u < numberOfUsers; u++) { // for each user
             double dissatisfaction = 0;
 
-            int userIndex = u * numberOfUsers;
+            int userIndex = u * this.numberOfConstraints_;
 
             int l = 0;
             for (int i = userIndex; i < userIndex + this.numberOfConstraints_; i++) { // for each objective
