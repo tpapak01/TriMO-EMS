@@ -2,7 +2,10 @@ package jmetal.metaheuristics.bilevel;
 
 import jmetal.core.*;
 import jmetal.metaheuristics.moead.MOEAD;
+import jmetal.operators.crossover.HUXCrossover;
 import jmetal.operators.crossover.SinglePointCrossover;
+import jmetal.operators.crossover.TwoPointCrossoverCustom;
+import jmetal.operators.crossover.TwoPointsCrossover;
 import jmetal.operators.mutation.BitFlipMutation;
 import jmetal.operators.selection.BinaryTournament;
 import jmetal.operators.selection.Selection;
@@ -42,7 +45,7 @@ public class LowerLevelMOKP {
         indicators = null ;
 
         //thalis
-        problem = new MOKP_Problem(problemName  ,"userpreference_5_5to5");
+        problem = new MOKP_Problem(problemName  ,"idealUserpreference_5_8to24");
         //thalis comment, default option
         //problem = new Kursawe("Real", 3);
         //problem = new Kursawe("BinaryReal", 3);
@@ -88,12 +91,12 @@ public class LowerLevelMOKP {
         algorithm.setInputParameter("dataDirectory",
                 "/Users/emine/IdeaProjects/JMETALHOME/data/MOEAD_parameters/Weight");
 
-        algorithm.setInputParameter("finalSize", 300) ; // used by MOEAD_DRA
+        //algorithm.setInputParameter("finalSize", 300) ; // used by MOEAD_DRA
 
         //thalis
-        algorithm.setInputParameter("T", 10) ;
-        algorithm.setInputParameter("delta", 1.0) ;
-        algorithm.setInputParameter("nr", 10) ;
+        algorithm.setInputParameter("T", 10) ; // number of neighbours per individual
+        algorithm.setInputParameter("delta", 1.0) ; // 1 = parents always from neighbourhood = MOEAD
+        algorithm.setInputParameter("nr", 10) ; // maximal number of solutions that can be updated in "updateProblem"
         //theta_ = 5.0; // used in PBI
         //algorithm.setInputParameter("theta", theta_) ;
         //thalis comment
@@ -106,7 +109,7 @@ public class LowerLevelMOKP {
         parameters = new HashMap();
         double crossoverProbability = 1.0;
         parameters.put("probability", crossoverProbability);
-        crossover = new SinglePointCrossover(parameters);
+        crossover = new TwoPointCrossoverCustom(parameters);
         //thalis comment
         //parameters = new HashMap() ;
         //parameters.put("CR", 1.0) ;
@@ -132,7 +135,7 @@ public class LowerLevelMOKP {
         Selection selection = new BinaryTournament(parameters);
         algorithm.addOperator("selection",selection);
         //algorithm.setInputParameter("functionType","TCHE1"); // scalar function type
-        algorithm.setInputParameter("rpType","Ideal"); // reference point z_ type, Ideal or Nadir
+        algorithm.setInputParameter("rpType","Ideal"); // reference point z_ type, Ideal (best) or Nadir (worst)
         // Ideal by default
         algorithm.setInputParameter("normalize",false);
 

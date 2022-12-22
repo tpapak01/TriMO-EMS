@@ -25,6 +25,7 @@ import jmetal.core.Solution;
 import jmetal.encodings.solutionType.BinaryRealSolutionType;
 import jmetal.encodings.solutionType.BinarySolutionType;
 import jmetal.encodings.variable.Binary;
+import jmetal.encodings.variable.MOKP_BinarySolution;
 import jmetal.util.Configuration;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
@@ -45,6 +46,7 @@ public class HUXCrossover extends Crossover{
    * Valid solution types to apply this operator 
    */
   private static final List VALID_TYPES = Arrays.asList(BinarySolutionType.class,
+                                                    MOKP_BinarySolution.class,
   		                                            BinaryRealSolutionType.class) ;
 
   private Double probability_ = null ;

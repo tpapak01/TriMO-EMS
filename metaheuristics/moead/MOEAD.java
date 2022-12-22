@@ -64,6 +64,10 @@ public class MOEAD extends Algorithm {
    */
   int[][] neighborhood_;
   /**
+   * Normalize
+   */
+  boolean normalize_;
+  /**
    * delta: probability that parent solutions are selected from neighbourhood
    */
   double delta_;
@@ -97,7 +101,7 @@ public class MOEAD extends Algorithm {
 
   } // DMOEA
 
-  //public static int execution;
+  public static int execution;
 
   public SolutionSet execute() throws JMException, ClassNotFoundException {
     int maxEvaluations;
@@ -117,6 +121,7 @@ public class MOEAD extends Algorithm {
     T_ = ((Integer) this.getInputParameter("T")).intValue();
     nr_ = ((Integer) this.getInputParameter("nr")).intValue();
     delta_ = ((Double) this.getInputParameter("delta")).doubleValue();
+    normalize_ = ((Boolean) this.getInputParameter("normalize")).booleanValue();
 
 /*
     T_ = (int) (0.1 * populationSize_);
@@ -135,8 +140,6 @@ public class MOEAD extends Algorithm {
     // STEP 1. Initialization
     // STEP 1.1. Compute euclidean distances between weight vectors and find T
     initUniformWeight();
-    //for (int i = 0; i < 300; i++)
-   // 	System.out.println(lambda_[i][0] + " " + lambda_[i][1]) ;
     
     initNeighborhood();
 
@@ -144,14 +147,11 @@ public class MOEAD extends Algorithm {
     initPopulation();
 
     // STEP 1.3. Initialize z_
-    //thalis
-    initialize_RP();
-    //thalis comment
-    //initIdealPoint();
+    initIdealPoint();
 
     //used for convergence observation
-    //int threshold = 0;
-    //int iteration = 0;
+    int threshold = 0;
+    int iteration = 0;
     //used for solution injection
     boolean passedOnce = false;
 
@@ -161,20 +161,22 @@ public class MOEAD extends Algorithm {
       Utils.randomPermutation(permutation, populationSize_);
 
       for (int i = 0; i < populationSize_; i++) {
+        // iterate through the population in random (permutation) order, or the normal order
         int n = permutation[i]; // or int n = i;
-        //int n = i ; // or int n = i;
         int type;
-        double rnd = PseudoRandom.randDouble();
+        //double rnd = PseudoRandom.randDouble();
 
         // STEP 2.1. Mating selection based on probability
-        if (rnd < delta_) // if (rnd < realb)    
-        {
+        //if (rnd < delta_) // if (rnd < realb)
+        //{
           type = 1;   // neighborhood
-        } else {
-          type = 2;   // whole population
-        }
-        Vector<Integer> p = new Vector<Integer>();
-        matingSelection(p, n, 2, type);
+        //} else {
+        //  type = 2;   // whole population
+        //}
+
+        // select 2 parents from the neighbours of the current individual n
+        Vector<Integer> parents_index = new Vector<Integer>();
+        matingSelection(parents_index, n, 2/*, type*/);
 
         // STEP 2.2. Reproduction
         Solution child;
@@ -183,13 +185,15 @@ public class MOEAD extends Algorithm {
         //thalis comment
         //Solution[] parents = new Solution[3];
 
-        parents[0] = population_.get(p.get(0));
-        parents[1] = population_.get(p.get(1));
+        parents[0] = population_.get(parents_index.get(0));
+        parents[1] = population_.get(parents_index.get(1));
         //thalis comment
         //parents[2] = population_.get(n);
 
         //thalis
+        // produce 2 offspring by performing crossover on the 2 parents
         Solution[] children = (Solution[]) crossover_.execute(parents);
+        // randomly select 1 of the 2 produced offspring
         double rndSel =  PseudoRandom.randDouble();
         if (rndSel < 0.5) {
           child = children[0];
@@ -199,7 +203,7 @@ public class MOEAD extends Algorithm {
         // Apply crossover, DE by default
         //child = (Solution) crossover_.execute(new Object[]{population_.get(n), parents});
 
-        // Apply mutation, we keep the original bit fliping for now, not the "updateProduct"
+        // Apply mutation, we keep the original bit flipping for now, not the "updateProduct"
         mutation_.execute(child);
 
         // Evaluation
@@ -207,24 +211,16 @@ public class MOEAD extends Algorithm {
         
         evaluations_++;
 
-        // STEP 2.3. Repair. Not necessary.
-        // thalis: Actually, in our MOKP case, it is
+        // STEP 2.3. Repair. Not necessary, no constraints
 
         // STEP 2.4. Update z_
-        //thalis
-        //same as "updateReference" in original
-        update_RP(child);
-        //thalis comment
-        //updateReference(child);
+        updateReference(child);
 
         // STEP 2.5. Update of solutions
         updateProblem(child, n, type);
       } // for
 
-      //thalis
-      initialize_RP();
 
-      /*
       if (evaluations_ > threshold && execution < 10){
         threshold += 500;
         Ranking ranking = new NondominatedRanking(population_);
@@ -232,10 +228,8 @@ public class MOEAD extends Algorithm {
         paretoFront.printObjectivesToFile("LowerLevelParetoVisual/" + execution + "_FUN_" + iteration++);
       }
 
-       */
-
-
       //solution injection
+      /*
       if (evaluations_ > 2000 && !passedOnce){
           passedOnce = true;
           population_.remove(population_.size()-1);
@@ -249,6 +243,7 @@ public class MOEAD extends Algorithm {
           Variable[] vars = new Variable[problem_.getNumberOfVariables()];
           for (int v = 0; v < vars.length; v++) {
               Binary bin = new Binary(numOfBits);
+
 
               for (int u = 0; u < numberOfUsers; u++) { // for each user
                   int userIndex = u * numOfConstraints;
@@ -273,9 +268,11 @@ public class MOEAD extends Algorithm {
           population_.add(population_.size(), newSolution);
         }
 
+       */
+
     } while (evaluations_ < maxEvaluations);
 
-    //execution++;
+    execution++;
 
     //thalis
     // Only feasible solutions
@@ -385,16 +382,17 @@ public class MOEAD extends Algorithm {
       // calculate the distances based on weight vectors
       for (int j = 0; j < populationSize_; j++) {
         x[j] = Utils.distVector(lambda_[i], lambda_[j]);
-        //x[j] = dist_vector(population[i].namda,population[j].namda);
         idx[j] = j;
-      //System.out.println("x["+j+"]: "+x[j]+ ". idx["+j+"]: "+idx[j]) ;
-      } // for
+      }
 
-      // find 'niche' nearest neighboring subproblems
+      // find 'niche' nearest neighboring subproblems to subproblem i
+      // This is basically insertion sort, but you only sort the first T positions.
+      // In other words, the first T positions contain the individuals with
+      // the closest distance to individual i
       Utils.minFastSort(x, idx, populationSize_, T_);
-      //minfastsort(x,idx,population.size(),niche);
 
-        System.arraycopy(idx, 0, neighborhood_[i], 0, T_);
+      // copy the indexes of the first (closest) T individuals to the neighbours-array of individual i
+      System.arraycopy(idx, 0, neighborhood_[i], 0, T_);
     } // for
   } // initNeighborhood
 
@@ -411,6 +409,7 @@ public class MOEAD extends Algorithm {
     for (int i = 0; i < populationSize_; i++) {
       Solution newSolution = new Solution(problem_);
 
+
       //1) zero devices
       if (i == 0) {
         newSolution.setDecisionVariables(updateSolution(numOfBits, false));
@@ -422,7 +421,7 @@ public class MOEAD extends Algorithm {
       }
 
       //3) exactly what the users want
-        /*
+
       if (i == 2) {
             boolean[][][] pref = ((MOKP_Problem) problem_).getUserPreferences();
             Variable[] vars = new Variable[problem_.getNumberOfVariables()];
@@ -449,13 +448,11 @@ public class MOEAD extends Algorithm {
             newSolution.setDecisionVariables(vars);
       }
 
-         */
-
       problem_.evaluate(newSolution);
       evaluations_++;
       population_.add(newSolution) ;
     } // for
-  } // initPopulation
+  }
 
   public Variable[] updateSolution(int numOfBits, Boolean val) {
     Variable[] vars = new Variable[problem_.getNumberOfVariables()];
@@ -469,43 +466,41 @@ public class MOEAD extends Algorithm {
     return vars;
   }
 
-  // initialise the reference point
-  void initialize_RP() {
-    int i;
-    for(i = 0; i < problem_.getNumberOfObjectives(); i++)  {
-      //if Nadir, start big. Else, start small
-      if(rpType_.equalsIgnoreCase("Nadir")) {
-        z_[i] = 1.1;
-      } else if(rpType_.equalsIgnoreCase("Ideal")){
-        z_[i] = -0.1; // This is very important for improving the performance
+  /**
+   * Initialise the reference point
+   */
+  void initIdealPoint() throws JMException, ClassNotFoundException {
+    for(int i = 0; i < problem_.getNumberOfObjectives(); i++)  {
+      if (problem_.isMaxmized() == false) {
+        if (rpType_.equalsIgnoreCase("Ideal")) {
+          if (normalize_) z_[i] = +0.1; else z_[i] = +1.0e+30;
+        } else {
+          System.out.println("MOEDA.initialize_RP: unknown type " + rpType_);
+          System.exit(-1);
+        }
       } else {
-        System.out.println("MOEDA.initialize_RP: unknown type " + rpType_);
-        System.exit(-1);
+        if (rpType_.equalsIgnoreCase("Ideal")) {
+          if (normalize_) z_[i] = -1.1; else z_[i] = -1.0e+30;
+        } else {
+          System.out.println("MOEDA.initialize_RP: unknown type " + rpType_);
+          System.exit(-1);
+        }
       }
 
+      indArray_[i] = new Solution(problem_);
+      problem_.evaluate(indArray_[i]);
+      evaluations_++;
+    }
+
+    for (int i = 0; i < populationSize_; i++) {
+      updateReference(population_.get(i));
     }
   }
 
   /**
-   * 
+   * Just choose *size* random neighbours from the list of neighbours of the individual (for mating purposes)
    */
-  void initIdealPoint() throws JMException, ClassNotFoundException {
-    for (int i = 0; i < problem_.getNumberOfObjectives(); i++) {
-      z_[i] = 1.0e+30;
-      indArray_[i] = new Solution(problem_);
-      problem_.evaluate(indArray_[i]);
-      evaluations_++;
-    } // for
-
-    for (int i = 0; i < populationSize_; i++) {
-      updateReference(population_.get(i));
-    } // for
-  } // initIdealPoint
-
-  /**
-   * 
-   */
-  public void matingSelection(Vector<Integer> list, int cid, int size, int type) {
+  public void matingSelection(Vector<Integer> list, int cid, int size/*, int type*/) {
     // list : the set of the indexes of selected mating parents
     // cid  : the id of current subproblem
     // size : the number of selected mating parents
@@ -515,15 +510,16 @@ public class MOEAD extends Algorithm {
     int p;
 
     ss = neighborhood_[cid].length;
+    //continue until you get enough (2) neighbours
     while (list.size() < size) {
-      if (type == 1) {
+      //if (type == 1) {
         r = PseudoRandom.randInt(0, ss - 1);
         p = neighborhood_[cid][r];
-      //p = population[cid].table[r];
-      } else {
-        p = PseudoRandom.randInt(0, populationSize_ - 1);
-      }
+      //} else {
+      //  p = PseudoRandom.randInt(0, populationSize_ - 1);
+      //}
       boolean flag = true;
+      // now make sure you don't pick the same neighbour twice
       for (int i = 0; i < list.size(); i++) {
         if (list.get(i) == p) // p is in the list
         {
@@ -531,8 +527,7 @@ public class MOEAD extends Algorithm {
           break;
         }
       }
-
-      //if (flag) list.push_back(p);
+      //if not in the list, add it
       if (flag) {
         list.addElement(p);
       }
@@ -540,38 +535,38 @@ public class MOEAD extends Algorithm {
   } // matingSelection
 
   /**
-   * 
+   * Update the reference point z_
    * @param individual
    */
-  //Only at IDEAL point
   void updateReference(Solution individual) {
     for (int n = 0; n < problem_.getNumberOfObjectives(); n++) {
-      if (individual.getNormalizedObjective(n) < z_[n]) {
-        z_[n] = individual.getNormalizedObjective(n);
-
-        indArray_[n] = individual;
+      if (normalize_) {
+        if (problem_.isMaxmized() == false) {
+          if (individual.getNormalizedObjective(n) < z_[n]) {
+            z_[n] = individual.getNormalizedObjective(n);
+            indArray_[n] = individual;
+          }
+        } else {
+          if (individual.getNormalizedObjective(n) > z_[n]) {
+            z_[n] = individual.getNormalizedObjective(n);
+            indArray_[n] = individual;
+          }
+        }
+      } else {
+        if (problem_.isMaxmized() == false) {
+          if (individual.getObjective(n) < z_[n]) {
+            z_[n] = individual.getObjective(n);
+            indArray_[n] = individual;
+          }
+        } else {
+          if (individual.getObjective(n) > z_[n]) {
+            z_[n] = individual.getObjective(n);
+            indArray_[n] = individual;
+          }
+        }
       }
     }
   } // updateReference
-
-  // update the reference point
-  void update_RP(Solution ind){
-    int i;
-
-    for(i = 0; i < problem_.getNumberOfObjectives(); i++)   {
-      //if Nadir, make it big. Else, make it small
-      if(rpType_.equalsIgnoreCase("Nadir")) {
-        if(ind.getNormalizedObjective(i) > z_[i])	{
-          z_[i] = ind.getNormalizedObjective(i);
-        }
-      } else {
-        if(ind.getNormalizedObjective(i) < z_[i])	{
-          z_[i] = ind.getNormalizedObjective(i);
-        }
-      }
-
-    }
-  }
 
   /**
    * @param indiv
@@ -587,22 +582,23 @@ public class MOEAD extends Algorithm {
 
     time = 0;
 
-    if (type == 1) {
+    //if (type == 1) {
       size = neighborhood_[id].length;
-    } else {
-      size = population_.size();
-    }
+    //} else {
+    //  size = population_.size();
+    //}
     int[] perm = new int[size];
 
     Utils.randomPermutation(perm, size);
 
+    // iterate through the neighbourhood of indiv (child) in random (permutation) order
     for (int i = 0; i < size; i++) {
       int k;
-      if (type == 1) {
+      //if (type == 1) {
         k = neighborhood_[id][perm[i]];
-      } else {
-        k = perm[i];      // calculate the values of objective function regarding the current subproblem
-      }
+      //} else {
+      //  k = perm[i];      // calculate the values of objective function regarding the current subproblem
+      //}
 
       //thalis
       int flagDominate;
@@ -618,37 +614,18 @@ public class MOEAD extends Algorithm {
         f1 = fitnessFunction(population_.get(k), lambda_[k]);
         f2 = fitnessFunction(indiv, lambda_[k]);
 
-        if (problem_.isMaxmized()) {
-          //if f2 bigger than f1, f2 is better. Correct
-          if (f2 > f1) {
-            flagDominate = 1;
-          }
-        } else {
-          //if f2 smaller than f1, f2 is better. Correct
-          if (f2 < f1) {
-            flagDominate = -1;
-          }
-        } // if
+        // if f2 smaller than f1, f2 (indiv) is better. We always look for the minimal Tchebycheff,
+        // regardless of maximization or minimization problem
+        if (f2 < f1) {
+          flagDominate = -1;
+        }
+
       }
 
       if (flagDominate == -1) {// indiv is better
         population_.replace(k, new Solution(indiv));
         time++;
       }
-
-      //thalis comment
-      /*
-      double f1, f2;
-      f1 = fitnessFunction(population_.get(k), lambda_[k]);
-      f2 = fitnessFunction(indiv, lambda_[k]);
-
-      if (f2 < f1) {
-        population_.replace(k, new Solution(indiv));
-        //population[k].indiv = indiv;
-        time++;
-      }
-
-       */
 
       // the maximal number of solutions updated is not allowed to exceed 'limit'
       if (time >= nr_) {
@@ -665,18 +642,20 @@ public class MOEAD extends Algorithm {
       double maxFun = -1.0e+30;
 
       for (int n = 0; n < problem_.getNumberOfObjectives(); n++) {
-        double diff = Math.abs(individual.getNormalizedObjective(n) - z_[n]);
-
-        if (problem_.isMaxmized()) {
-          diff = z_[n] - individual.getNormalizedObjective(n);
-        }
+        double diff;
+        if (normalize_)
+          diff = Math.abs(individual.getNormalizedObjective(n) - z_[n]);
+        else diff = Math.abs(individual.getObjective(n) - z_[n]);
 
         double feval;
+        // make sure the multiplication with λ doesn't result in an absolute zero
         if (lambda[n] == 0) {
           feval = 0.0001 * diff;
         } else {
-          feval = diff * lambda[n];
+          feval = lambda[n] * diff;
         }
+
+        //is this the maximum difference found so far?
         if (feval > maxFun) {
           maxFun = feval;
         }
@@ -690,16 +669,6 @@ public class MOEAD extends Algorithm {
     }
     return fitness;
   } // fitnessEvaluation
-
-  public boolean equalSolution (Solution sol1, Solution sol2) {
-
-    for (int i = 0; i < sol1.getNumberOfObjectives();i++) {
-      if (sol1.getNormalizedObjective(i) != sol2.getNormalizedObjective(i))
-        return false;
-    }
-
-    return true;
-  }
 
 
 } // MOEAD

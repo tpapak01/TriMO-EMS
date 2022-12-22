@@ -132,6 +132,8 @@ public class CostDistr extends Problem {
                 } // for i
             } //for u
 
+            lowerLevelSol.setSpentEnergy(spentEnergy);
+
             //do upper-level evaluation = finding deviation from available RE
             double result = upperLevel_evaluate(spentEnergy);
             if (result < best_result){

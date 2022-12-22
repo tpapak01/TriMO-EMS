@@ -1,4 +1,4 @@
-//  SinglePointCrossover.java
+//  TwoPointCrossover.java
 //
 //  Author:
 //       Antonio J. Nebro <antonio@lcc.uma.es>
@@ -36,12 +36,12 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * This class allows to apply a Single Point crossover operator using two parent
+ * This class allows to apply a Two Point crossover operator using two parent
  * solutions.
  */
-public class SinglePointCrossover extends Crossover {
+public class TwoPointCrossoverCustom extends Crossover {
   /**
-   * Valid solution types to apply this operator 
+   * Valid solution types to apply this operator
    */
   private static final List VALID_TYPES = Arrays.asList(BinarySolutionType.class,
   		                                            BinaryRealSolutionType.class,
@@ -52,28 +52,20 @@ public class SinglePointCrossover extends Crossover {
 
   /**
    * Constructor
-   * Creates a new instance of the single point crossover operator
+   * Creates a new instance of the two point crossover operator
    */
-  public SinglePointCrossover(HashMap<String, Object> parameters) {
+  public TwoPointCrossoverCustom(HashMap<String, Object> parameters) {
   	super(parameters) ;
   	if (parameters.get("probability") != null)
-  		crossoverProbability_ = (Double) parameters.get("probability") ;  		
-  } // SinglePointCrossover
+  		crossoverProbability_ = (Double) parameters.get("probability") ;
+  } // TwoPointCrossoverCustom
 
-
-  /**
-   * Constructor
-   * Creates a new instance of the single point crossover operator
-   */
-  //public SinglePointCrossover(Properties properties) {
-  //    this();
-  //} // SinglePointCrossover
 
   /**
    * Perform the crossover operation.
    * @param probability Crossover probability
    * @param parent1 The first parent
-   * @param parent2 The second parent   
+   * @param parent2 The second parent
    * @return An array containig the two offsprings
    * @throws JMException
    */
@@ -98,6 +90,8 @@ public class SinglePointCrossover extends Crossover {
           //2. Calculate the point to make the crossover
           int crossoverPoint = PseudoRandom.randInt(0, totalNumberOfBits - 1);
 
+          int crossoverPointEnd = PseudoRandom.randInt(crossoverPoint, totalNumberOfBits - 1);
+
           //3. Compute the encodings.variable containing the crossoverPoint bit
           int variable = 0;
 
@@ -109,7 +103,7 @@ public class SinglePointCrossover extends Crossover {
                   (Binary) parent2.getDecisionVariables()[variable].deepCopy();
 
           for (int i = crossoverPoint;
-                  i < offSpring1.getNumberOfBits();
+                  i <= crossoverPointEnd;
                   i++) {
             boolean swap = offSpring1.bits_.get(i);
             offSpring1.bits_.set(i, offSpring2.bits_.get(i));
@@ -149,9 +143,9 @@ public class SinglePointCrossover extends Crossover {
         } // Int representation
       }
     } catch (ClassCastException e1) {
-      Configuration.logger_.severe("SinglePointCrossover.doCrossover: Cannot perfom " +
-              "SinglePointCrossover");
-      Class cls = java.lang.String.class;
+      Configuration.logger_.severe("TwoPointCrossover.doCrossover: Cannot perfom " +
+              "TwoPointCrossover");
+      Class cls = String.class;
       String name = cls.getName();
       throw new JMException("Exception in " + name + ".doCrossover()");
     }
@@ -170,20 +164,20 @@ public class SinglePointCrossover extends Crossover {
     if (!(VALID_TYPES.contains(parents[0].getType().getClass())  &&
         VALID_TYPES.contains(parents[1].getType().getClass())) ) {
 
-      Configuration.logger_.severe("SinglePointCrossover.execute: the solutions " +
+      Configuration.logger_.severe("TwoPointCrossover.execute: the solutions " +
               "are not of the right type. The type should be 'Binary' or 'Int', but " +
               parents[0].getType() + " and " +
               parents[1].getType() + " are obtained");
 
-      Class cls = java.lang.String.class;
+      Class cls = String.class;
       String name = cls.getName();
       throw new JMException("Exception in " + name + ".execute()");
     } // if
 
     if (parents.length < 2) {
-      Configuration.logger_.severe("SinglePointCrossover.execute: operator " +
+      Configuration.logger_.severe("TwoPointCrossover.execute: operator " +
               "needs two parents");
-      Class cls = java.lang.String.class;
+      Class cls = String.class;
       String name = cls.getName();
       throw new JMException("Exception in " + name + ".execute()");
     } 
@@ -200,4 +194,4 @@ public class SinglePointCrossover extends Crossover {
     }
     return offSpring;
   } // execute
-} // SinglePointCrossover
+} // TwoPointCrossover

@@ -97,7 +97,7 @@ public class TwoPointsCrossover extends Crossover {
 
 					permutationLength = ((Permutation)parent1.getDecisionVariables()[0]).getLength() ;
 					parent1Vector     = ((Permutation)parent1.getDecisionVariables()[0]).vector_ ;
-					parent2Vector    = ((Permutation)parent2.getDecisionVariables()[0]).vector_ ;    
+					parent2Vector    = ((Permutation)parent2.getDecisionVariables()[0]).vector_ ;
 					offspring1Vector = ((Permutation)offspring[0].getDecisionVariables()[0]).vector_ ;
 					offspring2Vector = ((Permutation)offspring[1].getDecisionVariables()[0]).vector_ ;
 

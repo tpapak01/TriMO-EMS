@@ -95,7 +95,7 @@ public class DominanceComparator implements Comparator {
     }
             
     if (dominate1 == dominate2) {            
-      return 0; //No one dominate the other
+      return 0; //No one dominate the other, either 0==0 (same solution) or 1==1 (each one wins one of the two objectives)
     }
     if (dominate1 == 1) {
       return -1; // solution1 dominate

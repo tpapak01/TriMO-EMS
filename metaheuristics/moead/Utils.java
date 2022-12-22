@@ -26,6 +26,7 @@ package jmetal.metaheuristics.moead;
  */
 public class Utils {
 
+  //Euclidean distance = root (Σ (x1 - x2)^2)
   public static double distVector(double[] vector1, double[] vector2) {
     int dim = vector1.length;
     double sum = 0;

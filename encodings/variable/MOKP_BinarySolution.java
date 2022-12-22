@@ -36,13 +36,7 @@ public class MOKP_BinarySolution extends BinarySolutionType {
         Variable[] vars = new Variable[problem_.getNumberOfVariables()];
 
         for (int i = 0; i < vars.length; i++) {
-            Binary bin = new Binary(numberOfUsers * numberOfItems * problem_.getNumberOfConstraints());
-
-            for (int j = 0; j < bin.getNumberOfBits(); j++) {
-                bin.setIth(j, r.nextBoolean());
-            }
-
-            vars[i] = bin;
+            vars[i] = new Binary(numberOfUsers * numberOfItems * problem_.getNumberOfConstraints());
         }
         
         return vars;        

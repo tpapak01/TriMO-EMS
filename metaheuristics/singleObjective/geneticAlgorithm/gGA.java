@@ -113,7 +113,7 @@ public class gGA extends Algorithm {
     while (evaluations < maxEvaluations) {
 
       if (evaluations > threshold) {
-        threshold += 300;
+        threshold += 50;
         System.out.println(evaluations + ": " + population.get(0).getObjective(0)) ;
       } //
 
@@ -157,25 +157,24 @@ public class gGA extends Algorithm {
       population.sort(comparator);
 
       //solution injection
-      /*
-      if (evaluations > 1500 && !passedOnce){
+
+      if (evaluations > 0 && !passedOnce){
         passedOnce = true;
         population.remove(population.size()-1);
 
         double[] costsToSend = new double[problem_.getNumberOfVariables()];
-        int[] producedRE = ((CostDistr) problem_).getProducedRE();
+        //int[] producedRE = ((CostDistr) problem_).getProducedRE();
         Solution newSolution = new Solution(problem_);
-        for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
-          costsToSend[j] = 1 - (((double) producedRE[j]) / (20));
-        }
+        //for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
+        //  costsToSend[j] = 1 - (((double) producedRE[j]) / (20));
+        //}
+        costsToSend = new double[]{1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1};
         newSolution.setDecisionVariables(updateSolution(costsToSend));
         problem_.evaluate(newSolution);
 
         population.add(population.size(), newSolution);
         population.sort(comparator);
       }
-
-       */
 
     } // while
     

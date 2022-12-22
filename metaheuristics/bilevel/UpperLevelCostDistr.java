@@ -46,7 +46,7 @@ public class UpperLevelCostDistr {
         //int bits ; // Length of bit string in the OneMax problem
         HashMap parameters; // Operator parameters
 
-        String problemName = "knapsack_5_5to2";
+        String problemName = "idealKnapsack_24_8to2";
         //initialize Lower Level algorithm
         MOKP_Problem lowerLevelProblem = (MOKP_Problem) LowerLevelMOKP.initializeAlgorithm(problemName);
 
@@ -69,7 +69,7 @@ public class UpperLevelCostDistr {
         //algorithm.setInputParameter("populationSize",4); //must be even number
         //algorithm.setInputParameter("maxEvaluations", 2500);
         algorithm.setInputParameter("populationSize", 100); //must be even number
-        algorithm.setInputParameter("maxEvaluations", 5000);
+        algorithm.setInputParameter("maxEvaluations", 200);
 
 
         //thalis
