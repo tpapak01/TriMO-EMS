@@ -286,13 +286,11 @@ public class MOEAD extends Algorithm {
 
     //thalis
     // At last remove identical solutions
-      /*
-    SolutionSet finalSet = new SolutionSet(feasibleSet.size());
-    finalSet.add(feasibleSet.get(0));
+    SolutionSet finalSet = new SolutionSet(population_.size());
+    finalSet.add(population_.get(0));
 
-    for (int i = 1; i < feasibleSet.size(); i++) {
-
-      Solution sol = feasibleSet.get(i);
+    for (int i = 1; i < population_.size(); i++) {
+      Solution sol = population_.get(i);
       boolean existEqual = false;
 
       for (int j = 0; j < finalSet.size();j++) {
@@ -304,19 +302,25 @@ public class MOEAD extends Algorithm {
 
       if (existEqual) continue;
 
-      finalSet.add(feasibleSet.get(i));
+      finalSet.add(population_.get(i));
 
     } // for
 
-       */
-
     //thalis
     // Find non-dominated solutions
-    Ranking ranking = new NondominatedRanking(population_);
+    Ranking ranking = new NondominatedRanking(finalSet);
     SolutionSet paretoFront = ranking.getSubfront(0);
     //System.out.println("# Non-dominated feasible solutions in MOEDA = " + paretoFront.size());
 
     return paretoFront;
+  }
+
+  public boolean equalSolution (Solution sol1, Solution sol2) {
+    for (int i = 0; i < sol1.getNumberOfObjectives();i++) {
+      if (sol1.getObjective(i) != sol2.getObjective(i))
+        return false;
+    }
+    return true;
   }
 
  
@@ -606,7 +610,6 @@ public class MOEAD extends Algorithm {
       if (problem_.isMaxmized() == false)
         flagDominate = dominance_.compare(indiv, population_.get(k));
       else flagDominate = dominance_.compare(population_.get(k), indiv);
-
 
       if (flagDominate == 0) { // Non-dominated
         double f1, f2;
