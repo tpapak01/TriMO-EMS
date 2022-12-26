@@ -65,10 +65,6 @@ public class gGA extends Algorithm {
     Operator    selectionOperator ;
     
     Comparator  comparator        ;
-    //thalis
-    if (problem_.isMaxmized())
-      comparator = new ObjectiveComparator(0, true) ; // Single objective comparator
-    else comparator = new ObjectiveComparator(0) ; // Single objective comparator
     
     // Read the params
     populationSize = ((Integer)this.getInputParameter("populationSize")).intValue();
@@ -81,6 +77,7 @@ public class gGA extends Algorithm {
     evaluations  = 0;                
 
     // Read the operators
+    comparator = (Comparator) this.getInputParameter("comparator");
     mutationOperator  = this.operators_.get("mutation");
     crossoverOperator = this.operators_.get("crossover");
     selectionOperator = this.operators_.get("selection");  
@@ -121,11 +118,12 @@ public class gGA extends Algorithm {
       offspringPopulation.add(new Solution(population.get(0))) ;	
       offspringPopulation.add(new Solution(population.get(1))) ;	
         
-      // Reproductive cycle
+      // Reproductive cycle: keep adding 2 offspring to the offspring population until it reaches the max size
       for (int i = 0 ; i < (populationSize / 2 - 1) ; i ++) {
         // Selection
         Solution [] parents = new Solution[2];
 
+        //selection: binary tournament
         parents[0] = (Solution)selectionOperator.execute(population);
         parents[1] = (Solution)selectionOperator.execute(population);
  
@@ -136,7 +134,7 @@ public class gGA extends Algorithm {
         mutationOperator.execute(offspring[0]);
         mutationOperator.execute(offspring[1]);
 
-        // Evaluation of the new individual
+        // Evaluation of the new individuals
         problem_.evaluate(offspring[0]);            
         problem_.evaluate(offspring[1]);
           
@@ -158,6 +156,7 @@ public class gGA extends Algorithm {
 
       //solution injection
 
+      /*
       if (evaluations > 0 && !passedOnce){
         passedOnce = true;
         population.remove(population.size()-1);
@@ -175,6 +174,8 @@ public class gGA extends Algorithm {
         population.add(population.size(), newSolution);
         population.sort(comparator);
       }
+
+       */
 
     } // while
     

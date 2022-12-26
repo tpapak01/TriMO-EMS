@@ -7,8 +7,6 @@ import jmetal.operators.crossover.SinglePointCrossover;
 import jmetal.operators.crossover.TwoPointCrossoverCustom;
 import jmetal.operators.crossover.TwoPointsCrossover;
 import jmetal.operators.mutation.BitFlipMutation;
-import jmetal.operators.selection.BinaryTournament;
-import jmetal.operators.selection.Selection;
 import jmetal.problems.MOKP_Problem;
 import jmetal.qualityIndicator.QualityIndicator;
 import jmetal.util.Configuration;
@@ -78,7 +76,7 @@ public class LowerLevelMOKP {
             populationSize              = 100   ;
         }
         algorithm.setInputParameter("populationSize",populationSize);
-        algorithm.setInputParameter("maxEvaluations",10000);
+        algorithm.setInputParameter("maxEvaluations",15000);
         //thalis comment
         //algorithm.setInputParameter("populationSize",300);
         //algorithm.setInputParameter("maxEvaluations",150000);
@@ -131,9 +129,6 @@ public class LowerLevelMOKP {
         algorithm.addOperator("crossover",crossover);
         algorithm.addOperator("mutation",mutation);
 
-        //thalis - extras
-        Selection selection = new BinaryTournament(parameters);
-        algorithm.addOperator("selection",selection);
         //algorithm.setInputParameter("functionType","TCHE1"); // scalar function type
         algorithm.setInputParameter("rpType","Ideal"); // reference point z_ type, Ideal (best) or Nadir (worst)
         // Ideal by default

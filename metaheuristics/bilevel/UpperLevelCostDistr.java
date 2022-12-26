@@ -12,8 +12,10 @@ import jmetal.operators.selection.Selection;
 import jmetal.problems.MOKP_Problem;
 import jmetal.problems.CostDistr;
 import jmetal.util.JMException;
+import jmetal.util.comparators.ObjectiveComparator;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
@@ -69,7 +71,7 @@ public class UpperLevelCostDistr {
         //algorithm.setInputParameter("populationSize",4); //must be even number
         //algorithm.setInputParameter("maxEvaluations", 2500);
         algorithm.setInputParameter("populationSize", 100); //must be even number
-        algorithm.setInputParameter("maxEvaluations", 200);
+        algorithm.setInputParameter("maxEvaluations", 2000);
 
 
         //thalis
@@ -125,6 +127,12 @@ public class UpperLevelCostDistr {
         selection = SelectionFactory.getSelectionOperator("BinaryTournament", parameters) ;
          */
         //thalis
+        Comparator comparator;
+        if (problem.isMaxmized())
+            comparator = new ObjectiveComparator(0, true) ; // Single objective comparator
+        else comparator = new ObjectiveComparator(0) ; // Single objective comparator
+        algorithm.setInputParameter("comparator", comparator);
+        parameters.put("comparator", comparator);
         Selection selection = new BinaryTournament(parameters);
 
         /* Add the operators to the algorithm*/

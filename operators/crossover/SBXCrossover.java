@@ -68,7 +68,7 @@ public class SBXCrossover extends Crossover {
   } // SBXCrossover
     
   /**
-   * Perform the crossover operation. 
+   * Make 2 offspring out of 2 parents
    * @param probability Crossover probability
    * @param parent1 The first parent
    * @param parent2 The second parent
@@ -97,12 +97,15 @@ public class SBXCrossover extends Crossover {
 		int numberOfVariables = x1.getNumberOfDecisionVariables() ;
 
     if (PseudoRandom.randDouble() <= probability){
+      // per position
       for (i=0; i<numberOfVariables; i++){
         valueX1 = x1.getValue(i);
         valueX2 = x2.getValue(i);
         if (PseudoRandom.randDouble()<=0.5 ){
+          // difference between parents greater than minimum allowed
           if (java.lang.Math.abs(valueX1- valueX2) > EPS){
-            
+
+            // y1 and y2 represent the small and large value, respectively
             if (valueX1 < valueX2){
               y1 = valueX1;
               y2 = valueX2;
@@ -114,27 +117,28 @@ public class SBXCrossover extends Crossover {
             yL = x1.getLowerBound(i) ;
             yu = x1.getUpperBound(i) ;
             rand = PseudoRandom.randDouble();
+
+            // find out c1
             beta = 1.0 + (2.0*(y1-yL)/(y2-y1));
             alpha = 2.0 - java.lang.Math.pow(beta,-(distributionIndex_+1.0));
-            
             if (rand <= (1.0/alpha)){
               betaq = java.lang.Math.pow ((rand*alpha),(1.0/(distributionIndex_+1.0)));
             } else {
               betaq = java.lang.Math.pow ((1.0/(2.0 - rand*alpha)),(1.0/(distributionIndex_+1.0)));
             } // if
-            
             c1 = 0.5*((y1+y2)-betaq*(y2-y1));
+
+            // find out c2
             beta = 1.0 + (2.0*(yu-y2)/(y2-y1));
             alpha = 2.0 - java.lang.Math.pow(beta,-(distributionIndex_+1.0));
-            
             if (rand <= (1.0/alpha)){
               betaq = java.lang.Math.pow ((rand*alpha),(1.0/(distributionIndex_+1.0)));
             } else {
               betaq = java.lang.Math.pow ((1.0/(2.0 - rand*alpha)),(1.0/(distributionIndex_+1.0)));
-            } // if
-              
+            }
             c2 = 0.5*((y1+y2)+betaq*(y2-y1));
-            
+
+            // if any c1,c2 more/less than limits, set value to limit
             if (c1<yL)
               c1=yL;
             
@@ -145,19 +149,25 @@ public class SBXCrossover extends Crossover {
               c1=yu;
             
             if (c2>yu)
-              c2=yu;                        
-              
+              c2=yu;
+
+            c1 = Math.round(c1*1000.0) / 1000.0;
+            c2 = Math.round(c2*1000.0) / 1000.0;
+
+            // give values c1,c2 to offspring one way or the reverse, based on probability
             if (PseudoRandom.randDouble()<=0.5) {
               offs1.setValue(i, c2) ;
               offs2.setValue(i, c1) ;
             } else {
               offs1.setValue(i, c1) ;
               offs2.setValue(i, c2) ;
-            } // if
+            }
+          // if difference between parents less than minimum allowed, retain original values
           } else {
             offs1.setValue(i,valueX1) ;
             offs2.setValue(i, valueX2) ;
-          } // if
+          }
+        // 50% chance the positions retain their original values
         } else {
           offs1.setValue(i, valueX2) ;
           offs2.setValue(i, valueX1) ;

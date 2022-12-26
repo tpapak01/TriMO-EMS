@@ -54,7 +54,7 @@ public class BinaryTournament extends Selection {
   } // BinaryTournament
   
   /**
-  * Performs the operation
+  * Binary tournament: select 2 random solutions from the population and pick the best of the 2 as a representative
   * @param object Object representing a SolutionSet
   * @return the selected solution
   */

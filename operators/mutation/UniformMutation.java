@@ -82,7 +82,7 @@ public class UniformMutation extends Mutation{
   public void doMutation(double probability, Solution solution) throws JMException {  
   	XReal x = new XReal(solution) ; 
 
-    for (int var = 0; var < solution.getDecisionVariables().length; var++) {
+    for (int var = 0; var < x.getNumberOfDecisionVariables(); var++) {
       if (PseudoRandom.randDouble() < probability) {
         double rand = PseudoRandom.randDouble();
         double tmp = (rand - 0.5)*perturbation_.doubleValue();
@@ -93,10 +93,11 @@ public class UniformMutation extends Mutation{
           tmp = x.getLowerBound(var);
         else if (tmp > x.getUpperBound(var))
           tmp = x.getUpperBound(var);
-                
+
+        tmp = Math.round(tmp*1000.0) / 1000.0;
         x.setValue(var, tmp) ;
       } // if
-    } // for
+    }
   } // doMutation
   
   /**
