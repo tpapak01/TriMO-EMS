@@ -4,7 +4,7 @@ import jmetal.core.Algorithm;
 import jmetal.core.Operator;
 import jmetal.core.Problem;
 import jmetal.core.SolutionSet;
-import jmetal.metaheuristics.singleObjective.geneticAlgorithm.gGA;
+import jmetal.metaheuristics.singleObjective.geneticAlgorithm.gGA_CostDistr;
 import jmetal.operators.crossover.SBXCrossover;
 import jmetal.operators.mutation.UniformMutation;
 import jmetal.operators.selection.BinaryTournament;
@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
-public class UpperLevelCostDistr {
+public class UpperLevelCostDistr_gGA {
 
 
     public static Logger logger_;      // Logger object
@@ -62,7 +62,7 @@ public class UpperLevelCostDistr {
         //problem = new Easom("Real") ;
         //problem = new Griewank("Real", 10) ;
 
-        algorithm = new gGA(problem); // Generational GA
+        algorithm = new gGA_CostDistr(problem); // Generational GA
         //algorithm = new ssGA(problem); // Steady-state GA
         //algorithm = new scGA(problem) ; // Synchronous cGA
         //algorithm = new acGA(problem) ;   // Asynchronous cGA
@@ -99,13 +99,14 @@ public class UpperLevelCostDistr {
         crossover = CrossoverFactory.getCrossoverOperator("SinglePointCrossover", parameters);
          */
 
-        // Crossover operator
+        /* Crossover operator */
         //thalis
         parameters = new HashMap();
         //parameters.put("probability", CR_) ;
         //parameters.put("distributionIndex", F_) ;
         crossover = new SBXCrossover(parameters);
 
+        /* Mutation Operator */
         //thalis comment
         /*
         parameters = new HashMap() ;
@@ -120,6 +121,13 @@ public class UpperLevelCostDistr {
         parameters.put("perturbation", perturbationIndex);
         mutation = new UniformMutation(parameters);
 
+        /* Comparator */
+        Comparator comparator;
+        if (problem.isMaxmized())
+            comparator = new ObjectiveComparator(0, true) ; // Single objective comparator
+        else comparator = new ObjectiveComparator(0) ; // Single objective comparator
+        algorithm.setInputParameter("comparator", comparator);
+
         /* Selection Operator */
         //thalis comment
         /*
@@ -127,11 +135,6 @@ public class UpperLevelCostDistr {
         selection = SelectionFactory.getSelectionOperator("BinaryTournament", parameters) ;
          */
         //thalis
-        Comparator comparator;
-        if (problem.isMaxmized())
-            comparator = new ObjectiveComparator(0, true) ; // Single objective comparator
-        else comparator = new ObjectiveComparator(0) ; // Single objective comparator
-        algorithm.setInputParameter("comparator", comparator);
         parameters.put("comparator", comparator);
         Selection selection = new BinaryTournament(parameters);
 

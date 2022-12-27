@@ -156,38 +156,36 @@ public class DifferentialEvolutionCrossover extends Crossover {
 		XReal xChild   = new XReal(child) ;
 
 		int numberOfVariables = xParent0.getNumberOfDecisionVariables() ;
+		//index of the chosen position to be changed
 		jrand = PseudoRandom.randInt(0, numberOfVariables - 1);
 
 		// STEP 4. Checking the DE variant
 		if ((DE_Variant_.compareTo("rand/1/bin") == 0) || 
 				(DE_Variant_.compareTo("best/1/bin") == 0)) { 
 			for (int j=0; j < numberOfVariables; j++) {
+				// 50% chance to change position value, unless it is the chosen position, then 100%
 				if (PseudoRandom.randDouble(0, 1) < CR_ || j == jrand) {
 					double value ;
+
+					//check DE equation
 					value = xParent2.getValue(j)  + F_ * (xParent0.getValue(j) -
-							                                  xParent1.getValue(j)) ;
-					
+							                                  xParent1.getValue(j));
+
+					//keep changed position value within limits
 					if (value < xChild.getLowerBound(j))
 						value =  xChild.getLowerBound(j) ;
 					if (value > xChild.getUpperBound(j))
 						value = xChild.getUpperBound(j) ;
-          /*
-					if (value < xChild.getLowerBound(j)) {
-            double rnd = PseudoRandom.randDouble(0, 1) ;
-            value = xChild.getLowerBound(j) + rnd *(xParent2.getValue(j) - xChild.getLowerBound(j)) ;
-					}
-          if (value > xChild.getUpperBound(j)) {
-            double rnd = PseudoRandom.randDouble(0, 1) ;
-            value = xChild.getUpperBound(j) - rnd*(xChild.getUpperBound(j)-xParent2.getValue(j)) ;
-          }
-          */
+
+					value = Math.round(value*1000.0) / 1000.0;
 					xChild.setValue(j, value) ;
 				}
+				// if 50% chance failed and not chosen position, keep original position value
 				else {
 					double value ;
 					value = xCurrent.getValue(j);
 					xChild.setValue(j, value) ;
-				} // else
+				}
 			} // for
 		} // if
 		else if ((DE_Variant_.compareTo("rand/1/exp") == 0) || 

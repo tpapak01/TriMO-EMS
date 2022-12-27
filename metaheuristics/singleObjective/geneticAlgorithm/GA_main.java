@@ -25,15 +25,11 @@ import jmetal.core.Algorithm;
 import jmetal.core.Operator;
 import jmetal.core.Problem;
 import jmetal.core.SolutionSet;
-import jmetal.operators.crossover.CrossoverFactory;
 import jmetal.operators.crossover.SinglePointCrossover;
 import jmetal.operators.mutation.BitFlipMutation;
-import jmetal.operators.mutation.MutationFactory;
 import jmetal.operators.selection.BinaryTournament;
 import jmetal.operators.selection.Selection;
-import jmetal.operators.selection.SelectionFactory;
 import jmetal.problems.MOKP_Problem;
-import jmetal.problems.singleObjective.OneMax;
 import jmetal.util.JMException;
 
 import java.util.HashMap;

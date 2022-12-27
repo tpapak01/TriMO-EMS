@@ -147,6 +147,7 @@ public class CostDistr extends Problem {
 
         solution.setObjective(0, best_result);
         System.out.println(best_result);
+        System.out.println(solution.getDecisionVariables()[0]);
 
 	} // evaluate
 
