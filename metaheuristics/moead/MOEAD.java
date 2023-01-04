@@ -419,10 +419,13 @@ public class MOEAD extends Algorithm {
         newSolution.setDecisionVariables(updateSolution(numOfBits, false));
       }
 
+      /*
       //2) all devices
       if (i == 1) {
         newSolution.setDecisionVariables(updateSolution(numOfBits, true));
       }
+
+       */
 
       //3) exactly what the users want
 
@@ -451,6 +454,8 @@ public class MOEAD extends Algorithm {
 
             newSolution.setDecisionVariables(vars);
       }
+
+      ((MOKP_Problem) problem_).repair(newSolution);
 
       problem_.evaluate(newSolution);
       evaluations_++;

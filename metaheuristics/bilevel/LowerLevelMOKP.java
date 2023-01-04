@@ -76,7 +76,7 @@ public class LowerLevelMOKP {
             populationSize              = 100   ;
         }
         algorithm.setInputParameter("populationSize",populationSize);
-        algorithm.setInputParameter("maxEvaluations",15000);
+        algorithm.setInputParameter("maxEvaluations",10000);
         //thalis comment
         //algorithm.setInputParameter("populationSize",300);
         //algorithm.setInputParameter("maxEvaluations",150000);
@@ -119,6 +119,7 @@ public class LowerLevelMOKP {
         parameters = new HashMap();
         double mutationProbability = 0.01;
         parameters.put("probability", mutationProbability);
+        parameters.put("problem", problem);
         mutation = new BitFlipMutation(parameters);
         //thalis comment
         //parameters = new HashMap() ;

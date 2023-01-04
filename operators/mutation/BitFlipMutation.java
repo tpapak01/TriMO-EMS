@@ -21,12 +21,14 @@
 
 package jmetal.operators.mutation;
 
+import jmetal.core.Problem;
 import jmetal.core.Solution;
 import jmetal.encodings.solutionType.BinaryRealSolutionType;
 import jmetal.encodings.solutionType.BinarySolutionType;
 import jmetal.encodings.solutionType.IntSolutionType;
 import jmetal.encodings.variable.Binary;
 import jmetal.encodings.variable.MOKP_BinarySolution;
+import jmetal.problems.MOKP_Problem;
 import jmetal.util.Configuration;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
@@ -50,6 +52,7 @@ public class BitFlipMutation extends Mutation {
       IntSolutionType.class) ;
 
   private Double mutationProbability_ = null ;
+  private static MOKP_Problem problem = null;         // The problem to solve
   
 	/**
 	 * Constructor
@@ -58,8 +61,10 @@ public class BitFlipMutation extends Mutation {
 	public BitFlipMutation(HashMap<String, Object> parameters) {
 		super(parameters) ;
   	if (parameters.get("probability") != null)
-  		mutationProbability_ = (Double) parameters.get("probability") ;  		
-	} // BitFlipMutation
+  		mutationProbability_ = (Double) parameters.get("probability") ;
+  	if (parameters.get("problem") != null)
+		problem = (MOKP_Problem) parameters.get("problem") ;
+	}
 
 	/**
 	 * Perform the mutation operation
@@ -72,10 +77,13 @@ public class BitFlipMutation extends Mutation {
 			if ((solution.getType().getClass() == BinarySolutionType.class) ||
 					(solution.getType().getClass() == BinaryRealSolutionType.class) ||
 					(solution.getType().getClass() == MOKP_BinarySolution.class)) {
+
 				for (int i = 0; i < solution.getDecisionVariables().length; i++) {
-					for (int j = 0; j < ((Binary) solution.getDecisionVariables()[i]).getNumberOfBits(); j++) {
+					Binary bin = (Binary) solution.getDecisionVariables()[i];
+					int numOfBits = bin.getNumberOfBits();
+					for (int j = 0; j < numOfBits; j++) {
 						if (PseudoRandom.randDouble() < probability) {
-							((Binary) solution.getDecisionVariables()[i]).bits_.flip(j);
+							bin.bits_.flip(j);
 						}
 					}
 				}
@@ -102,6 +110,51 @@ public class BitFlipMutation extends Mutation {
 		}
 	} // doMutation
 
+	public void doCustomMutation(double probability, Solution solution) throws JMException {
+		try {
+			boolean[][][] pref = problem.getUserPreferences();
+			int numberOfUsers = problem.getNumberOfUsers();
+			int numberOfConstraints = problem.getNumberOfConstraints();
+			int numberOfItems = problem.getNumberOfItems();
+
+			for (int i = 0; i < solution.getDecisionVariables().length; i++) {
+				Binary bin = (Binary) solution.getDecisionVariables()[i];
+				for (int u = 0; u < numberOfUsers; u++) { // for each user
+
+					int userIndex = u * numberOfConstraints;
+
+					int l = 0;
+					for (int in = userIndex; in < userIndex + numberOfConstraints; in++) { // for each objective
+
+						int startingIndex = in * numberOfItems;
+
+						int k = 0;
+						for (int j = startingIndex; j < startingIndex + numberOfItems; j++) { // for each bit
+							if (pref[u][l][k]) {
+								if (PseudoRandom.randDouble() < probability) {
+									bin.bits_.flip(j);
+								}
+							}
+							k++;
+						} // for j
+						l++;
+					} // for i
+				} // for u
+
+			}
+
+			for (int i = 0; i < solution.getDecisionVariables().length; i++) {
+				((Binary) solution.getDecisionVariables()[i]).decode();
+			}
+		} catch (ClassCastException e1) {
+			Configuration.logger_.severe("BitFlipMutation.doMutation: " +
+					"ClassCastException error" + e1.getMessage());
+			Class cls = java.lang.String.class;
+			String name = cls.getName();
+			throw new JMException("Exception in " + name + ".doMutation()");
+		}
+	}
+
 	/**
 	 * Executes the operation
 	 * @param object An object containing a solution to mutate
@@ -121,7 +174,10 @@ public class BitFlipMutation extends Mutation {
 			throw new JMException("Exception in " + name + ".execute()");
 		} // if 
 
-		doMutation(mutationProbability_, solution);
+		if (problem == null)
+			doMutation(mutationProbability_, solution);
+		else
+			doCustomMutation(mutationProbability_, solution);
 		return solution;
 	} // execute
 } // BitFlipMutation
