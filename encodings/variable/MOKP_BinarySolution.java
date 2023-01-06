@@ -21,14 +21,12 @@ public class MOKP_BinarySolution extends BinarySolutionType {
 	private static Random r = new Random();
     private int numberOfItems;
     private int numberOfUsers;
-    private int [][] p; // profit of items
 
     
     public MOKP_BinarySolution(Problem problem, int numberOfItems, int numberOfUsers) {
         super(problem);       
         this.numberOfItems = numberOfItems;
         this.numberOfUsers = numberOfUsers;
-        this.p = p;
     }    
     
     @Override

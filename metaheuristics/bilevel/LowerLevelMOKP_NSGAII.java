@@ -1,0 +1,98 @@
+package jmetal.metaheuristics.bilevel;
+
+import jmetal.core.Algorithm;
+import jmetal.core.Operator;
+import jmetal.core.Problem;
+import jmetal.core.SolutionSet;
+import jmetal.metaheuristics.moead.MOEAD;
+import jmetal.metaheuristics.nsgaII.NSGAII;
+import jmetal.operators.crossover.TwoPointCrossoverCustom;
+import jmetal.operators.mutation.BitFlipMutation;
+import jmetal.operators.selection.SelectionFactory;
+import jmetal.problems.MOKP_Problem;
+import jmetal.qualityIndicator.QualityIndicator;
+import jmetal.util.Configuration;
+import jmetal.util.JMException;
+import jmetal.util.wrapper.XReal;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+
+public class LowerLevelMOKP_NSGAII {
+
+    public static Logger logger_ ;      // Logger object
+    public static FileHandler fileHandler_ ; // FileHandler object
+    public static Problem problem   ;         // The problem to solve
+    public static Algorithm algorithm ;         // The algorithm to use
+
+    public static Problem initializeAlgorithm(String problemName) throws SecurityException, IOException {
+
+
+        Operator crossover ;         // Crossover operator
+        Operator  mutation  ;         // Mutation operator
+        Operator  selection = null; // Selection operator
+
+        QualityIndicator indicators ; // Object to get quality indicators
+
+        HashMap parameters ; // Operator parameters
+
+        // Logger object and file to store log messages
+        logger_      = Configuration.logger_ ;
+        fileHandler_ = new FileHandler("MOEAD.log");
+        logger_.addHandler(fileHandler_) ;
+
+        indicators = null ;
+
+        //thalis
+        problem = new MOKP_Problem(problemName  ,"idealUserpreference_5_8to24");
+
+        algorithm = new NSGAII(problem);
+
+        // Algorithm parameters
+        algorithm.setInputParameter("populationSize",150);
+        algorithm.setInputParameter("maxEvaluations",25000);
+
+        // Crossover operator
+        //thalis
+        parameters = new HashMap();
+        double crossoverProbability = 1.0;
+        parameters.put("probability", crossoverProbability);
+        crossover = new TwoPointCrossoverCustom(parameters);
+
+        // Mutation operator
+        //thalis - authors have replaced this mutation operator with "updateProduct", but not us
+        parameters = new HashMap();
+        double mutationProbability = 0.01;
+        parameters.put("probability", mutationProbability);
+        parameters.put("problem", problem);
+        mutation = new BitFlipMutation(parameters);
+
+        // Selection Operator
+        parameters = null ;
+        try {
+            selection = SelectionFactory.getSelectionOperator("BinaryTournament2", parameters);
+        } catch (JMException ex) {
+            System.out.println("Selection exception: " + ex.toString());
+        }
+
+        algorithm.addOperator("crossover",crossover);
+        algorithm.addOperator("mutation",mutation);
+        algorithm.addOperator("selection",selection);
+
+        return problem;
+    }
+
+
+    public static SolutionSet evaluate(XReal y) throws JMException, SecurityException, ClassNotFoundException {
+
+        ((MOKP_Problem) problem).setCostOfUsage(y);
+
+        // Execute the Algorithm
+        SolutionSet population = algorithm.execute();
+
+        return population;
+    }
+
+}

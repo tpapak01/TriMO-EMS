@@ -22,6 +22,8 @@
 package jmetal.metaheuristics.nsgaII;
 
 import jmetal.core.*;
+import jmetal.encodings.variable.Binary;
+import jmetal.problems.MOKP_Problem;
 import jmetal.qualityIndicator.QualityIndicator;
 import jmetal.util.Distance;
 import jmetal.util.JMException;
@@ -39,6 +41,14 @@ import jmetal.util.comparators.CrowdingComparator;
  */
 
 public class NSGAII extends Algorithm {
+
+  private int populationSize_;
+  /**
+   * Stores the population
+   */
+  private SolutionSet population_;
+  private int evaluations_;
+
   /**
    * Constructor
    * @param problem Problem to solve
@@ -47,6 +57,8 @@ public class NSGAII extends Algorithm {
     super (problem) ;
   } // NSGAII
 
+  public static int execution;
+
   /**   
    * Runs the NSGA-II algorithm.
    * @return a <code>SolutionSet</code> that is a set of non dominated solutions
@@ -54,15 +66,12 @@ public class NSGAII extends Algorithm {
    * @throws JMException 
    */
   public SolutionSet execute() throws JMException, ClassNotFoundException {
-    int populationSize;
     int maxEvaluations;
-    int evaluations;
 
-    QualityIndicator indicators; // QualityIndicator object
-    int requiredEvaluations; // Use in the example of use of the
+    //QualityIndicator indicators; // QualityIndicator object
+    //int requiredEvaluations; // Use in the example of use of the
     // indicators object (see below)
 
-    SolutionSet population;
     SolutionSet offspringPopulation;
     SolutionSet union;
 
@@ -73,15 +82,15 @@ public class NSGAII extends Algorithm {
     Distance distance = new Distance();
 
     //Read the parameters
-    populationSize = ((Integer) getInputParameter("populationSize")).intValue();
+    populationSize_ = ((Integer) getInputParameter("populationSize")).intValue();
     maxEvaluations = ((Integer) getInputParameter("maxEvaluations")).intValue();
-    indicators = (QualityIndicator) getInputParameter("indicators");
+    //indicators = (QualityIndicator) getInputParameter("indicators");
 
     //Initialize the variables
-    population = new SolutionSet(populationSize);
-    evaluations = 0;
+    population_ = new SolutionSet(populationSize_);
+    evaluations_ = 0;
 
-    requiredEvaluations = 0;
+    //requiredEvaluations = 0;
 
     //Read the operators
     mutationOperator = operators_.get("mutation");
@@ -89,59 +98,56 @@ public class NSGAII extends Algorithm {
     selectionOperator = operators_.get("selection");
 
     // Create the initial solutionSet
-    Solution newSolution;
-    for (int i = 0; i < populationSize; i++) {
-      newSolution = new Solution(problem_);
-      problem_.evaluate(newSolution);
-      problem_.evaluateConstraints(newSolution);
-      evaluations++;
-      population.add(newSolution);
-    } //for       
+    initPopulation();
+
+    //used for convergence observation
+    int threshold = 0;
+    int iteration = 0;
 
     // Generations 
-    while (evaluations < maxEvaluations) {
+    while (evaluations_ < maxEvaluations) {
 
       // Create the offSpring solutionSet      
-      offspringPopulation = new SolutionSet(populationSize);
+      offspringPopulation = new SolutionSet(populationSize_);
       Solution[] parents = new Solution[2];
-      for (int i = 0; i < (populationSize / 2); i++) {
-        if (evaluations < maxEvaluations) {
+      for (int i = 0; i < (populationSize_ / 2); i++) {
+        if (evaluations_ < maxEvaluations) {
           //obtain parents
-          parents[0] = (Solution) selectionOperator.execute(population);
-          parents[1] = (Solution) selectionOperator.execute(population);
+          parents[0] = (Solution) selectionOperator.execute(population_);
+          parents[1] = (Solution) selectionOperator.execute(population_);
           Solution[] offSpring = (Solution[]) crossoverOperator.execute(parents);
           mutationOperator.execute(offSpring[0]);
           mutationOperator.execute(offSpring[1]);
           problem_.evaluate(offSpring[0]);
-          problem_.evaluateConstraints(offSpring[0]);
+          //problem_.evaluateConstraints(offSpring[0]);
           problem_.evaluate(offSpring[1]);
-          problem_.evaluateConstraints(offSpring[1]);
+          //problem_.evaluateConstraints(offSpring[1]);
           offspringPopulation.add(offSpring[0]);
           offspringPopulation.add(offSpring[1]);
-          evaluations += 2;
+          evaluations_ += 2;
         } // if                            
       } // for
 
       // Create the solutionSet union of solutionSet and offSpring
-      union = ((SolutionSet) population).union(offspringPopulation);
+      union = population_.union(offspringPopulation);
 
       // Ranking the union
       Ranking ranking = new Ranking(union);
 
-      int remain = populationSize;
+      int remain = populationSize_;
       int index = 0;
       SolutionSet front = null;
-      population.clear();
+      population_.clear();
 
       // Obtain the next front
       front = ranking.getSubfront(index);
 
       while ((remain > 0) && (remain >= front.size())) {
-        //Assign crowding distance to individuals
+        //Assign crowding distance to individuals (for later in tournament selection)
         distance.crowdingDistanceAssignment(front, problem_.getNumberOfObjectives());
         //Add the individuals of this front
         for (int k = 0; k < front.size(); k++) {
-          population.add(front.get(k));
+          population_.add(front.get(k));
         } // for
 
         //Decrement remain
@@ -151,20 +157,20 @@ public class NSGAII extends Algorithm {
         index++;
         if (remain > 0) {
           front = ranking.getSubfront(index);
-        } // if        
+        }
       } // while
 
-      // Remain is less than front(index).size, insert only the best one
+      // Remain is less than front(index).size, insert only the best solutions
+      // by sorting the front first
       if (remain > 0) {  // front contains individuals to insert                        
         distance.crowdingDistanceAssignment(front, problem_.getNumberOfObjectives());
         front.sort(new CrowdingComparator());
         for (int k = 0; k < remain; k++) {
-          population.add(front.get(k));
-        } // for
+          population_.add(front.get(k));
+        }
+      }
 
-        remain = 0;
-      } // if                               
-
+      /*
       // This piece of code shows how to use the indicator object into the code
       // of NSGA-II. In particular, it finds the number of evaluations required
       // by the algorithm to obtain a Pareto front with a hypervolume higher
@@ -176,15 +182,110 @@ public class NSGAII extends Algorithm {
           requiredEvaluations = evaluations;
         } // if
       } // if
+       */
+
+      if (evaluations_ > threshold && execution < 10){
+        threshold += 500;
+        Ranking myRanking = new Ranking(population_);
+        SolutionSet paretoFront = myRanking.getSubfront(0);
+        paretoFront.printObjectivesToFile("LowerLevelParetoVisualNSGAII/" + execution + "_FUN_" + iteration++);
+      }
+
     } // while
 
+    execution++;
+
     // Return as output parameter the required evaluations
-    setOutputParameter("evaluations", requiredEvaluations);
+    //setOutputParameter("evaluations", requiredEvaluations);
+
 
     // Return the first non-dominated front
-    Ranking ranking = new Ranking(population);
-    ranking.getSubfront(0).printFeasibleFUN("FUN_NSGAII") ;
+    Ranking ranking = new Ranking(population_);
+    SolutionSet paretoFront = ranking.getSubfront(0);
+    paretoFront.printFeasibleFUN("FUN_NSGAII") ;
 
-    return ranking.getSubfront(0);
+    return paretoFront;
   } // execute
+
+  /**
+   *
+   */
+  public void initPopulation() throws JMException, ClassNotFoundException {
+
+    int numberOfUsers = ((MOKP_Problem) problem_).getNumberOfUsers();
+    int numberOfItems = ((MOKP_Problem) problem_).getNumberOfItems();
+    int numOfConstraints = problem_.getNumberOfConstraints();
+    int numOfBits = numberOfUsers * numberOfItems * numOfConstraints;
+
+    for (int i = 0; i < populationSize_; i++) {
+      Solution newSolution = new Solution(problem_);
+
+
+      //1) zero devices
+      if (i == 0) {
+        newSolution.setDecisionVariables(updateSolution(numOfBits, false));
+      }
+
+      /*
+      //2) all devices
+      if (i == 1) {
+        newSolution.setDecisionVariables(updateSolution(numOfBits, true));
+      }
+
+       */
+
+      //3) exactly what the users want
+
+      if (i == 2) {
+        boolean[][][] pref = ((MOKP_Problem) problem_).getUserPreferences();
+        Variable[] vars = new Variable[problem_.getNumberOfVariables()];
+        for (int v = 0; v < vars.length; v++) {
+          Binary bin = new Binary(numOfBits);
+
+          for (int u = 0; u < numberOfUsers; u++) { // for each user
+            int userIndex = u * numOfConstraints;
+            int l = 0;
+            for (int p = userIndex; p < userIndex +  numOfConstraints; p++) { // for each objective
+              int startingIndex = p * numberOfItems;
+              int k = 0;
+              for (int j = startingIndex; j < startingIndex + numberOfItems; j++) { // for each bit
+                bin.setIth(j, pref[u][l][k]);
+                k++;
+              }
+              l++;
+            } // for p
+          } // for u
+
+          vars[v] = bin;
+        }
+
+        newSolution.setDecisionVariables(vars);
+      }
+
+      ((MOKP_Problem) problem_).repair(newSolution);
+
+      problem_.evaluate(newSolution);
+      evaluations_++;
+      population_.add(newSolution) ;
+    } // for
+  }
+
+  public Variable[] updateSolution(int numOfBits, Boolean val) {
+    Variable[] vars = new Variable[problem_.getNumberOfVariables()];
+    for (int j = 0; j < vars.length; j++) {
+      Binary bin = new Binary(numOfBits);
+      for (int k = 0; k < numOfBits; k++) {
+        bin.setIth(k, val);
+      }
+      vars[j] = bin;
+    }
+    return vars;
+  }
+
+
+
 } // NSGA-II
+
+
+
+

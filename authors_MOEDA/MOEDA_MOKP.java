@@ -32,8 +32,7 @@ import jmetal.metaheuristics.moead.Utils;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
 import jmetal.util.comparators.DominanceComparator;
-import jmetal.util.ranking.NondominatedRanking;
-import jmetal.util.ranking.Ranking;
+import jmetal.util.Ranking;
 
 public class MOEDA_MOKP extends Algorithm {
 	
@@ -369,7 +368,7 @@ public class MOEDA_MOKP extends Algorithm {
 	   
 
 	    // Find non-dominated solutions
-	    Ranking ranking = new NondominatedRanking(finalSet);        
+	    Ranking ranking = new Ranking(finalSet);
         System.out.println("# Non-dominated feasible solutions in MOEDA = " + ranking.getSubfront(0).size());         
     
         // return population_ 的原因是在RunExperiment类中有进行同样的处理。上述处理仅为了便于观察性能

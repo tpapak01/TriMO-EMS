@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
-public class LowerLevelMOKP {
+public class LowerLevelMOKP_MOEAD {
 
     public static Logger logger_ ;      // Logger object
     public static FileHandler fileHandler_ ; // FileHandler object

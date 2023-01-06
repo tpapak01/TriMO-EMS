@@ -125,10 +125,10 @@ public class Ranking {
     for (int p = 0; p < (solutionSet_.size()-1); p++) {
       // For all q individuals , calculate if p dominates q or vice versa
       for (int q = p+1; q < solutionSet_.size(); q++) {
-        flagDominate =constraint_.compare(solutionSet.get(p),solutionSet.get(q));
-        if (flagDominate == 0) {
+        //flagDominate =constraint_.compare(solutionSet.get(p),solutionSet.get(q));
+        //if (flagDominate == 0) {
           flagDominate =dominance_.compare(solutionSet.get(p),solutionSet.get(q));
-        }
+        //}
         if (flagDominate == -1)
         {
           iDominate[p].add(q);
@@ -150,6 +150,10 @@ public class Ranking {
     }    
     
     //Obtain the rest of fronts
+    //You do that by picking each winning front,
+    //finding all the dominated solutions by each solution in that front,
+    //and reducing their "dominateMe" count by 1, since we want to now
+    //find the non-dominated solutions excluding the winning fronts.
     int i = 0;
     Iterator<Integer> it1, it2 ; // Iterators
     while (front[i].size()!= 0) {
@@ -168,14 +172,16 @@ public class Ranking {
       }
     }
     //<-
-        
+
+    //transfer all the fronts from the local huge set to the specifically-sized global ranking
     ranking_ = new SolutionSet[i];
     //0,1,2,....,i-1 are front, then i fronts
     for (int j = 0; j < i; j++) {
+      //just initialize ranking
       ranking_[j] = new SolutionSet(front[j].size());
       it1 = front[j].iterator();
       while (it1.hasNext()) {
-                ranking_[j].add(solutionSet.get(it1.next()));
+        ranking_[j].add(solutionSet.get(it1.next()));
       }
     }
     

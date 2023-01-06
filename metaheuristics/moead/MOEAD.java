@@ -29,8 +29,7 @@ import jmetal.problems.MOKP_Problem;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
 import jmetal.util.comparators.DominanceComparator;
-import jmetal.util.ranking.NondominatedRanking;
-import jmetal.util.ranking.Ranking;
+import jmetal.util.Ranking;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -223,7 +222,7 @@ public class MOEAD extends Algorithm {
 
       if (evaluations_ > threshold && execution < 10){
         threshold += 500;
-        Ranking ranking = new NondominatedRanking(population_);
+        Ranking ranking = new Ranking(population_);
         SolutionSet paretoFront = ranking.getSubfront(0);
         paretoFront.printObjectivesToFile("LowerLevelParetoVisual/" + execution + "_FUN_" + iteration++);
       }
@@ -306,13 +305,7 @@ public class MOEAD extends Algorithm {
 
     } // for
 
-    //thalis
-    // Find non-dominated solutions
-    Ranking ranking = new NondominatedRanking(finalSet);
-    SolutionSet paretoFront = ranking.getSubfront(0);
-    //System.out.println("# Non-dominated feasible solutions in MOEDA = " + paretoFront.size());
-
-    return paretoFront;
+    return finalSet;
   }
 
   public boolean equalSolution (Solution sol1, Solution sol2) {

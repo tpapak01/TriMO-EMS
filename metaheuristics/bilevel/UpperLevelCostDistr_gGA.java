@@ -50,7 +50,7 @@ public class UpperLevelCostDistr_gGA {
 
         String problemName = "idealKnapsack_24_8to2";
         //initialize Lower Level algorithm
-        MOKP_Problem lowerLevelProblem = (MOKP_Problem) LowerLevelMOKP.initializeAlgorithm(problemName);
+        MOKP_Problem lowerLevelProblem = (MOKP_Problem) LowerLevelMOKP_MOEAD.initializeAlgorithm(problemName);
 
         //thalis
         problem = new CostDistr(problemName, lowerLevelProblem);

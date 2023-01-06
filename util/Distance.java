@@ -215,34 +215,39 @@ public class Distance {
       return;
     } // if       
 
-    //Use a new SolutionSet to evite alter original solutionSet
+    //Use a new SolutionSet to avoid altering the original solutionSet
     SolutionSet front = new SolutionSet(size);
     for (int i = 0; i < size; i++){
       front.add(solutionSet.get(i));
     }
 
+    //initialize distances to zero (0)
     for (int i = 0; i < size; i++)
       front.get(i).setCrowdingDistance(0.0);
 
-    double objetiveMaxn;
-    double objetiveMinn;
+    double objectiveMaxn;
+    double objectiveMinn;
     double distance;
 
     for (int i = 0; i<nObjs; i++) {
       // Sort the population by Obj n            
       front.sort(new ObjectiveComparator(i));
-      objetiveMinn = front.get(0).getObjective(i);
-      objetiveMaxn = front.get(front.size()-1).getObjective(i);
+      objectiveMinn = front.get(0).getObjective(i);
+      objectiveMaxn = front.get(size-1).getObjective(i);
 
-      //Set de crowding distance            
+      //Set the crowding distance of the edge-solutions to MAX
       front.get(0).setCrowdingDistance(Double.POSITIVE_INFINITY);
       front.get(size-1).setCrowdingDistance(Double.POSITIVE_INFINITY);
 
       for (int j = 1; j < size-1; j++) {
+        Solution currentSolution = front.get(j);
+        //equations are correct, check online
         distance = front.get(j+1).getObjective(i) - front.get(j-1).getObjective(i);
-        distance = distance / (objetiveMaxn - objetiveMinn);
-        distance += front.get(j).getCrowdingDistance();
-        front.get(j).setCrowdingDistance(distance);
+        distance /= objectiveMaxn - objectiveMinn;
+        //add the distance calculated for the previous objective to the total distance
+        double currentDist = currentSolution.getCrowdingDistance();
+        distance += currentDist;
+        currentSolution.setCrowdingDistance(distance);
       } // for
     } // for        
   } // crowdingDistanceAssing            
