@@ -45,7 +45,7 @@ public class MOKP_Problem extends Problem {
       //fills up numberOfItems, p, w, sackCapacity
       //simply read the input textfile
       this.loadProblem(fileName, userPreferencefileName);
-      this.solutionType_ = new MOKP_BinarySolution(this, numberOfItems, numberOfUsers);
+      this.solutionType_ = new MOKP_BinarySolution(this);
 
   }  // 
 

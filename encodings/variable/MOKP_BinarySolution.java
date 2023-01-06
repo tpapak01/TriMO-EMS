@@ -14,27 +14,24 @@ import jmetal.core.Problem;
 import jmetal.core.Solution;
 import jmetal.core.Variable;
 import jmetal.encodings.solutionType.BinarySolutionType;
+import jmetal.problems.MOKP_Problem;
 import jmetal.util.PseudoRandom;
 
 
 public class MOKP_BinarySolution extends BinarySolutionType {
-	private static Random r = new Random();
-    private int numberOfItems;
-    private int numberOfUsers;
-
     
-    public MOKP_BinarySolution(Problem problem, int numberOfItems, int numberOfUsers) {
-        super(problem);       
-        this.numberOfItems = numberOfItems;
-        this.numberOfUsers = numberOfUsers;
+    public MOKP_BinarySolution(Problem problem) {
+        super(problem);
     }    
     
     @Override
     public Variable[] createVariables() {
-        Variable[] vars = new Variable[problem_.getNumberOfVariables()];
+		MOKP_Problem problem = (MOKP_Problem) this.problem_;
+
+        Variable[] vars = new Variable[problem.getNumberOfVariables()];
 
         for (int i = 0; i < vars.length; i++) {
-            vars[i] = new Binary(numberOfUsers * numberOfItems * problem_.getNumberOfConstraints());
+            vars[i] = new Binary(problem.getNumberOfItems() * problem.getNumberOfUsers() * problem.getNumberOfConstraints());
         }
         
         return vars;        
