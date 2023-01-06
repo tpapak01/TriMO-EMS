@@ -6,22 +6,15 @@
 
 package jmetal.problems;
 
-import com.sun.org.apache.regexp.internal.RE;
-import com.sun.xml.internal.bind.v2.TODO;
 import jmetal.core.Problem;
 import jmetal.core.Solution;
 import jmetal.core.SolutionSet;
 import jmetal.core.Variable;
-import jmetal.encodings.solutionType.ArrayIntSolutionType;
 import jmetal.encodings.solutionType.ArrayRealSolutionType;
-import jmetal.encodings.solutionType.IntSolutionType;
-import jmetal.encodings.variable.ArrayInt;
 import jmetal.encodings.variable.Binary;
-import jmetal.encodings.variable.Int;
-import jmetal.encodings.variable.MOKP_BinarySolution;
-import jmetal.metaheuristics.bilevel.LowerLevelMOKP;
+import jmetal.metaheuristics.bilevel.LowerLevelMOKP_MOEAD;
+import jmetal.metaheuristics.bilevel.LowerLevelMOKP_NSGAII;
 import jmetal.util.JMException;
-import jmetal.util.wrapper.XInt;
 import jmetal.util.wrapper.XReal;
 
 import java.io.BufferedReader;
@@ -95,27 +88,32 @@ public class CostDistr extends Problem {
 
         SolutionSet lowerLevelSolutions = null;
         try {
-            lowerLevelSolutions = LowerLevelMOKP.evaluate(new XReal(solution));
+            lowerLevelSolutions = LowerLevelMOKP_MOEAD.evaluate(new XReal(solution));
+            //lowerLevelSolutions = LowerLevelMOKP_NSGAII.evaluate(new XReal(solution));
         } catch (Exception e){
             System.out.println("Exception at LowerLevelMOKP.evaluate: " + e.getMessage());
         }
 
+        int lsize = lowerLevelSolutions.size();
+
         double best_result = Double.MAX_VALUE;
+
+        /*
         int llConstraints = lowerLevelProblem.getNumberOfConstraints();
         int llUsers = lowerLevelProblem.getNumberOfUsers();
         int llItems = lowerLevelProblem.getNumberOfItems();
         double[] w = lowerLevelProblem.getWeightOfItems();
+         */
 
         for (int s=0; s<lowerLevelSolutions.size(); s++) {
             Solution lowerLevelSol = lowerLevelSolutions.get(s);
-
-            //Calculate total energy based on solution picked
-            //only take weight in account, not cost. where 1, add the weight to the total for that bucket
-            double[] spentEnergy = new double[llConstraints];
-
             Variable[] vars = lowerLevelSol.getDecisionVariables();
             Binary bin = (Binary) vars[0];
 
+            /*
+            //Calculate total energy based on solution picked
+            //only take weight in account, not cost. where 1, add the weight to the total for that bucket
+            double[] spentEnergy = new double[llConstraints];
             for (int u = 0; u < llUsers; u++) { // for each user
                 int userIndex = u * llConstraints;
                 int l = 0;
@@ -134,15 +132,18 @@ public class CostDistr extends Problem {
 
             lowerLevelSol.setSpentEnergy(spentEnergy);
 
+             */
+
             //do upper-level evaluation = finding deviation from available RE
             //double result = upperLevel_evaluate_distance_from_produced(spentEnergy);
-            double result = upperLevel_evaluate_maximize_usage_of_produced(spentEnergy);
+            double result = upperLevel_evaluate_maximize_usage_of_produced(lowerLevelSol.getSpentEnergy());
             if (result < best_result){
                 best_result = result;
-                solution.setSpentEnergy(spentEnergy);
+                //solution.setSpentEnergy(spentEnergy);
                 solution.setLowerLevelVars(bin);
                 solution.setLowerLevelObj(new double[] {lowerLevelSol.getObjective(0), lowerLevelSol.getObjective(1)});
             }
+
         }
 
         solution.setObjective(0, best_result);

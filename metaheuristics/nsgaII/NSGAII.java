@@ -30,6 +30,8 @@ import jmetal.util.JMException;
 import jmetal.util.Ranking;
 import jmetal.util.comparators.CrowdingComparator;
 
+import java.util.Comparator;
+
 /** 
  *  Implementation of NSGA-II.
  *  This implementation of NSGA-II makes use of a QualityIndicator object
@@ -79,6 +81,8 @@ public class NSGAII extends Algorithm {
     Operator crossoverOperator;
     Operator selectionOperator;
 
+    Comparator  comparator;
+
     Distance distance = new Distance();
 
     //Read the parameters
@@ -93,6 +97,7 @@ public class NSGAII extends Algorithm {
     //requiredEvaluations = 0;
 
     //Read the operators
+    comparator = (Comparator) this.getInputParameter("comparator");
     mutationOperator = operators_.get("mutation");
     crossoverOperator = operators_.get("crossover");
     selectionOperator = operators_.get("selection");
@@ -203,9 +208,52 @@ public class NSGAII extends Algorithm {
     Ranking ranking = new Ranking(population_);
     SolutionSet paretoFront = ranking.getSubfront(0);
     paretoFront.printFeasibleFUN("FUN_NSGAII") ;
+    population_ = paretoFront;
 
-    return paretoFront;
+    population_.sort(comparator) ;
+
+    MOKP_Problem mokp_problem = (MOKP_Problem) problem_;
+    for (int i = 0; i < population_.size(); i++) {
+      mokp_problem.calculateSpentEnergy(population_.get(i));
+    }
+
+    //thalis
+    // At last remove identical solutions, based not only on objective value, but also decision vector
+    SolutionSet finalSet = new SolutionSet(population_.size());
+    finalSet.add(population_.get(0));
+
+    for (int i = 1; i < population_.size(); i++) {
+      Solution sol = population_.get(i);
+      boolean existEqual = false;
+
+      for (int j = 0; j < finalSet.size();j++) {
+        if (equalSolution(sol, finalSet.get(j))) {
+          existEqual = true;
+          break;
+        }
+      }
+
+      if (existEqual) continue;
+
+      finalSet.add(population_.get(i));
+
+    } // for
+
+    return population_;
   } // execute
+
+  public boolean equalSolution (Solution sol1, Solution sol2) {
+    for (int i = 0; i < sol1.getNumberOfObjectives();i++) {
+      if (sol1.getObjective(i) != sol2.getObjective(i))
+        return false;
+    }
+    double[] spentEnergy1 = sol1.getSpentEnergy();
+    double[] spentEnergy2 = sol2.getSpentEnergy();
+    for (int i=0; i<spentEnergy1.length; i++)
+      if (spentEnergy1[i] != spentEnergy2[i])
+        return false;
+    return true;
+  }
 
   /**
    *

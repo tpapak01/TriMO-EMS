@@ -112,7 +112,7 @@ public class MOKP_Problem extends Problem {
 
   }
 
-    public void setCostOfUsage(XReal y) throws JMException {
+    public void setCostOfUsage(XReal y) {
         costOfUsage = y;
     }
 

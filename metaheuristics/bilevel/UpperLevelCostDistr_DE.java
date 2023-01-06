@@ -5,11 +5,7 @@ import jmetal.core.Operator;
 import jmetal.core.Problem;
 import jmetal.core.SolutionSet;
 import jmetal.metaheuristics.singleObjective.differentialEvolution.DE_CostDistr;
-import jmetal.metaheuristics.singleObjective.geneticAlgorithm.gGA_CostDistr;
 import jmetal.operators.crossover.CrossoverFactory;
-import jmetal.operators.crossover.SBXCrossover;
-import jmetal.operators.mutation.UniformMutation;
-import jmetal.operators.selection.BinaryTournament;
 import jmetal.operators.selection.Selection;
 import jmetal.operators.selection.SelectionFactory;
 import jmetal.problems.CostDistr;
@@ -53,7 +49,8 @@ public class UpperLevelCostDistr_DE {
 
         String problemName = "idealKnapsack_24_8to2";
         //initialize Lower Level algorithm
-        MOKP_Problem lowerLevelProblem = (MOKP_Problem) LowerLevelMOKP.initializeAlgorithm(problemName);
+        MOKP_Problem lowerLevelProblem = (MOKP_Problem) LowerLevelMOKP_MOEAD.initializeAlgorithm(problemName);
+        //MOKP_Problem lowerLevelProblem = (MOKP_Problem) LowerLevelMOKP_NSGAII.initializeAlgorithm(problemName);
 
         //thalis
         problem = new CostDistr(problemName, lowerLevelProblem);
