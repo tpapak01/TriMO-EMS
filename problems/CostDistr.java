@@ -135,11 +135,12 @@ public class CostDistr extends Problem {
              */
 
             //do upper-level evaluation = finding deviation from available RE
+            double[] energySpent = lowerLevelSol.getSpentEnergy();
             //double result = upperLevel_evaluate_distance_from_produced(spentEnergy);
-            double result = upperLevel_evaluate_maximize_usage_of_produced(lowerLevelSol.getSpentEnergy());
+            double result = upperLevel_evaluate_maximize_usage_of_produced(energySpent);
             if (result < best_result){
                 best_result = result;
-                //solution.setSpentEnergy(spentEnergy);
+                solution.setSpentEnergy(energySpent);
                 solution.setLowerLevelVars(bin);
                 solution.setLowerLevelObj(new double[] {lowerLevelSol.getObjective(0), lowerLevelSol.getObjective(1)});
             }
