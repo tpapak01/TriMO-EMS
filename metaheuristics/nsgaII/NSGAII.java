@@ -233,13 +233,14 @@ public class NSGAII extends Algorithm {
         }
       }
 
-      if (existEqual) continue;
+      if (existEqual)
+        continue;
 
       finalSet.add(population_.get(i));
 
     } // for
 
-    return population_;
+    return finalSet;
   } // execute
 
   public boolean equalSolution (Solution sol1, Solution sol2) {
