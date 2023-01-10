@@ -269,23 +269,20 @@ public class NSGAII extends Algorithm {
     for (int i = 0; i < populationSize_; i++) {
       Solution newSolution = new Solution(problem_);
 
+      /*
+      // all devices
+      if (i == 1) {
+        newSolution.setDecisionVariables(updateSolution(numOfBits, true));
+      }
+       */
 
-      //1) zero devices
+      // zero devices
       if (i == 0) {
         newSolution.setDecisionVariables(updateSolution(numOfBits, false));
       }
 
-      /*
-      //2) all devices
-      if (i == 1) {
-        newSolution.setDecisionVariables(updateSolution(numOfBits, true));
-      }
-
-       */
-
-      //3) exactly what the users want
-
-      if (i == 2) {
+      // exactly what the users want
+      if (i == populationSize_-1) {
         boolean[][][] pref = ((MOKP_Problem) problem_).getUserPreferences();
         Variable[] vars = new Variable[problem_.getNumberOfVariables()];
         for (int v = 0; v < vars.length; v++) {

@@ -54,7 +54,7 @@ public class LowerLevelMOKP_NSGAII {
 
         // Algorithm parameters
         algorithm.setInputParameter("populationSize",150);
-        algorithm.setInputParameter("maxEvaluations",25000);
+        algorithm.setInputParameter("maxEvaluations",10000);
 
         // Crossover operator
         //thalis
