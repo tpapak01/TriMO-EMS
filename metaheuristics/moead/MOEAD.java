@@ -88,6 +88,7 @@ public class MOEAD extends Algorithm {
   //thalis
   private static final Comparator dominance_ = new DominanceComparator();
   String rpType_;
+  SolutionSet previousPareto;
 
   /** 
    * Constructor
@@ -108,8 +109,10 @@ public class MOEAD extends Algorithm {
     evaluations_ = 0;
     maxEvaluations = ((Integer) this.getInputParameter("maxEvaluations")).intValue();
     populationSize_ = ((Integer) this.getInputParameter("populationSize")).intValue();
+
     //thalis
     rpType_ = this.getInputParameter("rpType").toString();
+    Comparator  comparator;
 
     dataDirectory_ = this.getInputParameter("dataDirectory").toString();
     //System.out.println("POPSIZE: "+ populationSize_) ;
@@ -133,6 +136,8 @@ public class MOEAD extends Algorithm {
     //lambda_ = new Vector(problem_.getNumberOfObjectives()) ;
     lambda_ = new double[populationSize_][problem_.getNumberOfObjectives()];
 
+    //Read the operators
+    comparator = (Comparator) this.getInputParameter("comparator");
     crossover_ = operators_.get("crossover"); // default: DE crossover
     mutation_ = operators_.get("mutation");  // default: polynomial mutation
 
@@ -153,6 +158,12 @@ public class MOEAD extends Algorithm {
     int iteration = 0;
     //used for solution injection
     boolean passedOnce = false;
+    //used for convergence
+    boolean converged = false;
+    Ranking r = new Ranking(population_);
+    SolutionSet pareto = r.getSubfront(0);
+    pareto.sort(comparator);
+    previousPareto = pareto;
 
     // STEP 2. Update
     do {
@@ -220,11 +231,29 @@ public class MOEAD extends Algorithm {
       } // for
 
 
-      if (evaluations_ > threshold && execution < 10){
+      if (evaluations_ > threshold){
         threshold += 500;
         Ranking ranking = new Ranking(population_);
         SolutionSet paretoFront = ranking.getSubfront(0);
-        paretoFront.printObjectivesToFile("LowerLevelParetoVisual/" + execution + "_FUN_" + iteration++);
+        paretoFront.sort(comparator);
+
+        if (paretoFront.size() == previousPareto.size()) {
+          converged = true;
+          for (int i = 0; i < paretoFront.size(); i++) {
+              Solution sol1 = paretoFront.get(i);
+              Solution sol2 = previousPareto.get(i);
+              for (int j = 0; j < sol1.getNumberOfObjectives(); j++) {
+                if (sol1.getObjective(j) != sol2.getObjective(j))
+                  converged = false;
+                  break;
+              }
+              if (converged == false) break;
+          }
+        }
+        if (converged == false && execution < 10)
+          paretoFront.printObjectivesToFile("LowerLevelParetoVisual/" + execution + "_FUN_" + iteration++);
+
+        previousPareto = paretoFront;
       }
 
       //solution injection
@@ -269,7 +298,7 @@ public class MOEAD extends Algorithm {
 
        */
 
-    } while (evaluations_ < maxEvaluations);
+    } while (evaluations_ < maxEvaluations && converged == false);
 
     execution++;
 

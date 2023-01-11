@@ -11,9 +11,11 @@ import jmetal.problems.MOKP_Problem;
 import jmetal.qualityIndicator.QualityIndicator;
 import jmetal.util.Configuration;
 import jmetal.util.JMException;
+import jmetal.util.comparators.ObjectiveComparator;
 import jmetal.util.wrapper.XReal;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
@@ -76,7 +78,7 @@ public class LowerLevelMOKP_MOEAD {
             populationSize              = 100   ;
         }
         algorithm.setInputParameter("populationSize",populationSize);
-        algorithm.setInputParameter("maxEvaluations",10000);
+        algorithm.setInputParameter("maxEvaluations",15000);
         //thalis comment
         //algorithm.setInputParameter("populationSize",300);
         //algorithm.setInputParameter("maxEvaluations",150000);
@@ -134,6 +136,13 @@ public class LowerLevelMOKP_MOEAD {
         algorithm.setInputParameter("rpType","Ideal"); // reference point z_ type, Ideal (best) or Nadir (worst)
         // Ideal by default
         algorithm.setInputParameter("normalize",false);
+
+        /* Comparator */
+        Comparator comparator;
+        if (problem.isMaxmized())
+            comparator = new ObjectiveComparator(0, true) ; // Single objective comparator
+        else comparator = new ObjectiveComparator(0) ; // Single objective comparator
+        algorithm.setInputParameter("comparator", comparator);
 
         return problem;
     }
