@@ -30,7 +30,7 @@ public class PseudoRandom  {
    * generator used to obtain the random values
    */
   private static IRandomGenerator random_ = null;
-  private static RandomGenerator defaultGenerator_ = new RandomGenerator() ;
+  private static RandomGenerator defaultGenerator_ = new RandomGenerator(0.454545) ;
                
   /** 
    * Constructor.

@@ -43,7 +43,12 @@ public class RandomGenerator implements IRandomGenerator{
   public RandomGenerator(){
     this.seed = (new Random(System.nanoTime())).nextDouble();
     this.randomize();
-  } // RandomGenerator
+ } // RandomGenerator
+
+   public RandomGenerator(double seed){
+     this.seed = seed;
+     this.randomize();
+   } // RandomGenerator
 
   /* Get seed number for random and start it up */
   void randomize(){
