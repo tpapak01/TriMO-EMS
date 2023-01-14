@@ -75,8 +75,6 @@ public class ArrayReal extends Variable {
       array_[i] = Math.round(array_[i]*1000.0) / 1000.0;
     } // for
 
-
-
     /*
     array_ = new Double[] {1.0, 1.0,1.0,1.0,1.0,1.0,1.0,1.0,
             0.0, 0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,
@@ -90,6 +88,21 @@ public class ArrayReal extends Variable {
     */
 
   } // Constructor
+
+  public ArrayReal(int size, Problem problem, double seed) {
+    problem_ = problem;
+    size_ = size;
+
+
+    array_ = new Double[size_];
+    PseudoRandom r = new PseudoRandom(seed);
+    for (int i = 0; i < size_; i++) {
+      array_[i] = r.randDoubleSeed() * (problem_.getUpperLimit(i) -
+              problem_.getLowerLimit(i)) +
+              problem_.getLowerLimit(i);
+      array_[i] = Math.round(array_[i] * 1000.0) / 1000.0;
+    } // for
+  }
 
   /**
    * Copy Constructor

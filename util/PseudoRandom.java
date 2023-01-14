@@ -30,7 +30,8 @@ public class PseudoRandom  {
    * generator used to obtain the random values
    */
   private static IRandomGenerator random_ = null;
-  private static RandomGenerator defaultGenerator_ = new RandomGenerator(0.454545) ;
+  private static IRandomGenerator randomWithSeed = null;
+  private static RandomGenerator defaultGenerator_ = new RandomGenerator() ;
                
   /** 
    * Constructor.
@@ -40,6 +41,12 @@ public class PseudoRandom  {
     if (random_ == null){
       //this.random = new java.util.Random((long)seed);
       random_ = new RandomGenerator();
+    }
+  } // PseudoRandom
+
+  public PseudoRandom(double seed) {
+    if (randomWithSeed == null){
+      randomWithSeed = new RandomGenerator(seed);
     }
   } // PseudoRandom
     
@@ -68,8 +75,16 @@ public class PseudoRandom  {
     }
     //return random_.rndReal(0.0,1.0);
     return random_.nextDouble();
+
     //return randomJava.nextDouble();
   } // randDouble
+
+  public static double randDoubleSeed() {
+    if (randomWithSeed == null) {
+      randomWithSeed = defaultGenerator_ ;
+    }
+    return randomWithSeed.nextDouble();
+  }
     
   /** 
    * Returns a random int value between a minimum bound and maximum bound using
