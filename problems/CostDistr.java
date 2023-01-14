@@ -137,7 +137,7 @@ public class CostDistr extends Problem {
             //do upper-level evaluation = finding deviation from available RE
             double[] energySpent = lowerLevelSol.getSpentEnergy();
             //double result = upperLevel_evaluate_distance_from_produced(spentEnergy);
-            double result = upperLevel_evaluate_maximize_usage_of_produced(energySpent);
+            double result = upperLevel_evaluate_distance_from_produced_complex(energySpent);
             if (result < best_result){
                 best_result = result;
                 solution.setSpentEnergy(energySpent);
@@ -153,13 +153,11 @@ public class CostDistr extends Problem {
 
 	} // evaluate
 
-    public double upperLevel_evaluate_distance_from_produced(double[] spentEnergy) {
+    public double upperLevel_evaluate_distance_from_produced_simple(double[] spentEnergy) {
 
         double sum = 0;
         for (int i=0; i<producedRE.length; i++) {
-            //if (spentEnergy[i] > producedRE[i]){
-                sum += Math.abs(spentEnergy[i] - producedRE[i]);
-            //}
+            sum += Math.abs(spentEnergy[i] - producedRE[i]);
         }
 
         return sum;
@@ -175,6 +173,20 @@ public class CostDistr extends Problem {
         }
 
         return sum;
+    }
+
+    public double upperLevel_evaluate_distance_from_produced_complex(double[] spentEnergy) {
+
+        double sum_extra = 0;
+        double sum_less = 0;
+        for (int i=0; i<producedRE.length; i++) {
+            double sum = spentEnergy[i] - producedRE[i];
+            if (sum < 0)
+                sum_less += sum * (-1);
+            else sum_extra += sum;
+        }
+
+        return 0.5 * sum_extra + 0.5 * sum_less;
     }
 
 }
