@@ -45,16 +45,16 @@ public class LowerLevelMOKP_NSGAII {
         fileHandler_ = new FileHandler("MOEAD.log");
         logger_.addHandler(fileHandler_) ;
 
-        indicators = null ;
-
         //thalis
         problem = new MOKP_Problem(problemName  ,"idealUserpreference_5_8to24");
+
+        indicators = new QualityIndicator(problem, "OPTIMAL_PARETO") ;
 
         algorithm = new NSGAII(problem);
 
         // Algorithm parameters
         algorithm.setInputParameter("populationSize",150);
-        algorithm.setInputParameter("maxEvaluations",10000);
+        algorithm.setInputParameter("maxEvaluations",15000);
 
         // Crossover operator
         //thalis
@@ -89,6 +89,9 @@ public class LowerLevelMOKP_NSGAII {
             comparator = new ObjectiveComparator(0, true) ; // Single objective comparator
         else comparator = new ObjectiveComparator(0) ; // Single objective comparator
         algorithm.setInputParameter("comparator", comparator);
+
+        // Add the indicator object to the algorithm
+        algorithm.setInputParameter("indicators", indicators) ;
 
         return problem;
     }

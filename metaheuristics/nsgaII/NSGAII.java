@@ -70,9 +70,8 @@ public class NSGAII extends Algorithm {
   public SolutionSet execute() throws JMException, ClassNotFoundException {
     int maxEvaluations;
 
-    //QualityIndicator indicators; // QualityIndicator object
+    QualityIndicator indicators; // QualityIndicator object
     //int requiredEvaluations; // Use in the example of use of the
-    // indicators object (see below)
 
     SolutionSet offspringPopulation;
     SolutionSet union;
@@ -82,13 +81,14 @@ public class NSGAII extends Algorithm {
     Operator selectionOperator;
 
     Comparator  comparator;
+    double previousHypervolume;
 
     Distance distance = new Distance();
 
     //Read the parameters
     populationSize_ = ((Integer) getInputParameter("populationSize")).intValue();
     maxEvaluations = ((Integer) getInputParameter("maxEvaluations")).intValue();
-    //indicators = (QualityIndicator) getInputParameter("indicators");
+    indicators = (QualityIndicator) getInputParameter("indicators");
 
     //Initialize the variables
     population_ = new SolutionSet(populationSize_);
@@ -108,9 +108,14 @@ public class NSGAII extends Algorithm {
     //used for convergence observation
     int threshold = 0;
     int iteration = 0;
+    //used for convergence
+    boolean converged = false;
+    Ranking r = new Ranking(population_);
+    SolutionSet pareto = r.getSubfront(0);
+    previousHypervolume = indicators.getHypervolume(pareto);
 
     // Generations 
-    while (evaluations_ < maxEvaluations) {
+    while (evaluations_ < maxEvaluations && converged == false) {
 
       // Create the offSpring solutionSet      
       offspringPopulation = new SolutionSet(populationSize_);
@@ -189,11 +194,19 @@ public class NSGAII extends Algorithm {
       } // if
        */
 
-      if (evaluations_ > threshold && execution < 10){
+      if (evaluations_ > threshold){
         threshold += 500;
-        Ranking myRanking = new Ranking(population_);
-        SolutionSet paretoFront = myRanking.getSubfront(0);
-        paretoFront.printObjectivesToFile("LowerLevelParetoVisualNSGAII/" + execution + "_FUN_" + iteration++);
+        Ranking convRanking = new Ranking(population_);
+        SolutionSet paretoFront = convRanking.getSubfront(0);
+        double hypervolume = indicators.getHypervolume(paretoFront);
+
+        double diff = hypervolume - previousHypervolume;
+        if (diff < 0.0001)
+          converged = true;
+        else if (execution < 10)
+          paretoFront.printObjectivesToFile("LowerLevelParetoVisualNSGAII/" + execution + "_FUN_" + iteration++);
+
+        previousHypervolume = hypervolume;
       }
 
     } // while
