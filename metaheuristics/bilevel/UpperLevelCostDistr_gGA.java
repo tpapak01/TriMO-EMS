@@ -51,6 +51,7 @@ public class UpperLevelCostDistr_gGA {
         String problemName = "idealKnapsack_24_8to2";
         //initialize Lower Level algorithm
         MOKP_Problem lowerLevelProblem = (MOKP_Problem) LowerLevelMOKP_MOEAD.initializeAlgorithm(problemName);
+        //MOKP_Problem lowerLevelProblem = (MOKP_Problem) LowerLevelMOKP_NSGAII.initializeAlgorithm(problemName);
 
         //thalis
         problem = new CostDistr(problemName, lowerLevelProblem);
@@ -71,7 +72,7 @@ public class UpperLevelCostDistr_gGA {
         //algorithm.setInputParameter("populationSize",4); //must be even number
         //algorithm.setInputParameter("maxEvaluations", 2500);
         algorithm.setInputParameter("populationSize", 100); //must be even number
-        algorithm.setInputParameter("maxEvaluations", 2000);
+        algorithm.setInputParameter("maxEvaluations", 1000000);
 
 
         //thalis
