@@ -40,11 +40,6 @@ import java.util.Vector;
 
 public class MOEAD extends Algorithm {
 
-  private int populationSize_;
-  /**
-   * Stores the population
-   */
-  private SolutionSet population_;
   /**
    * Z vector (ideal point)
    */
@@ -77,18 +72,11 @@ public class MOEAD extends Algorithm {
   Solution[] indArray_;
   String functionType_;
   int evaluations_;
-  /**
-   * Operators
-   */
-  Operator crossover_;
-  Operator mutation_;
 
   String dataDirectory_;
 
   //thalis
   private static final Comparator dominance_ = new DominanceComparator();
-  String rpType_;
-  SolutionSet previousPareto;
 
   /** 
    * Constructor
@@ -96,28 +84,30 @@ public class MOEAD extends Algorithm {
    */
   public MOEAD(Problem problem) {
     super (problem) ;
-
     functionType_ = "TCHE1";
-
-  } // DMOEA
+  }
 
   public static int execution;
 
   public SolutionSet execute() throws JMException, ClassNotFoundException {
     int maxEvaluations;
+    int populationSize;
+    SolutionSet population;
+    Operator crossover;
+    Operator mutation;
 
     evaluations_ = 0;
     maxEvaluations = ((Integer) this.getInputParameter("maxEvaluations")).intValue();
-    populationSize_ = ((Integer) this.getInputParameter("populationSize")).intValue();
+    populationSize = ((Integer) this.getInputParameter("populationSize")).intValue();
 
     //thalis
-    rpType_ = this.getInputParameter("rpType").toString();
+    String rpType = this.getInputParameter("rpType").toString();
     Comparator  comparator;
 
     dataDirectory_ = this.getInputParameter("dataDirectory").toString();
     //System.out.println("POPSIZE: "+ populationSize_) ;
 
-    population_ = new SolutionSet(populationSize_);
+    population = new SolutionSet(populationSize);
     indArray_ = new Solution[problem_.getNumberOfObjectives()];
 
     T_ = ((Integer) this.getInputParameter("T")).intValue();
@@ -130,28 +120,28 @@ public class MOEAD extends Algorithm {
     delta_ = 0.9;
     nr_ = (int) (0.01 * populationSize_);
 */
-    neighborhood_ = new int[populationSize_][T_];
+    neighborhood_ = new int[populationSize][T_];
 
     z_ = new double[problem_.getNumberOfObjectives()];
     //lambda_ = new Vector(problem_.getNumberOfObjectives()) ;
-    lambda_ = new double[populationSize_][problem_.getNumberOfObjectives()];
+    lambda_ = new double[populationSize][problem_.getNumberOfObjectives()];
 
     //Read the operators
     comparator = (Comparator) this.getInputParameter("comparator");
-    crossover_ = operators_.get("crossover"); // default: DE crossover
-    mutation_ = operators_.get("mutation");  // default: polynomial mutation
+    crossover = operators_.get("crossover"); // default: DE crossover
+    mutation = operators_.get("mutation");  // default: polynomial mutation
 
     // STEP 1. Initialization
     // STEP 1.1. Compute euclidean distances between weight vectors and find T
-    initUniformWeight();
+    initUniformWeight(populationSize);
     
-    initNeighborhood();
+    initNeighborhood(populationSize);
 
     // STEP 1.2. Initialize population
-    initPopulation();
+    initPopulation(population, populationSize);
 
     // STEP 1.3. Initialize z_
-    initIdealPoint();
+    initIdealPoint(population, populationSize, rpType);
 
     //used for convergence observation
     int threshold = 0;
@@ -160,17 +150,17 @@ public class MOEAD extends Algorithm {
     boolean passedOnce = false;
     //used for convergence
     boolean converged = false;
-    Ranking r = new Ranking(population_);
+    Ranking r = new Ranking(population);
     SolutionSet pareto = r.getSubfront(0);
     pareto.sort(comparator);
-    previousPareto = pareto;
+    SolutionSet previousPareto = pareto;
 
     // STEP 2. Update
     do {
-      int[] permutation = new int[populationSize_];
-      Utils.randomPermutation(permutation, populationSize_);
+      int[] permutation = new int[populationSize];
+      Utils.randomPermutation(permutation, populationSize);
 
-      for (int i = 0; i < populationSize_; i++) {
+      for (int i = 0; i < populationSize; i++) {
         // iterate through the population in random (permutation) order, or the normal order
         int n = permutation[i]; // or int n = i;
         int type;
@@ -195,14 +185,14 @@ public class MOEAD extends Algorithm {
         //thalis comment
         //Solution[] parents = new Solution[3];
 
-        parents[0] = population_.get(parents_index.get(0));
-        parents[1] = population_.get(parents_index.get(1));
+        parents[0] = population.get(parents_index.get(0));
+        parents[1] = population.get(parents_index.get(1));
         //thalis comment
         //parents[2] = population_.get(n);
 
         //thalis
         // produce 2 offspring by performing crossover on the 2 parents
-        Solution[] children = (Solution[]) crossover_.execute(parents);
+        Solution[] children = (Solution[]) crossover.execute(parents);
         // randomly select 1 of the 2 produced offspring
         double rndSel =  PseudoRandom.randDouble();
         if (rndSel < 0.5) {
@@ -214,11 +204,11 @@ public class MOEAD extends Algorithm {
         //child = (Solution) crossover_.execute(new Object[]{population_.get(n), parents});
 
         // Apply mutation, we keep the original bit flipping for now, not the "updateProduct"
-        mutation_.execute(child);
+        mutation.execute(child);
 
         // Evaluation
         problem_.evaluate(child);
-        
+
         evaluations_++;
 
         // STEP 2.3. Repair. Not necessary, no constraints
@@ -227,13 +217,13 @@ public class MOEAD extends Algorithm {
         updateReference(child);
 
         // STEP 2.5. Update of solutions
-        updateProblem(child, n, type);
+        updateProblem(population, child, n, type);
       } // for
 
 
       if (evaluations_ > threshold){
         threshold += 500;
-        Ranking ranking = new Ranking(population_);
+        Ranking ranking = new Ranking(population);
         SolutionSet paretoFront = ranking.getSubfront(0);
         paretoFront.sort(comparator);
 
@@ -315,18 +305,18 @@ public class MOEAD extends Algorithm {
     //thalis
     //register Spent Energy of top solutions
     MOKP_Problem mokp_problem = (MOKP_Problem) problem_;
-    for (int i = 0; i < population_.size(); i++) {
-      mokp_problem.calculateSpentEnergy(population_.get(i));
+    for (int i = 0; i < population.size(); i++) {
+      mokp_problem.calculateSpentEnergy(population.get(i));
     }
 
 
     //thalis
     // At last remove identical solutions, based not only on objective value, but also decision vector
-    SolutionSet finalSet = new SolutionSet(population_.size());
-    finalSet.add(population_.get(0));
+    SolutionSet finalSet = new SolutionSet(population.size());
+    finalSet.add(population.get(0));
 
-    for (int i = 1; i < population_.size(); i++) {
-      Solution sol = population_.get(i);
+    for (int i = 1; i < population.size(); i++) {
+      Solution sol = population.get(i);
       boolean existEqual = false;
 
       for (int j = 0; j < finalSet.size();j++) {
@@ -338,7 +328,7 @@ public class MOEAD extends Algorithm {
 
       if (existEqual) continue;
 
-      finalSet.add(population_.get(i));
+      finalSet.add(population.get(i));
 
     } // for
 
@@ -362,10 +352,10 @@ public class MOEAD extends Algorithm {
   /**
    * initUniformWeight
    */
-  public void initUniformWeight() {
+  public void initUniformWeight(int populationSize) {
     //if ((problem_.getNumberOfObjectives() == 2) && (populationSize_ <= 300)) {
-      for (int n = 0; n < populationSize_; n++) {
-        double a = 1.0 * n / (populationSize_ - 1);
+      for (int n = 0; n < populationSize; n++) {
+        double a = 1.0 * n / (populationSize - 1);
         lambda_[n][0] = a;
         lambda_[n][1] = 1 - a;
       } // for
@@ -413,13 +403,13 @@ public class MOEAD extends Algorithm {
   /**
    * 
    */
-  public void initNeighborhood() {
-    double[] x = new double[populationSize_];
-    int[] idx = new int[populationSize_];
+  public void initNeighborhood(int populationSize) {
+    double[] x = new double[populationSize];
+    int[] idx = new int[populationSize];
 
-    for (int i = 0; i < populationSize_; i++) {
+    for (int i = 0; i < populationSize; i++) {
       // calculate the distances based on weight vectors
-      for (int j = 0; j < populationSize_; j++) {
+      for (int j = 0; j < populationSize; j++) {
         x[j] = Utils.distVector(lambda_[i], lambda_[j]);
         idx[j] = j;
       }
@@ -428,7 +418,7 @@ public class MOEAD extends Algorithm {
       // This is basically insertion sort, but you only sort the first T positions.
       // In other words, the first T positions contain the individuals with
       // the closest distance to individual i
-      Utils.minFastSort(x, idx, populationSize_, T_);
+      Utils.minFastSort(x, idx, populationSize, T_);
 
       // copy the indexes of the first (closest) T individuals to the neighbours-array of individual i
       System.arraycopy(idx, 0, neighborhood_[i], 0, T_);
@@ -438,14 +428,14 @@ public class MOEAD extends Algorithm {
   /**
    * 
    */
-  public void initPopulation() throws JMException, ClassNotFoundException {
+  public void initPopulation(SolutionSet population, int populationSize) throws JMException, ClassNotFoundException {
 
     int numberOfUsers = ((MOKP_Problem) problem_).getNumberOfUsers();
     int numberOfItems = ((MOKP_Problem) problem_).getNumberOfItems();
     int numOfConstraints = problem_.getNumberOfConstraints();
     int numOfBits = numberOfUsers * numberOfItems * numOfConstraints;
 
-    for (int i = 0; i < populationSize_; i++) {
+    for (int i = 0; i < populationSize; i++) {
       Solution newSolution = new Solution(problem_);
 
       /*
@@ -461,7 +451,7 @@ public class MOEAD extends Algorithm {
       }
 
       // exactly what the users want
-      if (i == populationSize_-1) {
+      if (i == populationSize-1) {
             boolean[][][] pref = ((MOKP_Problem) problem_).getUserPreferences();
             Variable[] vars = new Variable[problem_.getNumberOfVariables()];
             for (int v = 0; v < vars.length; v++) {
@@ -491,7 +481,7 @@ public class MOEAD extends Algorithm {
 
       problem_.evaluate(newSolution);
       evaluations_++;
-      population_.add(newSolution) ;
+      population.add(newSolution) ;
     } // for
   }
 
@@ -510,20 +500,20 @@ public class MOEAD extends Algorithm {
   /**
    * Initialise the reference point
    */
-  void initIdealPoint() throws JMException, ClassNotFoundException {
+  void initIdealPoint(SolutionSet population, int populationSize, String rpType) throws JMException, ClassNotFoundException {
     for(int i = 0; i < problem_.getNumberOfObjectives(); i++)  {
       if (problem_.isMaxmized() == false) {
-        if (rpType_.equalsIgnoreCase("Ideal")) {
+        if (rpType.equalsIgnoreCase("Ideal")) {
           if (normalize_) z_[i] = +0.1; else z_[i] = +1.0e+30;
         } else {
-          System.out.println("MOEDA.initialize_RP: unknown type " + rpType_);
+          System.out.println("MOEDA.initialize_RP: unknown type " + rpType);
           System.exit(-1);
         }
       } else {
-        if (rpType_.equalsIgnoreCase("Ideal")) {
+        if (rpType.equalsIgnoreCase("Ideal")) {
           if (normalize_) z_[i] = -1.1; else z_[i] = -1.0e+30;
         } else {
-          System.out.println("MOEDA.initialize_RP: unknown type " + rpType_);
+          System.out.println("MOEDA.initialize_RP: unknown type " + rpType);
           System.exit(-1);
         }
       }
@@ -533,8 +523,8 @@ public class MOEAD extends Algorithm {
       evaluations_++;
     }
 
-    for (int i = 0; i < populationSize_; i++) {
-      updateReference(population_.get(i));
+    for (int i = 0; i < populationSize; i++) {
+      updateReference(population.get(i));
     }
   }
 
@@ -614,7 +604,7 @@ public class MOEAD extends Algorithm {
    * @param id
    * @param type
    */
-  void updateProblem(Solution indiv, int id, int type) {
+  void updateProblem(SolutionSet population, Solution indiv, int id, int type) {
     // indiv: child solution
     // id:   the id of current subproblem
     // type: update solutions in - neighborhood (1) or whole population (otherwise)
@@ -644,7 +634,7 @@ public class MOEAD extends Algorithm {
       //thalis
       int flagDominate;
 
-      Solution replacementCandidate = population_.get(k);
+      Solution replacementCandidate = population.get(k);
       if (problem_.isMaxmized() == false)
         flagDominate = dominance_.compare(indiv, replacementCandidate);
       else flagDominate = dominance_.compare(replacementCandidate, indiv);
@@ -664,7 +654,7 @@ public class MOEAD extends Algorithm {
       }
 
       if (flagDominate == -1) {// indiv is better
-        population_.replace(k, new Solution(indiv));
+        population.replace(k, new Solution(indiv));
         time++;
       }
 

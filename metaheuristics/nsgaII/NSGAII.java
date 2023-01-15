@@ -44,11 +44,10 @@ import java.util.Comparator;
 
 public class NSGAII extends Algorithm {
 
-  private int populationSize_;
   /**
    * Stores the population
    */
-  private SolutionSet population_;
+
   private int evaluations_;
 
   /**
@@ -69,6 +68,8 @@ public class NSGAII extends Algorithm {
    */
   public SolutionSet execute() throws JMException, ClassNotFoundException {
     int maxEvaluations;
+    int populationSize;
+    SolutionSet population;
 
     QualityIndicator indicators; // QualityIndicator object
     //int requiredEvaluations; // Use in the example of use of the
@@ -86,12 +87,12 @@ public class NSGAII extends Algorithm {
     Distance distance = new Distance();
 
     //Read the parameters
-    populationSize_ = ((Integer) getInputParameter("populationSize")).intValue();
+    populationSize = ((Integer) getInputParameter("populationSize")).intValue();
     maxEvaluations = ((Integer) getInputParameter("maxEvaluations")).intValue();
     indicators = (QualityIndicator) getInputParameter("indicators");
 
     //Initialize the variables
-    population_ = new SolutionSet(populationSize_);
+    population = new SolutionSet(populationSize);
     evaluations_ = 0;
 
     //requiredEvaluations = 0;
@@ -103,14 +104,14 @@ public class NSGAII extends Algorithm {
     selectionOperator = operators_.get("selection");
 
     // Create the initial solutionSet
-    initPopulation();
+    initPopulation(population, populationSize);
 
     //used for convergence observation
     int threshold = 0;
     int iteration = 0;
     //used for convergence
     boolean converged = false;
-    Ranking r = new Ranking(population_);
+    Ranking r = new Ranking(population);
     SolutionSet pareto = r.getSubfront(0);
     previousHypervolume = indicators.getHypervolume(pareto);
 
@@ -118,13 +119,13 @@ public class NSGAII extends Algorithm {
     while (evaluations_ < maxEvaluations && converged == false) {
 
       // Create the offSpring solutionSet      
-      offspringPopulation = new SolutionSet(populationSize_);
+      offspringPopulation = new SolutionSet(populationSize);
       Solution[] parents = new Solution[2];
-      for (int i = 0; i < (populationSize_ / 2); i++) {
+      for (int i = 0; i < (populationSize / 2); i++) {
         if (evaluations_ < maxEvaluations) {
           //obtain parents
-          parents[0] = (Solution) selectionOperator.execute(population_);
-          parents[1] = (Solution) selectionOperator.execute(population_);
+          parents[0] = (Solution) selectionOperator.execute(population);
+          parents[1] = (Solution) selectionOperator.execute(population);
           Solution[] offSpring = (Solution[]) crossoverOperator.execute(parents);
           mutationOperator.execute(offSpring[0]);
           mutationOperator.execute(offSpring[1]);
@@ -139,15 +140,15 @@ public class NSGAII extends Algorithm {
       } // for
 
       // Create the solutionSet union of solutionSet and offSpring
-      union = population_.union(offspringPopulation);
+      union = population.union(offspringPopulation);
 
       // Ranking the union
       Ranking ranking = new Ranking(union);
 
-      int remain = populationSize_;
+      int remain = populationSize;
       int index = 0;
       SolutionSet front = null;
-      population_.clear();
+      population.clear();
 
       // Obtain the next front
       front = ranking.getSubfront(index);
@@ -157,7 +158,7 @@ public class NSGAII extends Algorithm {
         distance.crowdingDistanceAssignment(front, problem_.getNumberOfObjectives());
         //Add the individuals of this front
         for (int k = 0; k < front.size(); k++) {
-          population_.add(front.get(k));
+          population.add(front.get(k));
         } // for
 
         //Decrement remain
@@ -176,7 +177,7 @@ public class NSGAII extends Algorithm {
         distance.crowdingDistanceAssignment(front, problem_.getNumberOfObjectives());
         front.sort(new CrowdingComparator());
         for (int k = 0; k < remain; k++) {
-          population_.add(front.get(k));
+          population.add(front.get(k));
         }
       }
 
@@ -196,7 +197,7 @@ public class NSGAII extends Algorithm {
 
       if (evaluations_ > threshold){
         threshold += 500;
-        Ranking convRanking = new Ranking(population_);
+        Ranking convRanking = new Ranking(population);
         SolutionSet paretoFront = convRanking.getSubfront(0);
         double hypervolume = indicators.getHypervolume(paretoFront);
 
@@ -218,25 +219,25 @@ public class NSGAII extends Algorithm {
 
 
     // Return the first non-dominated front
-    Ranking ranking = new Ranking(population_);
+    Ranking ranking = new Ranking(population);
     SolutionSet paretoFront = ranking.getSubfront(0);
     paretoFront.printFeasibleFUN("FUN_NSGAII") ;
-    population_ = paretoFront;
+    population = paretoFront;
 
-    population_.sort(comparator) ;
+    population.sort(comparator) ;
 
     MOKP_Problem mokp_problem = (MOKP_Problem) problem_;
-    for (int i = 0; i < population_.size(); i++) {
-      mokp_problem.calculateSpentEnergy(population_.get(i));
+    for (int i = 0; i < population.size(); i++) {
+      mokp_problem.calculateSpentEnergy(population.get(i));
     }
 
     //thalis
     // At last remove identical solutions, based not only on objective value, but also decision vector
-    SolutionSet finalSet = new SolutionSet(population_.size());
-    finalSet.add(population_.get(0));
+    SolutionSet finalSet = new SolutionSet(population.size());
+    finalSet.add(population.get(0));
 
-    for (int i = 1; i < population_.size(); i++) {
-      Solution sol = population_.get(i);
+    for (int i = 1; i < population.size(); i++) {
+      Solution sol = population.get(i);
       boolean existEqual = false;
 
       for (int j = 0; j < finalSet.size();j++) {
@@ -249,7 +250,7 @@ public class NSGAII extends Algorithm {
       if (existEqual)
         continue;
 
-      finalSet.add(population_.get(i));
+      finalSet.add(population.get(i));
 
     } // for
 
@@ -272,14 +273,14 @@ public class NSGAII extends Algorithm {
   /**
    *
    */
-  public void initPopulation() throws JMException, ClassNotFoundException {
+  public void initPopulation(SolutionSet population, int populationSize) throws JMException, ClassNotFoundException {
 
     int numberOfUsers = ((MOKP_Problem) problem_).getNumberOfUsers();
     int numberOfItems = ((MOKP_Problem) problem_).getNumberOfItems();
     int numOfConstraints = problem_.getNumberOfConstraints();
     int numOfBits = numberOfUsers * numberOfItems * numOfConstraints;
 
-    for (int i = 0; i < populationSize_; i++) {
+    for (int i = 0; i < populationSize; i++) {
       Solution newSolution = new Solution(problem_);
 
       /*
@@ -295,7 +296,7 @@ public class NSGAII extends Algorithm {
       }
 
       // exactly what the users want
-      if (i == populationSize_-1) {
+      if (i == populationSize-1) {
         boolean[][][] pref = ((MOKP_Problem) problem_).getUserPreferences();
         Variable[] vars = new Variable[problem_.getNumberOfVariables()];
         for (int v = 0; v < vars.length; v++) {
@@ -325,7 +326,7 @@ public class NSGAII extends Algorithm {
 
       problem_.evaluate(newSolution);
       evaluations_++;
-      population_.add(newSolution) ;
+      population.add(newSolution) ;
     } // for
   }
 
