@@ -30,6 +30,7 @@ public class CostDistr extends Problem {
 
     private MOKP_Problem lowerLevelProblem;
     private int[] producedRE;
+    private int totalProducedRE;
 
 
   public CostDistr(String problemName, MOKP_Problem lowerLevelProblem) {
@@ -70,6 +71,7 @@ public class CostDistr extends Problem {
           for (int i = 0; i < lowerLevelProblem.getNumberOfConstraints(); i++) {
               line = in.readLine();
               producedRE[i] = Integer.parseInt(line);
+              totalProducedRE += producedRE[i];
           }
 
           in.close();
@@ -81,6 +83,10 @@ public class CostDistr extends Problem {
 
     public int[] getProducedRE(){
         return producedRE;
+    }
+
+    public int getTotalProducedRE(){
+        return totalProducedRE;
     }
   
 	@Override
