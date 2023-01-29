@@ -9,6 +9,7 @@ package jmetal.problems;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 
 import jmetal.core.Problem;
 import jmetal.core.Solution;
@@ -109,6 +110,10 @@ public class MOKP_Problem extends Problem {
       } catch (IOException e){
           System.out.println("Error reading MOKP problemFile: " + e.getMessage());
       }
+
+      double[] requestedEnergy = calculateRequestedEnergy();
+      System.out.println("Requested Energy");
+      System.out.println(Arrays.toString(requestedEnergy));
 
   }
 
@@ -352,6 +357,56 @@ public class MOKP_Problem extends Problem {
 
         return highest_dissatisfaction;
     }
+
+
+    public void calculateSpentEnergy(Solution solution) {
+        Variable[] vars = solution.getDecisionVariables();
+        Binary bin = (Binary) vars[0];
+
+        double[] spentEnergy = new double[this.numberOfConstraints_];
+        for (int u = 0; u < numberOfUsers; u++) { // for each user
+            int userIndex = u * this.numberOfConstraints_;
+            int l = 0;
+            for (int i = userIndex; i < userIndex + this.numberOfConstraints_; i++) { // for each objective
+                int itemIndex = i * numberOfItems;
+                int k = 0;
+                for (int j = itemIndex; j < itemIndex + numberOfItems; j++) { // for each bit
+                    if (bin.getIth(j)) {
+                        spentEnergy[l] += w[k];
+                    }
+                    k++;
+                } // for j
+                l++;
+            } // for i
+        } //for u
+
+        solution.setSpentEnergy(spentEnergy);
+    }
+
+    public double[] calculateRequestedEnergy() {
+
+        double[] requestedEnergy = new double[this.numberOfConstraints_];
+        for (int u = 0; u < numberOfUsers; u++) { // for each user
+            int userIndex = u * this.numberOfConstraints_;
+            int l = 0;
+            for (int i = userIndex; i < userIndex + this.numberOfConstraints_; i++) { // for each objective
+                int itemIndex = i * numberOfItems;
+                int k = 0;
+                for (int j = itemIndex; j < itemIndex + numberOfItems; j++) { // for each bit
+                    if (pref[u][l][k]) {
+                        requestedEnergy[l] += w[k];
+                    }
+                    k++;
+                } // for j
+                l++;
+            } // for i
+        } //for u
+
+        return requestedEnergy;
+    }
+
+
+
 }
 
 

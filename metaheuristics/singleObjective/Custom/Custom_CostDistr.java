@@ -27,6 +27,7 @@ import jmetal.problems.CostDistr;
 import jmetal.util.JMException;
 import jmetal.util.wrapper.XReal;
 
+import java.util.Arrays;
 import java.util.Comparator;
 
 /** 
@@ -95,7 +96,9 @@ public class Custom_CostDistr extends Algorithm {
         Solution sol = population.get(i);
         Solution newSol = new Solution(sol);
 
-        double[] spentEnergy = sol.getSpentEnergy();
+        double[] spentEnergy;
+        double[] spentEnergyTemp = sol.getSpentEnergy();
+        spentEnergy = Arrays.copyOf(spentEnergyTemp,spentEnergyTemp.length);
         double[] costsToSend = new double[problem_.getNumberOfVariables()];
         XReal solDecisionVars = new XReal(sol);
         for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
