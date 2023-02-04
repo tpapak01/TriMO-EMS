@@ -56,13 +56,8 @@ public class Custom_CostDistr extends Algorithm {
   public SolutionSet execute() throws JMException, ClassNotFoundException {
 
     int maxEvaluations ;
+    int numOfVars = problem_.getNumberOfVariables();
 
-    SolutionSet offspringPopulation ;
-
-    Operator    mutationOperator  ;
-    Operator    crossoverOperator ;
-    Operator    selectionOperator ;
-    
     Comparator  comparator        ;
     
     // Read the params
@@ -76,13 +71,10 @@ public class Custom_CostDistr extends Algorithm {
 
     // Read the operators
     comparator = (Comparator) this.getInputParameter("comparator");
-    mutationOperator  = this.operators_.get("mutation");
-    crossoverOperator = this.operators_.get("crossover");
-    selectionOperator = this.operators_.get("selection");
 
     //initPopulation();
     CostDistr prob = ((CostDistr) problem_);
-    int[] producedRE = prob.getProducedRE();
+    int[] producedRE = Arrays.copyOf(prob.getProducedRE(),numOfVars);
     int totalProducedRE = prob.getTotalProducedRE();
     initPopulationCostDistr(producedRE, totalProducedRE);
 
@@ -96,31 +88,46 @@ public class Custom_CostDistr extends Algorithm {
         Solution sol = population.get(i);
         Solution newSol = new Solution(sol);
 
-        double[] spentEnergy;
-        double[] spentEnergyTemp = sol.getSpentEnergy();
-        spentEnergy = Arrays.copyOf(spentEnergyTemp,spentEnergyTemp.length);
-        double[] costsToSend = new double[problem_.getNumberOfVariables()];
+        double[] spentEnergy = Arrays.copyOf(sol.getSpentEnergy(),numOfVars);
+        double[] costsToSend = new double[numOfVars];
         XReal solDecisionVars = new XReal(sol);
-        for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
+        for (int j = 0; j < numOfVars; j++) {
+
+          double currentValue = solDecisionVars.getValue(j);
+
+          // 1) LINEAR
+          /*
+          if (spentEnergy[j] < producedRE[j]){
+            costsToSend[j] =  currentValue - 0.05;
+          } else if (spentEnergy[j] > producedRE[j]) {
+            costsToSend[j] = currentValue + 0.05;
+          } else {
+            costsToSend[j] =  currentValue;
+          }
+
+           */
+
+          // 2) PROPORTIONAL
           if (producedRE[j] == 0) {
             producedRE[j] = 1;
           }
-          if (spentEnergy[j] == 0){
+          if (spentEnergy[j] == 0) {
             spentEnergy[j] = 1;
           }
 
-          if (spentEnergy[j] <= producedRE[j]){
+          if (spentEnergy[j] != producedRE[j]){
             double proportion = spentEnergy[j] / (double) producedRE[j];
-            double currentValue = solDecisionVars.getValue(j);
             costsToSend[j] = currentValue * proportion;
           } else {
-            double proportion = spentEnergy[j] / (double) producedRE[j];
-            double currentValue = solDecisionVars.getValue(j);
-            costsToSend[j] = currentValue * proportion;
+            costsToSend[j] =  currentValue;
           }
+
+          //Normalize
           if (costsToSend[j] > 1.0)
             costsToSend[j] = 1.0;
-          costsToSend[j] = Math.round(costsToSend[j]*1000.0) / 1000.0;
+          else if (costsToSend[j] < 0)
+            costsToSend[j] = 0;
+          else costsToSend[j] = Math.round(costsToSend[j]*1000.0) / 1000.0;
 
         }
         newSol.setDecisionVariables(updateSolution(costsToSend));
