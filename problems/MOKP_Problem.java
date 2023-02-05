@@ -32,6 +32,7 @@ public class MOKP_Problem extends Problem {
     private double[] w; // weight of items
     private boolean [][][] pref; // preferences of users: user x time x device
     private XReal costOfUsage ; // capacity of each  knapsack .
+    private int[] requestedPerUser;
 	
 
   public MOKP_Problem(String problemName,String userPreferenceName) {
@@ -87,6 +88,7 @@ public class MOKP_Problem extends Problem {
           in.readLine();
 
           pref = new boolean[numberOfUsers][this.numberOfConstraints_][numberOfItems];
+          requestedPerUser = new int[numberOfUsers];
 
           for (int u = 0; u < numberOfUsers; u++) {
               for (int i = 0; i < this.numberOfConstraints_; i++) {
@@ -94,8 +96,10 @@ public class MOKP_Problem extends Problem {
                       // Read number of items
                       Character r = (char) in.read();
                       int num = Integer.parseInt(r.toString());
-                      if (num == 1)
+                      if (num == 1) {
                           pref[u][i][j] = true;
+                          requestedPerUser[u]++;
+                      }
                   }
                   in.read();
                   in.read();
@@ -174,7 +178,7 @@ public class MOKP_Problem extends Problem {
         Binary bin = (Binary) vars[0];
 
         double result;
-        result = complex_highest_dissatisfaction_evaluate(bin);
+        result = percentage_dissatisfaction_evaluate(bin);
         solution.setObjective(0, result);
         result = highest_cost_evaluate(bin);
         solution.setObjective(1, result);
@@ -358,6 +362,43 @@ public class MOKP_Problem extends Problem {
         return highest_dissatisfaction;
     }
 
+    public double percentage_dissatisfaction_evaluate(Binary bin) {
+        double total_dissatisfaction = 0;
+        //boolean[] used = new boolean[bin.getNumberOfBits()];
+
+        for (int u = 0; u < numberOfUsers; u++) { // for each user
+            double dissatisfaction_nominator = 0;
+
+            int userIndex = u * this.numberOfConstraints_;
+
+            int l = 0;
+            for (int i = userIndex; i < userIndex + this.numberOfConstraints_; i++) { // for each objective
+
+                int itemIndex = i * numberOfItems;
+
+                int k = 0;
+
+                for (int j = itemIndex; j < itemIndex + numberOfItems; j++) { // for each bit
+                    //we only care if we actually wanted a device running at that time
+                    if (pref[u][l][k]) {
+                        //if it is not running, we are dissatisfied. But how much?
+                        if (bin.getIth(j) == false){
+                            dissatisfaction_nominator++;
+                        }
+                    }
+                    k++;
+                } // for j
+                l++;
+            } // for i
+
+            int dissatisfaction_denominator = requestedPerUser[u];
+            double user_dissatisfaction = dissatisfaction_nominator / (double) dissatisfaction_denominator;
+            total_dissatisfaction += user_dissatisfaction;
+
+        } //for u
+
+        return total_dissatisfaction;
+    }
 
     public void calculateSpentEnergy(Solution solution) {
         Variable[] vars = solution.getDecisionVariables();
