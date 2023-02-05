@@ -94,7 +94,7 @@ public class UniformMutation extends Mutation{
         else if (tmp > x.getUpperBound(var))
           tmp = x.getUpperBound(var);
 
-        tmp = Math.round(tmp*1000.0) / 1000.0;
+        tmp = Math.round(tmp*100.0) / 100.0;
         x.setValue(var, tmp) ;
       } // if
     }

@@ -127,7 +127,7 @@ public class Custom_CostDistr extends Algorithm {
             costsToSend[j] = 1.0;
           else if (costsToSend[j] < 0)
             costsToSend[j] = 0;
-          else costsToSend[j] = Math.round(costsToSend[j]*1000.0) / 1000.0;
+          else costsToSend[j] = Math.round(costsToSend[j]*100.0) / 100.0;
 
         }
         newSol.setDecisionVariables(updateSolution(costsToSend));
@@ -191,9 +191,11 @@ public class Custom_CostDistr extends Algorithm {
       if (i == 0) {
         for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
           costsToSend[j] = 1 - ((double)producedRE[j]/(double)totalProducedRE);
+          costsToSend[j] = Math.round(costsToSend[j]*100.0) / 100.0;
         }
         newSolution.setDecisionVariables(updateSolution(costsToSend));
       }
+
 
       problem_.evaluate(newSolution);
       evaluations++;

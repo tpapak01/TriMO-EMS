@@ -151,8 +151,8 @@ public class SBXCrossover extends Crossover {
             if (c2>yu)
               c2=yu;
 
-            c1 = Math.round(c1*1000.0) / 1000.0;
-            c2 = Math.round(c2*1000.0) / 1000.0;
+            c1 = Math.round(c1*100.0) / 100.0;
+            c2 = Math.round(c2*100.0) / 100.0;
 
             // give values c1,c2 to offspring one way or the reverse, based on probability
             if (PseudoRandom.randDouble()<=0.5) {

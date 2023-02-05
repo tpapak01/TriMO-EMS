@@ -177,7 +177,7 @@ public class DifferentialEvolutionCrossover extends Crossover {
 					if (value > xChild.getUpperBound(j))
 						value = xChild.getUpperBound(j) ;
 
-					value = Math.round(value*1000.0) / 1000.0;
+					value = Math.round(value*100.0) / 100.0;
 					xChild.setValue(j, value) ;
 				}
 				// if 50% chance failed and not chosen position, keep original position value

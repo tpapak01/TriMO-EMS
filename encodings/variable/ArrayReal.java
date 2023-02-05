@@ -72,7 +72,7 @@ public class ArrayReal extends Variable {
       array_[i] = PseudoRandom.randDouble() * (problem_.getUpperLimit(i) -
               problem_.getLowerLimit(i)) +
               problem_.getLowerLimit(i);
-      array_[i] = Math.round(array_[i]*1000.0) / 1000.0;
+      array_[i] = Math.round(array_[i]*100.0) / 100.0;
     } // for
 
     /*
@@ -100,7 +100,7 @@ public class ArrayReal extends Variable {
       array_[i] = r.randDoubleSeed() * (problem_.getUpperLimit(i) -
               problem_.getLowerLimit(i)) +
               problem_.getLowerLimit(i);
-      array_[i] = Math.round(array_[i] * 1000.0) / 1000.0;
+      array_[i] = Math.round(array_[i] *100.0) / 1000.0;
     } // for
   }
 
