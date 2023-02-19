@@ -32,8 +32,7 @@ public class CreateGNUSpentEnergy {
                 pw.write(to_put);
             }
             scan.useDelimiter("");
-            useless = scan.next();
-            System.out.println("--" + useless);
+            scan.next();
         }
 
         pw.close();

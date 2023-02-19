@@ -93,8 +93,9 @@ public class CostDistr extends Problem {
 	public void evaluate(Solution solution) throws JMException {
 
         SolutionSet lowerLevelSolutions = null;
+        XReal costs = new XReal(solution);
         try {
-            lowerLevelSolutions = LowerLevelMOKP_MOEAD.evaluate(new XReal(solution));
+            lowerLevelSolutions = LowerLevelMOKP_MOEAD.evaluate(costs);
             //lowerLevelSolutions = LowerLevelMOKP_NSGAII.evaluate(new XReal(solution));
         } catch (Exception e){
             System.out.println("Exception at LowerLevelMOKP.evaluate: " + e.getMessage());
@@ -143,7 +144,7 @@ public class CostDistr extends Problem {
             //do upper-level evaluation = finding deviation from available RE
             double[] energySpent = lowerLevelSol.getSpentEnergy();
             //double result = upperLevel_evaluate_distance_from_produced(spentEnergy);
-            double result = upperLevel_evaluate_XOR_distance(energySpent);
+            double result = upperLevel_evaluate_XOR_distance_plus_weight(energySpent, costs);
             if (result < best_result){
                 best_result = result;
                 solution.setSpentEnergy(energySpent);
@@ -168,6 +169,20 @@ public class CostDistr extends Problem {
 
         return sum;
     }
+
+    public double upperLevel_evaluate_XOR_distance_plus_weight(double[] spentEnergy, XReal costs) throws JMException {
+
+        double sum = 0;
+        for (int i=0; i<producedRE.length; i++) {
+            double difference = spentEnergy[i] - producedRE[i];
+            double cost = costs.getValue(i);
+            if (difference < 0)
+                sum += Math.abs(difference) * (1.0 + cost);
+            else sum += Math.abs(difference) * (2.0 - cost);
+        }
+        return sum;
+    }
+
 
     public double upperLevel_evaluate_maximize_usage_of_produced(double[] spentEnergy) {
 
