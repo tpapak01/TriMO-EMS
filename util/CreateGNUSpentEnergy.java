@@ -20,12 +20,20 @@ public class CreateGNUSpentEnergy {
             scan.useDelimiter(",");
             while (scan.hasNextDouble()) {
                 value = scan.nextDouble();
-                String to_put = template_scan.nextLine() + " " + String.valueOf(value) + "\n";
+                String to_put = template_scan.nextLine() + " " + value + "\n";
+                System.out.println(value);
+                pw.write(to_put);
+            }
+            scan.useDelimiter("]");
+            while (scan.hasNextDouble()) {
+                value = scan.nextDouble();
+                String to_put = template_scan.nextLine() + " " + value + "\n";
                 System.out.println(value);
                 pw.write(to_put);
             }
             scan.useDelimiter("");
             useless = scan.next();
+            System.out.println("--" + useless);
         }
 
         pw.close();
