@@ -29,7 +29,7 @@ public class LowerLevelMOKP_NSGAII {
     public static Problem problem   ;         // The problem to solve
     public static Algorithm algorithm ;         // The algorithm to use
 
-    public static Problem initializeAlgorithm(String problemName) throws SecurityException, IOException {
+    public static Problem initializeAlgorithm(String problemName, String problemUserPreferences) throws SecurityException, IOException {
 
 
         Operator crossover ;         // Crossover operator
@@ -46,7 +46,7 @@ public class LowerLevelMOKP_NSGAII {
         logger_.addHandler(fileHandler_) ;
 
         //thalis
-        problem = new MOKP_Problem(problemName  ,"idealUserpreference_5_8to24");
+        problem = new MOKP_Problem(problemName, problemUserPreferences);
 
         indicators = new QualityIndicator(problem, "OPTIMAL_PARETO") ;
 
