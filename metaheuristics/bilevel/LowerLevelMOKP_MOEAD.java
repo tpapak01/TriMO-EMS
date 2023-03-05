@@ -55,7 +55,7 @@ public class LowerLevelMOKP_MOEAD {
         //problem = new DTLZ1("Real");
         //problem = new OKA2("Real") ;
 
-
+        //
         algorithm = new MOEAD(problem);
         //algorithm = new MOEAD_DRA(problem);
 
