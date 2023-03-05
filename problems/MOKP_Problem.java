@@ -174,13 +174,14 @@ public class MOKP_Problem extends Problem {
     @Override
 	public void evaluate(Solution solution) throws JMException {
 
-		Variable[] vars = solution.getDecisionVariables();
-        Binary bin = (Binary) vars[0];
+        // restore if extra data no longer filled
+		//Variable[] vars = solution.getDecisionVariables();
+        //Binary bin = (Binary) vars[0];
 
         double result;
-        result = percentage_dissatisfaction_evaluate(bin);
+        result = percentage_dissatisfaction_evaluate(solution);
         solution.setObjective(0, result);
-        result = highest_cost_evaluate(bin);
+        result = highest_cost_evaluate(solution);
         solution.setObjective(1, result);
         
 	} // evaluate
@@ -271,11 +272,17 @@ public class MOKP_Problem extends Problem {
         return highest_dissatisfaction;
     }
 
-    public double highest_cost_evaluate(Binary bin) throws JMException {
+    public double highest_cost_evaluate(Solution solution) throws JMException {
         double highest_cost = 0;
+
+        //remove if filling up extra data is no longer needed
+        Variable[] vars = solution.getDecisionVariables();
+        Binary bin = (Binary) vars[0];
+        double[] energyAllocatedPerUser = new double[numberOfUsers];
 
         for (int u = 0; u < numberOfUsers; u++) { // for each user
             double sum = 0;
+            double user_energy = 0;
 
             int userIndex = u * this.numberOfConstraints_;
 
@@ -288,6 +295,7 @@ public class MOKP_Problem extends Problem {
                 for (int j = startingIndex; j < startingIndex + numberOfItems; j++) { // for each bit
                     if (bin.getIth(j)) {
                         sum = sum + w[k] * costOfUsage.getValue(l);
+                        user_energy = user_energy + w[k];
                     }
                     k++;
                 } // for j
@@ -297,7 +305,12 @@ public class MOKP_Problem extends Problem {
             if (sum > highest_cost){
                 highest_cost = sum;
             }
+
+            energyAllocatedPerUser[u] = user_energy;
+
         } // for u
+
+        solution.setEnergyAllocatedPerUser(energyAllocatedPerUser);
 
         return highest_cost;
     }
@@ -362,9 +375,13 @@ public class MOKP_Problem extends Problem {
         return highest_dissatisfaction;
     }
 
-    public double percentage_dissatisfaction_evaluate(Binary bin) {
+    public double percentage_dissatisfaction_evaluate(Solution solution) {
         double total_dissatisfaction = 0;
-        //boolean[] used = new boolean[bin.getNumberOfBits()];
+
+        //remove if filling up extra data is no longer needed
+        Variable[] vars = solution.getDecisionVariables();
+        Binary bin = (Binary) vars[0];
+        double[] dissatisfactionPerUser = new double[numberOfUsers];
 
         for (int u = 0; u < numberOfUsers; u++) { // for each user
             double dissatisfaction_nominator = 0;
@@ -395,10 +412,16 @@ public class MOKP_Problem extends Problem {
             double user_dissatisfaction = dissatisfaction_nominator / (double) dissatisfaction_denominator;
             total_dissatisfaction += user_dissatisfaction;
 
+            dissatisfactionPerUser[u] = user_dissatisfaction;
+
         } //for u
+
+        solution.setDissatisfactionPerUser(dissatisfactionPerUser);
 
         return total_dissatisfaction;
     }
+
+    ////////////////////////////////    HELPER FUNCTIONS       ////////////////////////////////////////
 
     public void calculateSpentEnergy(Solution solution) {
         Variable[] vars = solution.getDecisionVariables();

@@ -53,6 +53,27 @@ public class Solution implements Serializable {
   public void setLowerLevelObj(double[] lowerLevelObj){
     this.lowerLevelObj = Arrays.copyOf(lowerLevelObj, lowerLevelObj.length);
   }
+  private double[] dissatisfactionPerUser;
+  public double[] getDissatisfactionPerUser(){
+    return dissatisfactionPerUser;
+  }
+  public void setDissatisfactionPerUser(double[] dissatisfactionPerUser){
+    this.dissatisfactionPerUser = Arrays.copyOf(dissatisfactionPerUser, dissatisfactionPerUser.length);
+  }
+  private double[] energyAllocatedPerUser;
+  public double[] getEnergyAllocatedPerUser(){
+    return energyAllocatedPerUser;
+  }
+  public void setEnergyAllocatedPerUser(double[] energyAllocatedPerUser){
+    this.energyAllocatedPerUser = Arrays.copyOf(energyAllocatedPerUser, energyAllocatedPerUser.length);
+  }
+  private double energyDeviationFromProduced = -1;
+  public double getEnergyDeviationFromProduced(){
+    return energyDeviationFromProduced;
+  }
+  public void setEnergyDeviationFromProduced(double energyDeviationFromProduced){
+    this.energyDeviationFromProduced = energyDeviationFromProduced;
+  }
 
 	/**
 	 * Stores the problem 
@@ -241,6 +262,15 @@ public class Solution implements Serializable {
     }
     if (solution.getLowerLevelObj() != null){
       setLowerLevelObj(solution.getLowerLevelObj());
+    }
+    if (solution.getDissatisfactionPerUser() != null){
+      setDissatisfactionPerUser(solution.getDissatisfactionPerUser());
+    }
+    if (solution.getEnergyAllocatedPerUser() != null){
+      setEnergyAllocatedPerUser(solution.getEnergyAllocatedPerUser());
+    }
+    if (solution.getEnergyDeviationFromProduced() != -1){
+      setEnergyDeviationFromProduced(solution.getEnergyDeviationFromProduced());
     }
   } // Solution
 

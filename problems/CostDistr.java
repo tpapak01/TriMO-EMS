@@ -105,51 +105,27 @@ public class CostDistr extends Problem {
 
         double best_result = Double.MAX_VALUE;
 
-        /*
-        int llConstraints = lowerLevelProblem.getNumberOfConstraints();
-        int llUsers = lowerLevelProblem.getNumberOfUsers();
-        int llItems = lowerLevelProblem.getNumberOfItems();
-        double[] w = lowerLevelProblem.getWeightOfItems();
-         */
-
         for (int s=0; s<lowerLevelSolutions.size(); s++) {
             Solution lowerLevelSol = lowerLevelSolutions.get(s);
             Variable[] vars = lowerLevelSol.getDecisionVariables();
             Binary bin = (Binary) vars[0];
 
-            /*
-            //Calculate total energy based on solution picked
-            //only take weight in account, not cost. where 1, add the weight to the total for that bucket
-            double[] spentEnergy = new double[llConstraints];
-            for (int u = 0; u < llUsers; u++) { // for each user
-                int userIndex = u * llConstraints;
-                int l = 0;
-                for (int i = userIndex; i < userIndex + llConstraints; i++) { // for each objective
-                    int itemIndex = i * llItems;
-                    int k = 0;
-                    for (int j = itemIndex; j < itemIndex + llItems; j++) { // for each bit
-                        if (bin.getIth(j)) {
-                            spentEnergy[l] += w[k];
-                        }
-                        k++;
-                    } // for j
-                    l++;
-                } // for i
-            } //for u
-
-            lowerLevelSol.setSpentEnergy(spentEnergy);
-
-             */
-
-            //do upper-level evaluation = finding deviation from available RE
-            double[] energySpent = lowerLevelSol.getSpentEnergy();
+            // do upper-level evaluation = finding deviation from available RE
             //double result = upperLevel_evaluate_distance_from_produced(spentEnergy);
+            double[] energySpent = lowerLevelSol.getSpentEnergy();
             double result = upperLevel_evaluate_XOR_distance_plus_weight(energySpent, costs);
             if (result < best_result){
                 best_result = result;
+
+                // fill up extra data for analysis
                 solution.setSpentEnergy(energySpent);
                 solution.setLowerLevelVars(bin);
                 solution.setLowerLevelObj(new double[] {lowerLevelSol.getObjective(0), lowerLevelSol.getObjective(1)});
+                solution.setDissatisfactionPerUser(lowerLevelSol.getDissatisfactionPerUser());
+                solution.setEnergyAllocatedPerUser(lowerLevelSol.getEnergyAllocatedPerUser());
+                double deviation = calculateEnergyDeviationFromProduced(energySpent);
+                solution.setEnergyDeviationFromProduced(deviation);
+
             }
 
         }
@@ -173,13 +149,16 @@ public class CostDistr extends Problem {
     public double upperLevel_evaluate_XOR_distance_plus_weight(double[] spentEnergy, XReal costs) throws JMException {
 
         double sum = 0;
+
         for (int i=0; i<producedRE.length; i++) {
             double difference = spentEnergy[i] - producedRE[i];
+            double abs_difference = Math.abs(difference);
             double cost = costs.getValue(i);
             if (difference < 0)
-                sum += Math.abs(difference) * (1.0 + cost);
-            else sum += Math.abs(difference) * (2.0 - cost);
+                sum += abs_difference * (1.0 + cost);
+            else sum += abs_difference * (2.0 - cost);
         }
+
         return sum;
     }
 
@@ -208,6 +187,17 @@ public class CostDistr extends Problem {
         }
 
         return 0.5 * sum_extra + 0.5 * sum_less;
+    }
+
+    ////////////////////////////////    HELPER FUNCTIONS       ////////////////////////////////////////
+
+    public double calculateEnergyDeviationFromProduced(double[] spentEnergy) {
+        double energyDeviationFromProduced = 0;
+        for (int i=0; i<producedRE.length; i++) {
+            double difference = Math.abs(spentEnergy[i] - producedRE[i]);
+            energyDeviationFromProduced += difference;
+        }
+        return energyDeviationFromProduced;
     }
 
 }
