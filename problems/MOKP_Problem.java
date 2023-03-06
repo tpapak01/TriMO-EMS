@@ -282,7 +282,6 @@ public class MOKP_Problem extends Problem {
 
         for (int u = 0; u < numberOfUsers; u++) { // for each user
             double sum = 0;
-            double user_energy = 0;
 
             int userIndex = u * this.numberOfConstraints_;
 
@@ -295,7 +294,6 @@ public class MOKP_Problem extends Problem {
                 for (int j = startingIndex; j < startingIndex + numberOfItems; j++) { // for each bit
                     if (bin.getIth(j)) {
                         sum = sum + w[k] * costOfUsage.getValue(l);
-                        user_energy = user_energy + w[k];
                     }
                     k++;
                 } // for j
@@ -306,7 +304,7 @@ public class MOKP_Problem extends Problem {
                 highest_cost = sum;
             }
 
-            energyAllocatedPerUser[u] = user_energy;
+            energyAllocatedPerUser[u] = sum;
 
         } // for u
 
