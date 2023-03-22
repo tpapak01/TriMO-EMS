@@ -32,8 +32,7 @@ public class MOKP_Problem extends Problem {
     private double[] w; // weight of items
     private boolean [][][] pref; // preferences of users: user x time x device
     private XReal costOfUsage ; // capacity of each  knapsack .
-    private int[] requestedPerUser;
-	
+    private int[] requestedDevicesPerUser;
 
   public MOKP_Problem(String problemName,String userPreferenceName) {
 	  this.setMaxmized_(false); // this problem is not to be maximized
@@ -79,7 +78,6 @@ public class MOKP_Problem extends Problem {
           System.out.println("Error reading MOKP problemFile: " + e.getMessage());
       }
 
-
       try {
           BufferedReader in = new BufferedReader(new FileReader(userPreferencefileName));
 
@@ -88,7 +86,11 @@ public class MOKP_Problem extends Problem {
           in.readLine();
 
           pref = new boolean[numberOfUsers][this.numberOfConstraints_][numberOfItems];
-          requestedPerUser = new int[numberOfUsers];
+          //--------
+          double[] requestedEnergy = new double[this.numberOfConstraints_];
+          requestedDevicesPerUser = new int[numberOfUsers];
+          double[] requestedEnergyPerUser = new double[numberOfUsers];
+          double[][] requestedEnergyPerUserPerTime = new double[numberOfUsers][this.numberOfConstraints_];
 
           for (int u = 0; u < numberOfUsers; u++) {
               for (int i = 0; i < this.numberOfConstraints_; i++) {
@@ -98,7 +100,10 @@ public class MOKP_Problem extends Problem {
                       int num = Integer.parseInt(r.toString());
                       if (num == 1) {
                           pref[u][i][j] = true;
-                          requestedPerUser[u]++;
+                          requestedEnergy[i] += w[j];
+                          requestedDevicesPerUser[u]++;
+                          requestedEnergyPerUser[u] += w[j];
+                          requestedEnergyPerUserPerTime[u][i] += w[j];
                       }
                   }
                   in.read();
@@ -111,13 +116,18 @@ public class MOKP_Problem extends Problem {
           }
 
           in.close();
+
+          System.out.println("Requested Energy Per Time ");
+          System.out.println(Arrays.toString(requestedEnergy));
+          System.out.println("Requested Energy Per User ");
+          System.out.println(Arrays.toString(requestedEnergyPerUser));
+          System.out.println("Requested Energy Per User Per Time ");
+          for (int i=0; i<numberOfUsers; i++)
+            System.out.println(Arrays.toString(requestedEnergyPerUserPerTime[i]));
+
       } catch (IOException e){
           System.out.println("Error reading MOKP problemFile: " + e.getMessage());
       }
-
-      double[] requestedEnergy = calculateRequestedEnergy();
-      System.out.println("Requested Energy");
-      System.out.println(Arrays.toString(requestedEnergy));
 
   }
 
@@ -406,7 +416,7 @@ public class MOKP_Problem extends Problem {
                 l++;
             } // for i
 
-            int dissatisfaction_denominator = requestedPerUser[u];
+            int dissatisfaction_denominator = requestedDevicesPerUser[u];
             double user_dissatisfaction = dissatisfaction_nominator / (double) dissatisfaction_denominator;
             total_dissatisfaction += user_dissatisfaction;
 
@@ -444,30 +454,6 @@ public class MOKP_Problem extends Problem {
 
         solution.setSpentEnergy(spentEnergy);
     }
-
-    public double[] calculateRequestedEnergy() {
-
-        double[] requestedEnergy = new double[this.numberOfConstraints_];
-        for (int u = 0; u < numberOfUsers; u++) { // for each user
-            int userIndex = u * this.numberOfConstraints_;
-            int l = 0;
-            for (int i = userIndex; i < userIndex + this.numberOfConstraints_; i++) { // for each objective
-                int itemIndex = i * numberOfItems;
-                int k = 0;
-                for (int j = itemIndex; j < itemIndex + numberOfItems; j++) { // for each bit
-                    if (pref[u][l][k]) {
-                        requestedEnergy[l] += w[k];
-                    }
-                    k++;
-                } // for j
-                l++;
-            } // for i
-        } //for u
-
-        return requestedEnergy;
-    }
-
-
 
 }
 
