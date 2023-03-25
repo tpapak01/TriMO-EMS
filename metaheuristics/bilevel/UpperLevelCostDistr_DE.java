@@ -62,7 +62,7 @@ public class UpperLevelCostDistr_DE {
         algorithm = new DE_CostDistr(problem);
 
         /* Algorithm parameters*/
-        algorithm.setInputParameter("populationSize", 100); //must be even number
+        algorithm.setInputParameter("populationSize", 1000); //must be even number
         algorithm.setInputParameter("maxEvaluations", 1000);
 
 

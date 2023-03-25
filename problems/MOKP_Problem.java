@@ -315,6 +315,7 @@ public class MOKP_Problem extends Problem {
             }
 
             energyAllocatedPerUser[u] = sum;
+            energyAllocatedPerUser[u] = Math.round(energyAllocatedPerUser[u]*100.0) / 100.0;
 
         } // for u
 
@@ -421,6 +422,7 @@ public class MOKP_Problem extends Problem {
             total_dissatisfaction += user_dissatisfaction;
 
             dissatisfactionPerUser[u] = user_dissatisfaction;
+            dissatisfactionPerUser[u] = Math.round(dissatisfactionPerUser[u]*100.0) / 100.0;
 
         } //for u
 
@@ -448,6 +450,7 @@ public class MOKP_Problem extends Problem {
                     }
                     k++;
                 } // for j
+                spentEnergy[l] = Math.round(spentEnergy[l]*100.0) / 100.0;
                 l++;
             } // for i
         } //for u
