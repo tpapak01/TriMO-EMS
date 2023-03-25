@@ -253,6 +253,97 @@ public class SolutionSet implements Serializable {
   }
 } // printObjectivesToFile
 
+  /**
+   * Writes the decision encodings.variable values of the <code>Solution</code>
+   * solutions objects into the set in a file.
+   * @param path The output file name
+   */
+  public void printVariablesToFile(String path){
+    try {
+      FileOutputStream fos   = new FileOutputStream(path)     ;
+      OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
+      BufferedWriter bw      = new BufferedWriter(osw)        ;
+
+      if (size()>0) {
+        int numberOfVariables = solutionsList_.get(0).getDecisionVariables().length ;
+        for (Solution aSolutionsList_ : solutionsList_) {
+          for (int j = 0; j < numberOfVariables; j++)
+            bw.write(aSolutionsList_.getDecisionVariables()[j].toString() + " ");
+          bw.newLine();
+        }
+      }
+      bw.close();
+    }catch (IOException e) {
+      Configuration.logger_.severe("Error acceding to the file");
+      e.printStackTrace();
+    }
+  } // printVariablesToFile
+
+  public void printSelfConsumptionToFile(String path){
+    try {
+      /* Open the file */
+      FileOutputStream fos   = new FileOutputStream(path)     ;
+      OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
+      BufferedWriter bw      = new BufferedWriter(osw)        ;
+
+      for (Solution aSolutionsList_ : solutionsList_) {
+        //if (this.vector[i].getFitness()<1.0) {
+        bw.write(String.valueOf(aSolutionsList_.getEnergyDeviationFromProduced()));
+        bw.newLine();
+        //}
+      }
+
+      /* Close the file */
+      bw.close();
+    }catch (IOException e) {
+      Configuration.logger_.severe("Error acceding to the file");
+      e.printStackTrace();
+    }
+  }
+
+  public void printUserDissatisfactionToFile(String path){
+    try {
+      /* Open the file */
+      FileOutputStream fos   = new FileOutputStream(path)     ;
+      OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
+      BufferedWriter bw      = new BufferedWriter(osw)        ;
+
+      for (Solution aSolutionsList_ : solutionsList_) {
+        //if (this.vector[i].getFitness()<1.0) {
+        bw.write(Arrays.toString(aSolutionsList_.getDissatisfactionPerUser()));
+        bw.newLine();
+        //}
+      }
+
+      /* Close the file */
+      bw.close();
+    }catch (IOException e) {
+      Configuration.logger_.severe("Error acceding to the file");
+      e.printStackTrace();
+    }
+  }
+
+  public void printUserEnergyToFile(String path){
+    try {
+      /* Open the file */
+      FileOutputStream fos   = new FileOutputStream(path)     ;
+      OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
+      BufferedWriter bw      = new BufferedWriter(osw)        ;
+
+      for (Solution aSolutionsList_ : solutionsList_) {
+        //if (this.vector[i].getFitness()<1.0) {
+        bw.write(Arrays.toString(aSolutionsList_.getEnergyAllocatedPerUser()));
+        bw.newLine();
+        //}
+      }
+
+      /* Close the file */
+      bw.close();
+    }catch (IOException e) {
+      Configuration.logger_.severe("Error acceding to the file");
+      e.printStackTrace();
+    }
+  }
 
   public void printSpentEnergyToFile(String path){
     try {
@@ -319,33 +410,6 @@ public class SolutionSet implements Serializable {
       e.printStackTrace();
     }
   } // printObjectivesToFile
-
-
-  /**
-   * Writes the decision encodings.variable values of the <code>Solution</code>
-   * solutions objects into the set in a file.
-   * @param path The output file name
-   */
-  public void printVariablesToFile(String path){
-    try {
-      FileOutputStream fos   = new FileOutputStream(path)     ;
-      OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
-      BufferedWriter bw      = new BufferedWriter(osw)        ;            
-
-      if (size()>0) {
-        int numberOfVariables = solutionsList_.get(0).getDecisionVariables().length ;
-        for (Solution aSolutionsList_ : solutionsList_) {
-          for (int j = 0; j < numberOfVariables; j++)
-            bw.write(aSolutionsList_.getDecisionVariables()[j].toString() + " ");
-          bw.newLine();
-        }
-      }
-      bw.close();
-    }catch (IOException e) {
-      Configuration.logger_.severe("Error acceding to the file");
-      e.printStackTrace();
-    }       
-  } // printVariablesToFile
 
 
   /**

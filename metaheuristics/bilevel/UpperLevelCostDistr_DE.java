@@ -105,9 +105,13 @@ public class UpperLevelCostDistr_DE {
         System.out.println("Variables values have been writen to file VAR");
         population.printVariablesToFile("VAR");
 
-        population.printSpentEnergyToFile("SPENT");
+        population.printSelfConsumptionToFile("SELF_CONSU");
         population.printLowerLevelVarsToFile("LL_VAR");
         population.printLowerLevelObjToFile("LL_FUN");
+
+        population.printSpentEnergyToFile("SPENT");
+        population.printUserDissatisfactionToFile("USER_DISSAT");
+        population.printUserEnergyToFile("USER_ENERGY");
 
 
     } //main
