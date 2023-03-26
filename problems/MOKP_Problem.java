@@ -39,7 +39,7 @@ public class MOKP_Problem extends Problem {
 	  this.problemName_ = problemName;
       this.numberOfVariables_ = 1;
 
-      fileName = problemPath + problemName + ".txt";
+      fileName = problemPath + this.problemName_ + ".txt";
       userPreferencefileName = userPreferencePath + userPreferenceName + ".txt";
       System.out.println(fileName);
 

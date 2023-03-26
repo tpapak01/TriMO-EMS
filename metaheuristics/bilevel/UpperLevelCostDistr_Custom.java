@@ -51,15 +51,16 @@ public class UpperLevelCostDistr_Custom {
 
         String problemName = args[0];
         String problemUserPreferences = args[1];
+        String lowerLevelAlgorithmName = args[2];
         //initialize Lower Level algorithm
         MOKP_Problem lowerLevelProblem;
-        if (args[2].equals("MOEAD"))
+        if (lowerLevelAlgorithmName.equals("MOEAD"))
             lowerLevelProblem = (MOKP_Problem) LowerLevelMOKP_MOEAD.initializeAlgorithm(problemName, problemUserPreferences);
         else
             lowerLevelProblem = (MOKP_Problem) LowerLevelMOKP_NSGAII.initializeAlgorithm(problemName, problemUserPreferences);
 
         //thalis
-        problem = new CostDistr(problemName, lowerLevelProblem);
+        problem = new CostDistr(problemName, lowerLevelProblem, lowerLevelAlgorithmName);
 
         algorithm = new Custom_CostDistr(problem); // Generational GA
 

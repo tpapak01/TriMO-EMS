@@ -29,13 +29,15 @@ public class CostDistr extends Problem {
     private String fileName;
 
     private MOKP_Problem lowerLevelProblem;
+    private String lowerLevelAlgorithmName;
     private int[] producedRE;
     private int totalProducedRE;
 
 
-  public CostDistr(String problemName, MOKP_Problem lowerLevelProblem) {
+  public CostDistr(String problemName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName) {
 	  this.setMaxmized_(false); // this problem is not to be maximized
 	  this.problemName_ = problemName;
+	  this.lowerLevelAlgorithmName = lowerLevelAlgorithmName;
       this.numberOfVariables_ = lowerLevelProblem.getNumberOfConstraints();
       this.numberOfObjectives_ = 1;
       this.lowerLimit_ = new double[numberOfVariables_];
@@ -45,7 +47,7 @@ public class CostDistr extends Problem {
       producedRE = new int[numberOfVariables_];
       this.lowerLevelProblem = lowerLevelProblem;
 
-      fileName = problemPath + problemName + ".txt";
+      fileName = problemPath + this.problemName_ + ".txt";
       System.out.println(fileName);
 
       //fills up numberOfItems, p, w, sackCapacity
@@ -95,8 +97,9 @@ public class CostDistr extends Problem {
         SolutionSet lowerLevelSolutions = null;
         XReal costs = new XReal(solution);
         try {
-            lowerLevelSolutions = LowerLevelMOKP_MOEAD.evaluate(costs);
-            //lowerLevelSolutions = LowerLevelMOKP_NSGAII.evaluate(new XReal(solution));
+            if (this.lowerLevelAlgorithmName.equals("MOEAD"))
+                lowerLevelSolutions = LowerLevelMOKP_MOEAD.evaluate(costs);
+            else lowerLevelSolutions = LowerLevelMOKP_NSGAII.evaluate(new XReal(solution));
         } catch (Exception e){
             System.out.println("Exception at LowerLevelMOKP.evaluate: " + e.getMessage());
         }
