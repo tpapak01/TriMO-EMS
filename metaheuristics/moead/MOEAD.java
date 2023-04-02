@@ -33,6 +33,7 @@ import jmetal.util.Ranking;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.util.Comparator;
 import java.util.StringTokenizer;
@@ -240,8 +241,8 @@ public class MOEAD extends Algorithm {
               if (converged == false) break;
           }
         }
-        if (converged == false && execution < 10)
-          paretoFront.printObjectivesToFile("LowerLevelParetoVisual/" + execution + "_FUN_" + iteration++);
+        //if (converged == false && execution < 10)
+        //  paretoFront.printObjectivesToFile("LowerLevelParetoVisual/" + execution + "_FUN_" + iteration++);
 
         previousPareto = paretoFront;
       }
@@ -331,6 +332,17 @@ public class MOEAD extends Algorithm {
       finalSet.add(population.get(i));
 
     } // for
+
+
+    //print final Pareto Front to file
+    Ranking finalRanking = new Ranking(finalSet);
+    SolutionSet finalParetoFront = finalRanking.getSubfront(0);
+    finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/" + (execution) + "_FUN");
+    try {
+      FileWriter myWriter = new FileWriter("LowerLevelParetoVisual/evals.txt", true );
+      myWriter.write(evaluations_ + "\n");
+      myWriter.close();
+    } catch(Exception e){}
 
     return finalSet;
   }

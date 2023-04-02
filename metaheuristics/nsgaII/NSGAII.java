@@ -30,6 +30,7 @@ import jmetal.util.JMException;
 import jmetal.util.Ranking;
 import jmetal.util.comparators.CrowdingComparator;
 
+import java.io.FileWriter;
 import java.util.Comparator;
 
 /** 
@@ -204,8 +205,8 @@ public class NSGAII extends Algorithm {
         double diff = hypervolume - previousHypervolume;
         if (diff > 0 && diff < 0.0000001)
           converged = true;
-        else if (execution < 10)
-          paretoFront.printObjectivesToFile("LowerLevelParetoVisualNSGAII/" + execution + "_FUN_" + iteration++);
+        //else if (execution < 10)
+        //  paretoFront.printObjectivesToFile("LowerLevelParetoVisualNSGAII/" + execution + "_FUN_" + iteration++);
 
         previousHypervolume = hypervolume;
       }
@@ -253,6 +254,17 @@ public class NSGAII extends Algorithm {
       finalSet.add(population.get(i));
 
     } // for
+
+    //print final Pareto Front to file
+    Ranking finalRanking = new Ranking(finalSet);
+    SolutionSet finalParetoFront = finalRanking.getSubfront(0);
+    finalParetoFront.printObjectivesToFile("LowerLevelParetoVisualNSGAII/" + (execution) + "_FUN");
+    try {
+      FileWriter myWriter = new FileWriter("LowerLevelParetoVisualNSGAII/evals.txt", true );
+      myWriter.write(evaluations_ + "\n");
+      myWriter.close();
+    } catch(Exception e){}
+
 
     return finalSet;
   } // execute

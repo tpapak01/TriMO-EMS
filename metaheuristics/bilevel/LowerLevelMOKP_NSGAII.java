@@ -16,6 +16,7 @@ import jmetal.util.JMException;
 import jmetal.util.comparators.ObjectiveComparator;
 import jmetal.util.wrapper.XReal;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -102,7 +103,15 @@ public class LowerLevelMOKP_NSGAII {
         ((MOKP_Problem) problem).setCostOfUsage(y);
 
         // Execute the Algorithm
+        long initTime = System.currentTimeMillis();
         SolutionSet population = algorithm.execute();
+        long estimatedTime = System.currentTimeMillis() - initTime;
+        try {
+            FileWriter myWriter = new FileWriter("LowerLevelParetoVisualNSGAII/time.txt", true );
+            myWriter.write(estimatedTime + "\n");
+            myWriter.close();
+        } catch(Exception e){}
+
 
         return population;
     }
