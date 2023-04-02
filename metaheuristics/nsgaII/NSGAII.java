@@ -27,8 +27,10 @@ import jmetal.problems.MOKP_Problem;
 import jmetal.qualityIndicator.QualityIndicator;
 import jmetal.util.Distance;
 import jmetal.util.JMException;
+import jmetal.util.PseudoRandom;
 import jmetal.util.Ranking;
 import jmetal.util.comparators.CrowdingComparator;
+import jmetal.util.comparators.DominanceComparator;
 
 import java.io.FileWriter;
 import java.util.Comparator;
@@ -50,6 +52,9 @@ public class NSGAII extends Algorithm {
    */
 
   private int evaluations_;
+
+  //thalis
+  private static final Comparator dominance_ = new DominanceComparator();
 
   /**
    * Constructor
@@ -122,7 +127,11 @@ public class NSGAII extends Algorithm {
       // Create the offSpring solutionSet      
       offspringPopulation = new SolutionSet(populationSize);
       Solution[] parents = new Solution[2];
-      for (int i = 0; i < (populationSize / 2); i++) {
+      boolean doubleOffspring = false;
+      int iterations = populationSize;
+      if (doubleOffspring)
+        iterations = populationSize / 2;
+      for (int i = 0; i < iterations; i++) {
         if (evaluations_ < maxEvaluations) {
           //obtain parents
           parents[0] = (Solution) selectionOperator.execute(population);
@@ -134,9 +143,34 @@ public class NSGAII extends Algorithm {
           //problem_.evaluateConstraints(offSpring[0]);
           problem_.evaluate(offSpring[1]);
           //problem_.evaluateConstraints(offSpring[1]);
-          offspringPopulation.add(offSpring[0]);
-          offspringPopulation.add(offSpring[1]);
           evaluations_ += 2;
+
+          if (doubleOffspring) {
+
+            offspringPopulation.add(offSpring[0]);
+            offspringPopulation.add(offSpring[1]);
+
+          } else { // Best offspring
+
+            int flagDominate;
+            if (problem_.isMaxmized() == false)
+              flagDominate = dominance_.compare(offSpring[0], offSpring[1]);
+            else flagDominate = dominance_.compare(offSpring[1], offSpring[0]);
+
+            if (flagDominate == -1)
+              offspringPopulation.add(offSpring[0]);
+            else if (flagDominate == 1)
+              offspringPopulation.add(offSpring[1]);
+            else {
+              double rndSel = PseudoRandom.randDouble();
+              if (rndSel < 0.5)
+                offspringPopulation.add(offSpring[0]);
+              else
+                offspringPopulation.add(offSpring[1]);
+            }
+
+          } // end of dilemma
+
         } // if                            
       } // for
 

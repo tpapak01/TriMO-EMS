@@ -192,23 +192,55 @@ public class MOEAD extends Algorithm {
         //thalis
         // produce 2 offspring by performing crossover on the 2 parents
         Solution[] children = (Solution[]) crossover.execute(parents);
-        // randomly select 1 of the 2 produced offspring
-        double rndSel =  PseudoRandom.randDouble();
-        if (rndSel < 0.5) {
-          child = children[0];
-        } else
-          child = children[1];
-        //thalis comment
-        // Apply crossover, DE by default
-        //child = (Solution) crossover_.execute(new Object[]{population_.get(n), parents});
 
-        // Apply mutation, we keep the original bit flipping for now, not the "updateProduct"
-        mutation.execute(child);
+        boolean randomOffspring = false;
+        if (randomOffspring) {
 
-        // Evaluation
-        problem_.evaluate(child);
+          // randomly select 1 of the 2 produced offspring
+          double rndSel = PseudoRandom.randDouble();
+          if (rndSel < 0.5)
+            child = children[0];
+          else
+            child = children[1];
 
-        evaluations_++;
+          //thalis comment
+          // Apply crossover, DE by default
+          //child = (Solution) crossover_.execute(new Object[]{population_.get(n), parents});
+
+          // Apply mutation, we keep the original bit flipping for now, not the "updateProduct"
+          mutation.execute(child);
+
+          // Evaluation
+          problem_.evaluate(child);
+          evaluations_++;
+
+        } else { // Best offspring
+          mutation.execute(children[0]);
+          mutation.execute(children[1]);
+
+          problem_.evaluate(children[0]);
+          evaluations_++;
+          problem_.evaluate(children[1]);
+          evaluations_++;
+
+          int flagDominate;
+          if (problem_.isMaxmized() == false)
+            flagDominate = dominance_.compare(children[0], children[1]);
+          else flagDominate = dominance_.compare(children[1], children[0]);
+
+          if (flagDominate == -1)
+            child = children[0];
+          else if (flagDominate == 1)
+            child = children[1];
+          else {
+            double rndSel = PseudoRandom.randDouble();
+            if (rndSel < 0.5)
+              child = children[0];
+            else
+              child = children[1];
+          }
+
+        } // end of dilemma
 
         // STEP 2.3. Repair. Not necessary, no constraints
 
