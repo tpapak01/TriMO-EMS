@@ -70,7 +70,6 @@ public class MOEAD extends Algorithm {
    * nr: maximal number of solutions replaced by each child solution
    */
   int nr_;
-  Solution[] indArray_;
   String functionType_;
   int evaluations_;
 
@@ -109,7 +108,6 @@ public class MOEAD extends Algorithm {
     //System.out.println("POPSIZE: "+ populationSize_) ;
 
     population = new SolutionSet(populationSize);
-    indArray_ = new Solution[problem_.getNumberOfObjectives()];
 
     T_ = ((Integer) this.getInputParameter("T")).intValue();
     nr_ = ((Integer) this.getInputParameter("nr")).intValue();
@@ -530,9 +528,6 @@ public class MOEAD extends Algorithm {
         }
       }
 
-      indArray_[i] = new Solution(problem_);
-      problem_.evaluate(indArray_[i]);
-      evaluations_++;
     }
 
     for (int i = 0; i < populationSize; i++) {
@@ -587,24 +582,20 @@ public class MOEAD extends Algorithm {
         if (problem_.isMaxmized() == false) {
           if (individual.getNormalizedObjective(n) < z_[n]) {
             z_[n] = individual.getNormalizedObjective(n);
-            indArray_[n] = individual;
           }
         } else {
           if (individual.getNormalizedObjective(n) > z_[n]) {
             z_[n] = individual.getNormalizedObjective(n);
-            indArray_[n] = individual;
           }
         }
       } else {
         if (problem_.isMaxmized() == false) {
           if (individual.getObjective(n) < z_[n]) {
             z_[n] = individual.getObjective(n);
-            indArray_[n] = individual;
           }
         } else {
           if (individual.getObjective(n) > z_[n]) {
             z_[n] = individual.getObjective(n);
-            indArray_[n] = individual;
           }
         }
       }
