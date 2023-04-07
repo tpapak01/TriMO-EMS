@@ -79,8 +79,7 @@ public class DE_CostDistr extends Algorithm {
      crossoverOperator = operators_.get("crossover") ;
      
      //Initialize the variables
-     population  = new SolutionSet(populationSize);        
-     evaluations = 0;                
+     population  = new SolutionSet(populationSize);
 
      /*
      // Create the initial solutionSet
@@ -99,7 +98,13 @@ public class DE_CostDistr extends Algorithm {
    
      // Generations ...
      population.sort(comparator) ;
-     while (evaluations < maxEvaluations) {
+
+     //Convergence
+     int generations_left_for_convergence = 10;
+     int converged = generations_left_for_convergence;
+     double best_solution = population.get(0).getObjective(0);
+
+     while (evaluations < maxEvaluations && converged != 0) {
        
        // Create the offSpring solutionSet      
        offspringPopulation  = new SolutionSet(populationSize);        
@@ -139,6 +144,15 @@ public class DE_CostDistr extends Algorithm {
 
        offspringPopulation.clear();
        population.sort(comparator) ;
+
+       //check for convergence
+       if (population.get(0).getObjective(0) >= best_solution){
+         converged--;
+       } else {
+         best_solution = population.get(0).getObjective(0);
+         converged = generations_left_for_convergence;
+       }
+
      } // while
      
      // Return a population with the best individual
