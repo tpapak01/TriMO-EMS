@@ -290,6 +290,7 @@ public class NSGAII extends Algorithm {
     } // for
 
     //print final Pareto Front to file
+    /*
     Ranking finalRanking = new Ranking(finalSet);
     SolutionSet finalParetoFront = finalRanking.getSubfront(0);
     finalParetoFront.printObjectivesToFile("LowerLevelParetoVisualNSGAII/" + (execution) + "_FUN");
@@ -298,6 +299,8 @@ public class NSGAII extends Algorithm {
       myWriter.write(evaluations_ + "\n");
       myWriter.close();
     } catch(Exception e){}
+
+     */
 
 
     return finalSet;

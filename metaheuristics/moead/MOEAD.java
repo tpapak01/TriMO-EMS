@@ -365,6 +365,7 @@ public class MOEAD extends Algorithm {
 
 
     //print final Pareto Front to file
+    /*
     Ranking finalRanking = new Ranking(finalSet);
     SolutionSet finalParetoFront = finalRanking.getSubfront(0);
     finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/" + (execution) + "_FUN");
@@ -373,6 +374,8 @@ public class MOEAD extends Algorithm {
       myWriter.write(evaluations_ + "\n");
       myWriter.close();
     } catch(Exception e){}
+
+     */
 
     return finalSet;
   }

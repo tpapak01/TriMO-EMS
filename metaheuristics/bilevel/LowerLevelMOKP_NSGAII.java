@@ -106,11 +106,14 @@ public class LowerLevelMOKP_NSGAII {
         long initTime = System.currentTimeMillis();
         SolutionSet population = algorithm.execute();
         long estimatedTime = System.currentTimeMillis() - initTime;
+        /*
         try {
             FileWriter myWriter = new FileWriter("LowerLevelParetoVisualNSGAII/time.txt", true );
             myWriter.write(estimatedTime + "\n");
             myWriter.close();
         } catch(Exception e){}
+
+         */
 
 
         return population;
