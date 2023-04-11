@@ -256,9 +256,7 @@ public class NSGAII extends Algorithm {
     // Return the first non-dominated front
     Ranking ranking = new Ranking(population);
     SolutionSet paretoFront = ranking.getSubfront(0);
-    paretoFront.printFeasibleFUN("FUN_NSGAII") ;
     population = paretoFront;
-
     population.sort(comparator) ;
 
     MOKP_Problem mokp_problem = (MOKP_Problem) problem_;
