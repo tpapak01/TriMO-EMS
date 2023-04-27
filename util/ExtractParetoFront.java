@@ -32,8 +32,8 @@ public class ExtractParetoFront {
 
 	String fileName_; 
 	int dimensions_;
-	List<Point> points_ = new LinkedList<Point>();
-	boolean minimization_problem = false;
+	List<Point> points_ = new LinkedList<Point>(); // the final non-dominated list to be filled
+	boolean minimization_problem = true;
 
 	private class Point {
 		double [] vector_; 
@@ -83,10 +83,11 @@ public class ExtractParetoFront {
 				StringTokenizer st = new StringTokenizer(line);
 				try {
 					Point auxPoint = new Point(dimensions_);
+					// fill up solution with dimensions
 					for (int i = 0; i < dimensions_; i++) {
 						auxPoint.vector_[i] = new Double(st.nextToken());
 					}
-
+					// decide whether solution is non-dominated == will be added
 					add(auxPoint);
 
 					line = br.readLine();
@@ -116,7 +117,7 @@ public class ExtractParetoFront {
 	public void add(Point point) {
 		Iterator<Point> iterator = points_.iterator();
 
-
+		// for all solutions already put in the list we are creating
 		while (iterator.hasNext()){
 			Point auxPoint = iterator.next();
 			int flag;
@@ -126,13 +127,16 @@ public class ExtractParetoFront {
 				flag = compareMax(point, auxPoint);
 			}
 
-			if (flag == -1) {  // A solution in the list is dominated by the new one
+			if (flag == -1) {  // A solution in the list we are creating
+				// is dominated by the new solution in question ==> remove that solution that was added before
 				iterator.remove();
 
 			} else if (flag == 1) { // The solution is dominated
 				return;
 			}        
 		} // while
+
+		//now that this solution has killed all solutions it dominates in the list, it can also go there
 		points_.add(point);
 
 	} // add                   
