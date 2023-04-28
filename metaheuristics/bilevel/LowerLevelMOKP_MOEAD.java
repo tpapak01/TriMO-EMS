@@ -56,6 +56,7 @@ public class LowerLevelMOKP_MOEAD {
         //problem = new DTLZ1("Real");
         //problem = new OKA2("Real") ;
 
+        indicators = new QualityIndicator(problem, "OPTIMAL_PARETO") ;
         
         algorithm = new MOEAD(problem);
         //algorithm = new MOEAD_DRA(problem);
@@ -144,6 +145,9 @@ public class LowerLevelMOKP_MOEAD {
             comparator = new ObjectiveComparator(0, true) ; // Single objective comparator
         else comparator = new ObjectiveComparator(0) ; // Single objective comparator
         algorithm.setInputParameter("comparator", comparator);
+
+        // Add the indicator object to the algorithm
+        algorithm.setInputParameter("indicators", indicators) ;
 
         return problem;
     }

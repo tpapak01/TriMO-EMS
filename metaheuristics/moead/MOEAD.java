@@ -26,6 +26,7 @@ import jmetal.encodings.variable.ArrayReal;
 import jmetal.encodings.variable.Binary;
 import jmetal.encodings.variable.MOKP_BinarySolution;
 import jmetal.problems.MOKP_Problem;
+import jmetal.qualityIndicator.QualityIndicator;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
 import jmetal.util.comparators.DominanceComparator;
@@ -96,9 +97,12 @@ public class MOEAD extends Algorithm {
     Operator crossover;
     Operator mutation;
 
+    QualityIndicator indicators; // QualityIndicator object
+
     evaluations_ = 0;
     maxEvaluations = ((Integer) this.getInputParameter("maxEvaluations")).intValue();
     populationSize = ((Integer) this.getInputParameter("populationSize")).intValue();
+    indicators = (QualityIndicator) getInputParameter("indicators");
 
     //thalis
     String rpType = this.getInputParameter("rpType").toString();
@@ -364,17 +368,29 @@ public class MOEAD extends Algorithm {
     } // for
 
 
-    //print final Pareto Front to file
+    //print final Pareto Front to file, and calculate/print hypervolume and spread (Delta)
     /*
     Ranking finalRanking = new Ranking(finalSet);
     SolutionSet finalParetoFront = finalRanking.getSubfront(0);
     finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/" + (execution) + "_FUN");
-    try {
-      FileWriter myWriter = new FileWriter("LowerLevelParetoVisual/evals.txt", true );
-      myWriter.write(evaluations_ + "\n");
-      myWriter.close();
-    } catch(Exception e){}
 
+    double spread = indicators.getSpread(finalParetoFront);
+    double hypervolume = indicators.getHypervolume(finalParetoFront);
+    try {
+      FileWriter evalsWriter = new FileWriter("LowerLevelParetoVisual/evals.txt", true );
+      evalsWriter.write(evaluations_ + "\n");
+      evalsWriter.close();
+
+      FileWriter spreadWriter = new FileWriter("LowerLevelParetoVisual/spread.txt", true );
+      spreadWriter.write(spread + "\n");
+      spreadWriter.close();
+
+      FileWriter hypervolumeWriter = new FileWriter("LowerLevelParetoVisual/hypervolume.txt", true );
+      hypervolumeWriter.write(hypervolume + "\n");
+      hypervolumeWriter.close();
+
+    } catch(Exception e){}
+    
      */
 
     return finalSet;
