@@ -287,17 +287,28 @@ public class NSGAII extends Algorithm {
 
     } // for
 
-    //print final Pareto Front to file
+    //print final Pareto Front to file, and calculate/print hypervolume and spread (Delta)
     /*
     Ranking finalRanking = new Ranking(finalSet);
     SolutionSet finalParetoFront = finalRanking.getSubfront(0);
     finalParetoFront.printObjectivesToFile("LowerLevelParetoVisualNSGAII/" + (execution) + "_FUN");
+    double spread = indicators.getSpread(finalParetoFront);
+    double hypervolume = indicators.getHypervolume(finalParetoFront);
     try {
-      FileWriter myWriter = new FileWriter("LowerLevelParetoVisualNSGAII/evals.txt", true );
-      myWriter.write(evaluations_ + "\n");
-      myWriter.close();
-    } catch(Exception e){}
+      FileWriter evalsWriter = new FileWriter("LowerLevelParetoVisualNSGAII/evals.txt", true );
+      evalsWriter.write(evaluations_ + "\n");
+      evalsWriter.close();
 
+      FileWriter spreadWriter = new FileWriter("LowerLevelParetoVisualNSGAII/spread.txt", true );
+      spreadWriter.write(spread + "\n");
+      spreadWriter.close();
+
+      FileWriter hypervolumeWriter = new FileWriter("LowerLevelParetoVisualNSGAII/hypervolume.txt", true );
+      hypervolumeWriter.write(hypervolume + "\n");
+      hypervolumeWriter.close();
+
+    } catch(Exception e){}
+    
      */
 
 
