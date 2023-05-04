@@ -96,7 +96,7 @@ public class gGA_CostDistr extends Algorithm {
      */
 
     initPopulation();
-    //int[] producedRE = ((CostDistr) problem_).getProducedRE();
+    //double[] producedRE = ((CostDistr) problem_).getProducedRE();
     //initPopulationCostDistr(producedRE);
      
     // Sort population
@@ -162,10 +162,10 @@ public class gGA_CostDistr extends Algorithm {
         population.remove(population.size()-1);
 
         double[] costsToSend = new double[problem_.getNumberOfVariables()];
-        //int[] producedRE = ((CostDistr) problem_).getProducedRE();
+        //double[] producedRE = ((CostDistr) problem_).getProducedRE();
         Solution newSolution = new Solution(problem_);
         //for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
-        //  costsToSend[j] = 1 - (((double) producedRE[j]) / (20));
+        //  costsToSend[j] = 1 - (producedRE[j] / 20);
         //}
         costsToSend = new double[]{1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1};
         newSolution.setDecisionVariables(updateSolution(costsToSend));
@@ -200,10 +200,10 @@ public class gGA_CostDistr extends Algorithm {
     } // for
   } // initPopulation
 
-  public void initPopulationCostDistr(int[] producedRE) throws JMException, ClassNotFoundException {
+  public void initPopulationCostDistr(double[] producedRE) throws JMException, ClassNotFoundException {
     double[] costsToSend = new double[problem_.getNumberOfVariables()];
-    int RE_min = Integer.MAX_VALUE;
-    int RE_max = Integer.MIN_VALUE;
+    double RE_min = Double.MAX_VALUE;
+    double RE_max = Double.MIN_VALUE;
     for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
       if (producedRE[j] < RE_min){
         RE_min = producedRE[j];
@@ -219,7 +219,7 @@ public class gGA_CostDistr extends Algorithm {
       //1) normalized costs to send - MIN MAX = LIMITS (so 0 and 1 exist)
       if (i == 0) {
         for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
-          costsToSend[j] = 1 - (((double) producedRE[j] - RE_min) / (RE_max - RE_min));
+          costsToSend[j] = 1 - ((producedRE[j] - RE_min) / (RE_max - RE_min));
         }
         newSolution.setDecisionVariables(updateSolution(costsToSend));
       }
@@ -259,7 +259,7 @@ public class gGA_CostDistr extends Algorithm {
       //6) normalized costs to send, but PERCENTAGE (MIN MAX = LIMITS (so 0 and 100 exist)
       if (i == 5) {
         for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
-          costsToSend[j] = (1 - (((double) producedRE[j] - RE_min) / (RE_max - RE_min))) * 100;
+          costsToSend[j] = (1 - ((producedRE[j] - RE_min) / (RE_max - RE_min))) * 100;
         }
         newSolution.setDecisionVariables(updateSolution(costsToSend));
       }

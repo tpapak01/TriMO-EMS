@@ -30,8 +30,8 @@ public class CostDistr extends Problem {
 
     private MOKP_Problem lowerLevelProblem;
     private String lowerLevelAlgorithmName;
-    private int[] producedRE;
-    private int totalProducedRE;
+    private double[] producedRE;
+    private double totalProducedRE;
 
 
   public CostDistr(String problemName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName) {
@@ -44,7 +44,7 @@ public class CostDistr extends Problem {
       this.upperLimit_ = new double[numberOfVariables_];
       for (int i=0; i<upperLimit_.length; i++)
           upperLimit_[i] = 1.0;
-      producedRE = new int[numberOfVariables_];
+      producedRE = new double[numberOfVariables_];
       this.lowerLevelProblem = lowerLevelProblem;
 
       fileName = problemPath + this.problemName_ + ".txt";
@@ -72,7 +72,7 @@ public class CostDistr extends Problem {
 
           for (int i = 0; i < lowerLevelProblem.getNumberOfConstraints(); i++) {
               line = in.readLine();
-              producedRE[i] = Integer.parseInt(line);
+              producedRE[i] = Double.parseDouble(line);
               totalProducedRE += producedRE[i];
           }
 
@@ -83,11 +83,11 @@ public class CostDistr extends Problem {
 
   }
 
-    public int[] getProducedRE(){
+    public double[] getProducedRE(){
         return producedRE;
     }
 
-    public int getTotalProducedRE(){
+    public double getTotalProducedRE(){
         return totalProducedRE;
     }
   

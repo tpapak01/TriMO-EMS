@@ -74,8 +74,8 @@ public class Custom_CostDistr extends Algorithm {
 
     //initPopulation();
     CostDistr prob = ((CostDistr) problem_);
-    int[] producedRE = Arrays.copyOf(prob.getProducedRE(),numOfVars);
-    int totalProducedRE = prob.getTotalProducedRE();
+    double[] producedRE = Arrays.copyOf(prob.getProducedRE(),numOfVars);
+    double totalProducedRE = prob.getTotalProducedRE();
     initPopulationCostDistr(producedRE, totalProducedRE);
 
     while (evaluations < maxEvaluations) {
@@ -116,7 +116,7 @@ public class Custom_CostDistr extends Algorithm {
           }
 
           if (spentEnergy[j] != producedRE[j]){
-            double proportion = spentEnergy[j] / (double) producedRE[j];
+            double proportion = spentEnergy[j] / producedRE[j];
             costsToSend[j] = currentValue * proportion;
           } else {
             costsToSend[j] =  currentValue;
@@ -157,7 +157,7 @@ public class Custom_CostDistr extends Algorithm {
   /**
    *
    */
-  public void initPopulation(int[] producedRE) throws JMException, ClassNotFoundException {
+  public void initPopulation(double[] producedRE) throws JMException, ClassNotFoundException {
     for (int i = 0; i < populationSize; i++) {
       Solution newSolution = new Solution(problem_);
 
@@ -167,10 +167,10 @@ public class Custom_CostDistr extends Algorithm {
     } // for
   } // initPopulation
 
-  public void initPopulationCostDistr(int[] producedRE, int totalProducedRE) throws JMException, ClassNotFoundException {
+  public void initPopulationCostDistr(double[] producedRE, double totalProducedRE) throws JMException, ClassNotFoundException {
     double[] costsToSend = new double[problem_.getNumberOfVariables()];
-    //int RE_min = Integer.MAX_VALUE;
-    //int RE_max = Integer.MIN_VALUE;
+    //double RE_min = Double.MAX_VALUE;
+    //double RE_max = Double.MIN_VALUE;
 
     for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
       /*
@@ -190,7 +190,7 @@ public class Custom_CostDistr extends Algorithm {
       //1) normalized costs to send - MIN MAX = LIMITS (so 0 and 1 exist)
       if (i == 0) {
         for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
-          costsToSend[j] = 1 - ((double)producedRE[j]/(double)totalProducedRE);
+          costsToSend[j] = 1 - (producedRE[j]/totalProducedRE);
           costsToSend[j] = Math.round(costsToSend[j]*100.0) / 100.0;
         }
         newSolution.setDecisionVariables(updateSolution(costsToSend));
