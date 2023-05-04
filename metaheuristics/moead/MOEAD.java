@@ -32,10 +32,7 @@ import jmetal.util.PseudoRandom;
 import jmetal.util.comparators.DominanceComparator;
 import jmetal.util.Ranking;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.Comparator;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -86,9 +83,26 @@ public class MOEAD extends Algorithm {
   public MOEAD(Problem problem) {
     super (problem) ;
     functionType_ = "TCHE1";
+    try {
+          evalsWriter = new FileWriter("LowerLevelParetoVisual/evals.txt");
+          spreadWriter = new FileWriter("LowerLevelParetoVisual/spread.txt");
+          hypervolumeWriter = new FileWriter("LowerLevelParetoVisual/hypervolume.txt");
+          ndsWriter = new FileWriter("LowerLevelParetoVisual/nds.txt");
+    } catch (IOException e) {
+          e.printStackTrace();
+    }
   }
 
-  public static int execution;
+    //statistical analysis
+    private static int execution = 0;
+    private static double evals_mean = 0;
+    private static double spread_mean = 0;
+    private static double hypervolume_mean = 0;
+    private static double nds_mean = 0;
+    private static FileWriter evalsWriter;
+    private static FileWriter spreadWriter;
+    private static FileWriter hypervolumeWriter;
+    private static FileWriter ndsWriter;
 
   public SolutionSet execute() throws JMException, ClassNotFoundException {
     int maxEvaluations;
@@ -372,25 +386,42 @@ public class MOEAD extends Algorithm {
     /*
     Ranking finalRanking = new Ranking(finalSet);
     SolutionSet finalParetoFront = finalRanking.getSubfront(0);
-    finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/" + (execution) + "_FUN");
 
+    finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/" + (execution) + "_FUN");
     double spread = indicators.getSpread(finalParetoFront);
     double hypervolume = indicators.getHypervolume(finalParetoFront);
+    double nds = finalParetoFront.size();
     try {
-      FileWriter evalsWriter = new FileWriter("LowerLevelParetoVisual/evals.txt", true );
-      evalsWriter.write(evaluations_ + "\n");
-      evalsWriter.close();
+        evals_mean += evaluations_;
+        evalsWriter.write(evaluations_ + "\n");
 
-      FileWriter spreadWriter = new FileWriter("LowerLevelParetoVisual/spread.txt", true );
-      spreadWriter.write(spread + "\n");
-      spreadWriter.close();
+        spread_mean += spread;
+        spreadWriter.write(spread + "\n");
 
-      FileWriter hypervolumeWriter = new FileWriter("LowerLevelParetoVisual/hypervolume.txt", true );
-      hypervolumeWriter.write(hypervolume + "\n");
-      hypervolumeWriter.close();
+        hypervolume_mean += hypervolume;
+        hypervolumeWriter.write(hypervolume + "\n");
+
+        nds_mean += nds;
+        ndsWriter.write(nds + "\n");
+
+        if (execution == 20) {
+            evals_mean = evals_mean / 20;
+            spread_mean = spread_mean / 20;
+            hypervolume_mean = hypervolume_mean / 20;
+            nds_mean = nds_mean / 20;
+            evalsWriter.write(evals_mean + "\n");
+            spreadWriter.write(spread_mean + "\n");
+            hypervolumeWriter.write(hypervolume_mean + "\n");
+            ndsWriter.write(nds_mean + "\n");
+            evalsWriter.close();
+            spreadWriter.close();
+            hypervolumeWriter.close();
+            ndsWriter.close();
+        }
 
     } catch(Exception e){}
-    
+
+
      */
 
     return finalSet;

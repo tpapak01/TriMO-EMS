@@ -28,6 +28,11 @@ public class LowerLevelMOKP_MOEAD {
     public static Problem problem   ;         // The problem to solve
     public static Algorithm algorithm ;         // The algorithm to use
 
+    // statistical analysis
+    private static int execution = 0;
+    private static double time_mean = 0;
+    private static FileWriter timeWriter;
+
     public static Problem initializeAlgorithm(String problemName, String problemUserPreferences) throws SecurityException, IOException {
 
 
@@ -149,6 +154,8 @@ public class LowerLevelMOKP_MOEAD {
         // Add the indicator object to the algorithm
         algorithm.setInputParameter("indicators", indicators) ;
 
+        timeWriter = new FileWriter("LowerLevelParetoVisual/time.txt");
+
         return problem;
     }
 
@@ -163,9 +170,14 @@ public class LowerLevelMOKP_MOEAD {
         long estimatedTime = System.currentTimeMillis() - initTime;
         /*
         try {
-            FileWriter myWriter = new FileWriter("LowerLevelParetoVisual/time.txt", true );
-            myWriter.write(estimatedTime + "\n");
-            myWriter.close();
+            execution++;
+            time_mean += estimatedTime;
+            timeWriter.write(estimatedTime + "\n");
+            if (execution == 20) {
+                time_mean = time_mean / 20;
+                timeWriter.write(time_mean + "\n");
+                timeWriter.close();
+            }
         } catch(Exception e){}
 
          */

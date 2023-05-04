@@ -33,6 +33,7 @@ import jmetal.util.comparators.CrowdingComparator;
 import jmetal.util.comparators.DominanceComparator;
 
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Comparator;
 
 /** 
@@ -62,9 +63,26 @@ public class NSGAII extends Algorithm {
    */
   public NSGAII(Problem problem) {
     super (problem) ;
+    try {
+      evalsWriter = new FileWriter("LowerLevelParetoVisualNSGAII/evals.txt");
+      spreadWriter = new FileWriter("LowerLevelParetoVisualNSGAII/spread.txt");
+      hypervolumeWriter = new FileWriter("LowerLevelParetoVisualNSGAII/hypervolume.txt");
+      ndsWriter = new FileWriter("LowerLevelParetoVisualNSGAII/nds.txt");
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   } // NSGAII
 
-  public static int execution;
+  //statistical analysis
+  private static int execution = 0;
+  private static double evals_mean = 0;
+  private static double spread_mean = 0;
+  private static double hypervolume_mean = 0;
+  private static double nds_mean = 0;
+  private static FileWriter evalsWriter;
+  private static FileWriter spreadWriter;
+  private static FileWriter hypervolumeWriter;
+  private static FileWriter ndsWriter;
 
   /**   
    * Runs the NSGA-II algorithm.
@@ -291,21 +309,38 @@ public class NSGAII extends Algorithm {
     /*
     Ranking finalRanking = new Ranking(finalSet);
     SolutionSet finalParetoFront = finalRanking.getSubfront(0);
+
     finalParetoFront.printObjectivesToFile("LowerLevelParetoVisualNSGAII/" + (execution) + "_FUN");
     double spread = indicators.getSpread(finalParetoFront);
     double hypervolume = indicators.getHypervolume(finalParetoFront);
+    double nds = finalParetoFront.size();
     try {
-      FileWriter evalsWriter = new FileWriter("LowerLevelParetoVisualNSGAII/evals.txt", true );
+      evals_mean += evaluations_;
       evalsWriter.write(evaluations_ + "\n");
-      evalsWriter.close();
 
-      FileWriter spreadWriter = new FileWriter("LowerLevelParetoVisualNSGAII/spread.txt", true );
+      spread_mean += spread;
       spreadWriter.write(spread + "\n");
-      spreadWriter.close();
 
-      FileWriter hypervolumeWriter = new FileWriter("LowerLevelParetoVisualNSGAII/hypervolume.txt", true );
+      hypervolume_mean += hypervolume;
       hypervolumeWriter.write(hypervolume + "\n");
-      hypervolumeWriter.close();
+
+      nds_mean += nds;
+      ndsWriter.write(nds + "\n");
+
+      if (execution == 20) {
+        evals_mean = evals_mean / 20;
+        spread_mean = spread_mean / 20;
+        hypervolume_mean = hypervolume_mean / 20;
+        nds_mean = nds_mean / 20;
+        evalsWriter.write(evals_mean + "\n");
+        spreadWriter.write(spread_mean + "\n");
+        hypervolumeWriter.write(hypervolume_mean + "\n");
+        ndsWriter.write(nds_mean + "\n");
+        evalsWriter.close();
+        spreadWriter.close();
+        hypervolumeWriter.close();
+        ndsWriter.close();
+      }
 
     } catch(Exception e){}
     
