@@ -185,7 +185,7 @@ public class C_Metric {
 			}        
 		} // while
 
-		System.out.println("Solution " + Arrays.toString(point.vector_) + " is undefeated by A!!");
+		//System.out.println("Solution " + Arrays.toString(point.vector_) + " is undefeated by A!!");
 
 	} // add                   
 
@@ -256,7 +256,7 @@ public class C_Metric {
 
 	 */
 
-	public static void main(String [] args) {
+	public static void main(String [] args) throws IOException {
 		if (args.length != 3) {
 			System.out.println("Wrong number of arguments: ");
 			System.out.println("Sintaxt: java C_Metric <fileA> <fileB> <dimensions>");
@@ -264,11 +264,56 @@ public class C_Metric {
 			System.out.println("\t<dimensions> represents the number of dimensions of the problem");
 			System.exit(-1) ;
 		}
+		int dimensions = new Integer(args[2]);
 
-		C_Metric epf = new C_Metric(args[0], args[1], new Integer(args[2]));
+		boolean mode_args = false;
+		if (mode_args) {
 
-		double cMetric = (float) epf.num_of_dominated_B / (float) epf.nds_B;
-		System.out.println(cMetric);
+			C_Metric epf = new C_Metric(args[0], args[1], dimensions);
+
+			double cMetric = (float) epf.num_of_dominated_B / (float) epf.nds_B;
+			System.out.println(cMetric);
+
+		} else {
+			FileWriter cMetricWriterNSGAII = new FileWriter("LowerLevelParetoVisualNSGAII/cmetric.txt");
+			FileWriter cMetricWriterMOEAD = new FileWriter("LowerLevelParetoVisual/cmetric.txt");
+
+			String prefix1 = "LowerLevelParetoVisual/";
+			String prefix2 = "LowerLevelParetoVisualNSGAII/";
+
+			// first calculate C metric of NSGAII (lower == better)
+			double cMetricMean = 0;
+			for (int i=1; i<21; i++){
+				String file1 = prefix1 + i + "_FUN";
+				String file2 = prefix2 + i + "_FUN";
+
+				C_Metric epf = new C_Metric(file1, file2, dimensions);
+				double cMetric = (float) epf.num_of_dominated_B / (float) epf.nds_B;
+				//System.out.println(cMetric);
+				cMetricMean += cMetric;
+				cMetricWriterNSGAII.write(cMetric + "\n");
+			}
+			cMetricMean = cMetricMean / 20;
+			cMetricWriterNSGAII.write(cMetricMean + "\n");
+			cMetricWriterNSGAII.close();
+
+			// now for MOEAD
+			cMetricMean = 0;
+			for (int i=1; i<21; i++){
+				String file1 = prefix1 + i + "_FUN";
+				String file2 = prefix2 + i + "_FUN";
+
+				C_Metric epf = new C_Metric(file2, file1, dimensions);
+				double cMetric = (float) epf.num_of_dominated_B / (float) epf.nds_B;
+				//System.out.println(cMetric);
+				cMetricMean += cMetric;
+				cMetricWriterMOEAD.write(cMetric + "\n");
+			}
+			cMetricMean = cMetricMean / 20;
+			cMetricWriterMOEAD.write(cMetricMean + "\n");
+			cMetricWriterMOEAD.close();
+
+		}
 
 
 	}
