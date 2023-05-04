@@ -83,6 +83,7 @@ public class MOEAD extends Algorithm {
   public MOEAD(Problem problem) {
     super (problem) ;
     functionType_ = "TCHE1";
+    /*
     try {
           evalsWriter = new FileWriter("LowerLevelParetoVisual/evals.txt");
           spreadWriter = new FileWriter("LowerLevelParetoVisual/spread.txt");
@@ -91,6 +92,7 @@ public class MOEAD extends Algorithm {
     } catch (IOException e) {
           e.printStackTrace();
     }
+     */
   }
 
     //statistical analysis

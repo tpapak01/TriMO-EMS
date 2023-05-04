@@ -63,6 +63,7 @@ public class NSGAII extends Algorithm {
    */
   public NSGAII(Problem problem) {
     super (problem) ;
+    /*
     try {
       evalsWriter = new FileWriter("LowerLevelParetoVisualNSGAII/evals.txt");
       spreadWriter = new FileWriter("LowerLevelParetoVisualNSGAII/spread.txt");
@@ -71,6 +72,7 @@ public class NSGAII extends Algorithm {
     } catch (IOException e) {
       e.printStackTrace();
     }
+     */
   } // NSGAII
 
   //statistical analysis

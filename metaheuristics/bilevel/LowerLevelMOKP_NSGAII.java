@@ -99,7 +99,7 @@ public class LowerLevelMOKP_NSGAII {
         // Add the indicator object to the algorithm
         algorithm.setInputParameter("indicators", indicators) ;
 
-        timeWriter = new FileWriter("LowerLevelParetoVisualNSGAII/time.txt");
+        //timeWriter = new FileWriter("LowerLevelParetoVisualNSGAII/time.txt");
 
         return problem;
     }

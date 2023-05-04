@@ -154,7 +154,7 @@ public class LowerLevelMOKP_MOEAD {
         // Add the indicator object to the algorithm
         algorithm.setInputParameter("indicators", indicators) ;
 
-        timeWriter = new FileWriter("LowerLevelParetoVisual/time.txt");
+        //timeWriter = new FileWriter("LowerLevelParetoVisual/time.txt");
 
         return problem;
     }
