@@ -362,7 +362,7 @@ public class SolutionSet implements Serializable {
       BufferedWriter bw      = new BufferedWriter(osw)        ;
 
       for (Solution aSolutionsList_ : solutionsList_) {
-        double std = calculateStandardDeviation(aSolutionsList_.getEnergyAllocatedPerUser());
+        double std = calculateStandardDeviation(aSolutionsList_.getDissatisfactionPerUser());
         bw.write(Double.toString(std));
         bw.newLine();
         //}
