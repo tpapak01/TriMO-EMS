@@ -107,12 +107,15 @@ public class UpperLevelCostDistr_DE {
         population.printVariablesToFile("VAR");
 
         population.printSelfConsumptionToFile("SELF_CONSU");
+        population.printNonREPaidToFile("NON_RE_PAID");
         population.printLowerLevelVarsToFile("LL_VAR");
         population.printLowerLevelObjToFile("LL_FUN");
 
         population.printSpentEnergyToFile("SPENT");
         population.printUserDissatisfactionToFile("USER_DISSAT");
+        population.printStdDevUserDissatisfactionToFile("STDDEV_USER_DISSAT");
         population.printUserEnergyToFile("USER_ENERGY");
+        population.printStdDevUserEnergyToFile("STDDEV_USER_ENERGY");
 
 
     } //main

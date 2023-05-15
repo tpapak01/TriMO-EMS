@@ -75,6 +75,14 @@ public class Solution implements Serializable {
     this.energyDeviationFromProduced = energyDeviationFromProduced;
   }
 
+  private double nonREpaid = -1;
+  public double getNonREpaid(){
+    return nonREpaid;
+  }
+  public void setNonREpaid(double nonREpaid){
+    this.nonREpaid = nonREpaid;
+  }
+
 	/**
 	 * Stores the problem 
 	 */
@@ -271,6 +279,9 @@ public class Solution implements Serializable {
     }
     if (solution.getEnergyDeviationFromProduced() != -1){
       setEnergyDeviationFromProduced(solution.getEnergyDeviationFromProduced());
+    }
+    if (solution.getNonREpaid() != -1){
+      setNonREpaid(solution.getNonREpaid());
     }
   } // Solution
 

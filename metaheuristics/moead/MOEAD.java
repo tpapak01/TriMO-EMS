@@ -354,7 +354,7 @@ public class MOEAD extends Algorithm {
        */
 
     //thalis
-    //register Spent Energy of top solutions
+    //register Spent Energy of top solutions, to be used when comparing equal solutions
     MOKP_Problem mokp_problem = (MOKP_Problem) problem_;
     for (int i = 0; i < population.size(); i++) {
       mokp_problem.calculateSpentEnergy(population.get(i));

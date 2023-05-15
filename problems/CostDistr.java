@@ -107,11 +107,10 @@ public class CostDistr extends Problem {
         int lsize = lowerLevelSolutions.size();
 
         double best_result = Double.MAX_VALUE;
+        int best_solution_index = -1;
 
         for (int s=0; s<lowerLevelSolutions.size(); s++) {
             Solution lowerLevelSol = lowerLevelSolutions.get(s);
-            Variable[] vars = lowerLevelSol.getDecisionVariables();
-            Binary bin = (Binary) vars[0];
 
             // do upper-level evaluation = finding deviation from available RE
             //double result = upperLevel_evaluate_distance_from_produced(spentEnergy);
@@ -119,21 +118,28 @@ public class CostDistr extends Problem {
             double result = upperLevel_evaluate_XOR_distance_plus_weight(energySpent, costs);
             if (result < best_result){
                 best_result = result;
-
-                // fill up extra data for analysis
-                solution.setSpentEnergy(energySpent);
-                solution.setLowerLevelVars(bin);
-                solution.setLowerLevelObj(new double[] {lowerLevelSol.getObjective(0), lowerLevelSol.getObjective(1)});
-                solution.setDissatisfactionPerUser(lowerLevelSol.getDissatisfactionPerUser());
-                solution.setEnergyAllocatedPerUser(lowerLevelSol.getEnergyAllocatedPerUser());
-                double deviation = calculateEnergyDeviationFromProduced(energySpent);
-                solution.setEnergyDeviationFromProduced(deviation);
-
+                best_solution_index = s;
             }
 
         }
 
         solution.setObjective(0, best_result);
+        // fill up extra data for analysis
+        Solution lowerLevelSol = lowerLevelSolutions.get(best_solution_index);
+        Variable[] vars = lowerLevelSol.getDecisionVariables();
+        Binary bin = (Binary) vars[0];
+        double[] energySpent = lowerLevelSol.getSpentEnergy();
+
+        solution.setSpentEnergy(energySpent);
+        solution.setLowerLevelVars(bin);
+        solution.setLowerLevelObj(new double[] {lowerLevelSol.getObjective(0), lowerLevelSol.getObjective(1)});
+        solution.setDissatisfactionPerUser(lowerLevelSol.getDissatisfactionPerUser());
+        solution.setEnergyAllocatedPerUser(lowerLevelSol.getEnergyAllocatedPerUser());
+        double deviation = calculateEnergyDeviationFromProduced(energySpent);
+        solution.setEnergyDeviationFromProduced(deviation);
+        double nonREpaid = calculateNonREPaid(energySpent, costs);
+        solution.setNonREpaid(nonREpaid);
+
         System.out.println(best_result);
         System.out.println(solution.getDecisionVariables()[0]);
 
@@ -201,6 +207,21 @@ public class CostDistr extends Problem {
             energyDeviationFromProduced += difference;
         }
         return energyDeviationFromProduced;
+    }
+
+    public double calculateNonREPaid(double[] spentEnergy, XReal costs) throws JMException {
+
+        double sum = 0;
+
+        for (int i=0; i<producedRE.length; i++) {
+            double difference = spentEnergy[i] - producedRE[i];
+            double abs_difference = Math.abs(difference);
+            double cost = costs.getValue(i);
+            if (difference > 0)
+                sum += abs_difference * cost;
+        }
+
+        return sum;
     }
 
 }

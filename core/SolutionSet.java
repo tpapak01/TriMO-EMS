@@ -231,10 +231,12 @@ public class SolutionSet implements Serializable {
    * objects into the set in a file.
    * @param path The output file name
    */
+
+  // Purpose: To know the actual final objective-value of the solution. Useless in paper
   public void printObjectivesToFile(String path){
     try {
     /* Open the file */
-    FileOutputStream fos   = new FileOutputStream(path)     ;
+    FileOutputStream fos   = new FileOutputStream(path, true)     ;
     OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
     BufferedWriter bw      = new BufferedWriter(osw)        ;
 
@@ -260,7 +262,7 @@ public class SolutionSet implements Serializable {
    */
   public void printVariablesToFile(String path){
     try {
-      FileOutputStream fos   = new FileOutputStream(path)     ;
+      FileOutputStream fos   = new FileOutputStream(path, true)     ;
       OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
       BufferedWriter bw      = new BufferedWriter(osw)        ;
 
@@ -279,10 +281,14 @@ public class SolutionSet implements Serializable {
     }
   } // printVariablesToFile
 
+
+  // The actual metric that defines how successful the solution is. Used a lot in the paper
+  // The benefit of approaching the "RE limit" is that dissatisfaction goes down, while the
+  // benefit of not exceeding the "RE limit" is that potential costs of non-RE energy stay low.
   public void printSelfConsumptionToFile(String path){
     try {
       /* Open the file */
-      FileOutputStream fos   = new FileOutputStream(path)     ;
+      FileOutputStream fos   = new FileOutputStream(path, true)     ;
       OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
       BufferedWriter bw      = new BufferedWriter(osw)        ;
 
@@ -301,10 +307,34 @@ public class SolutionSet implements Serializable {
     }
   }
 
+  // Purpose: secondary metric of how successful the solution is: the amount of energy to be paid, and how much money
+  public void printNonREPaidToFile(String path){
+    try {
+      /* Open the file */
+      FileOutputStream fos   = new FileOutputStream(path, true)     ;
+      OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
+      BufferedWriter bw      = new BufferedWriter(osw)        ;
+
+      for (Solution aSolutionsList_ : solutionsList_) {
+        //if (this.vector[i].getFitness()<1.0) {
+        bw.write(String.valueOf(aSolutionsList_.getNonREpaid()));
+        bw.newLine();
+        //}
+      }
+
+      /* Close the file */
+      bw.close();
+    }catch (IOException e) {
+      Configuration.logger_.severe("Error acceding to the file");
+      e.printStackTrace();
+    }
+  }
+
+  // Purpose: to calculate fairness of satisfaction (standard deviation among users)
   public void printUserDissatisfactionToFile(String path){
     try {
       /* Open the file */
-      FileOutputStream fos   = new FileOutputStream(path)     ;
+      FileOutputStream fos   = new FileOutputStream(path, true)     ;
       OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
       BufferedWriter bw      = new BufferedWriter(osw)        ;
 
@@ -323,10 +353,34 @@ public class SolutionSet implements Serializable {
     }
   }
 
+  // Purpose: to calculate fairness of satisfaction (standard deviation among users)
+  public void printStdDevUserDissatisfactionToFile(String path){
+    try {
+      /* Open the file */
+      FileOutputStream fos   = new FileOutputStream(path, true)     ;
+      OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
+      BufferedWriter bw      = new BufferedWriter(osw)        ;
+
+      for (Solution aSolutionsList_ : solutionsList_) {
+        double std = calculateStandardDeviation(aSolutionsList_.getEnergyAllocatedPerUser());
+        bw.write(Double.toString(std));
+        bw.newLine();
+        //}
+      }
+
+      /* Close the file */
+      bw.close();
+    }catch (IOException e) {
+      Configuration.logger_.severe("Error acceding to the file");
+      e.printStackTrace();
+    }
+  }
+
+  // Purpose: to calculate fairness of energy (standard deviation among them)
   public void printUserEnergyToFile(String path){
     try {
       /* Open the file */
-      FileOutputStream fos   = new FileOutputStream(path)     ;
+      FileOutputStream fos   = new FileOutputStream(path, true)     ;
       OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
       BufferedWriter bw      = new BufferedWriter(osw)        ;
 
@@ -345,10 +399,34 @@ public class SolutionSet implements Serializable {
     }
   }
 
+  // Purpose: to calculate fairness of energy (standard deviation among them)
+  public void printStdDevUserEnergyToFile(String path){
+    try {
+      /* Open the file */
+      FileOutputStream fos   = new FileOutputStream(path, true)     ;
+      OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
+      BufferedWriter bw      = new BufferedWriter(osw)        ;
+
+      for (Solution aSolutionsList_ : solutionsList_) {
+        double std = calculateStandardDeviation(aSolutionsList_.getEnergyAllocatedPerUser());
+        bw.write(Double.toString(std));
+        bw.newLine();
+        //}
+      }
+
+      /* Close the file */
+      bw.close();
+    }catch (IOException e) {
+      Configuration.logger_.severe("Error acceding to the file");
+      e.printStackTrace();
+    }
+  }
+
+  // Purpose: bar graphs, to show energy spent per hour compared to availability
   public void printSpentEnergyToFile(String path){
     try {
       /* Open the file */
-      FileOutputStream fos   = new FileOutputStream(path)     ;
+      FileOutputStream fos   = new FileOutputStream(path, true)     ;
       OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
       BufferedWriter bw      = new BufferedWriter(osw)        ;
 
@@ -367,10 +445,11 @@ public class SolutionSet implements Serializable {
     }
   }
 
+  // Purpose: to know exactly which device each user got and which not
   public void printLowerLevelVarsToFile(String path){
     try {
       /* Open the file */
-      FileOutputStream fos   = new FileOutputStream(path)     ;
+      FileOutputStream fos   = new FileOutputStream(path, true)     ;
       OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
       BufferedWriter bw      = new BufferedWriter(osw)        ;
 
@@ -389,10 +468,11 @@ public class SolutionSet implements Serializable {
     }
   }
 
+  // Purpose: to know the balance between dissatisfaction and costs of the chosen LL solution by the upper level
   public void printLowerLevelObjToFile(String path){
     try {
       /* Open the file */
-      FileOutputStream fos   = new FileOutputStream(path)     ;
+      FileOutputStream fos   = new FileOutputStream(path, true)     ;
       OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
       BufferedWriter bw      = new BufferedWriter(osw)        ;
 
@@ -418,7 +498,7 @@ public class SolutionSet implements Serializable {
    */
   public void printFeasibleFUN(String path) {
     try {
-      FileOutputStream fos   = new FileOutputStream(path)     ;
+      FileOutputStream fos   = new FileOutputStream(path, true)     ;
       OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
       BufferedWriter bw      = new BufferedWriter(osw)        ;
 
@@ -441,7 +521,7 @@ public class SolutionSet implements Serializable {
    */
   public void printFeasibleVAR(String path) {
     try {
-      FileOutputStream fos   = new FileOutputStream(path)     ;
+      FileOutputStream fos   = new FileOutputStream(path, true)     ;
       OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
       BufferedWriter bw      = new BufferedWriter(osw)        ;            
 
@@ -557,5 +637,27 @@ public class SolutionSet implements Serializable {
   public int getCapacity() {
     return capacity_ ;
   }
+
+  public static double calculateStandardDeviation(double[] array) {
+
+    // get the sum of array
+    double sum = 0.0;
+    for (double i : array) {
+      sum += i;
+    }
+
+    // get the mean of array
+    int length = array.length;
+    double mean = sum / length;
+
+    // calculate the standard deviation
+    double standardDeviation = 0.0;
+    for (double num : array) {
+      standardDeviation += Math.pow(num - mean, 2);
+    }
+
+    return Math.sqrt(standardDeviation / length);
+  }
+
 } // SolutionSet
 
