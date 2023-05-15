@@ -198,7 +198,6 @@ public class MOEAD extends Algorithm {
         matingSelection(parents_index, n, 2/*, type*/);
 
         // STEP 2.2. Reproduction
-        Solution child;
         //thalis
         Solution[] parents = new Solution[2];
         //thalis comment
@@ -213,6 +212,7 @@ public class MOEAD extends Algorithm {
         // produce 2 offspring by performing crossover on the 2 parents
         Solution[] children = (Solution[]) crossover.execute(parents);
 
+        Solution child;
         boolean randomOffspring = false;
         if (randomOffspring) {
 

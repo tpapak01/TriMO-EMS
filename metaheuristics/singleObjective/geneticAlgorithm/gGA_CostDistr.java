@@ -27,6 +27,7 @@ import jmetal.encodings.variable.ArrayReal;
 import jmetal.encodings.variable.MOKP_BinarySolution;
 import jmetal.problems.CostDistr;
 import jmetal.util.JMException;
+import jmetal.util.PseudoRandom;
 import jmetal.util.comparators.ObjectiveComparator;
 
 import java.io.FileWriter;
@@ -104,24 +105,28 @@ public class gGA_CostDistr extends Algorithm {
     // Sort population
     population.sort(comparator) ;
 
-    //used for convergence observation
-    int threshold = 0;
     //used for solution injection
     boolean passedOnce = false;
 
-    while (evaluations < maxEvaluations) {
+    //Convergence
+    int generations_left_for_convergence = 10;
+    int converged = generations_left_for_convergence;
+    double best_solution = population.get(0).getObjective(0);
 
-      if (evaluations > threshold) {
-        threshold += 50;
-        System.out.println(evaluations + ": " + population.get(0).getObjective(0)) ;
-      } //
+    while (evaluations < maxEvaluations && converged != 0) {
 
       // Copy the best two individuals to the offspring population
       offspringPopulation.add(new Solution(population.get(0))) ;	
-      offspringPopulation.add(new Solution(population.get(1))) ;	
+      offspringPopulation.add(new Solution(population.get(1))) ;
+
+      boolean randomOffspring = true;
+      boolean doubleOffspring = !randomOffspring;
+      int iterations = populationSize - 2;
+      if (doubleOffspring)
+        iterations = populationSize / 2 - 1;
         
       // Reproductive cycle: keep adding 2 offspring to the offspring population until it reaches the max size
-      for (int i = 0 ; i < (populationSize / 2 - 1) ; i ++) {
+      for (int i = 0 ; i < iterations; i++) {
         // Selection
         Solution [] parents = new Solution[2];
 
@@ -131,21 +136,42 @@ public class gGA_CostDistr extends Algorithm {
  
         // Crossover
         Solution [] offspring = (Solution []) crossoverOperator.execute(parents);
-          
-        // Mutation
-        mutationOperator.execute(offspring[0]);
-        mutationOperator.execute(offspring[1]);
 
-        // Evaluation of the new individuals
-        problem_.evaluate(offspring[0]);            
-        problem_.evaluate(offspring[1]);
-          
-        evaluations +=2;
-    
-        // Replacement: the two new individuals are inserted in the offspring
-        //                population
-        offspringPopulation.add(offspring[0]) ;
-        offspringPopulation.add(offspring[1]) ;
+        Solution child;
+        if (randomOffspring) {
+
+          // randomly select 1 of the 2 produced offspring
+          double rndSel = PseudoRandom.randDouble();
+          if (rndSel < 0.5)
+            child = offspring[0];
+          else
+            child = offspring[1];
+
+          mutationOperator.execute(child);
+
+          // Evaluation
+          problem_.evaluate(child);
+          evaluations++;
+
+          offspringPopulation.add(child) ;
+
+        } else { //double offspring
+          // Mutation
+          mutationOperator.execute(offspring[0]);
+          mutationOperator.execute(offspring[1]);
+
+          // Evaluation of the new individuals
+          problem_.evaluate(offspring[0]);
+          problem_.evaluate(offspring[1]);
+          evaluations +=2;
+
+          // Replacement: the two new individuals are inserted in the offspring
+          //                population
+          offspringPopulation.add(offspring[0]) ;
+          offspringPopulation.add(offspring[1]) ;
+
+        }
+
       } // for
       
       // The offspring population becomes the new current population
@@ -155,6 +181,14 @@ public class gGA_CostDistr extends Algorithm {
       }
       offspringPopulation.clear();
       population.sort(comparator);
+
+      //check for convergence
+      if (population.get(0).getObjective(0) >= best_solution){
+        converged--;
+      } else {
+        best_solution = population.get(0).getObjective(0);
+        converged = generations_left_for_convergence;
+      }
 
       //solution injection
 
