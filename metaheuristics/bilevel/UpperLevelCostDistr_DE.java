@@ -13,6 +13,7 @@ import jmetal.problems.MOKP_Problem;
 import jmetal.util.JMException;
 import jmetal.util.comparators.ObjectiveComparator;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -116,6 +117,10 @@ public class UpperLevelCostDistr_DE {
         population.printStdDevUserDissatisfactionToFile("STDDEV_USER_DISSAT");
         population.printUserEnergyToFile("USER_ENERGY");
         population.printStdDevUserEnergyToFile("STDDEV_USER_ENERGY");
+
+        FileWriter timeWriter = new FileWriter("TIME", true);
+        timeWriter.write(estimatedTime + "\n");
+        timeWriter.close();
 
 
     } //main

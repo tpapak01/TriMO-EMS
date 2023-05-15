@@ -25,6 +25,8 @@ import jmetal.core.*;
 import jmetal.util.JMException;
 import jmetal.util.comparators.ObjectiveComparator;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Comparator;
 
 /**
@@ -160,6 +162,15 @@ public class DE_CostDistr extends Algorithm {
      resultPopulation.add(population.get(0)) ;
      
      System.out.println("Evaluations: " + evaluations ) ;
+     FileWriter evalsWriter = null;
+     try {
+       evalsWriter = new FileWriter("EVALS", true);
+       evalsWriter.write(evaluations + "\n");
+       evalsWriter.close();
+     } catch (IOException e) {
+       e.printStackTrace();
+     }
+
      return resultPopulation ;
    } // execute
 

@@ -14,6 +14,7 @@ import jmetal.problems.CostDistr;
 import jmetal.util.JMException;
 import jmetal.util.comparators.ObjectiveComparator;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -161,9 +162,20 @@ public class UpperLevelCostDistr_gGA {
         System.out.println("Variables values have been writen to file VAR");
         population.printVariablesToFile("VAR");
 
-        population.printSpentEnergyToFile("SPENT");
+        population.printSelfConsumptionToFile("SELF_CONSU");
+        population.printNonREPaidToFile("NON_RE_PAID");
         population.printLowerLevelVarsToFile("LL_VAR");
         population.printLowerLevelObjToFile("LL_FUN");
+
+        population.printSpentEnergyToFile("SPENT");
+        population.printUserDissatisfactionToFile("USER_DISSAT");
+        population.printStdDevUserDissatisfactionToFile("STDDEV_USER_DISSAT");
+        population.printUserEnergyToFile("USER_ENERGY");
+        population.printStdDevUserEnergyToFile("STDDEV_USER_ENERGY");
+
+        FileWriter timeWriter = new FileWriter("TIME", true);
+        timeWriter.write(estimatedTime + "\n");
+        timeWriter.close();
 
 
     } //main
