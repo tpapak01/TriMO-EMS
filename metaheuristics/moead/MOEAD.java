@@ -718,29 +718,16 @@ public class MOEAD extends Algorithm {
       //  k = perm[i];      // calculate the values of objective function regarding the current subproblem
       //}
 
-      //thalis
-      int flagDominate;
-
       Solution replacementCandidate = population.get(k);
-      if (problem_.isMaxmized() == false)
-        flagDominate = dominance_.compare(indiv, replacementCandidate);
-      else flagDominate = dominance_.compare(replacementCandidate, indiv);
 
-      if (flagDominate == 0) { // Non-dominated
-        double f1, f2;
+      double f1, f2;
 
-        f1 = fitnessFunction(replacementCandidate, lambda_[k]);
-        f2 = fitnessFunction(indiv, lambda_[k]);
+      f1 = fitnessFunction(replacementCandidate, lambda_[k]);
+      f2 = fitnessFunction(indiv, lambda_[k]);
 
-        // if f2 smaller than f1, f2 (indiv) is better. We always look for the minimal Tchebycheff,
-        // regardless of maximization or minimization problem
-        if (f2 < f1) {
-          flagDominate = -1;
-        }
-
-      }
-
-      if (flagDominate == -1) {// indiv is better
+      // if f2 smaller or equal than f1, f2 (indiv) is better. We always look for the minimal Tchebycheff,
+      // regardless of maximization or minimization problem
+      if (f2 <= f1) {
         population.replace(k, new Solution(indiv));
         time++;
       }
