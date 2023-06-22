@@ -99,7 +99,7 @@ public class CostDistr extends Problem {
         try {
             if (this.lowerLevelAlgorithmName.equals("MOEAD"))
                 lowerLevelSolutions = LowerLevelMOKP_MOEAD.evaluate(costs);
-            else lowerLevelSolutions = LowerLevelMOKP_NSGAII.evaluate(new XReal(solution));
+            else lowerLevelSolutions = LowerLevelMOKP_NSGAII.evaluate(costs);
         } catch (Exception e){
             System.out.println("Exception at LowerLevelMOKP.evaluate: " + e.getMessage());
         }
