@@ -265,7 +265,8 @@ public class MOEAD extends Algorithm {
         // STEP 2.3. Repair. Not necessary, no constraints
 
         // STEP 2.4. Update z_
-        updateReference(child);
+        // NOT NEEDED BECAUSE Z* IS ALREADY OPTIMAL
+        // updateReference(child);
 
         // STEP 2.5. Update of solutions
         updateProblem(population, child, n, type);
@@ -594,18 +595,20 @@ public class MOEAD extends Algorithm {
   /**
    * Initialise the reference point
    */
-  void initIdealPoint(SolutionSet population, int populationSize, String rpType) throws JMException, ClassNotFoundException {
+  void initIdealPoint(SolutionSet population, int populationSize, String rpType) {
     for(int i = 0; i < problem_.getNumberOfObjectives(); i++)  {
       if (problem_.isMaxmized() == false) {
         if (rpType.equalsIgnoreCase("Ideal")) {
-          if (normalize_) z_[i] = +0.1; else z_[i] = +1.0e+30;
+          if (normalize_) z_[i] = +1.1;
+          else z_[i] = 0; //zero because we know it's the optimal solution z* for both objectives
         } else {
           System.out.println("MOEDA.initialize_RP: unknown type " + rpType);
           System.exit(-1);
         }
       } else {
         if (rpType.equalsIgnoreCase("Ideal")) {
-          if (normalize_) z_[i] = -1.1; else z_[i] = -1.0e+30;
+          if (normalize_) z_[i] = -1.1;
+          else z_[i] = -1.0e+30;
         } else {
           System.out.println("MOEDA.initialize_RP: unknown type " + rpType);
           System.exit(-1);
@@ -614,9 +617,12 @@ public class MOEAD extends Algorithm {
 
     }
 
+    // NOT NEEDED BECAUSE Z* IS ALREADY OPTIMAL
+    /*
     for (int i = 0; i < populationSize; i++) {
       updateReference(population.get(i));
     }
+     */
   }
 
   /**
