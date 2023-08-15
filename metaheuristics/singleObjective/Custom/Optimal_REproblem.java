@@ -1,0 +1,110 @@
+package jmetal.metaheuristics.singleObjective.Custom;
+import jmetal.core.*;
+import jmetal.problems.REproblem;
+import jmetal.util.JMException;
+import jmetal.util.PseudoRandom;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+
+public class Optimal_REproblem extends Algorithm {
+
+    public Optimal_REproblem(Problem problem){
+        super(problem) ;
+    } // GGA
+
+    static int[] winner;
+
+    public SolutionSet execute() throws JMException, ClassNotFoundException {
+
+        //PART 1: Calculate max possible sum per time slot
+        ArrayList<int[]> itemsPerTimeslot = new ArrayList<>(problem_.getNumberOfConstraints());
+        ArrayList<Integer[]> indexPerTimeslot = new ArrayList<>(problem_.getNumberOfConstraints());
+        int maxPossibleSum[] = new int[problem_.getNumberOfConstraints()];
+        for (int i=0; i<problem_.getNumberOfConstraints(); i++){
+            itemsPerTimeslot.add(((REproblem) problem_).produceListForTimeslot(i));
+            indexPerTimeslot.add(((REproblem) problem_).getIndexListPerTimeslot(i));
+            maxPossibleSum[i] = ((REproblem) problem_).calculateMaxPossibleSum(itemsPerTimeslot.get(i), i);
+        }
+
+        //PART 2: Perform exhaustive search to find that combination per time slot
+        for (int i=0; i<problem_.getNumberOfConstraints(); i++){
+            int r = itemsPerTimeslot.get(i).length;
+            do {
+                printCombination(itemsPerTimeslot.get(i), itemsPerTimeslot.get(i).length, r, maxPossibleSum[i]);
+                r--;
+            } while (r > 0);
+
+            //now that winner is full, use it to fill up MOKP solution with 1's in the right places
+        }
+
+        // Return a population with the best individual
+        SolutionSet resultPopulation = new SolutionSet(1) ;
+        //resultPopulation.add(population.get(0)) ;
+
+
+        return resultPopulation ;
+    } // execute
+
+    /* arr[]  ---> Input Array
+data[] ---> Temporary array to store current combination
+start & end ---> Starting and Ending indexes in arr[]
+index  ---> Current index in data[]
+r ---> Size of a combination to be printed */
+    static void combinationUtil(int arr[], int data[], int start,
+                                int end, int index, int r, int target)
+    {
+        // Current combination is ready to be printed, print it
+        if (index == r)
+        {
+            int sum = 0;
+            for (int j=0; j<r; j++) {
+                sum += data[j];
+                //System.out.print(data[j] + " ");
+            }
+            System.out.println(sum);
+            //System.out.println("");
+            if (sum == target){
+                winner = new int[r];
+                for (int j=0; j<r; j++) {
+                    winner[j] = data[j];
+                    //System.out.print(data[j] + " ");
+                }
+            }
+            return;
+        }
+
+        // replace index with all possible elements. The condition
+        // "end-i+1 >= r-index" makes sure that including one element
+        // at index will make a combination with remaining elements
+        // at remaining positions
+        for (int i=start; i<=end && end-i+1 >= r-index; i++)
+        {
+            data[index] = arr[i];
+            combinationUtil(arr, data, i+1, end, index+1, r, target);
+        }
+    }
+
+    // The main function that prints all combinations of size r
+    // in arr[] of size n. This function mainly uses combinationUtil()
+    static void printCombination(int arr[], int n, int r, int target)
+    {
+        // A temporary array to store all combination one by one
+        int data[]=new int[r];
+
+        // Print all combination using temporary array 'data[]'
+        combinationUtil(arr, data, 0, n-1, 0, r, target);
+    }
+
+    /*Driver function to check for above function*/
+    /*
+    public static void main (String[] args) {
+        int arr[] = {1, 2, 3, 4, 5};
+        int r = 3;
+        int n = arr.length;
+        printCombination(arr, n, r);
+    }
+     */
+
+}
