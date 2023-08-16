@@ -26,7 +26,14 @@ public class Optimal_REproblem extends Algorithm {
         for (int i=0; i<problem_.getNumberOfConstraints(); i++){
             itemsPerTimeslot.add(((REproblem) problem_).produceListForTimeslot(i));
             indexPerTimeslot.add(((REproblem) problem_).getIndexListPerTimeslot(i));
-            maxPossibleSum[i] = ((REproblem) problem_).calculateMaxPossibleSum(itemsPerTimeslot.get(i), i);
+            /////
+            int[] list = itemsPerTimeslot.get(i);
+            int sum = 0;
+            for (int k = 0; k < list.length; k++) {
+                sum += list[k];
+            }
+            /////
+            maxPossibleSum[i] = ((REproblem) problem_).calculateMaxPossibleSum(itemsPerTimeslot.get(i), sum, i);
         }
 
         //PART 2: Perform exhaustive search to find that combination per time slot
@@ -39,17 +46,39 @@ public class Optimal_REproblem extends Algorithm {
         }
         for (int i=0; i<problem_.getNumberOfConstraints(); i++){
             //update winner variable
-            int r = itemsPerTimeslot.get(i).length;
-            do {
-                printCombination(itemsPerTimeslot.get(i), itemsPerTimeslot.get(i).length, r, maxPossibleSum[i]);
-                r--;
-            } while (r > 0);
+            int[] list = itemsPerTimeslot.get(i);
+            int smallest = list[0];
+            int sum = 0;
+            for (int k = 0; k < list.length; k++) {
+                sum += list[k];
+                //Compare elements of array with min
+                if(list[k] <smallest)
+                    smallest = list[k];
+            }
+            int r = list.length;
+            if (sum > maxPossibleSum[i]){
+                r = maxPossibleSum[i] / smallest;
+                int start = 1;
+                do {
+                    boolean res = printCombination(list, list.length, start, maxPossibleSum[i]);
+                    if (res)
+                        break;
+                    start++;
+                } while (start <= r);
+            } else {
+                do {
+                    boolean res = printCombination(list, list.length, r, maxPossibleSum[i]);
+                    if (res)
+                        break;
+                    r--;
+                } while (r > 0);
+            }
 
             //now that winner is full, use it to fill up MOKP solution with 1's in the right places\
-            Integer[] list = indexPerTimeslot.get(i);
+            Integer[] indexList = indexPerTimeslot.get(i);
             for (int j=0; j<winner.length; j++){
                 int index = winner[j];
-                int position = list[index];
+                int position = indexList[index];
                 bin.setIth(position, true);
             }
         }
@@ -70,7 +99,7 @@ data[] ---> Temporary array to store current combination
 start & end ---> Starting and Ending indexes in arr[]
 index  ---> Current index in data[]
 r ---> Size of a combination to be printed */
-    static void combinationUtil(int arr[], int data[], int dataIndex[], int start,
+    static boolean combinationUtil(int arr[], int data[], int dataIndex[], int start,
                                 int end, int index, int r, int target)
     {
         // Current combination is ready to be printed, print it
@@ -89,8 +118,9 @@ r ---> Size of a combination to be printed */
                     winner[j] = dataIndex[j];
                     //System.out.print(data[j] + " ");
                 }
+                return true;
             }
-            return;
+            return false;
         }
 
         // replace index with all possible elements. The condition
@@ -101,20 +131,24 @@ r ---> Size of a combination to be printed */
         {
             data[index] = arr[i];
             dataIndex[index] = i;
-            combinationUtil(arr, data, dataIndex, i+1, end, index+1, r, target);
+            boolean res = combinationUtil(arr, data, dataIndex, i+1, end, index+1, r, target);
+            if (res)
+                return res;
         }
+        return false;
     }
 
     // The main function that prints all combinations of size r
     // in arr[] of size n. This function mainly uses combinationUtil()
-    static void printCombination(int arr[], int n, int r, int target)
+    static boolean printCombination(int arr[], int n, int r, int target)
     {
         // A temporary array to store all combination one by one
         int data[]=new int[r];
         int dataIndex[]=new int[r];
 
         // Print all combination using temporary array 'data[]'
-        combinationUtil(arr, data, dataIndex,0, n-1, 0, r, target);
+        boolean res = combinationUtil(arr, data, dataIndex,0, n-1, 0, r, target);
+        return res;
     }
 
     /*Driver function to check for above function*/

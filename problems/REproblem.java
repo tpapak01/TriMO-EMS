@@ -382,8 +382,10 @@ public class REproblem extends Problem {
         return indexPerTimeslot.get(pos).toArray(new Integer[0]);
     }
 
-    public int calculateMaxPossibleSum(int[] list, int pos){
+    public int calculateMaxPossibleSum(int[] list, int sum, int pos){
         int upper_limit_sum = (int) (producedRE[pos] * 10);
+        if (upper_limit_sum > sum)
+            upper_limit_sum = sum;
         boolean exists;
         while (true) {
             exists = isSubsetSum(list, list.length, upper_limit_sum);
