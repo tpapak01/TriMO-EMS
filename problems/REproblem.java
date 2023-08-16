@@ -11,6 +11,7 @@ import jmetal.core.Solution;
 import jmetal.core.Variable;
 import jmetal.encodings.variable.Binary;
 import jmetal.encodings.variable.MOKP_BinarySolution;
+import jmetal.encodings.variable.REproblem_BinarySolution;
 import jmetal.util.JMException;
 import jmetal.util.wrapper.XReal;
 
@@ -36,7 +37,7 @@ public class REproblem extends Problem {
     private int numberOfUsers;
     private double[] w; // weight of items
     private boolean [][][] pref; // preferences of users: user x time x device
-    private XReal costOfUsage ; // capacity of each  knapsack .
+    private double[] costs ; // capacity of each  knapsack .
     private int[] requestedDevicesPerUser;
 
     //upper level
@@ -46,6 +47,14 @@ public class REproblem extends Problem {
     //extras of optimal solutions
     private ArrayList<List<Double>> itemsPerTimeslot;
     private ArrayList<List<Integer>> indexPerTimeslot;
+
+    public int getNumberOfItems(){
+        return numberOfItems;
+    }
+
+    public int getNumberOfUsers(){
+        return numberOfUsers;
+    }
 
 
     public REproblem(String problemName,String userPreferenceName) {
@@ -61,7 +70,7 @@ public class REproblem extends Problem {
           //fills up numberOfItems, p, w, sackCapacity
           //simply read the input textfile
           this.loadProblem(fileName, userPreferencefileName);
-          this.solutionType_ = new MOKP_BinarySolution(this);
+          this.solutionType_ = new REproblem_BinarySolution(this);
 
     }  //
 
@@ -202,15 +211,16 @@ public class REproblem extends Problem {
             Binary bin = (Binary) vars[0];
             solution.setLowerLevelVars(bin);
 
+            costs = new double[this.numberOfConstraints_];
+            for (int j=0; j<this.numberOfConstraints_; j++)
+                costs[j] = 0.5;
+
             double Dresult;
             Dresult = percentage_dissatisfaction_evaluate(solution);
             double Cresult;
             Cresult = highest_cost_evaluate(solution);
             solution.setLowerLevelObj(new double[] {Dresult, Cresult});
 
-            double[] costs = new double[this.numberOfConstraints_];
-            for (int j=0; j<this.numberOfConstraints_; j++)
-                costs[j] = 0.5;
             double nonREpaid = calculateNonREPaid(energySpent, costs);
             solution.setNonREpaid(nonREpaid);
 
@@ -250,7 +260,7 @@ public class REproblem extends Problem {
                 int k = 0;
                 for (int j = startingIndex; j < startingIndex + numberOfItems; j++) { // for each bit
                     if (bin.getIth(j)) {
-                        sum = sum + w[k] * costOfUsage.getValue(l);
+                        sum = sum + w[k] * costs[l];
                     }
                     k++;
                 } // for j

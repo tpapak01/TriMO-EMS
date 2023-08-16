@@ -1,5 +1,6 @@
 package jmetal.metaheuristics.singleObjective.Custom;
 import jmetal.core.*;
+import jmetal.encodings.variable.Binary;
 import jmetal.problems.REproblem;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
@@ -29,19 +30,36 @@ public class Optimal_REproblem extends Algorithm {
         }
 
         //PART 2: Perform exhaustive search to find that combination per time slot
+        Solution newSolution = new Solution(problem_);
+        int numOfBits = ((REproblem) problem_).getNumberOfUsers() * ((REproblem) problem_).getNumberOfItems() * problem_.getNumberOfConstraints();
+        Variable[] vars = new Variable[problem_.getNumberOfVariables()];
+        Binary bin = new Binary(numOfBits);
+        for (int k = 0; k < numOfBits; k++) {
+            bin.setIth(k, false);
+        }
         for (int i=0; i<problem_.getNumberOfConstraints(); i++){
+            //update winner variable
             int r = itemsPerTimeslot.get(i).length;
             do {
                 printCombination(itemsPerTimeslot.get(i), itemsPerTimeslot.get(i).length, r, maxPossibleSum[i]);
                 r--;
             } while (r > 0);
 
-            //now that winner is full, use it to fill up MOKP solution with 1's in the right places
+            //now that winner is full, use it to fill up MOKP solution with 1's in the right places\
+            Integer[] list = indexPerTimeslot.get(i);
+            for (int j=0; j<winner.length; j++){
+                int index = winner[j];
+                int position = list[index];
+                bin.setIth(position, true);
+            }
         }
+        vars[0] = bin;
+        newSolution.setDecisionVariables(vars);
+        problem_.evaluate(newSolution);
 
         // Return a population with the best individual
         SolutionSet resultPopulation = new SolutionSet(1) ;
-        //resultPopulation.add(population.get(0)) ;
+        resultPopulation.add(newSolution) ;
 
 
         return resultPopulation ;
@@ -52,7 +70,7 @@ data[] ---> Temporary array to store current combination
 start & end ---> Starting and Ending indexes in arr[]
 index  ---> Current index in data[]
 r ---> Size of a combination to be printed */
-    static void combinationUtil(int arr[], int data[], int start,
+    static void combinationUtil(int arr[], int data[], int dataIndex[], int start,
                                 int end, int index, int r, int target)
     {
         // Current combination is ready to be printed, print it
@@ -63,12 +81,12 @@ r ---> Size of a combination to be printed */
                 sum += data[j];
                 //System.out.print(data[j] + " ");
             }
-            System.out.println(sum);
+            //System.out.println(sum);
             //System.out.println("");
             if (sum == target){
                 winner = new int[r];
                 for (int j=0; j<r; j++) {
-                    winner[j] = data[j];
+                    winner[j] = dataIndex[j];
                     //System.out.print(data[j] + " ");
                 }
             }
@@ -82,7 +100,8 @@ r ---> Size of a combination to be printed */
         for (int i=start; i<=end && end-i+1 >= r-index; i++)
         {
             data[index] = arr[i];
-            combinationUtil(arr, data, i+1, end, index+1, r, target);
+            dataIndex[index] = i;
+            combinationUtil(arr, data, dataIndex, i+1, end, index+1, r, target);
         }
     }
 
@@ -92,9 +111,10 @@ r ---> Size of a combination to be printed */
     {
         // A temporary array to store all combination one by one
         int data[]=new int[r];
+        int dataIndex[]=new int[r];
 
         // Print all combination using temporary array 'data[]'
-        combinationUtil(arr, data, 0, n-1, 0, r, target);
+        combinationUtil(arr, data, dataIndex,0, n-1, 0, r, target);
     }
 
     /*Driver function to check for above function*/
@@ -106,5 +126,6 @@ r ---> Size of a combination to be printed */
         printCombination(arr, n, r);
     }
      */
+
 
 }
