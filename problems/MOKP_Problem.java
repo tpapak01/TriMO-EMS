@@ -31,6 +31,7 @@ public class MOKP_Problem extends Problem {
     private int numberOfUsers;
     private double[] w; // weight of items
     private boolean [][][] pref; // preferences of users: user x time x device
+    private boolean [] pref_vector; // preferences of users: user x time x device
     private XReal costOfUsage ; // capacity of each  knapsack .
     private int[] requestedDevicesPerUser;
 
@@ -86,6 +87,7 @@ public class MOKP_Problem extends Problem {
           in.readLine();
 
           pref = new boolean[numberOfUsers][this.numberOfConstraints_][numberOfItems];
+          pref_vector = new boolean[numberOfUsers*this.numberOfConstraints_*numberOfItems];
           //--------
           double[] requestedEnergy = new double[this.numberOfConstraints_];
           requestedDevicesPerUser = new int[numberOfUsers];
@@ -100,6 +102,7 @@ public class MOKP_Problem extends Problem {
                       int num = Integer.parseInt(r.toString());
                       if (num == 1) {
                           pref[u][i][j] = true;
+                          pref_vector[u*i*j] = true;
                           requestedEnergy[i] += w[j];
                           requestedDevicesPerUser[u]++;
                           requestedEnergyPerUser[u] += w[j];
@@ -155,30 +158,20 @@ public class MOKP_Problem extends Problem {
       return pref;
     }
 
+    public boolean[] getUserPreferenceVector(){
+        return pref_vector;
+    }
+
     public void repair(Solution solution){
         Variable[] vars = solution.getDecisionVariables();
         Binary bin = (Binary) vars[0];
+        int numOfBits = bin.getNumberOfBits();
 
-        for (int u = 0; u < numberOfUsers; u++) { // for each user
-
-            int userIndex = u * this.numberOfConstraints_;
-
-            int l = 0;
-            for (int i = userIndex; i < userIndex + this.numberOfConstraints_; i++) { // for each objective
-
-                int startingIndex = i * numberOfItems;
-
-                int k = 0;
-                for (int j = startingIndex; j < startingIndex + numberOfItems; j++) { // for each bit
-                    if (bin.getIth(j) && !pref[u][l][k]) {
-                        bin.setIth(j, false);
-                    }
-                    k++;
-                } // for j
-                l++;
-            } // for i
-
-        } // for u
+        for (int j = 0; j < numOfBits; j++) { // for each user
+            if (bin.getIth(j) && !pref_vector[j]) {
+                bin.setIth(j, false);
+            }
+        }
     }
 
     @Override
@@ -198,27 +191,13 @@ public class MOKP_Problem extends Problem {
 
     public int simple_user_pref_evaluate(Binary bin) {
         int dissatisfaction = 0;
+        int numOfBits = bin.getNumberOfBits();
 
-        for (int u = 0; u < numberOfUsers; u++) { // for each user
-
-            int userIndex = u * this.numberOfConstraints_;
-
-            int l = 0;
-            for (int i = userIndex; i < userIndex + this.numberOfConstraints_; i++) { // for each objective
-
-                int itemIndex = i * numberOfItems;
-
-                int k = 0;
-                for (int j = itemIndex; j < itemIndex + numberOfItems; j++) { // for each bit
-                    if (bin.getIth(j) != pref[u][l][k]) {
-                        dissatisfaction++;
-                    }
-                    k++;
-                } // for j
-                l++;
-            } // for i
-
-        } //for u
+        for (int j = 0; j < numOfBits; j++) { // for each user
+            if (bin.getIth(j) != pref_vector[j]) {
+                dissatisfaction++;
+            }
+        }
 
         return dissatisfaction;
     }

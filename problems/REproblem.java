@@ -37,6 +37,7 @@ public class REproblem extends Problem {
     private int numberOfUsers;
     private double[] w; // weight of items
     private boolean [][][] pref; // preferences of users: user x time x device
+    private boolean [] pref_vector; // preferences of users: user x time x device
     private double[] costs ; // capacity of each  knapsack .
     private int[] requestedDevicesPerUser;
 
@@ -121,6 +122,7 @@ public class REproblem extends Problem {
               in.readLine();
 
               pref = new boolean[numberOfUsers][this.numberOfConstraints_][numberOfItems];
+              pref_vector = new boolean[numberOfUsers*this.numberOfConstraints_*numberOfItems];
               //--------
               double[] requestedEnergy = new double[this.numberOfConstraints_];
               requestedDevicesPerUser = new int[numberOfUsers];
@@ -136,6 +138,7 @@ public class REproblem extends Problem {
                           int num = Integer.parseInt(r.toString());
                           if (num == 1) {
                               pref[u][i][j] = true;
+                              pref_vector[u*i*j] = true;
                               requestedEnergy[i] += w[j];
                               requestedDevicesPerUser[u]++;
                               requestedEnergyPerUser[u] += w[j];

@@ -112,40 +112,20 @@ public class BitFlipMutation extends Mutation {
 
 	public void doCustomMutation(double probability, Solution solution) throws JMException {
 		try {
-			boolean[][][] pref = problem.getUserPreferences();
-			int numberOfUsers = problem.getNumberOfUsers();
-			int numberOfConstraints = problem.getNumberOfConstraints();
-			int numberOfItems = problem.getNumberOfItems();
+			boolean[] pref_vector = problem.getUserPreferenceVector();
 
 			for (int i = 0; i < solution.getDecisionVariables().length; i++) {
 				Binary bin = (Binary) solution.getDecisionVariables()[i];
-				for (int u = 0; u < numberOfUsers; u++) { // for each user
-
-					int userIndex = u * numberOfConstraints;
-
-					int l = 0;
-					for (int in = userIndex; in < userIndex + numberOfConstraints; in++) { // for each objective
-
-						int startingIndex = in * numberOfItems;
-
-						int k = 0;
-						for (int j = startingIndex; j < startingIndex + numberOfItems; j++) { // for each bit
-							if (pref[u][l][k]) {
-								if (PseudoRandom.randDouble() < probability) {
-									bin.bits_.flip(j);
-								}
-							}
-							k++;
-						} // for j
-						l++;
-					} // for i
-				} // for u
-
+				int numOfBits = bin.getNumberOfBits();
+				for (int j = 0; j < numOfBits; j++) { // for each user
+					if (pref_vector[j]) {
+						if (PseudoRandom.randDouble() < probability) {
+							bin.bits_.flip(j);
+						}
+					}
+				}
 			}
 
-			for (int i = 0; i < solution.getDecisionVariables().length; i++) {
-				((Binary) solution.getDecisionVariables()[i]).decode();
-			}
 		} catch (ClassCastException e1) {
 			Configuration.logger_.severe("BitFlipMutation.doMutation: " +
 					"ClassCastException error" + e1.getMessage());

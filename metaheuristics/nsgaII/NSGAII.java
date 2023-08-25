@@ -394,24 +394,14 @@ public class NSGAII extends Algorithm {
 
       // exactly what the users want
       if (i == populationSize-1) {
-        boolean[][][] pref = ((MOKP_Problem) problem_).getUserPreferences();
+        boolean[] pref_vector = ((MOKP_Problem) problem_).getUserPreferenceVector();
         Variable[] vars = new Variable[problem_.getNumberOfVariables()];
         for (int v = 0; v < vars.length; v++) {
           Binary bin = new Binary(numOfBits);
 
-          for (int u = 0; u < numberOfUsers; u++) { // for each user
-            int userIndex = u * numOfConstraints;
-            int l = 0;
-            for (int p = userIndex; p < userIndex +  numOfConstraints; p++) { // for each objective
-              int startingIndex = p * numberOfItems;
-              int k = 0;
-              for (int j = startingIndex; j < startingIndex + numberOfItems; j++) { // for each bit
-                bin.setIth(j, pref[u][l][k]);
-                k++;
-              }
-              l++;
-            } // for p
-          } // for u
+          for (int j = 0; j < numOfBits; j++) { // for each user
+            bin.setIth(j, pref_vector[j]);
+          }
 
           vars[v] = bin;
         }
