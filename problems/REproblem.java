@@ -169,32 +169,6 @@ public class REproblem extends Problem {
           }
 
   }
-
-    public void repair(Solution solution){
-        Variable[] vars = solution.getDecisionVariables();
-        Binary bin = (Binary) vars[0];
-
-        for (int u = 0; u < numberOfUsers; u++) { // for each user
-
-            int userIndex = u * this.numberOfConstraints_;
-
-            int l = 0;
-            for (int i = userIndex; i < userIndex + this.numberOfConstraints_; i++) { // for each objective
-
-                int startingIndex = i * numberOfItems;
-
-                int k = 0;
-                for (int j = startingIndex; j < startingIndex + numberOfItems; j++) { // for each bit
-                    if (bin.getIth(j) && !pref[u][l][k]) {
-                        bin.setIth(j, false);
-                    }
-                    k++;
-                } // for j
-                l++;
-            } // for i
-
-        } // for u
-    }
   
 	@Override
 	public void evaluate(Solution solution) throws JMException {
