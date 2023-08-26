@@ -94,6 +94,7 @@ public class MOKP_Problem extends Problem {
           double[] requestedEnergyPerUser = new double[numberOfUsers];
           double[][] requestedEnergyPerUserPerTime = new double[numberOfUsers][this.numberOfConstraints_];
 
+          int count = 0;
           for (int u = 0; u < numberOfUsers; u++) {
               for (int i = 0; i < this.numberOfConstraints_; i++) {
                   for (int j = 0; j < numberOfItems; j++) {
@@ -102,12 +103,13 @@ public class MOKP_Problem extends Problem {
                       int num = Integer.parseInt(r.toString());
                       if (num == 1) {
                           pref[u][i][j] = true;
-                          pref_vector[u*i*j] = true;
+                          pref_vector[count] = true;
                           requestedEnergy[i] += w[j];
                           requestedDevicesPerUser[u]++;
                           requestedEnergyPerUser[u] += w[j];
                           requestedEnergyPerUserPerTime[u][i] += w[j];
                       }
+                      count++;
                   }
                   in.read();
                   in.read();

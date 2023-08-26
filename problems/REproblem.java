@@ -138,7 +138,7 @@ public class REproblem extends Problem {
                           int num = Integer.parseInt(r.toString());
                           if (num == 1) {
                               pref[u][i][j] = true;
-                              pref_vector[u*i*j] = true;
+                              pref_vector[count] = true;
                               requestedEnergy[i] += w[j];
                               requestedDevicesPerUser[u]++;
                               requestedEnergyPerUser[u] += w[j];
