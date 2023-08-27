@@ -136,6 +136,10 @@ public class MOKP_Problem extends Problem {
 
   }
 
+    public XReal getCostOfUsage() {
+        return costOfUsage;
+    }
+
     public void setCostOfUsage(XReal y) {
         costOfUsage = y;
     }
@@ -411,6 +415,30 @@ public class MOKP_Problem extends Problem {
 
         return total_dissatisfaction;
     }
+
+    public void partiallyEvaluateD(Solution solution, double[][] positionsChanged) throws JMException {
+
+        //double[] dissatisfactionPerUser = solution.getDissatisfactionPerUser();
+
+        for (int i=0; i<positionsChanged[0].length; i++){
+            if (positionsChanged[1][i] == 0)
+                return;
+            int position = (int) positionsChanged[0][i];
+            int u, c, it;
+            u = position / (this.numberOfConstraints_ * numberOfItems);
+            c = position % (this.numberOfConstraints_ * numberOfItems) / numberOfItems;
+            int userAndTime = u * (this.numberOfConstraints_ * numberOfItems) + c * numberOfItems;
+            it =  (userAndTime == 0 ? position : (position % userAndTime));
+            double obj_d = solution.getObjective(0);
+            int dissatisfaction_denominator = requestedDevicesPerUser[u];
+            //int dissatisfaction_nominator = (int) dissatisfactionPerUser[u] * dissatisfaction_denominator;
+            double impact = Math.pow(0.5, positionsChanged[1][i]);
+            solution.setObjective(0, obj_d-((double)(1.0/dissatisfaction_denominator)*impact));
+            double obj_c = solution.getObjective(1);
+            solution.setObjective(1, obj_c + positionsChanged[2][i]);
+        }
+
+    } // evaluate
 
     ////////////////////////////////    HELPER FUNCTIONS       ////////////////////////////////////////
 

@@ -563,6 +563,7 @@ public class MOEAD extends Algorithm {
       }
 
       ((MOKP_Problem) problem_).repair(newSolution);
+      newSolution.setLambda(new double[]{lambda_[i][0],lambda_[i][1]});
 
       problem_.evaluate(newSolution);
       evaluations_++;

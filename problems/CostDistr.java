@@ -14,12 +14,18 @@ import jmetal.encodings.solutionType.ArrayRealSolutionType;
 import jmetal.encodings.variable.Binary;
 import jmetal.metaheuristics.bilevel.LowerLevelMOKP_MOEAD;
 import jmetal.metaheuristics.bilevel.LowerLevelMOKP_NSGAII;
+import jmetal.operators.localSearch.DissatisfactionLocalSearch;
+import jmetal.operators.localSearch.LocalSearch;
+import jmetal.operators.localSearch.MutationLocalSearch;
+import jmetal.operators.mutation.DissatisfactionMutation;
+import jmetal.operators.mutation.Mutation;
 import jmetal.util.JMException;
 import jmetal.util.wrapper.XReal;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 
 
 public class CostDistr extends Problem {
@@ -32,6 +38,7 @@ public class CostDistr extends Problem {
     private String lowerLevelAlgorithmName;
     private double[] producedRE;
     private double totalProducedRE;
+    private LocalSearch improvementOperatorD;
 
 
   public CostDistr(String problemName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName) {
@@ -54,6 +61,18 @@ public class CostDistr extends Problem {
       //simply read the input textfile
       this.loadProblem(fileName);
       this.solutionType_ = new ArrayRealSolutionType(this);
+
+      //now initialize local search operator
+      HashMap parameters = new HashMap() ;
+      parameters.put("repeats", 7) ;
+      parameters.put("problem",this.lowerLevelProblem) ;
+      Mutation mutation = new DissatisfactionMutation(parameters);
+      parameters.put("improvementRounds", 1);
+      parameters.put("temperature", 1.0) ;
+      parameters.put("cooldown", 0.2) ;
+      parameters.put("problem",this.lowerLevelProblem);
+      parameters.put("mutation", mutation) ;
+      improvementOperatorD = new DissatisfactionLocalSearch(parameters);
 
   }  // 
 
@@ -104,13 +123,30 @@ public class CostDistr extends Problem {
             System.out.println("Exception at LowerLevelMOKP.evaluate: " + e.getMessage());
         }
 
-        int lsize = lowerLevelSolutions.size();
+        SolutionSet improvedLowerLevelSolutions = new SolutionSet(lowerLevelSolutions.size());
+        if (this.lowerLevelAlgorithmName.equals("MOEAD")) {
+            for (int s = 0; s < lowerLevelSolutions.size(); s++) {
+                Solution lowerLevelSol = lowerLevelSolutions.get(s);
+                double[] lambda = lowerLevelSol.getLambda();
+                Solution newSol = null;
+                if (lambda[0] >= lambda[1]) {
+                    newSol = (Solution) improvementOperatorD.execute(lowerLevelSol);
+                    improvedLowerLevelSolutions.add(newSol);
+                } else {
+                    //TODO C LOCAL SEARCH
+                }
+            }
+        } else {
+            //TODO NSGAII
+        }
 
         double best_result = Double.MAX_VALUE;
         int best_solution_index = -1;
+        SolutionSet allSolutions = new SolutionSet(lowerLevelSolutions.size()+improvedLowerLevelSolutions.size());
+        allSolutions = lowerLevelSolutions.union(improvedLowerLevelSolutions);
 
-        for (int s=0; s<lowerLevelSolutions.size(); s++) {
-            Solution lowerLevelSol = lowerLevelSolutions.get(s);
+        for (int s=0; s<allSolutions.size(); s++) {
+            Solution lowerLevelSol = allSolutions.get(s);
 
             // do upper-level evaluation = finding deviation from available RE
             //double result = upperLevel_evaluate_distance_from_produced(spentEnergy);

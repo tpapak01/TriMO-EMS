@@ -83,6 +83,14 @@ public class Solution implements Serializable {
     this.nonREpaid = nonREpaid;
   }
 
+  private double[] lambda = null;
+  public double[] getLambda(){
+    return lambda;
+  }
+  public void setLambda(double[] lambda){
+    this.lambda = lambda;
+  }
+
 	/**
 	 * Stores the problem 
 	 */
@@ -282,6 +290,9 @@ public class Solution implements Serializable {
     }
     if (solution.getNonREpaid() != -1){
       setNonREpaid(solution.getNonREpaid());
+    }
+    if (solution.getLambda() != null){
+      setLambda(solution.getLambda());
     }
   } // Solution
 
