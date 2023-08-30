@@ -49,22 +49,12 @@ public class DissatisfactionLocalSearch extends LocalSearch {
   private double temperature_;
   private double cooldown_;
 
-  /**
-   * Stores comparators for dealing with constraints and dominance checking,
-   * respectively.
-   */
-  private Comparator constraintComparator_ ;
   private Comparator dominanceComparator_ ;
 
   /**
    * Stores the mutation operator
    */
   private Operator mutationOperator_;
-
-  /**
-   * Stores the number of evaluations_ carried out
-   */
-  int evaluations_ ;
 
   /**
   * Constructor.
@@ -85,12 +75,16 @@ public class DissatisfactionLocalSearch extends LocalSearch {
     if (parameters.get("mutation") != null)
   	  mutationOperator_ = (Mutation) parameters.get("mutation") ;  		
 
-    evaluations_          = 0      ;
+
     dominanceComparator_  = new DominanceComparator();
-    constraintComparator_ = new OverallConstraintViolationComparator();
   } //Mutation improvement
-  
- /**
+
+  @Override
+  public int getEvaluations() {
+    return 0;
+  }
+
+  /**
    * Executes the local search. The maximum number of iterations is given by 
    * the param "improvementRounds", which is in the parameter list of the 
    * operator. The archive to store the non-dominated solutions is also in the 
@@ -101,18 +95,17 @@ public class DissatisfactionLocalSearch extends LocalSearch {
    */
   public Object execute(Object object) throws JMException {
     int i = 0;
-    int best;
-    evaluations_ = 0;        
+    int best = 0;
     Solution solution = (Solution)object;
 
     int rounds = improvementRounds_;
     double temperature = temperature_;
     double cooldown = temperature_ * cooldown_;
-    Solution mutatedSolution = new Solution(solution);
+    Solution finalSolution = null;
 
     do {
       i++;
-      //TODO Put Solution mutatedSolution = new Solution(solution); here so that a new solution is created every time
+      Solution mutatedSolution = new Solution(solution);
 
       do {
         mutationOperator_.setParameter("temperature", temperature);
@@ -126,23 +119,21 @@ public class DissatisfactionLocalSearch extends LocalSearch {
         temperature -= cooldown;
       } while (temperature_> 0);
 
-      /*
-      best = dominanceComparator_.compare(mutatedSolution, solution);
-      if (best == -1) // This is: Mutated is best
-        solution = mutatedSolution;
-      else if (best == 1) {} // This is: Original is best == //delete mutatedSolution
-      else {}// mutatedSolution and original are non-dominated, put mutatedSolution in archive
-       */
+      if (finalSolution == null) finalSolution = mutatedSolution;
+      else {
+        best = dominanceComparator_.compare(mutatedSolution, finalSolution);
+        if (best == -1) // This is: Mutated is best
+          finalSolution = mutatedSolution;
+        else if (best == 1) {
+          int a = 2;
+        } // This is: Original is best == //delete mutatedSolution
+        else {
+          int a = 2;
+        }// mutatedSolution and original are non-dominated, put mutatedSolution in archive
+      }
 
     } while (i < rounds);
-    return mutatedSolution;
+    return finalSolution;
   } // execute
-  
-   
-  /** 
-   * Returns the number of evaluations maded
-   */
-  public int getEvaluations() {
-    return evaluations_;
-  } // evaluations
+
 }

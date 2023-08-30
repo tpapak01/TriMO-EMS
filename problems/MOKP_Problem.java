@@ -433,9 +433,25 @@ public class MOKP_Problem extends Problem {
             int dissatisfaction_denominator = requestedDevicesPerUser[u];
             //int dissatisfaction_nominator = (int) dissatisfactionPerUser[u] * dissatisfaction_denominator;
             double impact = Math.pow(0.5, positionsChanged[1][i]);
-            solution.setObjective(0, obj_d-((double)(1.0/dissatisfaction_denominator)*impact));
+            double difference = 1.0/dissatisfaction_denominator*impact;
+            solution.setObjective(0, obj_d - difference);
             double obj_c = solution.getObjective(1);
-            solution.setObjective(1, obj_c + positionsChanged[2][i]);
+            double cost = positionsChanged[2][i];
+            solution.setObjective(1, obj_c + cost);
+            /**********update extra attributes of solution*******/
+            //dissatisfactionPerUser
+            double[] dissatisfactionPerUser = solution.getDissatisfactionPerUser();
+            dissatisfactionPerUser[u] -= difference;
+            solution.setDissatisfactionPerUser(dissatisfactionPerUser);
+            //spentEnergy
+            double[] spentEnergy = solution.getSpentEnergy();
+            spentEnergy[c] += w[it];
+            solution.setSpentEnergy(spentEnergy);
+            //energyAllocatedPerUser
+            double[] energyAllocatedPerUser = solution.getEnergyAllocatedPerUser();
+            energyAllocatedPerUser[u] += cost;
+            solution.setEnergyAllocatedPerUser(energyAllocatedPerUser);
+
         }
 
     } // evaluate

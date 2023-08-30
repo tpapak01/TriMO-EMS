@@ -32,6 +32,7 @@ import java.util.Arrays;
  * Class representing a solution for a problem.
  */
 public class Solution implements Serializable {
+  //LOWER-LEVEL SOLUTION ATTRIBUTES
   private double[] spentEnergy;
   public double[] getSpentEnergy(){
     return spentEnergy;
@@ -39,6 +40,7 @@ public class Solution implements Serializable {
   public void setSpentEnergy(double[] spentEnergy){
     this.spentEnergy = Arrays.copyOf(spentEnergy, spentEnergy.length);
   }
+
   private Binary lowerLevelVars;
   public Binary getLowerLevelVars(){
     return lowerLevelVars;
@@ -46,6 +48,7 @@ public class Solution implements Serializable {
   public void setLowerLevelVars(Binary vars){
     this.lowerLevelVars = new Binary(vars);
   }
+
   private double[] lowerLevelObj;
   public double[] getLowerLevelObj(){
     return lowerLevelObj;
@@ -53,6 +56,7 @@ public class Solution implements Serializable {
   public void setLowerLevelObj(double[] lowerLevelObj){
     this.lowerLevelObj = Arrays.copyOf(lowerLevelObj, lowerLevelObj.length);
   }
+
   private double[] dissatisfactionPerUser;
   public double[] getDissatisfactionPerUser(){
     return dissatisfactionPerUser;
@@ -60,6 +64,7 @@ public class Solution implements Serializable {
   public void setDissatisfactionPerUser(double[] dissatisfactionPerUser){
     this.dissatisfactionPerUser = Arrays.copyOf(dissatisfactionPerUser, dissatisfactionPerUser.length);
   }
+
   private double[] energyAllocatedPerUser;
   public double[] getEnergyAllocatedPerUser(){
     return energyAllocatedPerUser;
@@ -67,6 +72,16 @@ public class Solution implements Serializable {
   public void setEnergyAllocatedPerUser(double[] energyAllocatedPerUser){
     this.energyAllocatedPerUser = Arrays.copyOf(energyAllocatedPerUser, energyAllocatedPerUser.length);
   }
+
+  private double[] lambda = null;
+  public double[] getLambda(){
+    return lambda;
+  }
+  public void setLambda(double[] lambda){
+    this.lambda = lambda;
+  }
+
+  //UPPER-LEVEL SOLUTION ATTRIBUTES
   private double energyDeviationFromProduced = -1;
   public double getEnergyDeviationFromProduced(){
     return energyDeviationFromProduced;
@@ -81,14 +96,6 @@ public class Solution implements Serializable {
   }
   public void setNonREpaid(double nonREpaid){
     this.nonREpaid = nonREpaid;
-  }
-
-  private double[] lambda = null;
-  public double[] getLambda(){
-    return lambda;
-  }
-  public void setLambda(double[] lambda){
-    this.lambda = lambda;
   }
 
 	/**

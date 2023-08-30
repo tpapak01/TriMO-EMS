@@ -67,8 +67,8 @@ public class CostDistr extends Problem {
       parameters.put("repeats", 7) ;
       parameters.put("problem",this.lowerLevelProblem) ;
       Mutation mutation = new DissatisfactionMutation(parameters);
-      parameters.put("improvementRounds", 1);
-      parameters.put("temperature", 1.0) ;
+      parameters.put("improvementRounds", 4);
+      parameters.put("temperature", 0.4) ;
       parameters.put("cooldown", 0.2) ;
       parameters.put("problem",this.lowerLevelProblem);
       parameters.put("mutation", mutation) ;
@@ -142,8 +142,7 @@ public class CostDistr extends Problem {
 
         double best_result = Double.MAX_VALUE;
         int best_solution_index = -1;
-        SolutionSet allSolutions = new SolutionSet(lowerLevelSolutions.size()+improvedLowerLevelSolutions.size());
-        allSolutions = lowerLevelSolutions.union(improvedLowerLevelSolutions);
+        SolutionSet allSolutions = lowerLevelSolutions.union(improvedLowerLevelSolutions);
 
         for (int s=0; s<allSolutions.size(); s++) {
             Solution lowerLevelSol = allSolutions.get(s);
@@ -161,7 +160,7 @@ public class CostDistr extends Problem {
 
         solution.setObjective(0, best_result);
         // fill up extra data for analysis
-        Solution lowerLevelSol = lowerLevelSolutions.get(best_solution_index);
+        Solution lowerLevelSol = allSolutions.get(best_solution_index);
         Variable[] vars = lowerLevelSol.getDecisionVariables();
         Binary bin = (Binary) vars[0];
         double[] energySpent = lowerLevelSol.getSpentEnergy();
@@ -176,7 +175,16 @@ public class CostDistr extends Problem {
         double nonREpaid = calculateNonREPaid(energySpent, costs);
         solution.setNonREpaid(nonREpaid);
 
+        boolean improved_won = true;
+        if (best_solution_index < lowerLevelSolutions.size())
+            improved_won = false;
+        else {
+            int a = 2;
+        }
+
+        //PRINT RESULTS
         System.out.println(best_result);
+        System.out.println("Improved won?: " + improved_won);
         System.out.println(solution.getDecisionVariables()[0]);
 
 	} // evaluate

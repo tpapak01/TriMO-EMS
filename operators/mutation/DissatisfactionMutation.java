@@ -33,10 +33,7 @@ import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
 import jmetal.util.wrapper.XReal;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * This class implements a bit flip mutation operator.
@@ -84,25 +81,24 @@ public class DissatisfactionMutation extends Mutation {
 			double[] w = problem.getWeightOfItems();
 			XReal costs = problem.getCostOfUsage();
 			double[][] positionsChanged = new double[3][mutationRepeats_];
-			int[] positionChanged2 = new int[mutationRepeats_];
-			for (int i=0; i<mutationRepeats_; i++) positionChanged2[i] = -1;
+			int[] dontRevisitPositions = new int[mutationRepeats_];
+			for (int i=0; i<mutationRepeats_; i++) dontRevisitPositions[i] = -1;
 			int index = 0;
-			int repeat_counter = 0;
 
 			for (int i = 0; i < solution.getDecisionVariables().length; i++) {
 				Binary bin = (Binary) solution.getDecisionVariables()[i];
 				int numOfBits = bin.getNumberOfBits();
 
-				do {
+				for (int r=0; r<mutationRepeats_; r++){
 					int tries = 0;
                     int position;
-                    List check = Arrays.asList(positionChanged2);
+                    List check = Collections.singletonList(dontRevisitPositions);
                     do {
                         position = PseudoRandom.randInt(0, numOfBits-1);
 						tries++;
 						if (tries > 20)
 							break;
-                    } while (check.contains(position) || bin.getIth(position) || pref_vector[position] == false);
+                    } while (check.contains(position) || bin.getIth(position) || !pref_vector[position]);
 
 					if (tries > 20)
 						break;
@@ -126,21 +122,19 @@ public class DissatisfactionMutation extends Mutation {
                         	break;
                     } while (step == c || pref_vector[newposition] || bin.getIth(newposition));
 
-					repeat_counter++;
-					if (tries > 20)
-						continue;
+					if (tries <= 20) {
+						double cost = w[it] * costs.getValue(step);
+						if (cost <= temperature) {
+							bin.bits_.flip(newposition);
+							positionsChanged[0][index] = newposition;
+							positionsChanged[1][index] = Math.abs(c - step);
+							positionsChanged[2][index] = cost;
+							dontRevisitPositions[index] = newposition;
+							index++;
+						}
+					}
 
-                    double cost = w[it] * costs.getValue(step);
-                    if (cost <= temperature) {
-                        bin.bits_.flip(newposition);
-                        positionsChanged[0][index] = newposition;
-                        positionsChanged[1][index] = Math.abs(c - step);
-                        positionsChanged[2][index] = cost;
-						positionChanged2[index] = newposition;
-                        index++;
-                    }
-
-                } while (repeat_counter < mutationRepeats_);
+                }
 			}
 			return positionsChanged;
 
