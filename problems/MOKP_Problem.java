@@ -429,15 +429,20 @@ public class MOKP_Problem extends Problem {
             c = position % (this.numberOfConstraints_ * numberOfItems) / numberOfItems;
             int userAndTime = u * (this.numberOfConstraints_ * numberOfItems) + c * numberOfItems;
             it =  (userAndTime == 0 ? position : (position % userAndTime));
+            //OBJ D
             double obj_d = solution.getObjective(0);
             int dissatisfaction_denominator = requestedDevicesPerUser[u];
             //int dissatisfaction_nominator = (int) dissatisfactionPerUser[u] * dissatisfaction_denominator;
             double impact = Math.pow(0.5, positionsChanged[1][i]);
             double difference = 1.0/dissatisfaction_denominator*impact;
             solution.setObjective(0, obj_d - difference);
+            //OBJ C
             double obj_c = solution.getObjective(1);
             double cost = positionsChanged[2][i];
-            solution.setObjective(1, obj_c + cost);
+            double[] energyAllocatedPerUser = solution.getEnergyAllocatedPerUser();
+            energyAllocatedPerUser[u] += cost;
+            if (energyAllocatedPerUser[u] > obj_c)
+                solution.setObjective(1, energyAllocatedPerUser[u]);
             /**********update extra attributes of solution*******/
             //dissatisfactionPerUser
             double[] dissatisfactionPerUser = solution.getDissatisfactionPerUser();
@@ -448,8 +453,6 @@ public class MOKP_Problem extends Problem {
             spentEnergy[c] += w[it];
             solution.setSpentEnergy(spentEnergy);
             //energyAllocatedPerUser
-            double[] energyAllocatedPerUser = solution.getEnergyAllocatedPerUser();
-            energyAllocatedPerUser[u] += cost;
             solution.setEnergyAllocatedPerUser(energyAllocatedPerUser);
 
         }

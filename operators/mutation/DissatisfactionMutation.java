@@ -51,7 +51,7 @@ public class DissatisfactionMutation extends Mutation {
 
 	  private int mutationRepeats_ = 0;
 	  private MOKP_Problem problem = null;         // The problem to solve
-	  private static final int MISPLACEMENT = 2;
+	  private static final int MISPLACEMENT = 3;
 
 	/**
 	 * Constructor
