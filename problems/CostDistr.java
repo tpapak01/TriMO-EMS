@@ -20,6 +20,7 @@ import jmetal.operators.localSearch.MutationLocalSearch;
 import jmetal.operators.mutation.DissatisfactionMutation;
 import jmetal.operators.mutation.Mutation;
 import jmetal.util.JMException;
+import jmetal.util.PseudoRandom;
 import jmetal.util.wrapper.XReal;
 
 import java.io.BufferedReader;
@@ -137,7 +138,17 @@ public class CostDistr extends Problem {
                 }
             }
         } else {
-            //TODO NSGAII
+            for (int s = 0; s < lowerLevelSolutions.size(); s++) {
+                Solution lowerLevelSol = lowerLevelSolutions.get(s);
+                Solution newSol = null;
+                double rndSel = PseudoRandom.randDouble();
+                if (rndSel < 0.5) {
+                    newSol = (Solution) improvementOperatorD.execute(lowerLevelSol);
+                    improvedLowerLevelSolutions.add(newSol);
+                } else {
+                    //TODO C LOCAL SEARCH
+                }
+            }
         }
 
         double best_result = Double.MAX_VALUE;
