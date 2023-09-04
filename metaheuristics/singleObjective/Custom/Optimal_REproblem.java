@@ -23,17 +23,17 @@ public class Optimal_REproblem extends Algorithm {
         ArrayList<int[]> itemsPerTimeslot = new ArrayList<>(problem_.getNumberOfConstraints());
         ArrayList<Integer[]> indexPerTimeslot = new ArrayList<>(problem_.getNumberOfConstraints());
         int maxPossibleSum[] = new int[problem_.getNumberOfConstraints()];
+        int sum[] = new int[problem_.getNumberOfConstraints()];
         for (int i=0; i<problem_.getNumberOfConstraints(); i++){
             itemsPerTimeslot.add(((REproblem) problem_).produceListForTimeslot(i));
             indexPerTimeslot.add(((REproblem) problem_).getIndexListPerTimeslot(i));
             /////
             int[] list = itemsPerTimeslot.get(i);
-            int sum = 0;
             for (int k = 0; k < list.length; k++) {
-                sum += list[k];
+                sum[i] += list[k];
             }
             /////
-            maxPossibleSum[i] = ((REproblem) problem_).calculateMaxPossibleSum(itemsPerTimeslot.get(i), sum, i);
+            maxPossibleSum[i] = ((REproblem) problem_).calculateMaxPossibleSum(itemsPerTimeslot.get(i), sum[i], i);
             System.out.println("Max possible for " + i + " = "+ (double)maxPossibleSum[i]/10);
         }
 
@@ -49,30 +49,23 @@ public class Optimal_REproblem extends Algorithm {
             //update winner variable
             int[] list = itemsPerTimeslot.get(i);
             int smallest = list[0];
-            int sum = 0;
             for (int k = 0; k < list.length; k++) {
-                sum += list[k];
                 //Compare elements of array with min
                 if(list[k] <smallest)
                     smallest = list[k];
             }
-            int r = list.length;
-            if (sum > maxPossibleSum[i]){
-                r = maxPossibleSum[i] / smallest;
+
+            if (sum[i] == maxPossibleSum[i]){
+                printCombination(list, list.length, list.length, maxPossibleSum[i]);
+            } else {
                 int start = 1;
+                //int r = maxPossibleSum[i] / smallest;
                 do {
                     boolean res = printCombination(list, list.length, start, maxPossibleSum[i]);
                     if (res)
                         break;
                     start++;
-                } while (start <= r);
-            } else {
-                do {
-                    boolean res = printCombination(list, list.length, r, maxPossibleSum[i]);
-                    if (res)
-                        break;
-                    r--;
-                } while (r > 0);
+                } while (start < list.length);
             }
 
             //now that winner is full, use it to fill up MOKP solution with 1's in the right places\
@@ -82,6 +75,7 @@ public class Optimal_REproblem extends Algorithm {
                 int position = indexList[index];
                 bin.setIth(position, true);
             }
+            System.out.println("Found combination for time " + i);
         }
         vars[0] = bin;
         newSolution.setDecisionVariables(vars);
