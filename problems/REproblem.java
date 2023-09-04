@@ -360,15 +360,25 @@ public class REproblem extends Problem {
     }
 
     public int calculateMaxPossibleSum(int[] list, int sum, int pos){
-        int upper_limit_sum = (int) (producedRE[pos] * 10);
-        if (upper_limit_sum > sum)
-            upper_limit_sum = sum;
+        int produced = (int) (producedRE[pos] * 10);
+        if (produced >= sum) {
+            return sum;
+        }
         boolean exists;
+        int upper_index = produced;
+        int lower_index = produced;
         while (true) {
-            exists = isSubsetSum(list, list.length, upper_limit_sum);
+            //check above produced
+            exists = isSubsetSum(list, list.length, upper_index);
             if (exists)
-                return upper_limit_sum;
-            upper_limit_sum -= 1;
+                return upper_index;
+            upper_index++;
+            if (upper_index == sum) return upper_index;
+            //check below produced
+            exists = isSubsetSum(list, list.length, lower_index);
+            if (exists)
+                return lower_index;
+            lower_index--;
         }
     }
 
