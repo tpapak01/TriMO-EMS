@@ -34,6 +34,7 @@ public class Optimal_REproblem extends Algorithm {
             }
             /////
             maxPossibleSum[i] = ((REproblem) problem_).calculateMaxPossibleSum(itemsPerTimeslot.get(i), sum, i);
+            System.out.println("Max possible for " + i + " = "+ (double)maxPossibleSum[i]/10);
         }
 
         //PART 2: Perform exhaustive search to find that combination per time slot
