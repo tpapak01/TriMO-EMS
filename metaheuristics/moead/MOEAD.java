@@ -48,6 +48,7 @@ public class MOEAD extends Algorithm {
    */
   //Vector<Vector<Double>> lambda_ ; 
   double[][] lambda_;
+  private double[] nadirObjectiveValue;
   /**
    * T: neighbour size
    */
@@ -83,6 +84,7 @@ public class MOEAD extends Algorithm {
   public MOEAD(Problem problem) {
     super (problem) ;
     functionType_ = "TCHE1";
+    nadirObjectiveValue = ((MOKP_Problem)problem).getNadirObjectiveValue();
     /*
     try {
           evalsWriter = new FileWriter("LowerLevelParetoVisual/evals.txt");
@@ -760,7 +762,7 @@ public class MOEAD extends Algorithm {
         double diff;
         if (normalize_)
           diff = Math.abs(individual.getNormalizedObjective(n) - z_[n]);
-        else diff = Math.abs(individual.getObjective(n) - z_[n]);
+        else diff = Math.abs((individual.getObjective(n) / nadirObjectiveValue[n]) - z_[n]);
 
         double feval;
         // make sure the multiplication with λ doesn't result in an absolute zero

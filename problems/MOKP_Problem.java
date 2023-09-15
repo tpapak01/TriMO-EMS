@@ -34,6 +34,7 @@ public class MOKP_Problem extends Problem {
     private boolean [] pref_vector; // preferences of users: user x time x device
     private XReal costOfUsage ; // capacity of each  knapsack .
     private int[] requestedDevicesPerUser;
+    private double[] nadirObjectiveValue;
 
   public MOKP_Problem(String problemName,String userPreferenceName) {
 	  this.setMaxmized_(false); // this problem is not to be maximized
@@ -65,6 +66,8 @@ public class MOKP_Problem extends Problem {
           this.numberOfConstraints_ = Integer.parseInt(line);
 
           this.numberOfObjectives_ = 2;
+          nadirObjectiveValue = new double[this.numberOfObjectives_];
+          nadirObjectiveValue[1] = Double.MIN_VALUE;
 
           w = new double[numberOfItems];
 
@@ -86,6 +89,7 @@ public class MOKP_Problem extends Problem {
           numberOfUsers = Integer.parseInt(line);
           in.readLine();
 
+          nadirObjectiveValue[0] = numberOfUsers;
           pref = new boolean[numberOfUsers][this.numberOfConstraints_][numberOfItems];
           pref_vector = new boolean[numberOfUsers*this.numberOfConstraints_*numberOfItems];
           //--------
@@ -118,7 +122,10 @@ public class MOKP_Problem extends Problem {
 
               in.readLine();
 
-          }
+              if (requestedEnergyPerUser[u] > nadirObjectiveValue[1])
+                  nadirObjectiveValue[1] = requestedEnergyPerUser[u];
+
+          } //u
 
           in.close();
 
@@ -166,6 +173,10 @@ public class MOKP_Problem extends Problem {
 
     public boolean[] getUserPreferenceVector(){
         return pref_vector;
+    }
+
+    public double[] getNadirObjectiveValue(){
+        return nadirObjectiveValue;
     }
 
     public void repair(Solution solution){
