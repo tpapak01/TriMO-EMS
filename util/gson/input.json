@@ -1,0 +1,183 @@
+{
+  "id" : 0,
+  "num_of_distinct_appliances" : 3,
+  "userList" : [ {
+    "id" : 0,
+    "index" : 0
+  }, {
+    "id" : 1,
+    "index" : 1
+  } ],
+  "timeslotList" : [ {
+    "id" : 0,
+    "index" : 0
+  }, {
+    "id" : 1,
+    "index" : 1
+  } ],
+  "statusList" : [ {
+    "id" : 0,
+    "index" : 0
+  }, {
+    "id" : 1,
+    "index" : 1
+  } ],
+  "energyList" : [ {
+    "id" : 0,
+    "index" : 0,
+    "value" : 1.0
+  }, {
+    "id" : 1,
+    "index" : 1,
+    "value" : 1.0
+  }, {
+    "id" : 2,
+    "index" : 2,
+    "value" : 1.0
+  } ],
+  "costList" : [ {
+    "id" : 0,
+    "index" : 0,
+    "timeslot" : 0,
+    "value" : 1.0
+  }, {
+    "id" : 1,
+    "index" : 1,
+    "timeslot" : 1,
+    "value" : 1.0
+  } ],
+  "producedREList" : [ {
+    "id" : 0,
+    "index" : 0,
+    "timeslot" : 0,
+    "value" : 3.0
+  }, {
+    "id" : 1,
+    "index" : 1,
+    "timeslot" : 1,
+    "value" : 2.0
+  } ],
+  "applianceList" : [ {
+    "id" : 0,
+    "user" : 0,
+    "timeslot" : 0,
+    "energy" : 0,
+    "status" : null
+  }, {
+    "id" : 1,
+    "user" : 0,
+    "timeslot" : 0,
+    "energy" : 1,
+    "status" : null
+  }, {
+    "id" : 2,
+    "user" : 0,
+    "timeslot" : 0,
+    "energy" : 2,
+    "status" : null
+  }, {
+    "id" : 3,
+    "user" : 0,
+    "timeslot" : 1,
+    "energy" : 0,
+    "status" : null
+  }, {
+    "id" : 4,
+    "user" : 0,
+    "timeslot" : 1,
+    "energy" : 1,
+    "status" : null
+  }, {
+    "id" : 5,
+    "user" : 0,
+    "timeslot" : 1,
+    "energy" : 2,
+    "status" : null
+  }, {
+    "id" : 6,
+    "user" : 1,
+    "timeslot" : 0,
+    "energy" : 0,
+    "status" : null
+  }, {
+    "id" : 7,
+    "user" : 1,
+    "timeslot" : 0,
+    "energy" : 1,
+    "status" : null
+  }, {
+    "id" : 8,
+    "user" : 1,
+    "timeslot" : 0,
+    "energy" : 2,
+    "status" : null
+  }, {
+    "id" : 9,
+    "user" : 1,
+    "timeslot" : 1,
+    "energy" : 0,
+    "status" : null
+  }, {
+    "id" : 10,
+    "user" : 1,
+    "timeslot" : 1,
+    "energy" : 1,
+    "status" : null
+  }, {
+    "id" : 11,
+    "user" : 1,
+    "timeslot" : 1,
+    "energy" : 2,
+    "status" : null
+  } ],
+  "preferenceList" : [ {
+    "id" : 0,
+    "appliance" : 0,
+    "status" : true
+  }, {
+    "id" : 1,
+    "appliance" : 1,
+    "status" : true
+  }, {
+    "id" : 2,
+    "appliance" : 2,
+    "status" : true
+  }, {
+    "id" : 3,
+    "appliance" : 3,
+    "status" : false
+  }, {
+    "id" : 4,
+    "appliance" : 4,
+    "status" : true
+  }, {
+    "id" : 5,
+    "appliance" : 5,
+    "status" : false
+  }, {
+    "id" : 6,
+    "appliance" : 6,
+    "status" : true
+  }, {
+    "id" : 7,
+    "appliance" : 7,
+    "status" : false
+  }, {
+    "id" : 8,
+    "appliance" : 8,
+    "status" : false
+  }, {
+    "id" : 9,
+    "appliance" : 9,
+    "status" : false
+  }, {
+    "id" : 10,
+    "appliance" : 10,
+    "status" : true
+  }, {
+    "id" : 11,
+    "appliance" : 11,
+    "status" : true
+  } ],
+  "score" : null
+}
