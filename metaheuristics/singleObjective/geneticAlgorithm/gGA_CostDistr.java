@@ -236,13 +236,23 @@ public class gGA_CostDistr extends Algorithm {
    *
    */
   public void initPopulation() throws JMException, ClassNotFoundException {
-    for (int i = 0; i < populationSize; i++) {
-      Solution newSolution = new Solution(problem_);
+    if (((CostDistr)problem_).getInputCosts() == null) {
+      for (int i = 0; i < populationSize; i++) {
+        Solution newSolution = new Solution(problem_);
 
-      problem_.evaluate(newSolution);
-      evaluations++;
-      population.add(newSolution) ;
-    } // for
+        problem_.evaluate(newSolution);
+        evaluations++;
+        population.add(newSolution);
+      } // for
+    } else {
+      for (int i = 0; i < populationSize; i++) {
+        Solution newSolution = new Solution(problem_);
+        newSolution.setDecisionVariables(updateSolution(((CostDistr)problem_).getInputCosts()));
+        problem_.evaluate(newSolution);
+        evaluations++;
+        population.add(newSolution);
+      } // for
+    }
   } // initPopulation
 
   public void initPopulationCostDistr(double[] producedRE) throws JMException, ClassNotFoundException {

@@ -22,6 +22,9 @@
 package jmetal.metaheuristics.singleObjective.differentialEvolution;
 
 import jmetal.core.*;
+import jmetal.encodings.variable.ArrayReal;
+import jmetal.problems.CostDistr;
+import jmetal.problems.MOKP_Problem;
 import jmetal.util.JMException;
 import jmetal.util.comparators.ObjectiveComparator;
 
@@ -178,12 +181,34 @@ public class DE_CostDistr extends Algorithm {
    *
    */
   public void initPopulation() throws JMException, ClassNotFoundException {
-    for (int i = 0; i < populationSize; i++) {
-      Solution newSolution = new Solution(problem_);
 
-      problem_.evaluate(newSolution);
-      evaluations++;
-      population.add(newSolution) ;
-    } // for
+    if (((CostDistr)problem_).getInputCosts() == null) {
+      for (int i = 0; i < populationSize; i++) {
+        Solution newSolution = new Solution(problem_);
+
+        problem_.evaluate(newSolution);
+        evaluations++;
+        population.add(newSolution);
+      } // for
+    } else {
+      for (int i = 0; i < populationSize; i++) {
+        Solution newSolution = new Solution(problem_);
+        newSolution.setDecisionVariables(updateSolution(((CostDistr)problem_).getInputCosts()));
+        problem_.evaluate(newSolution);
+        evaluations++;
+        population.add(newSolution);
+      } // for
+    }
   } // initPopulation
+
+
+  public Variable[] updateSolution(double[] costsToSend) throws JMException {
+    Variable [] variables = new Variable[1];
+    ArrayReal arrayReal = new ArrayReal(problem_.getNumberOfVariables(), problem_);
+    for (int j=0; j<problem_.getNumberOfVariables(); j++)
+      arrayReal.setValue(j, costsToSend[j]);
+    variables[0] = arrayReal;
+    return variables;
+  }
+
 } // DE
