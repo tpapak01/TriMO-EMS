@@ -48,6 +48,7 @@ import java.util.Comparator;
 
 public class NSGAII extends Algorithm {
 
+  private MOKP_Problem problemMOKP;
   /**
    * Stores the population
    */
@@ -62,7 +63,8 @@ public class NSGAII extends Algorithm {
    * @param problem Problem to solve
    */
   public NSGAII(Problem problem) {
-    super (problem) ;
+    super (problem);
+    problemMOKP = (MOKP_Problem) problem;
     /*
     try {
       evalsWriter = new FileWriter("LowerLevelParetoVisualNSGAII/evals.txt");
@@ -281,9 +283,8 @@ public class NSGAII extends Algorithm {
 
     //thalis
     //register Spent Energy of top solutions, to be used when comparing equal solutions
-    MOKP_Problem mokp_problem = (MOKP_Problem) problem_;
     for (int i = 0; i < population.size(); i++) {
-      mokp_problem.calculateSpentEnergy(population.get(i));
+      problemMOKP.calculateSpentEnergy(population.get(i));
     }
 
     //thalis
@@ -372,8 +373,8 @@ public class NSGAII extends Algorithm {
    */
   public void initPopulation(SolutionSet population, int populationSize) throws JMException, ClassNotFoundException {
 
-    int numberOfUsers = ((MOKP_Problem) problem_).getNumberOfUsers();
-    int numberOfItems = ((MOKP_Problem) problem_).getNumberOfItems();
+    int numberOfUsers = problemMOKP.getNumberOfUsers();
+    int numberOfItems = problemMOKP.getNumberOfItems();
     int numOfConstraints = problem_.getNumberOfConstraints();
     int numOfBits = numberOfUsers * numberOfItems * numOfConstraints;
 
@@ -394,7 +395,7 @@ public class NSGAII extends Algorithm {
 
       // exactly what the users want
       if (i == populationSize-1) {
-        boolean[] pref_vector = ((MOKP_Problem) problem_).getUserPreferenceVector();
+        boolean[] pref_vector = problemMOKP.getUserPreferenceVector();
         Variable[] vars = new Variable[problem_.getNumberOfVariables()];
         for (int v = 0; v < vars.length; v++) {
           Binary bin = new Binary(numOfBits);
@@ -409,7 +410,7 @@ public class NSGAII extends Algorithm {
         newSolution.setDecisionVariables(vars);
       }
 
-      ((MOKP_Problem) problem_).repair(newSolution);
+      problemMOKP.repair(newSolution);
 
       problem_.evaluate(newSolution);
       evaluations_++;

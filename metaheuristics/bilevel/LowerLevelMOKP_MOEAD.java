@@ -7,6 +7,7 @@ import jmetal.operators.crossover.SinglePointCrossover;
 import jmetal.operators.crossover.TwoPointCrossoverCustom;
 import jmetal.operators.crossover.TwoPointsCrossover;
 import jmetal.operators.mutation.BitFlipMutation;
+import jmetal.problems.CostDistr;
 import jmetal.problems.MOKP_Problem;
 import jmetal.qualityIndicator.QualityIndicator;
 import jmetal.util.Configuration;
@@ -25,7 +26,7 @@ public class LowerLevelMOKP_MOEAD {
 
     public static Logger logger_ ;      // Logger object
     public static FileHandler fileHandler_ ; // FileHandler object
-    public static Problem problem   ;         // The problem to solve
+    public static MOKP_Problem problemMOKP   ;         // The problem to solve
     public static Algorithm algorithm ;         // The algorithm to use
 
     // statistical analysis
@@ -33,7 +34,7 @@ public class LowerLevelMOKP_MOEAD {
     private static double time_mean = 0;
     private static FileWriter timeWriter;
 
-    public static Problem initializeAlgorithm(String problemName, String problemUserPreferences) throws SecurityException, IOException {
+    public static MOKP_Problem initializeAlgorithm(String problemName, String problemUserPreferences) throws SecurityException, IOException {
 
 
         Operator crossover ;         // Crossover operator
@@ -51,7 +52,7 @@ public class LowerLevelMOKP_MOEAD {
         indicators = null ;
 
         //thalis
-        problem = new MOKP_Problem(problemName, problemUserPreferences);
+        problemMOKP = new MOKP_Problem(problemName, problemUserPreferences);
         //thalis comment, default option
         //problem = new Kursawe("Real", 3);
         //problem = new Kursawe("BinaryReal", 3);
@@ -61,25 +62,25 @@ public class LowerLevelMOKP_MOEAD {
         //problem = new DTLZ1("Real");
         //problem = new OKA2("Real") ;
 
-        indicators = new QualityIndicator(problem, "OPTIMAL_PARETO") ;
+        indicators = new QualityIndicator(problemMOKP, "OPTIMAL_PARETO") ;
         
-        algorithm = new MOEAD(problem);
+        algorithm = new MOEAD(problemMOKP);
         //algorithm = new MOEAD_DRA(problem);
 
         // Algorithm parameters
         //thalis
         int populationSize;
-        if (problem.getNumberOfObjectives() == 2) {
+        if (problemMOKP.getNumberOfObjectives() == 2) {
             populationSize              = 100   ;
-        } else if (problem.getNumberOfObjectives() == 3) {
+        } else if (problemMOKP.getNumberOfObjectives() == 3) {
             populationSize              = 105   ;
-        } else if (problem.getNumberOfObjectives() == 4) {
+        } else if (problemMOKP.getNumberOfObjectives() == 4) {
             populationSize              = 120   ;
-        } else if (problem.getNumberOfObjectives() == 6) {
+        } else if (problemMOKP.getNumberOfObjectives() == 6) {
             populationSize              = 126   ;
-        } else if (problem.getNumberOfObjectives() == 8) {
+        } else if (problemMOKP.getNumberOfObjectives() == 8) {
             populationSize              = 120   ;
-        } else if (problem.getNumberOfObjectives() == 10) {
+        } else if (problemMOKP.getNumberOfObjectives() == 10) {
             populationSize              = 220   ;
         } else {
             populationSize              = 100   ;
@@ -128,7 +129,7 @@ public class LowerLevelMOKP_MOEAD {
         parameters = new HashMap();
         double mutationProbability = 0.01;
         parameters.put("probability", mutationProbability);
-        parameters.put("problem", problem);
+        parameters.put("problem", problemMOKP);
         mutation = new BitFlipMutation(parameters);
         //thalis comment
         //parameters = new HashMap() ;
@@ -146,7 +147,7 @@ public class LowerLevelMOKP_MOEAD {
 
         /* Comparator */
         Comparator comparator;
-        if (problem.isMaxmized())
+        if (problemMOKP.isMaxmized())
             comparator = new ObjectiveComparator(0, true) ; // Single objective comparator
         else comparator = new ObjectiveComparator(0) ; // Single objective comparator
         algorithm.setInputParameter("comparator", comparator);
@@ -156,13 +157,13 @@ public class LowerLevelMOKP_MOEAD {
 
         //timeWriter = new FileWriter("LowerLevelParetoVisual/time.txt");
 
-        return problem;
+        return problemMOKP;
     }
 
 
     public static SolutionSet evaluate(XReal y) throws JMException, SecurityException, ClassNotFoundException {
 
-        ((MOKP_Problem) problem).setCostOfUsage(y);
+        problemMOKP.setCostOfUsage(y);
 
         // Execute the Algorithm
         long initTime = System.currentTimeMillis();

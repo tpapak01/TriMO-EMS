@@ -19,19 +19,20 @@ import jmetal.util.PseudoRandom;
 
 
 public class MOKP_BinarySolution extends BinarySolutionType {
-    
+
+	private MOKP_Problem problemMOKP;
+
     public MOKP_BinarySolution(Problem problem) {
         super(problem);
+		problemMOKP = (MOKP_Problem) problem;
     }    
     
     @Override
     public Variable[] createVariables() {
-		MOKP_Problem problem = (MOKP_Problem) this.problem_;
-
-        Variable[] vars = new Variable[problem.getNumberOfVariables()];
+        Variable[] vars = new Variable[problemMOKP.getNumberOfVariables()];
 
         for (int i = 0; i < vars.length; i++) {
-            vars[i] = new Binary(problem.getNumberOfItems() * problem.getNumberOfUsers() * problem.getNumberOfConstraints());
+            vars[i] = new Binary(problemMOKP.getNumberOfItems() * problemMOKP.getNumberOfUsers() * problemMOKP.getNumberOfConstraints());
         }
         
         return vars;        

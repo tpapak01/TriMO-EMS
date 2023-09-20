@@ -39,7 +39,7 @@ public class UpperLevelCostDistr_DE {
      */
     public static void main(String[] args) throws JMException, SecurityException, IOException, ClassNotFoundException {
 
-        Problem problem;         // The problem to solve
+        CostDistr problem;         // The problem to solve
         Algorithm algorithm;         // The algorithm to use
         Operator crossover;         // Crossover operator
         Operator mutation;         // Mutation operator
@@ -57,9 +57,9 @@ public class UpperLevelCostDistr_DE {
         //initialize Lower Level algorithm
         MOKP_Problem lowerLevelProblem;
         if (lowerLevelAlgorithmName.equals("MOEAD"))
-            lowerLevelProblem = (MOKP_Problem) LowerLevelMOKP_MOEAD.initializeAlgorithm(problemName, problemUserPreferences);
+            lowerLevelProblem = LowerLevelMOKP_MOEAD.initializeAlgorithm(problemName, problemUserPreferences);
         else
-            lowerLevelProblem = (MOKP_Problem) LowerLevelMOKP_NSGAII.initializeAlgorithm(problemName, problemUserPreferences);
+            lowerLevelProblem = LowerLevelMOKP_NSGAII.initializeAlgorithm(problemName, problemUserPreferences);
 
         //thalis
         problem = new CostDistr(problemName, lowerLevelProblem, lowerLevelAlgorithmName, costsName);

@@ -37,12 +37,15 @@ import java.util.Comparator;
  */
 public class DE_CostDistr extends Algorithm {
 
+  private CostDistr problemCostDistr;
+
   /**
   * Constructor
   * @param problem Problem to solve
   */
   public DE_CostDistr(Problem problem){
-    super(problem) ;
+    super(problem);
+    problemCostDistr = (CostDistr) problem;
   } // gDE
 
   private int populationSize;
@@ -182,7 +185,7 @@ public class DE_CostDistr extends Algorithm {
    */
   public void initPopulation() throws JMException, ClassNotFoundException {
 
-    if (((CostDistr)problem_).getInputCosts() == null) {
+    if (problemCostDistr.getInputCosts() == null) {
       for (int i = 0; i < populationSize; i++) {
         Solution newSolution = new Solution(problem_);
 
@@ -193,7 +196,7 @@ public class DE_CostDistr extends Algorithm {
     } else {
       for (int i = 0; i < populationSize; i++) {
         Solution newSolution = new Solution(problem_);
-        newSolution.setDecisionVariables(updateSolution(((CostDistr)problem_).getInputCosts()));
+        newSolution.setDecisionVariables(updateSolution(problemCostDistr.getInputCosts()));
         problem_.evaluate(newSolution);
         evaluations++;
         population.add(newSolution);

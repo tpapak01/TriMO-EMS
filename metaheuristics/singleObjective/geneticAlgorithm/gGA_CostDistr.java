@@ -39,6 +39,7 @@ import java.util.Comparator;
  */
 public class gGA_CostDistr extends Algorithm {
 
+  private CostDistr problemCostDistr;
   private int populationSize;
   private SolutionSet population;
   int evaluations;
@@ -50,7 +51,8 @@ public class gGA_CostDistr extends Algorithm {
   * @param problem Problem to solve.
   */
   public gGA_CostDistr(Problem problem){
-    super(problem) ;
+    super(problem);
+    problemCostDistr = (CostDistr) problem;
   } // GGA
   
  /**
@@ -99,7 +101,7 @@ public class gGA_CostDistr extends Algorithm {
      */
 
     initPopulation();
-    //double[] producedRE = ((CostDistr) problem_).getProducedRE();
+    //double[] producedRE = problemCostDistr.getProducedRE();
     //initPopulationCostDistr(producedRE);
      
     // Sort population
@@ -198,7 +200,7 @@ public class gGA_CostDistr extends Algorithm {
         population.remove(population.size()-1);
 
         double[] costsToSend = new double[problem_.getNumberOfVariables()];
-        //double[] producedRE = ((CostDistr) problem_).getProducedRE();
+        //double[] producedRE = problemCostDistr.getProducedRE();
         Solution newSolution = new Solution(problem_);
         //for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
         //  costsToSend[j] = 1 - (producedRE[j] / 20);
@@ -236,7 +238,7 @@ public class gGA_CostDistr extends Algorithm {
    *
    */
   public void initPopulation() throws JMException, ClassNotFoundException {
-    if (((CostDistr)problem_).getInputCosts() == null) {
+    if (problemCostDistr.getInputCosts() == null) {
       for (int i = 0; i < populationSize; i++) {
         Solution newSolution = new Solution(problem_);
 
@@ -247,7 +249,7 @@ public class gGA_CostDistr extends Algorithm {
     } else {
       for (int i = 0; i < populationSize; i++) {
         Solution newSolution = new Solution(problem_);
-        newSolution.setDecisionVariables(updateSolution(((CostDistr)problem_).getInputCosts()));
+        newSolution.setDecisionVariables(updateSolution(problemCostDistr.getInputCosts()));
         problem_.evaluate(newSolution);
         evaluations++;
         population.add(newSolution);

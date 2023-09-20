@@ -39,6 +39,7 @@ import java.util.Vector;
 
 public class MOEAD extends Algorithm {
 
+  private MOKP_Problem problemMOKP;
   /**
    * Z vector (ideal point)
    */
@@ -83,8 +84,9 @@ public class MOEAD extends Algorithm {
    */
   public MOEAD(Problem problem) {
     super (problem) ;
+    problemMOKP = (MOKP_Problem) problem;
     functionType_ = "TCHE1";
-    nadirObjectiveValue = ((MOKP_Problem)problem).getNadirObjectiveValue();
+    nadirObjectiveValue = problemMOKP.getNadirObjectiveValue();
     /*
     try {
           evalsWriter = new FileWriter("LowerLevelParetoVisual/evals.txt");
@@ -307,11 +309,11 @@ public class MOEAD extends Algorithm {
           population_.remove(population_.size()-1);
 
           Solution newSolution = new Solution(problem_);
-          int numberOfUsers = ((MOKP_Problem) problem_).getNumberOfUsers();
-          int numberOfItems = ((MOKP_Problem) problem_).getNumberOfItems();
+          int numberOfUsers = problemMOKP.getNumberOfUsers();
+          int numberOfItems = problemMOKP.getNumberOfItems();
           int numOfConstraints = problem_.getNumberOfConstraints();
           int numOfBits = numberOfUsers * numberOfItems * numOfConstraints;
-          boolean[][][] pref = ((MOKP_Problem) problem_).getUserPreferences();
+          boolean[][][] pref = problemMOKP.getUserPreferences();
           Variable[] vars = new Variable[problem_.getNumberOfVariables()];
           for (int v = 0; v < vars.length; v++) {
               Binary bin = new Binary(numOfBits);
@@ -358,9 +360,8 @@ public class MOEAD extends Algorithm {
 
     //thalis
     //register Spent Energy of top solutions, to be used when comparing equal solutions
-    MOKP_Problem mokp_problem = (MOKP_Problem) problem_;
     for (int i = 0; i < population.size(); i++) {
-      mokp_problem.calculateSpentEnergy(population.get(i));
+      problemMOKP.calculateSpentEnergy(population.get(i));
     }
 
 
@@ -527,8 +528,8 @@ public class MOEAD extends Algorithm {
    */
   public void initPopulation(SolutionSet population, int populationSize) throws JMException, ClassNotFoundException {
 
-    int numberOfUsers = ((MOKP_Problem) problem_).getNumberOfUsers();
-    int numberOfItems = ((MOKP_Problem) problem_).getNumberOfItems();
+    int numberOfUsers = problemMOKP.getNumberOfUsers();
+    int numberOfItems = problemMOKP.getNumberOfItems();
     int numOfConstraints = problem_.getNumberOfConstraints();
     int numOfBits = numberOfUsers * numberOfItems * numOfConstraints;
 
@@ -549,7 +550,7 @@ public class MOEAD extends Algorithm {
 
       // exactly what the users want
       if (i == populationSize-1) {
-            boolean[] pref_vector = ((MOKP_Problem) problem_).getUserPreferenceVector();
+            boolean[] pref_vector = problemMOKP.getUserPreferenceVector();
             Variable[] vars = new Variable[problem_.getNumberOfVariables()];
             for (int v = 0; v < vars.length; v++) {
                 Binary bin = new Binary(numOfBits);
@@ -564,7 +565,7 @@ public class MOEAD extends Algorithm {
             newSolution.setDecisionVariables(vars);
       }
 
-      ((MOKP_Problem) problem_).repair(newSolution);
+      problemMOKP.repair(newSolution);
 
       problem_.evaluate(newSolution);
       evaluations_++;
