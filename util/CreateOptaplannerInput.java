@@ -11,7 +11,19 @@ import java.io.IOException;
 
 public class CreateOptaplannerInput {
 
+    private static String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data - multi user - bilevel/"; // The path of the files
+    private static String userPreferencePath = "/Users/emine/IdeaProjects/JMETALHOME/Userpreference_data/"; // The path of the files
+    private static String costsPath = "/Users/emine/IdeaProjects/JMETALHOME/Costs_data/";
+
     public static void main (String[] args) throws IOException {
+
+        String problemName = args[0];
+        String problemUserPreferences = args[1];
+        String problemCosts = args[2];
+
+        String fileName = problemPath + problemName + ".txt";
+        String userPreferenceFileName = userPreferencePath + problemUserPreferences + ".txt";
+        String costsFileName = costsPath + problemCosts + ".txt";
 
         GsonBuilder builder = new GsonBuilder();
         builder.setPrettyPrinting();
@@ -32,7 +44,7 @@ public class CreateOptaplannerInput {
 
         Input myclass = new Input();
 
-        BufferedReader in = new BufferedReader(new FileReader("/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data - multi user - bilevel/knapsack_2_3to2.txt"));
+        BufferedReader in = new BufferedReader(new FileReader(fileName));
         String line;
 
         // Read number of items
@@ -90,7 +102,7 @@ public class CreateOptaplannerInput {
 
         ////////////////////////////////////
 
-        in = new BufferedReader(new FileReader("/Users/emine/IdeaProjects/JMETALHOME/Userpreference_data/userpreference_2_3to2.txt"));
+        in = new BufferedReader(new FileReader(userPreferenceFileName));
 
         line = in.readLine();
         int numberOfUsers = Integer.parseInt(line);
@@ -140,6 +152,23 @@ public class CreateOptaplannerInput {
             in.readLine();
 
         } //u
+
+        in.close();
+
+        /////////////////////////////////////////////////
+
+        in = new BufferedReader(new FileReader(costsFileName));
+
+        for (int i = 0; i < numberOfConstraints_; i++) {
+            line = in.readLine();
+
+            costList cl = new costList();
+            cl.id = i;
+            cl.index = i;
+            cl.timeslot = i;
+            cl.value = Double.parseDouble(line);
+            myclass.costList[i] = cl;
+        }
 
         in.close();
 
