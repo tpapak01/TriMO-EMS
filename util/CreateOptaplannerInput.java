@@ -4,16 +4,15 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import jmetal.util.gson.*;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 
 public class CreateOptaplannerInput {
 
     private static String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data - multi user - bilevel/"; // The path of the files
     private static String userPreferencePath = "/Users/emine/IdeaProjects/JMETALHOME/Userpreference_data/"; // The path of the files
     private static String costsPath = "/Users/emine/IdeaProjects/JMETALHOME/Costs_data/";
+
+    private static String outputPath = "/Users/emine/Downloads/optaplanner-distribution-9.42.0.Final/optaplanner-distribution-9.42.0.Final/examples/sources/data/reproblem/unsolved/";
 
     public static void main (String[] args) throws IOException {
 
@@ -24,6 +23,7 @@ public class CreateOptaplannerInput {
         String fileName = problemPath + problemName + ".txt";
         String userPreferenceFileName = userPreferencePath + problemUserPreferences + ".txt";
         String costsFileName = costsPath + problemCosts + ".txt";
+        String outputFileName = outputPath + "5users" + ".json";
 
         GsonBuilder builder = new GsonBuilder();
         builder.setPrettyPrinting();
@@ -175,7 +175,15 @@ public class CreateOptaplannerInput {
         myclass.statusList[1].index = 1;
 
         String jsonString = gson.toJson(myclass);
+        jsonString = jsonString.replace("\"score\": 0", "\"score\": null");
         System.out.println(jsonString);
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName));
+        writer.write(jsonString);
+
+        writer.close();
+
+
     }
 
 
