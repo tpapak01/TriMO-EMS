@@ -27,7 +27,7 @@ public class LowerLevelMOKP_NSGAII {
 
     public static Logger logger_ ;      // Logger object
     public static FileHandler fileHandler_ ; // FileHandler object
-    public static Problem problem   ;         // The problem to solve
+    public static MOKP_Problem problemMOKP;         // The problem to solve
     public static Algorithm algorithm ;         // The algorithm to use
 
     // statistical analysis
@@ -35,7 +35,7 @@ public class LowerLevelMOKP_NSGAII {
     private static double time_mean = 0;
     private static FileWriter timeWriter;
 
-    public static Problem initializeAlgorithm(String problemName, String problemUserPreferences) throws SecurityException, IOException {
+    public static MOKP_Problem initializeAlgorithm(String problemName, String problemUserPreferences) throws SecurityException, IOException {
 
 
         Operator crossover ;         // Crossover operator
@@ -52,11 +52,11 @@ public class LowerLevelMOKP_NSGAII {
         logger_.addHandler(fileHandler_) ;
 
         //thalis
-        problem = new MOKP_Problem(problemName, problemUserPreferences);
+        problemMOKP = new MOKP_Problem(problemName, problemUserPreferences);
 
-        indicators = new QualityIndicator(problem, "OPTIMAL_PARETO") ;
+        indicators = new QualityIndicator(problemMOKP, "OPTIMAL_PARETO") ;
 
-        algorithm = new NSGAII(problem);
+        algorithm = new NSGAII(problemMOKP);
 
         // Algorithm parameters
         algorithm.setInputParameter("populationSize",100);
@@ -74,7 +74,7 @@ public class LowerLevelMOKP_NSGAII {
         parameters = new HashMap();
         double mutationProbability = 0.01;
         parameters.put("probability", mutationProbability);
-        parameters.put("problem", problem);
+        parameters.put("problem", problemMOKP);
         mutation = new BitFlipMutation(parameters);
 
         // Selection Operator
@@ -91,7 +91,7 @@ public class LowerLevelMOKP_NSGAII {
 
         /* Comparator */
         Comparator comparator;
-        if (problem.isMaxmized())
+        if (problemMOKP.isMaxmized())
             comparator = new ObjectiveComparator(0, true) ; // Single objective comparator
         else comparator = new ObjectiveComparator(0) ; // Single objective comparator
         algorithm.setInputParameter("comparator", comparator);
@@ -101,13 +101,13 @@ public class LowerLevelMOKP_NSGAII {
 
         //timeWriter = new FileWriter("LowerLevelParetoVisualNSGAII/time.txt");
 
-        return problem;
+        return problemMOKP;
     }
 
 
     public static SolutionSet evaluate(XReal y) throws JMException, SecurityException, ClassNotFoundException {
 
-        ((MOKP_Problem) problem).setCostOfUsage(y);
+        problemMOKP.setCostOfUsage(y);
 
         // Execute the Algorithm
         long initTime = System.currentTimeMillis();

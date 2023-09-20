@@ -52,7 +52,7 @@ public class BitFlipMutation extends Mutation {
       IntSolutionType.class) ;
 
   private Double mutationProbability_ = null ;
-  private static MOKP_Problem problem = null;         // The problem to solve
+  private static MOKP_Problem problemMOKP = null;         // The problem to solve
   
 	/**
 	 * Constructor
@@ -63,7 +63,7 @@ public class BitFlipMutation extends Mutation {
   	if (parameters.get("probability") != null)
   		mutationProbability_ = (Double) parameters.get("probability") ;
   	if (parameters.get("problem") != null)
-		problem = (MOKP_Problem) parameters.get("problem") ;
+		problemMOKP = (MOKP_Problem) parameters.get("problem") ;
 	}
 
 	/**
@@ -112,7 +112,7 @@ public class BitFlipMutation extends Mutation {
 
 	public void doCustomMutation(double probability, Solution solution) throws JMException {
 		try {
-			boolean[] pref_vector = problem.getUserPreferenceVector();
+			boolean[] pref_vector = problemMOKP.getUserPreferenceVector();
 
 			for (int i = 0; i < solution.getDecisionVariables().length; i++) {
 				Binary bin = (Binary) solution.getDecisionVariables()[i];
@@ -154,7 +154,7 @@ public class BitFlipMutation extends Mutation {
 			throw new JMException("Exception in " + name + ".execute()");
 		} // if 
 
-		if (problem == null)
+		if (problemMOKP == null)
 			doMutation(mutationProbability_, solution);
 		else
 			doCustomMutation(mutationProbability_, solution);

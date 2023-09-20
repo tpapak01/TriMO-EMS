@@ -35,6 +35,7 @@ import java.util.Comparator;
  */
 public class Custom_CostDistr extends Algorithm {
 
+  private CostDistr problemCostDistr;
   private int populationSize;
   private SolutionSet population;
   int evaluations;
@@ -46,7 +47,8 @@ public class Custom_CostDistr extends Algorithm {
   * @param problem Problem to solve.
   */
   public Custom_CostDistr(Problem problem){
-    super(problem) ;
+    super(problem);
+    problemCostDistr = (CostDistr) problem;
   } // GGA
   
  /**
@@ -73,9 +75,8 @@ public class Custom_CostDistr extends Algorithm {
     comparator = (Comparator) this.getInputParameter("comparator");
 
     //initPopulation();
-    CostDistr prob = ((CostDistr) problem_);
-    double[] producedRE = Arrays.copyOf(prob.getProducedRE(),numOfVars);
-    double totalProducedRE = prob.getTotalProducedRE();
+    double[] producedRE = Arrays.copyOf(problemCostDistr.getProducedRE(),numOfVars);
+    double totalProducedRE = problemCostDistr.getTotalProducedRE();
     initPopulationCostDistr(producedRE, totalProducedRE);
 
     while (evaluations < maxEvaluations) {
