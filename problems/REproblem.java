@@ -29,6 +29,7 @@ public class REproblem extends Problem {
     private static final long serialVersionUID = 1L;
     private String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data - multi user - bilevel/"; // The path of the files
     private String userPreferencePath = "/Users/emine/IdeaProjects/JMETALHOME/Userpreference_data/"; // The path of the files
+    private static String costsPath = "/Users/emine/IdeaProjects/JMETALHOME/Costs_data/";
     public static String fileName; //
     public static String userPreferencefileName; //
 
@@ -58,7 +59,7 @@ public class REproblem extends Problem {
     }
 
 
-    public REproblem(String problemName,String userPreferenceName) {
+    public REproblem(String problemName,String userPreferenceName, String costsName) {
           this.setMaxmized_(false); // this problem is not to be maximized
           this.problemName_ = problemName;
           this.numberOfVariables_ = 1;
@@ -67,15 +68,16 @@ public class REproblem extends Problem {
           fileName = problemPath + this.problemName_ + ".txt";
           userPreferencefileName = userPreferencePath + userPreferenceName + ".txt";
           System.out.println(fileName);
+          String costsFileName = costsPath + costsName + ".txt";
 
           //fills up numberOfItems, p, w, sackCapacity
           //simply read the input textfile
-          this.loadProblem(fileName, userPreferencefileName);
+          this.loadProblem(fileName, userPreferencefileName, costsFileName);
           this.solutionType_ = new REproblem_BinarySolution(this);
 
     }  //
 
-  public void loadProblem(String problemFileName, String userPreferencefileName) {
+  public void loadProblem(String problemFileName, String userPreferencefileName, String costsFileName) {
 
         //1) items, constraints, weights, producedRE
       try {
@@ -170,6 +172,21 @@ public class REproblem extends Problem {
           } catch (IOException e){
               System.out.println("Error reading MOKP problemFile: " + e.getMessage());
           }
+          
+          try {
+              costs = new double[this.numberOfConstraints_];
+              BufferedReader in = new BufferedReader(new FileReader(costsFileName));
+
+              for (int i = 0; i < this.numberOfConstraints_; i++) {
+                  String line = in.readLine();
+                  costs[i] = Double.parseDouble(line);
+              }
+
+              in.close();
+          } catch (IOException e){
+              System.out.println("Error reading MOKP problemFile: " + e.getMessage());
+          }
+
 
   }
   
@@ -187,10 +204,6 @@ public class REproblem extends Problem {
             Variable[] vars = solution.getDecisionVariables();
             Binary bin = (Binary) vars[0];
             solution.setLowerLevelVars(bin);
-
-            costs = new double[this.numberOfConstraints_];
-            for (int j=0; j<this.numberOfConstraints_; j++)
-                costs[j] = 0.5;
 
             double Dresult;
             Dresult = percentage_dissatisfaction_evaluate(solution);

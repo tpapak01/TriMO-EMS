@@ -48,10 +48,11 @@ public class OptimalRE_main {
 
         String problemName = args[0];
         String problemUserPreferences = args[1];
+        String costsName = args[2];
         //initialize Lower Level algorithm
 
         //thalis
-        problem = new REproblem(problemName, problemUserPreferences);
+        problem = new REproblem(problemName, problemUserPreferences, costsName);
 
         algorithm = new Optimal_REproblem(problem); // Generational GA
 
