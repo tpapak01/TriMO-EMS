@@ -26,15 +26,16 @@ public class CostDistr extends Problem {
 
 	private static final long serialVersionUID = 1L;
     private String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data - multi user - bilevel/"; // The path of the files
-    private String fileName;
+    private static String costsPath = "/Users/emine/IdeaProjects/JMETALHOME/Costs_data/";
 
     private MOKP_Problem lowerLevelProblem;
     private String lowerLevelAlgorithmName;
     private double[] producedRE;
+    private double[] inputCosts = null;
     private double totalProducedRE;
 
 
-  public CostDistr(String problemName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName) {
+  public CostDistr(String problemName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName, String costsName) {
 	  this.setMaxmized_(false); // this problem is not to be maximized
 	  this.problemName_ = problemName;
 	  this.lowerLevelAlgorithmName = lowerLevelAlgorithmName;
@@ -47,17 +48,19 @@ public class CostDistr extends Problem {
       producedRE = new double[numberOfVariables_];
       this.lowerLevelProblem = lowerLevelProblem;
 
-      fileName = problemPath + this.problemName_ + ".txt";
+      String fileName = problemPath + this.problemName_ + ".txt";
       System.out.println(fileName);
+      String costsFileName = "";
+      if (!costsName.equals("")) costsFileName = costsPath + costsName + ".txt";
 
       //fills up numberOfItems, p, w, sackCapacity
       //simply read the input textfile
-      this.loadProblem(fileName);
+      this.loadProblem(fileName, costsFileName);
       this.solutionType_ = new ArrayRealSolutionType(this);
 
   }  // 
 
-  public void loadProblem(String problemFileName) {
+  public void loadProblem(String problemFileName, String costsFileName) {
 
       try {
           BufferedReader in = new BufferedReader(new FileReader(problemFileName));
@@ -70,13 +73,28 @@ public class CostDistr extends Problem {
               in.readLine();
           }
 
-          for (int i = 0; i < lowerLevelProblem.getNumberOfConstraints(); i++) {
+          for (int i = 0; i < this.numberOfVariables_; i++) {
               line = in.readLine();
               producedRE[i] = Double.parseDouble(line);
               totalProducedRE += producedRE[i];
           }
 
           in.close();
+
+          ////////////////////////////////////////////////////////////////
+
+          if (!costsFileName.equals("")) {
+              inputCosts = new double[this.numberOfVariables_];
+              in = new BufferedReader(new FileReader(costsFileName));
+
+              for (int i = 0; i < this.numberOfVariables_; i++) {
+                  line = in.readLine();
+                  inputCosts[i] = Double.parseDouble(line);
+              }
+
+              in.close();
+          }
+
       } catch (IOException e){
           System.out.println("Error reading MOKP problemFile: " + e.getMessage());
       }
@@ -85,6 +103,10 @@ public class CostDistr extends Problem {
 
     public double[] getProducedRE(){
         return producedRE;
+    }
+
+    public double[] getInputCosts(){
+      return inputCosts;
     }
 
     public double getTotalProducedRE(){

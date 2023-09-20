@@ -51,6 +51,9 @@ public class UpperLevelCostDistr_DE {
         String problemName = args[0];
         String problemUserPreferences = args[1];
         String lowerLevelAlgorithmName = args[2];
+        String costsName = "";
+        if (args.length > 3)
+            costsName = args[3];
         //initialize Lower Level algorithm
         MOKP_Problem lowerLevelProblem;
         if (lowerLevelAlgorithmName.equals("MOEAD"))
@@ -59,14 +62,16 @@ public class UpperLevelCostDistr_DE {
             lowerLevelProblem = (MOKP_Problem) LowerLevelMOKP_NSGAII.initializeAlgorithm(problemName, problemUserPreferences);
 
         //thalis
-        problem = new CostDistr(problemName, lowerLevelProblem, lowerLevelAlgorithmName);
+        problem = new CostDistr(problemName, lowerLevelProblem, lowerLevelAlgorithmName, costsName);
 
         algorithm = new DE_CostDistr(problem);
 
         /* Algorithm parameters*/
         algorithm.setInputParameter("populationSize", 100); //must be even number
-        algorithm.setInputParameter("maxEvaluations", 10000);
-
+        if (costsName.equals(""))
+            algorithm.setInputParameter("maxEvaluations", 10000);
+        else
+            algorithm.setInputParameter("maxEvaluations", 100);
 
         //thalis
         algorithm.setInputParameter("dataDirectory",

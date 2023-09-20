@@ -88,14 +88,6 @@ public class CreateOptaplannerInput {
             tsl.id = i;
             tsl.index = i;
             myclass.timeslotList[i] = tsl;
-
-            //TODO
-            costList cl = new costList();
-            cl.id = i;
-            cl.index = i;
-            cl.timeslot = i;
-            cl.value = 1.0;
-            myclass.costList[i] = cl;
         }
 
         in.close();
