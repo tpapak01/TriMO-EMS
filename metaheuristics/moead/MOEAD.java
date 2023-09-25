@@ -87,6 +87,7 @@ public class MOEAD extends Algorithm {
     problemMOKP = (MOKP_Problem) problem;
     functionType_ = "TCHE1";
     nadirObjectiveValue = problemMOKP.getNadirObjectiveValue();
+    z_ = problemMOKP.getZenithObjectiveValue();
     /*
     try {
           evalsWriter = new FileWriter("LowerLevelParetoVisual/evals.txt");
@@ -145,9 +146,8 @@ public class MOEAD extends Algorithm {
 */
     neighborhood_ = new int[populationSize][T_];
 
-    z_ = new double[problem_.getNumberOfObjectives()];
-    //lambda_ = new Vector(problem_.getNumberOfObjectives()) ;
-    lambda_ = new double[populationSize][problem_.getNumberOfObjectives()];
+    //lambda_ = new Vector(problemMOKP.getNumberOfObjectives()) ;
+    lambda_ = new double[populationSize][problemMOKP.getNumberOfObjectives()];
 
     //Read the operators
     comparator = (Comparator) this.getInputParameter("comparator");
@@ -164,7 +164,7 @@ public class MOEAD extends Algorithm {
     initPopulation(population, populationSize);
 
     // STEP 1.3. Initialize z_
-    initIdealPoint(population, populationSize, rpType);
+    //initIdealPoint(population, populationSize, rpType);
 
     //used for convergence observation
     int threshold = 0;
@@ -235,20 +235,20 @@ public class MOEAD extends Algorithm {
           mutation.execute(child);
 
           // Evaluation
-          problem_.evaluate(child);
+          problemMOKP.evaluate(child);
           evaluations_++;
 
         } else { // Best offspring
           mutation.execute(children[0]);
           mutation.execute(children[1]);
 
-          problem_.evaluate(children[0]);
+          problemMOKP.evaluate(children[0]);
           evaluations_++;
-          problem_.evaluate(children[1]);
+          problemMOKP.evaluate(children[1]);
           evaluations_++;
 
           int flagDominate;
-          if (problem_.isMaxmized() == false)
+          if (problemMOKP.isMaxmized() == false)
             flagDominate = dominance_.compare(children[0], children[1]);
           else flagDominate = dominance_.compare(children[1], children[0]);
 
@@ -308,13 +308,13 @@ public class MOEAD extends Algorithm {
           passedOnce = true;
           population_.remove(population_.size()-1);
 
-          Solution newSolution = new Solution(problem_);
+          Solution newSolution = new Solution(problemMOKP);
           int numberOfUsers = problemMOKP.getNumberOfUsers();
           int numberOfItems = problemMOKP.getNumberOfItems();
-          int numOfConstraints = problem_.getNumberOfConstraints();
+          int numOfConstraints = problemMOKP.getNumberOfConstraints();
           int numOfBits = numberOfUsers * numberOfItems * numOfConstraints;
           boolean[][][] pref = problemMOKP.getUserPreferences();
-          Variable[] vars = new Variable[problem_.getNumberOfVariables()];
+          Variable[] vars = new Variable[problemMOKP.getNumberOfVariables()];
           for (int v = 0; v < vars.length; v++) {
               Binary bin = new Binary(numOfBits);
 
@@ -337,7 +337,7 @@ public class MOEAD extends Algorithm {
           }
 
           newSolution.setDecisionVariables(vars);
-          problem_.evaluate(newSolution);
+          problemMOKP.evaluate(newSolution);
 
           population_.add(population_.size(), newSolution);
         }
@@ -451,7 +451,7 @@ public class MOEAD extends Algorithm {
    * initUniformWeight
    */
   public void initUniformWeight(int populationSize) {
-    //if ((problem_.getNumberOfObjectives() == 2) && (populationSize_ <= 300)) {
+    //if ((problemMOKP.getNumberOfObjectives() == 2) && (populationSize_ <= 300)) {
       for (int n = 0; n < populationSize; n++) {
         double a = 1.0 * n / (populationSize - 1);
         lambda_[n][0] = a;
@@ -461,7 +461,7 @@ public class MOEAD extends Algorithm {
     } // if
     else {
       String dataFileName;
-      dataFileName = "W" + problem_.getNumberOfObjectives() + "D_" +
+      dataFileName = "W" + problemMOKP.getNumberOfObjectives() + "D_" +
         populationSize_ + ".dat";
    
       try {
@@ -530,11 +530,11 @@ public class MOEAD extends Algorithm {
 
     int numberOfUsers = problemMOKP.getNumberOfUsers();
     int numberOfItems = problemMOKP.getNumberOfItems();
-    int numOfConstraints = problem_.getNumberOfConstraints();
+    int numOfConstraints = problemMOKP.getNumberOfConstraints();
     int numOfBits = numberOfUsers * numberOfItems * numOfConstraints;
 
     for (int i = 0; i < populationSize; i++) {
-      Solution newSolution = new Solution(problem_);
+      Solution newSolution = new Solution(problemMOKP);
 
       /*
       // all devices
@@ -551,7 +551,7 @@ public class MOEAD extends Algorithm {
       // exactly what the users want
       if (i == populationSize-1) {
             boolean[] pref_vector = problemMOKP.getUserPreferenceVector();
-            Variable[] vars = new Variable[problem_.getNumberOfVariables()];
+            Variable[] vars = new Variable[problemMOKP.getNumberOfVariables()];
             for (int v = 0; v < vars.length; v++) {
                 Binary bin = new Binary(numOfBits);
 
@@ -568,14 +568,14 @@ public class MOEAD extends Algorithm {
       problemMOKP.repair(newSolution);
       newSolution.setLambda(new double[]{lambda_[i][0],lambda_[i][1]});
 
-      problem_.evaluate(newSolution);
+      problemMOKP.evaluate(newSolution);
       evaluations_++;
       population.add(newSolution) ;
     } // for
   }
 
   public Variable[] updateSolution(int numOfBits, Boolean val) {
-    Variable[] vars = new Variable[problem_.getNumberOfVariables()];
+    Variable[] vars = new Variable[problemMOKP.getNumberOfVariables()];
     for (int j = 0; j < vars.length; j++) {
         Binary bin = new Binary(numOfBits);
         for (int k = 0; k < numOfBits; k++) {
@@ -590,8 +590,8 @@ public class MOEAD extends Algorithm {
    * Initialise the reference point
    */
   void initIdealPoint(SolutionSet population, int populationSize, String rpType) {
-    for(int i = 0; i < problem_.getNumberOfObjectives(); i++)  {
-      if (problem_.isMaxmized() == false) {
+    for(int i = 0; i < problemMOKP.getNumberOfObjectives(); i++)  {
+      if (problemMOKP.isMaxmized() == false) {
         if (rpType.equalsIgnoreCase("Ideal")) {
           if (normalize_) z_[i] = +1.1;
           else z_[i] = 0; //zero because we know it's the optimal solution z* for both objectives
@@ -661,9 +661,9 @@ public class MOEAD extends Algorithm {
    * @param individual
    */
   void updateReference(Solution individual) {
-    for (int n = 0; n < problem_.getNumberOfObjectives(); n++) {
+    for (int n = 0; n < problemMOKP.getNumberOfObjectives(); n++) {
       if (normalize_) {
-        if (problem_.isMaxmized() == false) {
+        if (problemMOKP.isMaxmized() == false) {
           if (individual.getNormalizedObjective(n) < z_[n]) {
             z_[n] = individual.getNormalizedObjective(n);
           }
@@ -673,7 +673,7 @@ public class MOEAD extends Algorithm {
           }
         }
       } else {
-        if (problem_.isMaxmized() == false) {
+        if (problemMOKP.isMaxmized() == false) {
           if (individual.getObjective(n) < z_[n]) {
             z_[n] = individual.getObjective(n);
           }
@@ -722,7 +722,7 @@ public class MOEAD extends Algorithm {
       int flagDominate;
 
       Solution replacementCandidate = population.get(k);
-      if (problem_.isMaxmized() == false)
+      if (problemMOKP.isMaxmized() == false)
         flagDominate = dominance_.compare(indiv, replacementCandidate);
       else flagDominate = dominance_.compare(replacementCandidate, indiv);
 
@@ -759,7 +759,7 @@ public class MOEAD extends Algorithm {
     if (functionType_.equals("TCHE1")) {
       double maxFun = -1.0e+30;
 
-      for (int n = 0; n < problem_.getNumberOfObjectives(); n++) {
+      for (int n = 0; n < problemMOKP.getNumberOfObjectives(); n++) {
         double diff;
         if (normalize_)
           diff = Math.abs(individual.getNormalizedObjective(n) - z_[n]);

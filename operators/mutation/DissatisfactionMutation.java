@@ -51,7 +51,6 @@ public class DissatisfactionMutation extends Mutation {
 
 	  private int mutationRepeats_ = 0;
 	  private MOKP_Problem problem = null;         // The problem to solve
-	  private static final int MISPLACEMENT = 3;
 
 	/**
 	 * Constructor
@@ -67,12 +66,11 @@ public class DissatisfactionMutation extends Mutation {
 
 	/**
 	 * Perform the mutation operation
-	 * @param temperature temperature
 	 * @param solution The solution to mutate
 	 * @throws JMException
 	 */
 
-	public double[][] doMutation(double temperature, Solution solution) throws JMException {
+	public double[][] doMutation(/*double temperature, */Solution solution) throws JMException {
 		try {
 			boolean[] pref_vector = problem.getUserPreferenceVector();
 			int numberOfUsers = problem.getNumberOfUsers();
@@ -80,7 +78,7 @@ public class DissatisfactionMutation extends Mutation {
 			int numberOfItems = problem.getNumberOfItems();
 			double[] w = problem.getWeightOfItems();
 			XReal costs = problem.getCostOfUsage();
-			double[][] positionsChanged = new double[3][mutationRepeats_];
+			double[][] positionsChanged = new double[mutationRepeats_][3];
 			int[] dontRevisitPositions = new int[mutationRepeats_];
 			for (int i=0; i<mutationRepeats_; i++) dontRevisitPositions[i] = -1;
 			int index = 0;
@@ -109,29 +107,46 @@ public class DissatisfactionMutation extends Mutation {
 					int userAndTime = u * (numberOfConstraints * numberOfItems) + c * numberOfItems;
                     it = (userAndTime == 0 ? position : (position % userAndTime));
 
-                    int newposition;
-                    int step;
-                    int max_step_limit = Math.min(c + MISPLACEMENT, numberOfConstraints - 1);
-                    int min_step_limit = Math.max(0, c - MISPLACEMENT);
-                    tries = 0;
-                    do {
-                        step = PseudoRandom.randInt(min_step_limit, max_step_limit);
-                        newposition = position + ((step-c) * numberOfItems);
-                        tries++;
-                        if (tries > 20)
-                        	break;
-                    } while (step == c || pref_vector[newposition] || bin.getIth(newposition));
+                    int newposition = -1;
+                    int newtimeslot = -1;
+                    boolean goLeft = false;
+                    boolean exitLoop = false;
+                    int step = 0;
+                    while(true) {
+						if (goLeft == false) {
+							if (exitLoop)
+								break;
+							exitLoop = true;
+							step++;
+						}
+						if (goLeft) {
+							newtimeslot = c-step;
+							if (newtimeslot >= 0) {
+								newposition = position - step * numberOfItems;
+								exitLoop = false;
+							}
+						}
+                    	if (!goLeft) {
+							newtimeslot = c+step;
+							if (newtimeslot < numberOfConstraints) {
+								newposition = position + step * numberOfItems;
+								exitLoop = false;
+							}
+						}
+						goLeft = !goLeft;
+						if (newposition != -1 && !pref_vector[newposition] && !bin.getIth(newposition))
+							break;
+                    }
 
-					if (tries <= 20) {
-						double cost = w[it] * costs.getValue(step);
-						if (cost <= temperature) {
-							bin.bits_.flip(newposition);
-							positionsChanged[0][index] = newposition;
-							positionsChanged[1][index] = Math.abs(c - step);
-							positionsChanged[2][index] = cost;
+					if (!exitLoop) {
+						double cost = w[it] * costs.getValue(newtimeslot);
+						//if (cost <= temperature) {
+							positionsChanged[index][0] = newposition; //position
+							positionsChanged[index][1] = step; //step
+							positionsChanged[index][2] = cost; //cost
 							dontRevisitPositions[index] = newposition;
 							index++;
-						}
+						//}
 					}
 
                 }
@@ -166,7 +181,7 @@ public class DissatisfactionMutation extends Mutation {
 			throw new JMException("Exception in " + name + ".execute()");
 		} // if 
 
-		double temperature = (double) this.getParameter("temperature") ;
-		return doMutation(temperature, solution);
+		//double temperature = (double) this.getParameter("temperature") ;
+		return doMutation(/*temperature, */solution);
 	} // execute
 } // BitFlipMutation

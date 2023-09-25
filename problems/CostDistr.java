@@ -72,7 +72,7 @@ public class CostDistr extends Problem {
       parameters.put("problem",this.lowerLevelProblem) ;
       Mutation mutation = new DissatisfactionMutation(parameters);
       parameters.put("improvementRounds", 4);
-      parameters.put("temperature", 0.4) ;
+      parameters.put("temperature", 1.0) ;
       parameters.put("cooldown", 0.2) ;
       parameters.put("problem",this.lowerLevelProblem);
       parameters.put("mutation", mutation) ;

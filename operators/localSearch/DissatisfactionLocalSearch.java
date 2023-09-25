@@ -24,6 +24,7 @@ import jmetal.core.Operator;
 import jmetal.core.Problem;
 import jmetal.core.Solution;
 import jmetal.core.SolutionSet;
+import jmetal.encodings.variable.Binary;
 import jmetal.operators.mutation.Mutation;
 import jmetal.problems.MOKP_Problem;
 import jmetal.util.JMException;
@@ -43,11 +44,13 @@ public class DissatisfactionLocalSearch extends LocalSearch {
   /**
    * Stores the problem to solve
    */
-  private MOKP_Problem problem_;
+  private MOKP_Problem problemMOKP;
 
   private int improvementRounds_ ;
   private double temperature_;
   private double cooldown_;
+  private double[] nadirObjectiveValue;
+  private double[] z_;
 
   private Comparator dominanceComparator_ ;
 
@@ -64,8 +67,11 @@ public class DissatisfactionLocalSearch extends LocalSearch {
   */
   public DissatisfactionLocalSearch(HashMap<String, Object> parameters) {
   	super(parameters) ;
-  	if (parameters.get("problem") != null)
-  		problem_ = (MOKP_Problem) parameters.get("problem") ;
+  	if (parameters.get("problem") != null) {
+      problemMOKP = (MOKP_Problem) parameters.get("problem");
+      nadirObjectiveValue = problemMOKP.getNadirObjectiveValue();
+      z_ = problemMOKP.getZenithObjectiveValue();
+    }
     if (parameters.get("improvementRounds") != null)
       improvementRounds_ = (Integer) parameters.get("improvementRounds") ;
     if (parameters.get("temperature") != null)
@@ -106,15 +112,36 @@ public class DissatisfactionLocalSearch extends LocalSearch {
     do {
       i++;
       Solution mutatedSolution = new Solution(solution);
+      double[] lambda = solution.getLambda();
 
       do {
-        mutationOperator_.setParameter("temperature", temperature);
+        //mutationOperator_.setParameter("temperature", temperature);
         double[][] positionsChanged = (double[][]) mutationOperator_.execute(mutatedSolution);
 
-        if (positionsChanged[1][0] == 0)
+        if (positionsChanged[0][1] == 0)
           break;
 
-        problem_.partiallyEvaluateD(mutatedSolution, positionsChanged);
+        for (int k=0; k<positionsChanged.length; k++) {
+          double[] newposition = positionsChanged[k];
+          if (newposition[1] == 0) //step == 0
+            break;
+          double[] oldVals = new double[problemMOKP.getNumberOfObjectives()];
+          double oldFitness = fitnessFunction(mutatedSolution, lambda);
+          for (int o=0; o<oldVals.length; o++)
+            oldVals[o] = solution.getObjective(o);
+          problemMOKP.partiallyEvaluateD(mutatedSolution, newposition);
+          double newFitness = fitnessFunction(mutatedSolution, lambda);
+          if (newFitness < oldFitness){
+            Binary bin  = (Binary)mutatedSolution.getDecisionVariables()[0];
+            bin.bits_.flip((int)newposition[0]);
+            problemMOKP.partiallyUpdate(mutatedSolution, newposition);
+          } else {
+            for (int o=0; o<oldVals.length; o++)
+               solution.setObjective(o, oldVals[o]);
+          }
+
+        }
+
 
         temperature -= cooldown;
       } while (temperature_> 0);
@@ -135,5 +162,32 @@ public class DissatisfactionLocalSearch extends LocalSearch {
     } while (i < rounds);
     return finalSolution;
   } // execute
+
+
+  double fitnessFunction(Solution individual, double[] lambda) {
+    double fitness;
+    double maxFun = -1.0e+30;
+
+    for (int n = 0; n < problemMOKP.getNumberOfObjectives(); n++) {
+      double diff = Math.abs((individual.getObjective(n) / nadirObjectiveValue[n]) - z_[n]);
+
+      double feval;
+      // make sure the multiplication with λ doesn't result in an absolute zero
+      if (lambda[n] == 0) {
+        feval = 0.0001 * diff;
+      } else {
+        feval = lambda[n] * diff;
+      }
+
+      //is this the maximum difference found so far?
+      if (feval > maxFun) {
+        maxFun = feval;
+      }
+    } // for
+
+    fitness = maxFun;
+
+    return fitness;
+  } // fitnessEvaluation
 
 }

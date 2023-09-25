@@ -35,6 +35,7 @@ public class MOKP_Problem extends Problem {
     private XReal costOfUsage ; // capacity of each  knapsack .
     private int[] requestedDevicesPerUser;
     private double[] nadirObjectiveValue;
+    private double[] zenithObjectiveValue;
 
   public MOKP_Problem(String problemName,String userPreferenceName) {
 	  this.setMaxmized_(false); // this problem is not to be maximized
@@ -67,7 +68,9 @@ public class MOKP_Problem extends Problem {
 
           this.numberOfObjectives_ = 2;
           nadirObjectiveValue = new double[this.numberOfObjectives_];
+          zenithObjectiveValue = new double[this.numberOfObjectives_];
           nadirObjectiveValue[1] = Double.MIN_VALUE;
+          zenithObjectiveValue[0] = zenithObjectiveValue[1] = 0;
 
           w = new double[numberOfItems];
 
@@ -177,6 +180,10 @@ public class MOKP_Problem extends Problem {
 
     public double[] getNadirObjectiveValue(){
         return nadirObjectiveValue;
+    }
+
+    public double[] getZenithObjectiveValue(){
+        return zenithObjectiveValue;
     }
 
     public void repair(Solution solution){
@@ -427,48 +434,53 @@ public class MOKP_Problem extends Problem {
         return total_dissatisfaction;
     }
 
-    public void partiallyEvaluateD(Solution solution, double[][] positionsChanged) throws JMException {
-
-        //double[] dissatisfactionPerUser = solution.getDissatisfactionPerUser();
-
-        for (int i=0; i<positionsChanged[0].length; i++){
-            if (positionsChanged[1][i] == 0)
-                return;
-            int position = (int) positionsChanged[0][i];
-            int u, c, it;
-            u = position / (this.numberOfConstraints_ * numberOfItems);
-            c = position % (this.numberOfConstraints_ * numberOfItems) / numberOfItems;
-            int userAndTime = u * (this.numberOfConstraints_ * numberOfItems) + c * numberOfItems;
-            it =  (userAndTime == 0 ? position : (position % userAndTime));
-            //OBJ D
-            double obj_d = solution.getObjective(0);
-            int dissatisfaction_denominator = requestedDevicesPerUser[u];
-            //int dissatisfaction_nominator = (int) dissatisfactionPerUser[u] * dissatisfaction_denominator;
-            double impact = Math.pow(0.5, positionsChanged[1][i]);
-            double difference = 1.0/dissatisfaction_denominator*impact;
-            solution.setObjective(0, obj_d - difference);
-            //OBJ C
-            double obj_c = solution.getObjective(1);
-            double cost = positionsChanged[2][i];
-            double[] energyAllocatedPerUser = solution.getEnergyAllocatedPerUser();
-            energyAllocatedPerUser[u] += cost;
-            if (energyAllocatedPerUser[u] > obj_c)
-                solution.setObjective(1, energyAllocatedPerUser[u]);
-            /**********update extra attributes of solution*******/
-            //dissatisfactionPerUser
-            double[] dissatisfactionPerUser = solution.getDissatisfactionPerUser();
-            dissatisfactionPerUser[u] -= difference;
-            solution.setDissatisfactionPerUser(dissatisfactionPerUser);
-            //spentEnergy
-            double[] spentEnergy = solution.getSpentEnergy();
-            spentEnergy[c] += w[it];
-            solution.setSpentEnergy(spentEnergy);
-            //energyAllocatedPerUser
-            solution.setEnergyAllocatedPerUser(energyAllocatedPerUser);
-
-        }
+    public void partiallyEvaluateD(Solution solution, double[] positionsChanged) throws JMException {
+        int position = (int) positionsChanged[0];
+        int step = (int) positionsChanged[1];
+        double cost = positionsChanged[2];
+        int u = position / (this.numberOfConstraints_ * numberOfItems);
+        //OBJ D
+        double obj_d = solution.getObjective(0);
+        int dissatisfaction_denominator = requestedDevicesPerUser[u];
+        double impact = Math.pow(0.5, step);
+        double difference = 1.0/dissatisfaction_denominator*impact;
+        solution.setObjective(0, obj_d - difference);
+        //OBJ C
+        double obj_c = solution.getObjective(1);
+        double energyAllocatedToUser = solution.getEnergyAllocatedPerUser()[u];
+        energyAllocatedToUser += cost;
+        if (energyAllocatedToUser > obj_c)
+            solution.setObjective(1, energyAllocatedToUser);
 
     } // evaluate
+
+    public void partiallyUpdate(Solution solution, double[] positionsChanged){
+        int position = (int) positionsChanged[0];
+        int step = (int) positionsChanged[1];
+        double cost = positionsChanged[2];
+        int u, c, it;
+        u = position / (this.numberOfConstraints_ * numberOfItems);
+        c = position % (this.numberOfConstraints_ * numberOfItems) / numberOfItems;
+        int userAndTime = u * (this.numberOfConstraints_ * numberOfItems) + c * numberOfItems;
+        it =  (userAndTime == 0 ? position : (position % userAndTime));
+        int dissatisfaction_denominator = requestedDevicesPerUser[u];
+        double impact = Math.pow(0.5, step);
+        double difference = 1.0/dissatisfaction_denominator*impact;
+        /**********update extra attributes of solution*******/
+        //dissatisfactionPerUser
+        double[] dissatisfactionPerUser = solution.getDissatisfactionPerUser();
+        dissatisfactionPerUser[u] -= difference;
+        solution.setDissatisfactionPerUser(dissatisfactionPerUser);
+        //spentEnergy
+        double[] spentEnergy = solution.getSpentEnergy();
+        spentEnergy[c] += w[it];
+        solution.setSpentEnergy(spentEnergy);
+        //energyAllocatedPerUser
+        double[] energyAllocatedPerUser = solution.getEnergyAllocatedPerUser();
+        energyAllocatedPerUser[u] += cost;
+        solution.setEnergyAllocatedPerUser(energyAllocatedPerUser);
+    }
+
 
     ////////////////////////////////    HELPER FUNCTIONS       ////////////////////////////////////////
 
