@@ -28,6 +28,7 @@ import jmetal.encodings.variable.Binary;
 import jmetal.operators.mutation.Mutation;
 import jmetal.problems.MOKP_Problem;
 import jmetal.util.JMException;
+import jmetal.util.PseudoRandom;
 import jmetal.util.comparators.DominanceComparator;
 import jmetal.util.comparators.OverallConstraintViolationComparator;
 
@@ -47,8 +48,7 @@ public class DissatisfactionLocalSearch extends LocalSearch {
   private MOKP_Problem problemMOKP;
 
   private int improvementRounds_ ;
-  private double temperature_;
-  private double cooldown_;
+  private int cooldownRounds_;
   private double[] nadirObjectiveValue;
   private double[] z_;
 
@@ -74,10 +74,8 @@ public class DissatisfactionLocalSearch extends LocalSearch {
     }
     if (parameters.get("improvementRounds") != null)
       improvementRounds_ = (Integer) parameters.get("improvementRounds") ;
-    if (parameters.get("temperature") != null)
-      temperature_ = (Double) parameters.get("temperature") ;
-    if (parameters.get("cooldown") != null)
-      cooldown_ = (Double) parameters.get("cooldown") ;
+    if (parameters.get("cooldownRounds") != null)
+      cooldownRounds_ = (Integer) parameters.get("cooldownRounds") ;
     if (parameters.get("mutation") != null)
   	  mutationOperator_ = (Mutation) parameters.get("mutation") ;  		
 
@@ -105,8 +103,7 @@ public class DissatisfactionLocalSearch extends LocalSearch {
     Solution solution = (Solution)object;
 
     int rounds = improvementRounds_;
-    double temperature = temperature_;
-    double cooldown = temperature_ * cooldown_;
+    int cooldownRounds = cooldownRounds_;
     Solution finalSolution = null;
 
     do {
@@ -114,7 +111,8 @@ public class DissatisfactionLocalSearch extends LocalSearch {
       Solution mutatedSolution = new Solution(solution);
       double[] lambda = solution.getLambda();
 
-      do {
+      for (int cr=0; cr<cooldownRounds; cr++) {
+        double temperature = 1.0 - ( (cr+1.0) / (double) cooldownRounds );
         //mutationOperator_.setParameter("temperature", temperature);
         double[][] positionsChanged = (double[][]) mutationOperator_.execute(mutatedSolution);
 
@@ -126,14 +124,17 @@ public class DissatisfactionLocalSearch extends LocalSearch {
           if (newposition[1] == 0) //step == 0
             break;
           double[] oldVals = new double[problemMOKP.getNumberOfObjectives()];
-          double oldFitness = fitnessFunction(mutatedSolution, lambda);
-          for (int o=0; o<oldVals.length; o++)
+          for (int o = 0; o < oldVals.length; o++)
             oldVals[o] = solution.getObjective(o);
+          //calculate current and new fitness
+          double oldFitness = fitnessFunction(mutatedSolution, lambda);
           problemMOKP.partiallyEvaluateD(mutatedSolution, newposition);
           double newFitness = fitnessFunction(mutatedSolution, lambda);
-          if (newFitness < oldFitness){
-            Binary bin  = (Binary)mutatedSolution.getDecisionVariables()[0];
-            bin.bits_.flip((int)newposition[0]);
+          if (newFitness < oldFitness ||
+                  (1.0/(1.0+Math.exp((newFitness - oldFitness)/temperature))) > PseudoRandom.randDouble()
+          ) {
+            Binary bin = (Binary) mutatedSolution.getDecisionVariables()[0];
+            bin.bits_.flip((int) newposition[0]);
             problemMOKP.partiallyUpdate(mutatedSolution, newposition);
           } else {
             for (int o=0; o<oldVals.length; o++)
@@ -141,10 +142,7 @@ public class DissatisfactionLocalSearch extends LocalSearch {
           }
 
         }
-
-
-        temperature -= cooldown;
-      } while (temperature_> 0);
+      } //cooldownRoundOver
 
       if (finalSolution == null) finalSolution = mutatedSolution;
       else {
