@@ -127,18 +127,18 @@ public class DissatisfactionLocalSearch extends LocalSearch {
           for (int o = 0; o < oldVals.length; o++)
             oldVals[o] = solution.getObjective(o);
           //calculate current and new fitness
-          double oldFitness = fitnessFunction(mutatedSolution, lambda);
-          problemMOKP.partiallyEvaluateD(mutatedSolution, newposition);
+          double oldFitness = fitnessFunction(solution, lambda);
+          problemMOKP.partiallyEvaluateD(mutatedSolution, newposition); //mutatedSolution gets new obj values
           double newFitness = fitnessFunction(mutatedSolution, lambda);
           if (newFitness < oldFitness ||
                   (1.0/(1.0+Math.exp((newFitness - oldFitness)/temperature))) > PseudoRandom.randDouble()
           ) {
             Binary bin = (Binary) mutatedSolution.getDecisionVariables()[0];
             bin.bits_.flip((int) newposition[0]);
-            problemMOKP.partiallyUpdate(mutatedSolution, newposition);
+            problemMOKP.partiallyUpdate(mutatedSolution, newposition); //mutatedSolution gets updated stat metrics
           } else {
             for (int o=0; o<oldVals.length; o++)
-               solution.setObjective(o, oldVals[o]);
+              mutatedSolution.setObjective(o, oldVals[o]);
           }
 
         }
