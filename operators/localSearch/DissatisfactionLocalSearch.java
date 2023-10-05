@@ -125,9 +125,9 @@ public class DissatisfactionLocalSearch extends LocalSearch {
             break;
           double[] oldVals = new double[problemMOKP.getNumberOfObjectives()];
           for (int o = 0; o < oldVals.length; o++)
-            oldVals[o] = solution.getObjective(o);
+            oldVals[o] = mutatedSolution.getObjective(o);
           //calculate current and new fitness
-          double oldFitness = fitnessFunction(solution, lambda);
+          double oldFitness = fitnessFunction(mutatedSolution, lambda);
           problemMOKP.partiallyEvaluateD(mutatedSolution, newposition); //mutatedSolution gets new obj values
           double newFitness = fitnessFunction(mutatedSolution, lambda);
           if (newFitness < oldFitness ||
