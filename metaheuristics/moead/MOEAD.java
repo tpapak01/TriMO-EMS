@@ -392,8 +392,9 @@ public class MOEAD extends Algorithm {
     /*
     Ranking finalRanking = new Ranking(finalSet);
     SolutionSet finalParetoFront = finalRanking.getSubfront(0);
+    finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/WithLocalSearchD" + (execution) + "_FUN");
 
-    finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/" + (execution) + "_FUN");
+
     double spread = indicators.getSpread(finalParetoFront);
     double hypervolume = indicators.getHypervolume(finalParetoFront);
     double nds = finalParetoFront.size();
