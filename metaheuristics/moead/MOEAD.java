@@ -300,7 +300,7 @@ public class MOEAD extends Algorithm {
 
         //print the evolution of the Pareto front over N generations
         //if (converged == false && execution < 10)
-        //  paretoFront.printObjectivesToFile("LowerLevelParetoVisual/" + execution + "_FUN_" + iteration++);
+        //  paretoFront.printObjectivesToFile("LowerLevelParetoEvolution/" + execution + "_FUN_" + iteration++);
 
         previousPareto = paretoFront;
       }

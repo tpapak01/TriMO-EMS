@@ -262,7 +262,7 @@ public class NSGAII extends Algorithm {
         if (diff <= 0)
           converged = true;
         //else if (execution < 10)
-        //  paretoFront.printObjectivesToFile("LowerLevelParetoVisualNSGAII/" + execution + "_FUN_" + iteration++);
+        //  paretoFront.printObjectivesToFile("LowerLevelParetoEvolutionNSGAII/" + execution + "_FUN_" + iteration++);
 
         previousHypervolume = hypervolume;
       }
