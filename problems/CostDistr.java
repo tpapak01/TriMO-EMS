@@ -21,6 +21,7 @@ import jmetal.operators.mutation.DissatisfactionMutation;
 import jmetal.operators.mutation.Mutation;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
+import jmetal.util.Ranking;
 import jmetal.util.wrapper.XReal;
 
 import java.io.BufferedReader;
@@ -41,6 +42,8 @@ public class CostDistr extends Problem {
     private double[] inputCosts = null;
     private double totalProducedRE;
     private LocalSearch improvementOperatorD;
+
+    public static int execution = 0;
 
 
   public CostDistr(String problemName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName, String costsName) {
@@ -135,6 +138,7 @@ public class CostDistr extends Problem {
 	@Override
 	public void evaluate(Solution solution) throws JMException {
 
+        execution++;
         SolutionSet lowerLevelSolutions = null;
         XReal costs = new XReal(solution);
         try {
@@ -151,6 +155,7 @@ public class CostDistr extends Problem {
                 Solution lowerLevelSol = lowerLevelSolutions.get(s);
                 double[] lambda = lowerLevelSol.getLambda();
                 Solution newSol = null;
+                //if focus is more on satisfaction, based on lambda...
                 if (lambda[0] >= lambda[1]) {
                     newSol = (Solution) improvementOperatorD.execute(lowerLevelSol);
                     improvedLowerLevelSolutions.add(newSol);
@@ -172,9 +177,35 @@ public class CostDistr extends Problem {
             }
         }
 
+        if (execution % 50 == 0) {
+            Ranking finalRanking = new Ranking(lowerLevelSolutions);
+            SolutionSet finalParetoFront = finalRanking.getSubfront(0);
+            for (int s=0; s<finalParetoFront.size(); s++){
+                Solution original = finalParetoFront.get(s);
+                for (int p=0; p<improvedLowerLevelSolutions.size(); p++) {
+                    Solution newSol = improvedLowerLevelSolutions.get(p);
+                    if (original.getDecisionVariables()[0].toString().equals(
+                            newSol.getDecisionVariables()[0].toString()
+                    )
+                    ){
+                        improvedLowerLevelSolutions.remove(p);
+                    }
+                }
+            }
+            finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/WithoutLocalSearch/" + (execution) + "_FUN");
+        }
+
         double best_result = Double.MAX_VALUE;
         int best_solution_index = -1;
         SolutionSet allSolutions = lowerLevelSolutions.union(improvedLowerLevelSolutions);
+
+        if (execution % 50 == 0) {
+            if (improvedLowerLevelSolutions.size() > 0) {
+                Ranking finalRanking = new Ranking(improvedLowerLevelSolutions);
+                SolutionSet finalParetoFront = finalRanking.getSubfront(0);
+                finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/WithLocalSearchD/" + (execution) + "_FUN");
+            } else improvedLowerLevelSolutions.printObjectivesToFile("LowerLevelParetoVisual/WithLocalSearchD/" + (execution) + "_FUN");
+        }
 
         for (int s=0; s<allSolutions.size(); s++) {
             Solution lowerLevelSol = allSolutions.get(s);
