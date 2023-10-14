@@ -277,6 +277,7 @@ public class MOEAD extends Algorithm {
       } // for
 
 
+      //convergence check
       if (evaluations_ > threshold){
         threshold += 500;
         Ranking ranking = new Ranking(population);
@@ -296,53 +297,13 @@ public class MOEAD extends Algorithm {
               if (converged == false) break;
           }
         }
+
+        //print the evolution of the Pareto front over N generations
         //if (converged == false && execution < 10)
         //  paretoFront.printObjectivesToFile("LowerLevelParetoVisual/" + execution + "_FUN_" + iteration++);
 
         previousPareto = paretoFront;
       }
-
-      //solution injection
-      /*
-      if (evaluations_ > 2000 && !passedOnce){
-          passedOnce = true;
-          population_.remove(population_.size()-1);
-
-          Solution newSolution = new Solution(problem_);
-          int numberOfUsers = problemMOKP.getNumberOfUsers();
-          int numberOfItems = problemMOKP.getNumberOfItems();
-          int numOfConstraints = problem_.getNumberOfConstraints();
-          int numOfBits = numberOfUsers * numberOfItems * numOfConstraints;
-          boolean[][][] pref = problemMOKP.getUserPreferences();
-          Variable[] vars = new Variable[problem_.getNumberOfVariables()];
-          for (int v = 0; v < vars.length; v++) {
-              Binary bin = new Binary(numOfBits);
-
-
-              for (int u = 0; u < numberOfUsers; u++) { // for each user
-                  int userIndex = u * numOfConstraints;
-                  int l = 0;
-                  for (int p = userIndex; p < userIndex +  numOfConstraints; p++) { // for each objective
-                      int startingIndex = p * numberOfItems;
-                      int k = 0;
-                      for (int j = startingIndex; j < startingIndex + numberOfItems; j++) { // for each bit
-                          bin.setIth(j, pref[u][l][k]);
-                          k++;
-                      }
-                      l++;
-                  } // for p
-              } // for u
-
-              vars[v] = bin;
-          }
-
-          newSolution.setDecisionVariables(vars);
-          problem_.evaluate(newSolution);
-
-          population_.add(population_.size(), newSolution);
-        }
-
-       */
 
     } while (evaluations_ < maxEvaluations && converged == false);
 
@@ -392,8 +353,8 @@ public class MOEAD extends Algorithm {
     /*
     Ranking finalRanking = new Ranking(finalSet);
     SolutionSet finalParetoFront = finalRanking.getSubfront(0);
+    finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/WithoutLocalSearch/" + (execution) + "_FUN");
 
-    finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/" + (execution) + "_FUN");
     double spread = indicators.getSpread(finalParetoFront);
     double hypervolume = indicators.getHypervolume(finalParetoFront);
     double nds = finalParetoFront.size();
