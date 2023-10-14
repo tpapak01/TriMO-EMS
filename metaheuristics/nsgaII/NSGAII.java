@@ -366,6 +366,12 @@ public class NSGAII extends Algorithm {
       if (spentEnergy1[i] != spentEnergy2[i])
         return false;
     return true;
+    /*
+    if (!sol1.getDecisionVariables()[0].toString().equals(
+            sol2.getDecisionVariables()[0].toString()
+    )) return false;
+    return true;
+     */
   }
 
   /**
