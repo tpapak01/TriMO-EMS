@@ -44,6 +44,8 @@ public class CostDistr extends Problem {
     private LocalSearch improvementOperatorD;
 
     public static int execution = 0;
+    private static double best_upper_level_result = Double.MAX_VALUE;
+    private static int fileID = 1;
 
 
   public CostDistr(String problemName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName, String costsName) {
@@ -177,36 +179,19 @@ public class CostDistr extends Problem {
             }
         }
 
-        if (execution % 50 == 0) {
-            Ranking finalRanking = new Ranking(lowerLevelSolutions);
-            SolutionSet finalParetoFront = finalRanking.getSubfront(0);
-            for (int s=0; s<finalParetoFront.size(); s++){
-                Solution original = finalParetoFront.get(s);
-                for (int p=0; p<improvedLowerLevelSolutions.size(); p++) {
-                    Solution newSol = improvedLowerLevelSolutions.get(p);
-                    if (original.getDecisionVariables()[0].toString().equals(
-                            newSol.getDecisionVariables()[0].toString()
-                    )
-                    ){
-                        improvedLowerLevelSolutions.remove(p);
-                    }
-                }
-            }
-            finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/WithoutLocalSearch/" + (execution) + "_FUN");
-        }
-
         double best_result = Double.MAX_VALUE;
         int best_solution_index = -1;
-        SolutionSet allSolutions = lowerLevelSolutions.union(improvedLowerLevelSolutions);
 
-        if (execution % 50 == 0) {
-            if (improvedLowerLevelSolutions.size() > 0) {
-                Ranking finalRanking = new Ranking(improvedLowerLevelSolutions);
-                SolutionSet finalParetoFront = finalRanking.getSubfront(0);
-                finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/WithLocalSearchD/" + (execution) + "_FUN");
-            } else improvedLowerLevelSolutions.printObjectivesToFile("LowerLevelParetoVisual/WithLocalSearchD/" + (execution) + "_FUN");
-        }
+        //only keep the Pareto front of the improved solutions
+        //in the future TODO change to be the Pareto front of the union, not only the improved solutions
+        SolutionSet allSolutions;
+        if (improvedLowerLevelSolutions.size() > 0) {
+            Ranking toGetOnlyParetoOptimals = new Ranking(improvedLowerLevelSolutions);
+            SolutionSet paretoOptimalImprovedLL = toGetOnlyParetoOptimals.getSubfront(0);
+            allSolutions = lowerLevelSolutions.union(paretoOptimalImprovedLL);
+        } else allSolutions = lowerLevelSolutions;
 
+        //find best LL solution for the upper level
         for (int s=0; s<allSolutions.size(); s++) {
             Solution lowerLevelSol = allSolutions.get(s);
 
@@ -223,16 +208,17 @@ public class CostDistr extends Problem {
 
         solution.setObjective(0, best_result);
         // fill up extra data for analysis
-        Solution lowerLevelSol = allSolutions.get(best_solution_index);
-        Variable[] vars = lowerLevelSol.getDecisionVariables();
+        Solution chosenlowerLevelSol = allSolutions.get(best_solution_index);
+        Variable[] vars = chosenlowerLevelSol.getDecisionVariables();
         Binary bin = (Binary) vars[0];
-        double[] energySpent = lowerLevelSol.getSpentEnergy();
+        double[] energySpent = chosenlowerLevelSol.getSpentEnergy();
 
+        //fill up upper-level solution with winner-LL-solution data
         solution.setSpentEnergy(energySpent);
         solution.setLowerLevelVars(bin);
-        solution.setLowerLevelObj(new double[] {lowerLevelSol.getObjective(0), lowerLevelSol.getObjective(1)});
-        solution.setDissatisfactionPerUser(lowerLevelSol.getDissatisfactionPerUser());
-        solution.setEnergyAllocatedPerUser(lowerLevelSol.getEnergyAllocatedPerUser());
+        solution.setLowerLevelObj(new double[] {chosenlowerLevelSol.getObjective(0), chosenlowerLevelSol.getObjective(1)});
+        solution.setDissatisfactionPerUser(chosenlowerLevelSol.getDissatisfactionPerUser());
+        solution.setEnergyAllocatedPerUser(chosenlowerLevelSol.getEnergyAllocatedPerUser());
         double deviation = calculateEnergyDeviationFromProduced(energySpent);
         solution.setEnergyDeviationFromProduced(deviation);
         double nonREpaid = calculateNonREPaid(energySpent, costs);
@@ -245,10 +231,45 @@ public class CostDistr extends Problem {
             int a = 2;
         }
 
+        if (best_upper_level_result > best_result){
+            best_upper_level_result = best_result;
+            System.out.println((improved_won?"WON":"LOS") + " " + best_upper_level_result);
+            //----------
+            SolutionSet chosenSolutionSet = new SolutionSet(1);
+            chosenSolutionSet.add(chosenlowerLevelSol);
+            chosenSolutionSet.printObjectivesToFile("LowerLevelParetoVisual/WithoutLocalSearch/" + (fileID) + "_CHOSEN");
+            //----------
+            Ranking finalRanking = new Ranking(lowerLevelSolutions);
+            SolutionSet finalParetoFront = finalRanking.getSubfront(0);
+            for (int s=0; s<finalParetoFront.size(); s++){
+                Solution original = finalParetoFront.get(s);
+                for (int p=0; p<improvedLowerLevelSolutions.size(); p++) {
+                    Solution newSol = improvedLowerLevelSolutions.get(p);
+                    if (original.getDecisionVariables()[0].toString().equals(
+                            newSol.getDecisionVariables()[0].toString()
+                    )
+                    ){
+                        improvedLowerLevelSolutions.remove(p);
+                    }
+                }
+            }
+            finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/WithoutLocalSearch/" + (fileID) + "_FUN");
+            //----------
+            if (improvedLowerLevelSolutions.size() > 0) {
+                finalRanking = new Ranking(improvedLowerLevelSolutions);
+                finalParetoFront = finalRanking.getSubfront(0);
+                finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/WithLocalSearchD/" + (fileID) + "_FUN");
+            } else improvedLowerLevelSolutions.printObjectivesToFile("LowerLevelParetoVisual/WithLocalSearchD/" + (fileID) + "_FUN");
+
+            fileID++;
+
+        }
+
+
         //PRINT RESULTS
-        System.out.println(best_result);
-        System.out.println("Improved won?: " + improved_won);
-        System.out.println(solution.getDecisionVariables()[0]);
+        //System.out.println(best_result);
+        //System.out.println("Improved won?: " + improved_won);
+        //System.out.println(solution.getDecisionVariables()[0]);
 
 	} // evaluate
 
