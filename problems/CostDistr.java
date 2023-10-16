@@ -166,14 +166,16 @@ public class CostDistr extends Problem {
         double nonREpaid = calculateNonREPaid(energySpent, costs);
         solution.setNonREpaid(nonREpaid);
 
+        /*
         if (best_upper_level_result > best_result) {
             best_upper_level_result = best_result;
             System.out.println(best_upper_level_result);
             Ranking finalRanking = new Ranking(lowerLevelSolutions);
             SolutionSet finalParetoFront = finalRanking.getSubfront(0);
-            finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/" + (fileID) + "_FUN");
+            finalParetoFront.printObjectivesToFile("LowerLevelParetoVisualNSGAII/" + (fileID) + "_FUN"); check
             fileID++;
         }
+         */
 
         //System.out.println(best_result);
         //System.out.println(solution.getDecisionVariables()[0]);
