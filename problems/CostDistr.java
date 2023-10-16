@@ -15,6 +15,7 @@ import jmetal.encodings.variable.Binary;
 import jmetal.metaheuristics.bilevel.LowerLevelMOKP_MOEAD;
 import jmetal.metaheuristics.bilevel.LowerLevelMOKP_NSGAII;
 import jmetal.util.JMException;
+import jmetal.util.Ranking;
 import jmetal.util.wrapper.XReal;
 
 import java.io.BufferedReader;
@@ -33,6 +34,9 @@ public class CostDistr extends Problem {
     private double[] producedRE;
     private double[] inputCosts = null;
     private double totalProducedRE;
+
+    private static double best_upper_level_result = Double.MAX_VALUE;
+    private static int fileID = 1;
 
 
   public CostDistr(String problemName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName, String costsName) {
@@ -162,8 +166,17 @@ public class CostDistr extends Problem {
         double nonREpaid = calculateNonREPaid(energySpent, costs);
         solution.setNonREpaid(nonREpaid);
 
-        System.out.println(best_result);
-        System.out.println(solution.getDecisionVariables()[0]);
+        if (best_upper_level_result > best_result) {
+            best_upper_level_result = best_result;
+            System.out.println(best_upper_level_result);
+            Ranking finalRanking = new Ranking(lowerLevelSolutions);
+            SolutionSet finalParetoFront = finalRanking.getSubfront(0);
+            finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/" + (fileID) + "_FUN");
+            fileID++;
+        }
+
+        //System.out.println(best_result);
+        //System.out.println(solution.getDecisionVariables()[0]);
 
 	} // evaluate
 
