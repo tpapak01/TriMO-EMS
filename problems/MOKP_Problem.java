@@ -180,11 +180,71 @@ public class MOKP_Problem extends Problem {
         Binary bin = (Binary) vars[0];
         int numOfBits = bin.getNumberOfBits();
 
+        int[] covered = new int[numberOfUsers * this.numberOfConstraints_ * numberOfItems];
+        Arrays.fill(covered, -1);
+
+        ////// loop 1
         for (int j = 0; j < numOfBits; j++) { // for each user
-            if (bin.getIth(j) && !pref_vector[j]) {
-                bin.setIth(j, false);
+            if (pref_vector[j] && bin.getIth(j)) {
+                covered[j] = j;
             }
         }
+
+        ////// loop 2
+        for (int u = 0; u < numberOfUsers; u++) { // for each user
+
+            int userIndex = u * this.numberOfConstraints_;
+            int l = 0;
+            for (int i = userIndex; i < userIndex + this.numberOfConstraints_; i++) { // for each objective
+                int itemIndex = i * numberOfItems;
+                int k = 0;
+                for (int j = itemIndex; j < itemIndex + numberOfItems; j++) { // for each bit
+                    if (pref[u][l][k] == false) {
+                        if (bin.getIth(j)){
+
+                            //find the satisfied slot, if it exists. If not, turn device OFF
+                            int misplacement = 1;
+                            int selected = -1;
+                            int behind = l-1;
+                            int front = l+1;
+                            while (behind >= 0 || front < this.numberOfConstraints_){
+                                if (behind >= 0) {
+                                    int new_position = j-misplacement*numberOfItems;
+                                    boolean pref_behind = pref_vector[new_position];
+                                    if (pref_behind && covered[new_position] == -1) {
+                                        selected = new_position;
+                                        break;
+                                    }
+                                    behind--;
+                                }
+                                if (front < this.numberOfConstraints_) {
+                                    int new_position = j+misplacement*numberOfItems;
+                                    boolean pref_front = pref_vector[new_position];
+                                    if (pref_front && covered[new_position] == -1) {
+                                        selected = new_position;
+                                        break;
+                                    }
+                                    front++;
+                                }
+                                misplacement++;
+                            }
+                            if (selected != -1) {
+                                //now that we found someone to cover, add satisfaction and secure that
+                                //position so that noone else claims it in the future
+                                covered[j] = selected;
+                            } else {
+                                //no slot found means ON-device does not belong here
+                                bin.setIth(j, false);
+                            }
+                        } //end of active device
+                    } //end of preference check
+                    k++;
+                } // for j
+                l++;
+            } // for i
+        } //for u
+
+        solution.setDeviceToPreferenceMapping(covered);
     }
 
     @Override
@@ -284,14 +344,10 @@ public class MOKP_Problem extends Problem {
 
         for (int u = 0; u < numberOfUsers; u++) { // for each user
             double sum = 0;
-
             int userIndex = u * this.numberOfConstraints_;
-
             int l = 0;
             for (int i = userIndex; i < userIndex + this.numberOfConstraints_; i++) { // for each objective
-
                 int startingIndex = i * numberOfItems;
-
                 int k = 0;
                 for (int j = startingIndex; j < startingIndex + numberOfItems; j++) { // for each bit
                     if (bin.getIth(j)) {
@@ -383,25 +439,27 @@ public class MOKP_Problem extends Problem {
         Variable[] vars = solution.getDecisionVariables();
         Binary bin = (Binary) vars[0];
         double[] dissatisfactionPerUser = new double[numberOfUsers];
+        int[] covered = solution.getDeviceToPreferenceMapping();
 
         for (int u = 0; u < numberOfUsers; u++) { // for each user
-            double dissatisfaction_nominator = 0;
+            double satisfaction_nominator = 0;
 
             int userIndex = u * this.numberOfConstraints_;
 
             int l = 0;
             for (int i = userIndex; i < userIndex + this.numberOfConstraints_; i++) { // for each objective
-
                 int itemIndex = i * numberOfItems;
-
                 int k = 0;
-
                 for (int j = itemIndex; j < itemIndex + numberOfItems; j++) { // for each bit
-                    //we only care if we actually wanted a device running at that time
                     if (pref[u][l][k]) {
-                        //if it is not running, we are dissatisfied. But how much?
-                        if (bin.getIth(j) == false){
-                            dissatisfaction_nominator++;
+                        if (bin.getIth(j)){
+                            satisfaction_nominator++;
+                        }
+                        //not preferred
+                    } else {
+                        if (bin.getIth(j)){
+                            int misplacement = Math.abs(covered[j] - j) / numberOfItems;
+                            satisfaction_nominator += Math.pow(0.5, misplacement);
                         }
                     }
                     k++;
@@ -410,7 +468,7 @@ public class MOKP_Problem extends Problem {
             } // for i
 
             int dissatisfaction_denominator = requestedDevicesPerUser[u];
-            double user_dissatisfaction = dissatisfaction_nominator / (double) dissatisfaction_denominator;
+            double user_dissatisfaction = 1.0 - (satisfaction_nominator / (double) dissatisfaction_denominator);
             total_dissatisfaction += user_dissatisfaction;
 
             dissatisfactionPerUser[u] = user_dissatisfaction;
