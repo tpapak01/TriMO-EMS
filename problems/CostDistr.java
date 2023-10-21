@@ -165,6 +165,7 @@ public class CostDistr extends Problem {
         solution.setEnergyDeviationFromProduced(deviation);
         double nonREpaid = calculateNonREPaid(energySpent, costs);
         solution.setNonREpaid(nonREpaid);
+        solution.setDeviceToPreferenceMapping(lowerLevelSol.getDeviceToPreferenceMapping());
 
 
         if (best_upper_level_result > best_result) {

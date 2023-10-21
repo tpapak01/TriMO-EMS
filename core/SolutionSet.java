@@ -468,6 +468,8 @@ public class SolutionSet implements Serializable {
     }
   }
 
+
+
   // Purpose: to know the balance between dissatisfaction and costs of the chosen LL solution by the upper level
   public void printLowerLevelObjToFile(String path){
     try {
@@ -490,6 +492,36 @@ public class SolutionSet implements Serializable {
       e.printStackTrace();
     }
   } // printObjectivesToFile
+
+  public void printMappingToFile(String path){
+    try {
+      /* Open the file */
+      FileOutputStream fos   = new FileOutputStream(path, true)     ;
+      OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
+      BufferedWriter bw      = new BufferedWriter(osw)        ;
+
+      for (Solution aSolutionsList_ : solutionsList_) {
+        //if (this.vector[i].getFitness()<1.0) {
+        int len = aSolutionsList_.getLowerLevelVars().getNumberOfBits();
+        int[] mapping = aSolutionsList_.getDeviceToPreferenceMapping();
+        for (int i=0; i<len; i++){
+          bw.write(String.format("%4d", i));
+        }
+        bw.newLine();
+        for (int i=0; i<len; i++) {
+          bw.write(String.format("%4d", mapping[i]));
+        }
+        bw.newLine();
+        //}
+      }
+
+      /* Close the file */
+      bw.close();
+    }catch (IOException e) {
+      Configuration.logger_.severe("Error acceding to the file");
+      e.printStackTrace();
+    }
+  }
 
 
   /**
