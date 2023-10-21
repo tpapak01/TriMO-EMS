@@ -182,11 +182,14 @@ public class MOKP_Problem extends Problem {
 
         int[] covered = new int[numberOfUsers * this.numberOfConstraints_ * numberOfItems];
         Arrays.fill(covered, -1);
+        int[] coveredReverse = new int[numberOfUsers * this.numberOfConstraints_ * numberOfItems];
+        Arrays.fill(coveredReverse, -1);
 
         ////// loop 1
         for (int j = 0; j < numOfBits; j++) { // for each user
             if (pref_vector[j] && bin.getIth(j)) {
                 covered[j] = j;
+                coveredReverse[j] = j;
             }
         }
 
@@ -197,9 +200,8 @@ public class MOKP_Problem extends Problem {
             int l = 0;
             for (int i = userIndex; i < userIndex + this.numberOfConstraints_; i++) { // for each objective
                 int itemIndex = i * numberOfItems;
-                int k = 0;
                 for (int j = itemIndex; j < itemIndex + numberOfItems; j++) { // for each bit
-                    if (pref[u][l][k] == false) {
+                    if (pref_vector[j] == false) {
                         if (bin.getIth(j)){
 
                             //find the satisfied slot, if it exists. If not, turn device OFF
@@ -232,19 +234,20 @@ public class MOKP_Problem extends Problem {
                                 //now that we found someone to cover, add satisfaction and secure that
                                 //position so that noone else claims it in the future
                                 covered[j] = selected;
+                                coveredReverse[selected] = j;
                             } else {
                                 //no slot found means ON-device does not belong here
                                 bin.setIth(j, false);
                             }
                         } //end of active device
                     } //end of preference check
-                    k++;
                 } // for j
                 l++;
             } // for i
         } //for u
 
         solution.setDeviceToPreferenceMapping(covered);
+        solution.setReverseDeviceToPreferenceMapping(coveredReverse);
     }
 
     @Override
