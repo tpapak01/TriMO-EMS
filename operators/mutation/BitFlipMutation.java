@@ -139,6 +139,11 @@ public class BitFlipMutation extends Mutation {
 								} else {
 									//preferred
 									if (pref_vector[j]) {
+										if (coveredReverse[j] != -1){
+											int currentCoverer = coveredReverse[j];
+											covered[currentCoverer] = -1;
+											bin.bits_.flip(currentCoverer);
+										}
 										covered[j] = j;
 										coveredReverse[j] = j;
 									//not preferred
