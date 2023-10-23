@@ -151,21 +151,21 @@ public class CostDistr extends Problem {
 
         solution.setObjective(0, best_result);
         // fill up extra data for analysis
-        Solution lowerLevelSol = lowerLevelSolutions.get(best_solution_index);
-        Variable[] vars = lowerLevelSol.getDecisionVariables();
+        Solution chosenlowerLevelSol = lowerLevelSolutions.get(best_solution_index);
+        Variable[] vars = chosenlowerLevelSol.getDecisionVariables();
         Binary bin = (Binary) vars[0];
-        double[] energySpent = lowerLevelSol.getSpentEnergy();
+        double[] energySpent = chosenlowerLevelSol.getSpentEnergy();
 
         solution.setSpentEnergy(energySpent);
         solution.setLowerLevelVars(bin);
-        solution.setLowerLevelObj(new double[] {lowerLevelSol.getObjective(0), lowerLevelSol.getObjective(1)});
-        solution.setDissatisfactionPerUser(lowerLevelSol.getDissatisfactionPerUser());
-        solution.setEnergyAllocatedPerUser(lowerLevelSol.getEnergyAllocatedPerUser());
+        solution.setLowerLevelObj(new double[] {chosenlowerLevelSol.getObjective(0), chosenlowerLevelSol.getObjective(1)});
+        solution.setDissatisfactionPerUser(chosenlowerLevelSol.getDissatisfactionPerUser());
+        solution.setEnergyAllocatedPerUser(chosenlowerLevelSol.getEnergyAllocatedPerUser());
         double deviation = calculateEnergyDeviationFromProduced(energySpent);
         solution.setEnergyDeviationFromProduced(deviation);
         double nonREpaid = calculateNonREPaid(energySpent, costs);
         solution.setNonREpaid(nonREpaid);
-        solution.setDeviceToPreferenceMapping(lowerLevelSol.getDeviceToPreferenceMapping());
+        solution.setDeviceToPreferenceMapping(chosenlowerLevelSol.getDeviceToPreferenceMapping());
 
 
         if (best_upper_level_result > best_result) {
