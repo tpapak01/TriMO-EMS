@@ -171,13 +171,19 @@ public class CostDistr extends Problem {
         if (best_upper_level_result > best_result) {
             best_upper_level_result = best_result;
             System.out.println(best_upper_level_result);
+
             /*
+            SolutionSet chosenSolutionSet = new SolutionSet(1);
+            chosenSolutionSet.add(chosenlowerLevelSol);
+            chosenSolutionSet.printObjectivesToFile("LowerLevelParetoVisual/Misplacement/" + (fileID) + "_CHOSEN");
+
             Ranking finalRanking = new Ranking(lowerLevelSolutions);
             SolutionSet finalParetoFront = finalRanking.getSubfront(0);
-            finalParetoFront.printObjectivesToFile("LowerLevelParetoVisualNSGAII/" + (fileID) + "_FUN"); check
+            finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/Misplacement/" + (fileID) + "_FUN"); //check
             fileID++;
-
+            
              */
+
         }
 
 
