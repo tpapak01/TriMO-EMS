@@ -98,6 +98,14 @@ public class Solution implements Serializable {
     this.nonREpaid = nonREpaid;
   }
 
+  private int[] deviceToPreferenceMapping;
+  public int[] getDeviceToPreferenceMapping(){
+    return deviceToPreferenceMapping;
+  }
+  public void setDeviceToPreferenceMapping(int[] deviceToPreferenceMappings){
+    this.deviceToPreferenceMapping = Arrays.copyOf(deviceToPreferenceMapping, deviceToPreferenceMapping.length);
+  }
+
 	/**
 	 * Stores the problem 
 	 */
@@ -300,6 +308,9 @@ public class Solution implements Serializable {
     }
     if (solution.getLambda() != null){
       setLambda(solution.getLambda());
+    }
+    if (solution.getDeviceToPreferenceMapping() != null) {
+      setDeviceToPreferenceMapping(solution.getDeviceToPreferenceMapping());
     }
   } // Solution
 

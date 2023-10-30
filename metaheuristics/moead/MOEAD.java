@@ -512,21 +512,9 @@ public class MOEAD extends Algorithm {
         newSolution.setDecisionVariables(updateSolution(numOfBits, false));
       }
 
-      // exactly what the users want
+      // all devices
       if (i == populationSize-1) {
-            boolean[] pref_vector = problemMOKP.getUserPreferenceVector();
-            Variable[] vars = new Variable[problemMOKP.getNumberOfVariables()];
-            for (int v = 0; v < vars.length; v++) {
-                Binary bin = new Binary(numOfBits);
-
-                for (int j = 0; j < numOfBits; j++) { // for each user
-                  bin.setIth(j, pref_vector[j]);
-                }
-
-                vars[v] = bin;
-            }
-
-            newSolution.setDecisionVariables(vars);
+        newSolution.setDecisionVariables(updateSolution(numOfBits, true));
       }
 
       problemMOKP.repair(newSolution);
