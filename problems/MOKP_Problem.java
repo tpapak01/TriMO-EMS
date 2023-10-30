@@ -224,7 +224,7 @@ public class MOKP_Problem extends Problem {
                                 if (behind >= 0) {
                                     int new_position = j-misplacement*numberOfItems;
                                     boolean pref_behind = pref_vector[new_position];
-                                    if (pref_behind && covered[new_position] == -1) {
+                                    if (pref_behind && coveredReverse[new_position] == -1) {
                                         selected = new_position;
                                         break;
                                     }
@@ -233,7 +233,7 @@ public class MOKP_Problem extends Problem {
                                 if (front < this.numberOfConstraints_) {
                                     int new_position = j+misplacement*numberOfItems;
                                     boolean pref_front = pref_vector[new_position];
-                                    if (pref_front && covered[new_position] == -1) {
+                                    if (pref_front && coveredReverse[new_position] == -1) {
                                         selected = new_position;
                                         break;
                                     }

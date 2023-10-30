@@ -131,6 +131,7 @@ public class BitFlipMutation extends Mutation {
 						int itemIndex = i * numberOfItems;
 						for (int j = itemIndex; j < itemIndex + numberOfItems; j++) { // for each bit
 							if (PseudoRandom.randDouble() < probability) {
+								//just delete current mapping
 								if (bin.getIth(j)) {
 									int preferenceCovered = covered[j];
 									covered[j] = -1;
@@ -138,6 +139,11 @@ public class BitFlipMutation extends Mutation {
 								} else {
 									//preferred
 									if (pref_vector[j]) {
+										if (coveredReverse[j] != -1){
+											int currentCoverer = coveredReverse[j];
+											covered[currentCoverer] = -1;
+											bin.bits_.flip(currentCoverer);
+										}
 										covered[j] = j;
 										coveredReverse[j] = j;
 									//not preferred
@@ -151,7 +157,7 @@ public class BitFlipMutation extends Mutation {
 											if (behind >= 0) {
 												int new_position = j-misplacement*numberOfItems;
 												boolean pref_behind = pref_vector[new_position];
-												if (pref_behind && covered[new_position] == -1) {
+												if (pref_behind && coveredReverse[new_position] == -1) {
 													selected = new_position;
 													break;
 												}
@@ -160,7 +166,7 @@ public class BitFlipMutation extends Mutation {
 											if (front < numberOfConstraints_) {
 												int new_position = j+misplacement*numberOfItems;
 												boolean pref_front = pref_vector[new_position];
-												if (pref_front && covered[new_position] == -1) {
+												if (pref_front && coveredReverse[new_position] == -1) {
 													selected = new_position;
 													break;
 												}

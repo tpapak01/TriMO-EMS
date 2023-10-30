@@ -172,6 +172,7 @@ public class UpperLevelCostDistr_gGA {
         population.printNonREPaidToFile("NON_RE_PAID");
         population.printLowerLevelVarsToFile("LL_VAR");
         population.printLowerLevelObjToFile("LL_FUN");
+        population.printMappingToFile("LL_MAPPING");
 
         population.printSpentEnergyToFile("SPENT");
         population.printUserDissatisfactionToFile("USER_DISSAT");
