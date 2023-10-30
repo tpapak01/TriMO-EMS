@@ -2,12 +2,8 @@ package jmetal.metaheuristics.bilevel;
 
 import jmetal.core.*;
 import jmetal.metaheuristics.moead.MOEAD;
-import jmetal.operators.crossover.HUXCrossover;
-import jmetal.operators.crossover.SinglePointCrossover;
-import jmetal.operators.crossover.TwoPointCrossoverCustom;
-import jmetal.operators.crossover.TwoPointsCrossover;
+import jmetal.operators.crossover.*;
 import jmetal.operators.mutation.BitFlipMutation;
-import jmetal.problems.CostDistr;
 import jmetal.problems.MOKP_Problem;
 import jmetal.qualityIndicator.QualityIndicator;
 import jmetal.util.Configuration;
@@ -117,7 +113,7 @@ public class LowerLevelMOKP_MOEAD {
         parameters = new HashMap();
         double crossoverProbability = 1.0;
         parameters.put("probability", crossoverProbability);
-        crossover = new TwoPointCrossoverCustom(parameters);
+        crossover = new PartiallyMappedCrossoverCustom(parameters);
         //thalis comment
         //parameters = new HashMap() ;
         //parameters.put("CR", 1.0) ;

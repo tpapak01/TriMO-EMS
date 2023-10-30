@@ -102,8 +102,16 @@ public class Solution implements Serializable {
   public int[] getDeviceToPreferenceMapping(){
     return deviceToPreferenceMapping;
   }
-  public void setDeviceToPreferenceMapping(int[] deviceToPreferenceMappings){
+  public void setDeviceToPreferenceMapping(int[] deviceToPreferenceMapping){
     this.deviceToPreferenceMapping = Arrays.copyOf(deviceToPreferenceMapping, deviceToPreferenceMapping.length);
+  }
+
+  private int[] reverseDeviceToPreferenceMapping;
+  public int[] getReverseDeviceToPreferenceMapping(){
+    return reverseDeviceToPreferenceMapping;
+  }
+  public void setReverseDeviceToPreferenceMapping(int[] reverseDeviceToPreferenceMapping){
+    this.reverseDeviceToPreferenceMapping = Arrays.copyOf(reverseDeviceToPreferenceMapping, reverseDeviceToPreferenceMapping.length);
   }
 
 	/**
@@ -311,6 +319,9 @@ public class Solution implements Serializable {
     }
     if (solution.getDeviceToPreferenceMapping() != null) {
       setDeviceToPreferenceMapping(solution.getDeviceToPreferenceMapping());
+    }
+    if (solution.getReverseDeviceToPreferenceMapping() != null) {
+      setReverseDeviceToPreferenceMapping(solution.getReverseDeviceToPreferenceMapping());
     }
   } // Solution
 
