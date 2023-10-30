@@ -116,6 +116,7 @@ public class BitFlipMutation extends Mutation {
 			int numberOfUsers = problemMOKP.getNumberOfUsers();
 			int numberOfConstraints_ = problemMOKP.getNumberOfConstraints();
 			int numberOfItems = problemMOKP.getNumberOfItems();
+			int[] max_shift = problemMOKP.getMax_shift();
 
 			for (int v = 0; v < solution.getDecisionVariables().length; v++) {
 				Binary bin = (Binary) solution.getDecisionVariables()[v];
@@ -129,6 +130,7 @@ public class BitFlipMutation extends Mutation {
 					int l = 0;
 					for (int i = userIndex; i < userIndex + numberOfConstraints_; i++) { // for each objective
 						int itemIndex = i * numberOfItems;
+						int k = 0;
 						for (int j = itemIndex; j < itemIndex + numberOfItems; j++) { // for each bit
 							if (PseudoRandom.randDouble() < probability) {
 								//just delete current mapping
@@ -154,6 +156,9 @@ public class BitFlipMutation extends Mutation {
 										int behind = l-1;
 										int front = l+1;
 										while (behind >= 0 || front < numberOfConstraints_){
+											if (max_shift[k] < misplacement){
+												break;
+											}
 											if (behind >= 0) {
 												int new_position = j-misplacement*numberOfItems;
 												boolean pref_behind = pref_vector[new_position];
@@ -188,6 +193,7 @@ public class BitFlipMutation extends Mutation {
 								}
 								bin.bits_.flip(j);
 							} // end of probability check
+							k++;
 						} // for j
 						l++;
 					} // for i

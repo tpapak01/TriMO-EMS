@@ -30,6 +30,7 @@ public class MOKP_Problem extends Problem {
     private int numberOfItems;
     private int numberOfUsers;
     private double[] w; // weight of items
+    private int[] max_shift; //max shifting of items
     private boolean [][][] pref; // preferences of users: user x time x device
     private boolean [] pref_vector; // preferences of users: user x time x device
     private XReal costOfUsage ; // capacity of each  knapsack .
@@ -73,11 +74,13 @@ public class MOKP_Problem extends Problem {
           zenithObjectiveValue[0] = zenithObjectiveValue[1] = 0;
 
           w = new double[numberOfItems];
+          max_shift = new int[numberOfItems];
 
           for (int i = 0; i < numberOfItems; i++) {
               // Read weight for the j-th item
               line = in.readLine();
               w[i] = Double.parseDouble(line);
+              max_shift[i] = this.numberOfConstraints_;
           }
 
           in.close();
@@ -170,6 +173,8 @@ public class MOKP_Problem extends Problem {
         return w;
     }
 
+    public int[] getMax_shift() {return max_shift;}
+
     public boolean[][][] getUserPreferences(){
       return pref;
     }
@@ -211,6 +216,7 @@ public class MOKP_Problem extends Problem {
             int l = 0;
             for (int i = userIndex; i < userIndex + this.numberOfConstraints_; i++) { // for each objective
                 int itemIndex = i * numberOfItems;
+                int k = 0;
                 for (int j = itemIndex; j < itemIndex + numberOfItems; j++) { // for each bit
                     if (pref_vector[j] == false) {
                         if (bin.getIth(j)){
@@ -221,6 +227,9 @@ public class MOKP_Problem extends Problem {
                             int behind = l-1;
                             int front = l+1;
                             while (behind >= 0 || front < this.numberOfConstraints_){
+                                if (max_shift[k] < misplacement){
+                                    break;
+                                }
                                 if (behind >= 0) {
                                     int new_position = j-misplacement*numberOfItems;
                                     boolean pref_behind = pref_vector[new_position];
@@ -252,9 +261,11 @@ public class MOKP_Problem extends Problem {
                             }
                         } //end of active device
                     } //end of preference check
+                    k++;
                 } // for j
                 l++;
             } // for i
+
         } //for u
 
         solution.setDeviceToPreferenceMapping(covered);

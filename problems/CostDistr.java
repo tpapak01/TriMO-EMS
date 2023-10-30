@@ -236,9 +236,10 @@ public class CostDistr extends Problem {
             best_upper_level_result = best_result;
             System.out.println((improved_won?"WON":"LOS") + " " + best_upper_level_result);
             //----------
+            /*
             SolutionSet chosenSolutionSet = new SolutionSet(1);
             chosenSolutionSet.add(chosenlowerLevelSol);
-            chosenSolutionSet.printObjectivesToFile("LowerLevelParetoVisual/WithoutLocalSearch/" + (fileID) + "_CHOSEN");
+            chosenSolutionSet.printObjectivesToFile("LowerLevelParetoVisual/Misplacement/WithoutLocalSearch/" + (fileID) + "_CHOSEN");
             //----------
             Ranking finalRanking = new Ranking(lowerLevelSolutions);
             SolutionSet finalParetoFront = finalRanking.getSubfront(0);
@@ -254,15 +255,17 @@ public class CostDistr extends Problem {
                     }
                 }
             }
-            finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/WithoutLocalSearch/" + (fileID) + "_FUN");
+            finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/Misplacement/WithoutLocalSearch/" + (fileID) + "_FUN");
             //----------
             if (improvedLowerLevelSolutions.size() > 0) {
                 finalRanking = new Ranking(improvedLowerLevelSolutions);
                 finalParetoFront = finalRanking.getSubfront(0);
-                finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/WithLocalSearchD/" + (fileID) + "_FUN");
-            } else improvedLowerLevelSolutions.printObjectivesToFile("LowerLevelParetoVisual/WithLocalSearchD/" + (fileID) + "_FUN");
+                finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/Misplacement/WithLocalSearchD/" + (fileID) + "_FUN");
+            } else improvedLowerLevelSolutions.printObjectivesToFile("LowerLevelParetoVisual/Misplacement/WithLocalSearchD/" + (fileID) + "_FUN");
 
             fileID++;
+            
+             */
 
         }
 
