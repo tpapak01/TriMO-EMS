@@ -693,7 +693,7 @@ public class MOEAD extends Algorithm {
       }
 
       if (flagDominate == -1) {// indiv is better
-        population.replace(k, new Solution(indiv));
+        population.replace(k, new Solution(indiv, lambda_[k]));
         time++;
       }
 
