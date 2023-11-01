@@ -507,10 +507,18 @@ public class MOKP_Problem extends Problem {
     }
 
     public void partiallyEvaluateD(Solution solution, double[] positionsChanged) throws JMException {
-        int position = (int) positionsChanged[0];
+        int positionToMake1 = (int) positionsChanged[0];
         int step = (int) positionsChanged[1];
         double cost = positionsChanged[2];
-        int u = position / (this.numberOfConstraints_ * numberOfItems);
+        Binary bin = (Binary) solution.getDecisionVariables()[0];
+        bin.bits_.flip(positionToMake1); //positionToMake1
+
+        int u, c, it;
+        u = positionToMake1 / (this.numberOfConstraints_ * numberOfItems);
+        c = positionToMake1 % (this.numberOfConstraints_ * numberOfItems) / numberOfItems;
+        int userAndTime = u * (this.numberOfConstraints_ * numberOfItems) + c * numberOfItems;
+        it =  (userAndTime == 0 ? positionToMake1 : (positionToMake1 % userAndTime));
+
         //OBJ D
         double obj_d = solution.getObjective(0);
         int dissatisfaction_denominator = requestedDevicesPerUser[u];
@@ -523,36 +531,18 @@ public class MOKP_Problem extends Problem {
         energyAllocatedToUser += cost;
         if (energyAllocatedToUser > obj_c)
             solution.setObjective(1, energyAllocatedToUser);
-
-    } // evaluate
-
-    public void partiallyUpdate(Solution solution, double[] positionsChanged){
-        int position = (int) positionsChanged[0];
-        int step = (int) positionsChanged[1];
-        double cost = positionsChanged[2];
-        int u, c, it;
-        u = position / (this.numberOfConstraints_ * numberOfItems);
-        c = position % (this.numberOfConstraints_ * numberOfItems) / numberOfItems;
-        int userAndTime = u * (this.numberOfConstraints_ * numberOfItems) + c * numberOfItems;
-        it =  (userAndTime == 0 ? position : (position % userAndTime));
-        int dissatisfaction_denominator = requestedDevicesPerUser[u];
-        double impact = Math.pow(0.5, step);
-        double difference = 1.0/dissatisfaction_denominator*impact;
         /**********update extra attributes of solution*******/
         //dissatisfactionPerUser
         double[] dissatisfactionPerUser = solution.getDissatisfactionPerUser();
         dissatisfactionPerUser[u] -= difference;
-        solution.setDissatisfactionPerUser(dissatisfactionPerUser);
         //spentEnergy
         double[] spentEnergy = solution.getSpentEnergy();
         spentEnergy[c] += w[it];
-        solution.setSpentEnergy(spentEnergy);
         //energyAllocatedPerUser
         double[] energyAllocatedPerUser = solution.getEnergyAllocatedPerUser();
         energyAllocatedPerUser[u] += cost;
-        solution.setEnergyAllocatedPerUser(energyAllocatedPerUser);
-    }
 
+    } // evaluate
 
     ////////////////////////////////    HELPER FUNCTIONS       ////////////////////////////////////////
 

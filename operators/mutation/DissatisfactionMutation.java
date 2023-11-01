@@ -76,11 +76,11 @@ public class DissatisfactionMutation extends Mutation {
 			int numberOfUsers = problem.getNumberOfUsers();
 			int numberOfConstraints = problem.getNumberOfConstraints();
 			int numberOfItems = problem.getNumberOfItems();
+			int[] covered = solution.getDeviceToPreferenceMapping();
+			int[] coveredReverse = solution.getReverseDeviceToPreferenceMapping();
 			double[] w = problem.getWeightOfItems();
 			XReal costs = problem.getCostOfUsage();
 			double[][] positionsChanged = new double[mutationRepeats_][3];
-			int[] dontRevisitPositions = new int[mutationRepeats_];
-			for (int i=0; i<mutationRepeats_; i++) dontRevisitPositions[i] = -1;
 			int index = 0;
 
 			for (int i = 0; i < solution.getDecisionVariables().length; i++) {
@@ -89,30 +89,31 @@ public class DissatisfactionMutation extends Mutation {
 
 				for (int r=0; r<mutationRepeats_; r++){
 					int tries = 0;
-                    int position;
-                    List check = Collections.singletonList(dontRevisitPositions);
+                    int preferencePosition;
                     do {
-                        position = PseudoRandom.randInt(0, numOfBits-1);
+						preferencePosition = PseudoRandom.randInt(0, numOfBits-1);
 						tries++;
 						if (tries > 20)
 							break;
-                    } while (check.contains(position) || bin.getIth(position) || !pref_vector[position]);
+                    } while (coveredReverse[preferencePosition] != -1 || !pref_vector[preferencePosition]);
 
 					if (tries > 20)
 						break;
 
                     int u, c, it;
-                    u = position / (numberOfConstraints * numberOfItems);
-                    c = position % (numberOfConstraints * numberOfItems) / numberOfItems;
+                    u = preferencePosition / (numberOfConstraints * numberOfItems);
+                    c = preferencePosition % (numberOfConstraints * numberOfItems) / numberOfItems;
 					int userAndTime = u * (numberOfConstraints * numberOfItems) + c * numberOfItems;
-                    it = (userAndTime == 0 ? position : (position % userAndTime));
+                    it = (userAndTime == 0 ? preferencePosition : (preferencePosition % userAndTime));
 
-                    int newposition = -1;
+                    int positionToMake1 = -1;
                     int newtimeslot = -1;
                     boolean goLeft = false;
                     boolean exitLoop = false;
                     int step = 0;
                     while(true) {
+                    	//only check for exiting (and incrementing step) after you have
+						//checked both left and right
 						if (goLeft == false) {
 							if (exitLoop)
 								break;
@@ -122,30 +123,36 @@ public class DissatisfactionMutation extends Mutation {
 						if (goLeft) {
 							newtimeslot = c-step;
 							if (newtimeslot >= 0) {
-								newposition = position - step * numberOfItems;
+								positionToMake1 = preferencePosition - step * numberOfItems;
 								exitLoop = false;
 							}
 						}
                     	if (!goLeft) {
 							newtimeslot = c+step;
 							if (newtimeslot < numberOfConstraints) {
-								newposition = position + step * numberOfItems;
+								positionToMake1 = preferencePosition + step * numberOfItems;
 								exitLoop = false;
 							}
 						}
+						//continuously flip checks from left to right
 						goLeft = !goLeft;
-						if (newposition != -1 && !pref_vector[newposition] && !bin.getIth(newposition))
+                    	//check if device to turn ON is valid (other than being within the timeslot limits)
+						if (positionToMake1 != -1 &&
+								!pref_vector[positionToMake1] && covered[positionToMake1] == -1) {
 							break;
+						}
                     }
 
 					if (!exitLoop) {
 						double cost = w[it] * costs.getValue(newtimeslot);
 						//if (cost <= temperature) {
-							positionsChanged[index][0] = newposition; //position
+							positionsChanged[index][0] = positionToMake1;
 							positionsChanged[index][1] = step; //step
 							positionsChanged[index][2] = cost; //cost
-							dontRevisitPositions[index] = newposition;
 							index++;
+
+							coveredReverse[preferencePosition] = positionToMake1;
+							covered[positionToMake1] = preferencePosition;
 						//}
 					}
 

@@ -98,52 +98,48 @@ public class DissatisfactionLocalSearch extends LocalSearch {
  * @throws JMException 
    */
   public Object execute(Object object) throws JMException {
-    int i = 0;
-    int best = 0;
-    Solution solution = (Solution)object;
 
-    int rounds = improvementRounds_;
+    Solution original = (Solution)object;
     int cooldownRounds = cooldownRounds_;
-    Solution finalSolution = null;
 
-    do {
-      i++;
-      Solution mutatedSolution = new Solution(solution);
-      double[] lambda = solution.getLambda();
+    //Solution finalSolution = null;
+    //int rounds = improvementRounds_;
+    //int i = 0;
+    //int best = 0;
+    //do {
+      //i++;
+      double[] lambda = original.getLambda();
+      Solution solution = new Solution(original);
+      double currentFitness = fitnessFunction(solution, lambda);
 
       for (int cr=0; cr<cooldownRounds; cr++) {
         double temperature = 1.0 - ( (cr+1.0) / (double) cooldownRounds );
-        //mutationOperator_.setParameter("temperature", temperature);
-        double[][] positionsChanged = (double[][]) mutationOperator_.execute(mutatedSolution);
 
+        //find positions to be changed
+        Solution mutatedSolution = new Solution(solution);
+        double[][] positionsChanged = (double[][]) mutationOperator_.execute(mutatedSolution);
         if (positionsChanged[0][1] == 0)
           break;
 
         for (int k=0; k<positionsChanged.length; k++) {
-          double[] newposition = positionsChanged[k];
-          if (newposition[1] == 0) //step == 0
-            break;
-          double[] oldVals = new double[problemMOKP.getNumberOfObjectives()];
-          for (int o = 0; o < oldVals.length; o++)
-            oldVals[o] = mutatedSolution.getObjective(o);
-          //calculate current and new fitness
-          double oldFitness = fitnessFunction(mutatedSolution, lambda);
-          problemMOKP.partiallyEvaluateD(mutatedSolution, newposition); //mutatedSolution gets new obj values
-          double newFitness = fitnessFunction(mutatedSolution, lambda);
-          if (newFitness < oldFitness ||
-                  (1.0/(1.0+Math.exp((newFitness - oldFitness)/temperature))) > PseudoRandom.randDouble()
-          ) {
-            Binary bin = (Binary) mutatedSolution.getDecisionVariables()[0];
-            bin.bits_.flip((int) newposition[0]);
-            problemMOKP.partiallyUpdate(mutatedSolution, newposition); //mutatedSolution gets updated stat metrics
-          } else {
-            for (int o=0; o<oldVals.length; o++)
-              mutatedSolution.setObjective(o, oldVals[o]);
-          }
-
+            double[] infoOnSingleChange = positionsChanged[k];
+            if (infoOnSingleChange[1] == 0) //step == 0
+                break;
+            problemMOKP.partiallyEvaluateD(mutatedSolution, infoOnSingleChange); //mutatedSolution gets new obj values
         }
+        //calculate new fitness
+        double newFitness = fitnessFunction(mutatedSolution, lambda);
+
+        if (newFitness < currentFitness ||
+              (1.0/(1.0+Math.exp((newFitness - currentFitness)/temperature))) > PseudoRandom.randDouble()
+        ) {
+            solution = mutatedSolution;
+            currentFitness = newFitness;
+        }
+
       } //cooldownRoundOver
 
+    /*
       if (finalSolution == null) finalSolution = mutatedSolution;
       else {
         best = dominanceComparator_.compare(mutatedSolution, finalSolution);
@@ -157,8 +153,11 @@ public class DissatisfactionLocalSearch extends LocalSearch {
         }// mutatedSolution and original are non-dominated, put mutatedSolution in archive
       }
 
-    } while (i < rounds);
-    return finalSolution;
+     */
+
+    //} while (i < rounds);
+    //return finalSolution;
+    return solution;
   } // execute
 
 
