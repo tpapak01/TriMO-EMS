@@ -119,7 +119,7 @@ public class DissatisfactionLocalSearch extends LocalSearch {
         Solution mutatedSolution = new Solution(solution);
         double[][] positionsChanged = (double[][]) mutationOperator_.execute(mutatedSolution);
         if (positionsChanged[0][1] == 0)
-          break;
+          continue;
 
         for (int k=0; k<positionsChanged.length; k++) {
             double[] infoOnSingleChange = positionsChanged[k];
