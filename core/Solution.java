@@ -98,6 +98,22 @@ public class Solution implements Serializable {
     this.nonREpaid = nonREpaid;
   }
 
+  private int[] deviceToPreferenceMapping;
+  public int[] getDeviceToPreferenceMapping(){
+    return deviceToPreferenceMapping;
+  }
+  public void setDeviceToPreferenceMapping(int[] deviceToPreferenceMapping){
+    this.deviceToPreferenceMapping = Arrays.copyOf(deviceToPreferenceMapping, deviceToPreferenceMapping.length);
+  }
+
+  private int[] reverseDeviceToPreferenceMapping;
+  public int[] getReverseDeviceToPreferenceMapping(){
+    return reverseDeviceToPreferenceMapping;
+  }
+  public void setReverseDeviceToPreferenceMapping(int[] reverseDeviceToPreferenceMapping){
+    this.reverseDeviceToPreferenceMapping = Arrays.copyOf(reverseDeviceToPreferenceMapping, reverseDeviceToPreferenceMapping.length);
+  }
+
 	/**
 	 * Stores the problem 
 	 */
@@ -298,6 +314,12 @@ public class Solution implements Serializable {
     if (solution.getNonREpaid() != -1){
       setNonREpaid(solution.getNonREpaid());
     }
+    if (solution.getDeviceToPreferenceMapping() != null) {
+      setDeviceToPreferenceMapping(solution.getDeviceToPreferenceMapping());
+    }
+    if (solution.getReverseDeviceToPreferenceMapping() != null) {
+      setReverseDeviceToPreferenceMapping(solution.getReverseDeviceToPreferenceMapping());
+    }
   } // Solution
 
   public Solution(Solution solution, double[] lambda) {
@@ -344,6 +366,13 @@ public class Solution implements Serializable {
     }
 
     setLambda(lambda);
+
+    if (solution.getDeviceToPreferenceMapping() != null) {
+      setDeviceToPreferenceMapping(solution.getDeviceToPreferenceMapping());
+    }
+    if (solution.getReverseDeviceToPreferenceMapping() != null) {
+      setReverseDeviceToPreferenceMapping(solution.getReverseDeviceToPreferenceMapping());
+    }
   } // Solution
 
   /**
