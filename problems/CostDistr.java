@@ -77,7 +77,7 @@ public class CostDistr extends Problem {
       parameters.put("problem",this.lowerLevelProblem) ;
       Mutation mutation = new DissatisfactionMutation(parameters);
       parameters.put("improvementRounds", 1);
-      parameters.put("cooldownRounds", 20) ;
+      parameters.put("cooldownRounds", 60) ;
       parameters.put("problem",this.lowerLevelProblem);
       parameters.put("mutation", mutation) ;
       improvementOperatorD = new DissatisfactionLocalSearch(parameters);
@@ -223,23 +223,24 @@ public class CostDistr extends Problem {
         solution.setEnergyDeviationFromProduced(deviation);
         double nonREpaid = calculateNonREPaid(energySpent, costs);
         solution.setNonREpaid(nonREpaid);
-        solution.setDeviceToPreferenceMapping(chosenlowerLevelSol.getDeviceToPreferenceMapping());
-        solution.setReverseDeviceToPreferenceMapping(chosenlowerLevelSol.getReverseDeviceToPreferenceMapping());
 
         boolean improved_won = true;
         if (best_solution_index < lowerLevelSolutions.size())
             improved_won = false;
         else {
-            int a = 2;
+            solution.setDeviceToPreferenceMapping(chosenlowerLevelSol.getDeviceToPreferenceMapping());
+            solution.setReverseDeviceToPreferenceMapping(chosenlowerLevelSol.getReverseDeviceToPreferenceMapping());
         }
 
         if (best_upper_level_result > best_result){
             best_upper_level_result = best_result;
-	        int[] covered = solution.getDeviceToPreferenceMapping();
             int count = 0;
-            for (int i=0; i<covered.length; i++){
-                if (covered[i] != -1 && covered[i] != i){
-                    count++;
+            if (improved_won) {
+                int[] covered = solution.getDeviceToPreferenceMapping();
+                for (int i = 0; i < covered.length; i++) {
+                    if (covered[i] != -1 && covered[i] != i) {
+                        count++;
+                    }
                 }
             }
             System.out.println((improved_won?"WON":"LOS") + " " + best_upper_level_result + " " + count);
@@ -272,7 +273,7 @@ public class CostDistr extends Problem {
             } else improvedLowerLevelSolutions.printObjectivesToFile("LowerLevelParetoVisual/WithLocalSearchD/" + (fileID) + "_FUN");
 
             fileID++;
-            
+
              */
 
         }
