@@ -73,11 +73,11 @@ public class CostDistr extends Problem {
 
       //now initialize local search operator
       HashMap parameters = new HashMap() ;
-      parameters.put("repeats", 7) ;
+      parameters.put("repeats", 1) ;
       parameters.put("problem",this.lowerLevelProblem) ;
       Mutation mutation = new DissatisfactionMutation(parameters);
-      parameters.put("improvementRounds", 10);
-      parameters.put("cooldownRounds", 8) ;
+      parameters.put("improvementRounds", 1);
+      parameters.put("cooldownRounds", 20) ;
       parameters.put("problem",this.lowerLevelProblem);
       parameters.put("mutation", mutation) ;
       improvementOperatorD = new DissatisfactionLocalSearch(parameters);
