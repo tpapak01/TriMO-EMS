@@ -77,7 +77,7 @@ public class CostDistr extends Problem {
       parameters.put("problem",this.lowerLevelProblem) ;
       Mutation mutation = new DissatisfactionMutation(parameters);
       parameters.put("improvementRounds", 1);
-      parameters.put("cooldownRounds", 60) ;
+      parameters.put("cooldownRounds", 80) ;
       parameters.put("problem",this.lowerLevelProblem);
       parameters.put("mutation", mutation) ;
       improvementOperatorD = new DissatisfactionLocalSearch(parameters);
@@ -160,6 +160,7 @@ public class CostDistr extends Problem {
                 //if focus is more on satisfaction, based on lambda...
                 if (lambda[0] >= lambda[1]) {
                     newSol = (Solution) improvementOperatorD.execute(lowerLevelSol);
+                    newSol.setImprovedByLocalSearch(true);
                     improvedLowerLevelSolutions.add(newSol);
                 } else {
                     //TODO C LOCAL SEARCH
@@ -172,6 +173,7 @@ public class CostDistr extends Problem {
                 double rndSel = PseudoRandom.randDouble();
                 if (rndSel < 0.5) {
                     newSol = (Solution) improvementOperatorD.execute(lowerLevelSol);
+                    newSol.setImprovedByLocalSearch(true);
                     improvedLowerLevelSolutions.add(newSol);
                 } else {
                     //TODO C LOCAL SEARCH
@@ -186,10 +188,16 @@ public class CostDistr extends Problem {
         //in the future TODO change to be the Pareto front of the union, not only the improved solutions
         SolutionSet allSolutions;
         if (improvedLowerLevelSolutions.size() > 0) {
-            Ranking toGetOnlyParetoOptimals = new Ranking(improvedLowerLevelSolutions);
-            SolutionSet paretoOptimalImprovedLL = toGetOnlyParetoOptimals.getSubfront(0);
-            allSolutions = lowerLevelSolutions.union(paretoOptimalImprovedLL);
+            allSolutions = lowerLevelSolutions.union(improvedLowerLevelSolutions);
+            //Ranking toGetOnlyParetoOptimals = new Ranking(improvedLowerLevelSolutions);
+            //SolutionSet paretoOptimalImprovedLL = toGetOnlyParetoOptimals.getSubfront(0);
+            //allSolutions = lowerLevelSolutions.union(paretoOptimalImprovedLL);
         } else allSolutions = lowerLevelSolutions;
+
+        //only keep the Pareto front of the solutions
+        Ranking toGetOnlyParetoOptimals = new Ranking(allSolutions);
+        SolutionSet paretoOptimal = toGetOnlyParetoOptimals.getSubfront(0);
+        allSolutions = paretoOptimal;
 
         //find best LL solution for the upper level
         for (int s=0; s<allSolutions.size(); s++) {
@@ -218,6 +226,7 @@ public class CostDistr extends Problem {
         solution.setLowerLevelVars(bin);
         solution.setLowerLevelObj(new double[] {chosenlowerLevelSol.getObjective(0), chosenlowerLevelSol.getObjective(1)});
         solution.setDissatisfactionPerUser(chosenlowerLevelSol.getDissatisfactionPerUser());
+        solution.setImprovedByLocalSearch(chosenlowerLevelSol.getImprovedByLocalSearch());
         solution.setEnergyAllocatedPerUser(chosenlowerLevelSol.getEnergyAllocatedPerUser());
         double deviation = calculateEnergyDeviationFromProduced(energySpent);
         solution.setEnergyDeviationFromProduced(deviation);
@@ -225,7 +234,7 @@ public class CostDistr extends Problem {
         solution.setNonREpaid(nonREpaid);
 
         boolean improved_won = true;
-        if (best_solution_index < lowerLevelSolutions.size())
+        if (solution.getImprovedByLocalSearch() == false)
             improved_won = false;
         else {
             solution.setDeviceToPreferenceMapping(chosenlowerLevelSol.getDeviceToPreferenceMapping());

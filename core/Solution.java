@@ -113,6 +113,13 @@ public class Solution implements Serializable {
   public void setReverseDeviceToPreferenceMapping(int[] reverseDeviceToPreferenceMapping){
     this.reverseDeviceToPreferenceMapping = Arrays.copyOf(reverseDeviceToPreferenceMapping, reverseDeviceToPreferenceMapping.length);
   }
+  private boolean improvedByLocalSearch = false;
+  public boolean getImprovedByLocalSearch(){
+    return improvedByLocalSearch;
+  }
+  public void setImprovedByLocalSearch(boolean improvedByLocalSearch){
+    this.improvedByLocalSearch = improvedByLocalSearch;
+  }
 
 	/**
 	 * Stores the problem 
@@ -283,6 +290,7 @@ public class Solution implements Serializable {
       objective_[i] = solution.getObjective(i);
       normalizedObjective_[i] =  solution.getNormalizedObjective(i);
     }
+    improvedByLocalSearch = solution.getImprovedByLocalSearch();
     variable_ = type_.copyVariables(solution.variable_) ;
     overallConstraintViolation_  = solution.getOverallConstraintViolation();
     numberOfViolatedConstraints_ = solution.getNumberOfViolatedConstraint();
