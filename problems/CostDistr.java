@@ -166,11 +166,19 @@ public class CostDistr extends Problem {
         double nonREpaid = calculateNonREPaid(energySpent, costs);
         solution.setNonREpaid(nonREpaid);
         solution.setDeviceToPreferenceMapping(chosenlowerLevelSol.getDeviceToPreferenceMapping());
+        solution.setReverseDeviceToPreferenceMapping(chosenlowerLevelSol.getReverseDeviceToPreferenceMapping());
 
 
         if (best_upper_level_result > best_result) {
             best_upper_level_result = best_result;
-            System.out.println(best_upper_level_result);
+            int[] covered = solution.getDeviceToPreferenceMapping();
+            int count = 0;
+            for (int i=0; i<covered.length; i++){
+                if (covered[i] != -1 && covered[i] != i){
+                    count++;
+                }
+            }
+            System.out.println(best_upper_level_result + " " + count);
 
             /*
             SolutionSet chosenSolutionSet = new SolutionSet(1);
