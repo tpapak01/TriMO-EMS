@@ -199,9 +199,13 @@ public class CostDistr extends Problem {
         SolutionSet paretoOptimal = toGetOnlyParetoOptimals.getSubfront(0);
         allSolutions = paretoOptimal;
 
+        int improvedSurvivors = 0;
         //find best LL solution for the upper level
         for (int s=0; s<allSolutions.size(); s++) {
             Solution lowerLevelSol = allSolutions.get(s);
+
+            if (lowerLevelSol.getImprovedByLocalSearch())
+                improvedSurvivors++;
 
             // do upper-level evaluation = finding deviation from available RE
             //double result = upperLevel_evaluate_distance_from_produced(spentEnergy);
@@ -252,6 +256,7 @@ public class CostDistr extends Problem {
                     }
                 }
             }
+            System.out.println("Improved Survivors: " + improvedSurvivors);
             System.out.println((improved_won?"WON":"LOS") + " " + best_upper_level_result + " " + count);
 
             /*
