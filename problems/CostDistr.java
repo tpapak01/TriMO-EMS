@@ -264,27 +264,17 @@ public class CostDistr extends Problem {
             chosenSolutionSet.add(chosenlowerLevelSol);
             chosenSolutionSet.printObjectivesToFile("LowerLevelParetoVisual/WithoutLocalSearch/" + (fileID) + "_CHOSEN");
             //----------
-            Ranking finalRanking = new Ranking(lowerLevelSolutions);
-            SolutionSet finalParetoFront = finalRanking.getSubfront(0);
-            for (int s=0; s<finalParetoFront.size(); s++){
-                Solution original = finalParetoFront.get(s);
-                for (int p=0; p<improvedLowerLevelSolutions.size(); p++) {
-                    Solution newSol = improvedLowerLevelSolutions.get(p);
-                    if (original.getDecisionVariables()[0].toString().equals(
-                            newSol.getDecisionVariables()[0].toString()
-                    )
-                    ){
-                        improvedLowerLevelSolutions.remove(p);
-                    }
-                }
+            SolutionSet improvedSet = new SolutionSet(allSolutions.size());
+            SolutionSet originalSet = new SolutionSet(allSolutions.size());
+            for (int s=0; s<allSolutions.size(); s++){
+                Solution sol = allSolutions.get(s);
+                if (sol.getImprovedByLocalSearch())
+                    improvedSet.add(sol);
+                else
+                    originalSet.add(sol);
             }
-            finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/WithoutLocalSearch/" + (fileID) + "_FUN");
-            //----------
-            if (improvedLowerLevelSolutions.size() > 0) {
-                finalRanking = new Ranking(improvedLowerLevelSolutions);
-                finalParetoFront = finalRanking.getSubfront(0);
-                finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/WithLocalSearchD/" + (fileID) + "_FUN");
-            } else improvedLowerLevelSolutions.printObjectivesToFile("LowerLevelParetoVisual/WithLocalSearchD/" + (fileID) + "_FUN");
+            improvedSet.printObjectivesToFile("LowerLevelParetoVisual/WithLocalSearchD/" + (fileID) + "_FUN");
+            originalSet.printObjectivesToFile("LowerLevelParetoVisual/WithoutLocalSearch/" + (fileID) + "_FUN");
 
             fileID++;
 
