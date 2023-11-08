@@ -127,12 +127,34 @@ public class DissatisfactionLocalSearch extends LocalSearch {
                 break;
             problemMOKP.partiallyEvaluateD(mutatedSolution, infoOnSingleChange); //mutatedSolution gets new obj values
         }
+
         //calculate new fitness
         double newFitness = fitnessFunction(mutatedSolution, lambda);
 
-        if (newFitness < currentFitness ||
-              (1.0/(1.0+Math.exp((newFitness - currentFitness)/temperature))) > PseudoRandom.randDouble()
-        ) {
+        //immediately choose if dominant
+        int flagDominate;
+        if (problemMOKP.isMaxmized() == false)
+          flagDominate = dominanceComparator_.compare(mutatedSolution, solution);
+        else flagDominate = dominanceComparator_.compare(solution, mutatedSolution);
+
+        if (flagDominate == 0) { // Non-dominated
+
+          if (newFitness < currentFitness) {
+            solution = mutatedSolution;
+            currentFitness = newFitness;
+          } else {
+            double chance = 1.0 / (1.0 + Math.exp((newFitness - currentFitness) * 50 / temperature));
+            double rand = PseudoRandom.randDouble();
+            if (temperature < 0.8){
+              int a = 2;
+            }
+            if (chance > rand) {
+              solution = mutatedSolution;
+              currentFitness = newFitness;
+            }
+          }
+
+        } else if (flagDominate == -1) {// mutated is better
             solution = mutatedSolution;
             currentFitness = newFitness;
         }
@@ -159,7 +181,6 @@ public class DissatisfactionLocalSearch extends LocalSearch {
     //return finalSolution;
     return solution;
   } // execute
-
 
   double fitnessFunction(Solution individual, double[] lambda) {
     double fitness;
