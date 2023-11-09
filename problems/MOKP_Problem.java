@@ -461,10 +461,10 @@ public class MOKP_Problem extends Problem {
         Binary bin = (Binary) solution.getDecisionVariables()[0];
         bin.bits_.flip(positionToMake1); //positionToMake1
 
-        int u, c, it;
+        int u, t, it;
         u = positionToMake1 / (this.numberOfConstraints_ * numberOfItems);
-        c = positionToMake1 % (this.numberOfConstraints_ * numberOfItems) / numberOfItems;
-        int userAndTime = u * (this.numberOfConstraints_ * numberOfItems) + c * numberOfItems;
+        t = positionToMake1 % (this.numberOfConstraints_ * numberOfItems) / numberOfItems;
+        int userAndTime = u * (this.numberOfConstraints_ * numberOfItems) + t * numberOfItems;
         it =  (userAndTime == 0 ? positionToMake1 : (positionToMake1 % userAndTime));
 
         //OBJ D
@@ -485,12 +485,56 @@ public class MOKP_Problem extends Problem {
         dissatisfactionPerUser[u] -= difference;
         //spentEnergy
         double[] spentEnergy = solution.getSpentEnergy();
-        spentEnergy[c] += w[it];
+        spentEnergy[t] += w[it];
         //energyAllocatedPerUser
         double[] energyAllocatedPerUser = solution.getEnergyAllocatedPerUser();
         energyAllocatedPerUser[u] += cost;
 
     } // evaluate
+
+    public void partiallyEvaluateC(Solution solution, double[] positionsChanged) throws JMException {
+        int oldPosition = (int) positionsChanged[0];
+        int newPosition = (int) positionsChanged[1];
+        int old_step = (int) positionsChanged[2];
+        int step = (int) positionsChanged[3];
+        double cost = positionsChanged[4];
+        Binary bin = (Binary) solution.getDecisionVariables()[0];
+        bin.bits_.flip(oldPosition);
+        bin.bits_.flip(newPosition);
+
+        int u, t, it, old_t;
+        u = newPosition / (this.numberOfConstraints_ * numberOfItems);
+        old_t = oldPosition % (this.numberOfConstraints_ * numberOfItems) / numberOfItems;
+        t = newPosition % (this.numberOfConstraints_ * numberOfItems) / numberOfItems;
+        int userAndTime = u * (this.numberOfConstraints_ * numberOfItems) + t * numberOfItems;
+        it =  (userAndTime == 0 ? newPosition : (newPosition % userAndTime));
+
+        //OBJ D
+        double obj_d = solution.getObjective(0);
+        int dissatisfaction_denominator = requestedDevicesPerUser[u];
+        double previous_impact = old_step == 0 ? 1 : Math.pow(0.5, old_step);
+        double previous_satisfaction = 1.0/dissatisfaction_denominator*previous_impact;
+        double impact = step == 0 ? 1 : Math.pow(0.5, step);
+        double satisfaction = 1.0/dissatisfaction_denominator*impact;
+        solution.setObjective(0, obj_d + (previous_satisfaction - satisfaction));
+        //OBJ C + //energyAllocatedPerUser
+        double obj_c = -1;
+        double energyAllocatedPerUser[] = solution.getEnergyAllocatedPerUser();
+        energyAllocatedPerUser[u] += cost;
+        for (int e=0; e<energyAllocatedPerUser.length; e++){
+            if (energyAllocatedPerUser[e] > obj_c)
+                obj_c = energyAllocatedPerUser[e];
+        }
+        solution.setObjective(1, obj_c);
+        /**********update extra attributes of solution*******/
+        //dissatisfactionPerUser
+        double[] dissatisfactionPerUser = solution.getDissatisfactionPerUser();
+        dissatisfactionPerUser[u] = dissatisfactionPerUser[u] + (previous_satisfaction - satisfaction);
+        //spentEnergy
+        double[] spentEnergy = solution.getSpentEnergy();
+        spentEnergy[old_t] -= w[it];
+        spentEnergy[t] += w[it];
+    }
 
     ////////////////////////////////    HELPER FUNCTIONS       ////////////////////////////////////////
 
