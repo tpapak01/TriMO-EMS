@@ -111,14 +111,14 @@ public class DissatisfactionLocalSearch extends LocalSearch {
     //do {
       //i++;
       double[] lambda = original.getLambda();
-      Solution solution = new Solution(original);
+      Solution solution = new Solution(original, lambda);
       double currentFitness = fitnessFunction(solution, lambda);
 
       for (int cr=0; cr<cooldownRounds; cr++) {
         double temperature = 1.0 - ( (cr+1.0) / (double) cooldownRounds );
 
         //find positions to be changed
-        Solution mutatedSolution = new Solution(solution);
+        Solution mutatedSolution = new Solution(solution, lambda);
         double[][] positionsChanged = (double[][]) mutationOperator_.execute(mutatedSolution);
         if (positionsChanged[0][1] == 0)
           continue;
