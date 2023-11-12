@@ -217,10 +217,24 @@ public class CostDistr extends Problem {
                 Solution lowerLevelSol = lowerLevelSolutions.get(s);
                 Solution newSol = null;
                 double rndSel = PseudoRandom.randDouble();
+
+                //Approach 1: Choose 1 of 2 heuristics probabilistically
+                /*
                 if (rndSel < 0.5) {
                     newSol = (Solution) improvementOperatorD.execute(lowerLevelSol);
                 } else {
                     newSol = (Solution) improvementOperatorC.execute(lowerLevelSol);
+                }
+                 */
+
+                //Approach 2: Choose 1 of 3 heuristics probabilistically
+                if (rndSel < 0.333) {
+                    newSol = (Solution) improvementOperatorD.execute(lowerLevelSol);
+                } else if (rndSel > 0.666) {
+                    newSol = (Solution) improvementOperatorC.execute(lowerLevelSol);
+                } else {
+                    newSol = (Solution) improvementOperatorD.execute(lowerLevelSol);
+                    newSol = (Solution) improvementOperatorC.execute(newSol);
                 }
 
                 newSol.setImprovedByLocalSearch(true);
