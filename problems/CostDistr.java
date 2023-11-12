@@ -78,6 +78,7 @@ public class CostDistr extends Problem {
       HashMap parametersD = new HashMap() ;
       parametersD.put("repeats", 1) ;
       parametersD.put("problem",this.lowerLevelProblem) ;
+      parametersD.put("algorithm",this.lowerLevelAlgorithmName) ;
       Mutation mutationD = new DissatisfactionMutation(parametersD);
       parametersD.put("improvementRounds", 1);
       parametersD.put("cooldownRounds", 80) ;
@@ -89,6 +90,7 @@ public class CostDistr extends Problem {
       HashMap parametersC = new HashMap() ;
       parametersC.put("repeats", 1) ;
       parametersC.put("problem",this.lowerLevelProblem) ;
+      parametersC.put("algorithm",this.lowerLevelAlgorithmName) ;
       Mutation mutationC = new CostsMutation(parametersC);
       parametersC.put("improvementRounds", 1);
       parametersC.put("cooldownRounds", 80) ;
@@ -171,12 +173,42 @@ public class CostDistr extends Problem {
                 Solution lowerLevelSol = lowerLevelSolutions.get(s);
                 double[] lambda = lowerLevelSol.getLambda();
                 Solution newSol = null;
-                //if focus is more on satisfaction, based on lambda...
+                /*
+                //Approach 1: Choose 1 of 2 heuristics based on lambda
                 if (lambda[0] >= lambda[1]) {
                     newSol = (Solution) improvementOperatorD.execute(lowerLevelSol);
                 } else {
                     newSol = (Solution) improvementOperatorC.execute(lowerLevelSol);
                 }
+                 */
+
+                //Approach 2: Apply both heuristics sequentially
+                /*
+                newSol = (Solution) improvementOperatorD.execute(lowerLevelSol);
+                newSol = (Solution) improvementOperatorC.execute(newSol);
+                 */
+
+                //Approach 3: Choose 1 of 3 heuristics based on probabilities and thresholds
+                double rand = PseudoRandom.randDouble();
+                if (lambda[0] >= lambda[1]){
+                    //prioritize dissatisfaction
+                    if (rand <= lambda[0]){
+                        newSol = (Solution) improvementOperatorD.execute(lowerLevelSol);
+                    } else {
+                        newSol = (Solution) improvementOperatorD.execute(lowerLevelSol);
+                        newSol = (Solution) improvementOperatorC.execute(newSol);
+                    }
+                } else {
+                    //prioritize costs
+                    if (rand <= lambda[1]){
+                        newSol = (Solution) improvementOperatorC.execute(lowerLevelSol);
+                    } else {
+                        newSol = (Solution) improvementOperatorD.execute(lowerLevelSol);
+                        newSol = (Solution) improvementOperatorC.execute(newSol);
+                    }
+
+                }
+
                 newSol.setImprovedByLocalSearch(true);
                 improvedLowerLevelSolutions.add(newSol);
             }
@@ -187,19 +219,19 @@ public class CostDistr extends Problem {
                 double rndSel = PseudoRandom.randDouble();
                 if (rndSel < 0.5) {
                     newSol = (Solution) improvementOperatorD.execute(lowerLevelSol);
-                    newSol.setImprovedByLocalSearch(true);
-                    improvedLowerLevelSolutions.add(newSol);
                 } else {
-                    //TODO C LOCAL SEARCH
+                    newSol = (Solution) improvementOperatorC.execute(lowerLevelSol);
                 }
+
+                newSol.setImprovedByLocalSearch(true);
+                improvedLowerLevelSolutions.add(newSol);
             }
         }
 
         double best_result = Double.MAX_VALUE;
         int best_solution_index = -1;
 
-        //only keep the Pareto front of the improved solutions
-        //in the future TODO change to be the Pareto front of the union, not only the improved solutions
+
         SolutionSet allSolutions;
         if (improvedLowerLevelSolutions.size() > 0) {
             allSolutions = lowerLevelSolutions.union(improvedLowerLevelSolutions);
@@ -277,7 +309,9 @@ public class CostDistr extends Problem {
             /*
             SolutionSet chosenSolutionSet = new SolutionSet(1);
             chosenSolutionSet.add(chosenlowerLevelSol);
-            chosenSolutionSet.printObjectivesToFile("LowerLevelParetoVisual/WithoutLocalSearch/" + (fileID) + "_CHOSEN");
+            if (this.lowerLevelAlgorithmName.equals("MOEAD"))
+                chosenSolutionSet.printObjectivesToFile("LowerLevelParetoVisual/WithoutLocalSearch/" + (fileID) + "_CHOSEN");
+            else chosenSolutionSet.printObjectivesToFile("LowerLevelParetoVisualNSGAII/WithoutLocalSearch/" + (fileID) + "_CHOSEN");
             //----------
             SolutionSet improvedSet = new SolutionSet(allSolutions.size());
             SolutionSet originalSet = new SolutionSet(allSolutions.size());
@@ -288,8 +322,13 @@ public class CostDistr extends Problem {
                 else
                     originalSet.add(sol);
             }
-            improvedSet.printObjectivesToFile("LowerLevelParetoVisual/WithLocalSearchD/" + (fileID) + "_FUN");
-            originalSet.printObjectivesToFile("LowerLevelParetoVisual/WithoutLocalSearch/" + (fileID) + "_FUN");
+            if (this.lowerLevelAlgorithmName.equals("MOEAD")) {
+                improvedSet.printObjectivesToFile("LowerLevelParetoVisual/WithLocalSearchD/" + (fileID) + "_FUN");
+                originalSet.printObjectivesToFile("LowerLevelParetoVisual/WithoutLocalSearch/" + (fileID) + "_FUN");
+            } else {
+                improvedSet.printObjectivesToFile("LowerLevelParetoVisualNSGAII/WithLocalSearchD/" + (fileID) + "_FUN");
+                originalSet.printObjectivesToFile("LowerLevelParetoVisualNSGAII/WithoutLocalSearch/" + (fileID) + "_FUN");
+            }
 
             fileID++;
 
