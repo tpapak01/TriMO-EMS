@@ -100,7 +100,6 @@ public class CostsLocalSearch extends LocalSearch {
   public Object execute(Object object) throws JMException {
 
     Solution original = (Solution)object;
-    problemMOKP.fillUpCovered(original);
     int cooldownRounds = cooldownRounds_;
 
     //Solution finalSolution = null;
