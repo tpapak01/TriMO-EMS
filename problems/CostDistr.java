@@ -14,9 +14,11 @@ import jmetal.encodings.solutionType.ArrayRealSolutionType;
 import jmetal.encodings.variable.Binary;
 import jmetal.metaheuristics.bilevel.LowerLevelMOKP_MOEAD;
 import jmetal.metaheuristics.bilevel.LowerLevelMOKP_NSGAII;
+import jmetal.operators.localSearch.CostsLocalSearch;
 import jmetal.operators.localSearch.DissatisfactionLocalSearch;
 import jmetal.operators.localSearch.LocalSearch;
 import jmetal.operators.localSearch.MutationLocalSearch;
+import jmetal.operators.mutation.CostsMutation;
 import jmetal.operators.mutation.DissatisfactionMutation;
 import jmetal.operators.mutation.Mutation;
 import jmetal.util.JMException;
@@ -42,6 +44,7 @@ public class CostDistr extends Problem {
     private double[] inputCosts = null;
     private double totalProducedRE;
     private LocalSearch improvementOperatorD;
+    private LocalSearch improvementOperatorC;
 
     public static int execution = 0;
     private static double best_upper_level_result = Double.MAX_VALUE;
@@ -71,16 +74,27 @@ public class CostDistr extends Problem {
       this.loadProblem(fileName, costsFileName);
       this.solutionType_ = new ArrayRealSolutionType(this);
 
-      //now initialize local search operator
-      HashMap parameters = new HashMap() ;
-      parameters.put("repeats", 1) ;
-      parameters.put("problem",this.lowerLevelProblem) ;
-      Mutation mutation = new DissatisfactionMutation(parameters);
-      parameters.put("improvementRounds", 1);
-      parameters.put("cooldownRounds", 80) ;
-      parameters.put("problem",this.lowerLevelProblem);
-      parameters.put("mutation", mutation) ;
-      improvementOperatorD = new DissatisfactionLocalSearch(parameters);
+      //now initialize local search operator D
+      HashMap parametersD = new HashMap() ;
+      parametersD.put("repeats", 1) ;
+      parametersD.put("problem",this.lowerLevelProblem) ;
+      Mutation mutationD = new DissatisfactionMutation(parametersD);
+      parametersD.put("improvementRounds", 1);
+      parametersD.put("cooldownRounds", 80) ;
+      parametersD.put("problem",this.lowerLevelProblem);
+      parametersD.put("mutation", mutationD) ;
+      improvementOperatorD = new DissatisfactionLocalSearch(parametersD);
+
+      //now initialize local search operator C
+      HashMap parametersC = new HashMap() ;
+      parametersC.put("repeats", 1) ;
+      parametersC.put("problem",this.lowerLevelProblem) ;
+      Mutation mutationC = new CostsMutation(parametersC);
+      parametersC.put("improvementRounds", 1);
+      parametersC.put("cooldownRounds", 80) ;
+      parametersC.put("problem",this.lowerLevelProblem);
+      parametersC.put("mutation", mutationC) ;
+      improvementOperatorC = new CostsLocalSearch(parametersC);
 
   }  // 
 
@@ -160,11 +174,11 @@ public class CostDistr extends Problem {
                 //if focus is more on satisfaction, based on lambda...
                 if (lambda[0] >= lambda[1]) {
                     newSol = (Solution) improvementOperatorD.execute(lowerLevelSol);
-                    newSol.setImprovedByLocalSearch(true);
-                    improvedLowerLevelSolutions.add(newSol);
                 } else {
-                    //TODO C LOCAL SEARCH
+                    newSol = (Solution) improvementOperatorC.execute(lowerLevelSol);
                 }
+                newSol.setImprovedByLocalSearch(true);
+                improvedLowerLevelSolutions.add(newSol);
             }
         } else {
             for (int s = 0; s < lowerLevelSolutions.size(); s++) {
