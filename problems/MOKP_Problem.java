@@ -29,7 +29,7 @@ public class MOKP_Problem extends Problem {
     public static String userPreferencefileName; //
     private int numberOfItems;
     private int numberOfUsers;
-    private double[] w; // weight of items
+    private double[][] w; // weight of items
     private int[] max_shift; //max shifting of items
     private boolean [][][] pref; // preferences of users: user x time x device
     private boolean [] pref_vector; // preferences of users: user x time x device
@@ -66,18 +66,26 @@ public class MOKP_Problem extends Problem {
           line = in.readLine();
           this.numberOfConstraints_ = Integer.parseInt(line);
 
+          line = in.readLine();
+          numberOfUsers = Integer.parseInt(line);
+          in.readLine();
+
           this.numberOfObjectives_ = 2;
           nadirObjectiveValue = new double[this.numberOfObjectives_];
           nadirObjectiveValue[1] = Double.MIN_VALUE;
 
-          w = new double[numberOfItems];
+          w = new double[numberOfUsers][numberOfItems];
           max_shift = new int[numberOfItems];
 
-          for (int i = 0; i < numberOfItems; i++) {
-              // Read weight for the j-th item
-              line = in.readLine();
-              w[i] = Double.parseDouble(line);
-              max_shift[i] = this.numberOfConstraints_;
+          for (int u = 0; u < numberOfUsers; u++) {
+              for (int i = 0; i < numberOfItems; i++) {
+                  // Read weight for the j-th item
+                  line = in.readLine();
+                  w[u][i] = Double.parseDouble(line);
+		          max_shift[i] = this.numberOfConstraints_;
+              }
+              //empty line
+              in.readLine();
           }
 
           in.close();
@@ -87,10 +95,6 @@ public class MOKP_Problem extends Problem {
 
       try {
           BufferedReader in = new BufferedReader(new FileReader(userPreferencefileName));
-
-          String line = in.readLine();
-          numberOfUsers = Integer.parseInt(line);
-          in.readLine();
 
           nadirObjectiveValue[0] = numberOfUsers;
           pref = new boolean[numberOfUsers][this.numberOfConstraints_][numberOfItems];
@@ -111,10 +115,10 @@ public class MOKP_Problem extends Problem {
                       if (num == 1) {
                           pref[u][i][j] = true;
                           pref_vector[count] = true;
-                          requestedEnergy[i] += w[j];
+                          requestedEnergy[i] += w[u][j];
                           requestedDevicesPerUser[u]++;
-                          requestedEnergyPerUser[u] += w[j];
-                          requestedEnergyPerUserPerTime[u][i] += w[j];
+                          requestedEnergyPerUser[u] += w[u][j];
+                          requestedEnergyPerUserPerTime[u][i] += w[u][j];
                       }
                       count++;
                   }
@@ -162,7 +166,7 @@ public class MOKP_Problem extends Problem {
         return this.numberOfConstraints_;
     }
 
-    public double[] getWeightOfItems(){
+    public double[][] getWeightOfItems(){
         return w;
     }
 
@@ -304,7 +308,7 @@ public class MOKP_Problem extends Problem {
                 int k = 0;
                 for (int j = startingIndex; j < startingIndex + numberOfItems; j++) { // for each bit
                     if (bin.getIth(j) == true) {
-                        sum = sum + w[k] * costOfUsage.getValue(l);
+                        sum = sum + w[u][k] * costOfUsage.getValue(l);
                     }
                     k++;
                 } // for j
@@ -365,7 +369,7 @@ public class MOKP_Problem extends Problem {
                 int k = 0;
                 for (int j = startingIndex; j < startingIndex + numberOfItems; j++) { // for each bit
                     if (bin.getIth(j)) {
-                        sum = sum + w[k] * costOfUsage.getValue(l);
+                        sum = sum + w[u][k] * costOfUsage.getValue(l);
                     }
                     k++;
                 } // for j
@@ -510,7 +514,7 @@ public class MOKP_Problem extends Problem {
                 int k = 0;
                 for (int j = itemIndex; j < itemIndex + numberOfItems; j++) { // for each bit
                     if (bin.getIth(j)) {
-                        spentEnergy[l] += w[k];
+                        spentEnergy[l] += w[u][k];
                     }
                     k++;
                 } // for j
