@@ -39,9 +39,9 @@ public class CostDistr extends Problem {
     private static int fileID = 1;
 
 
-  public CostDistr(String problemName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName, String costsName) {
+  public CostDistr(String renewableFileName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName, String costsName) {
 	  this.setMaxmized_(false); // this problem is not to be maximized
-	  this.problemName_ = problemName;
+	  this.problemName_ = renewableFileName;
 	  this.lowerLevelAlgorithmName = lowerLevelAlgorithmName;
       this.numberOfVariables_ = lowerLevelProblem.getNumberOfConstraints();
       this.numberOfObjectives_ = 1;
@@ -64,18 +64,11 @@ public class CostDistr extends Problem {
 
   }  // 
 
-  public void loadProblem(String problemFileName, String costsFileName) {
+  public void loadProblem(String renewableFileName, String costsFileName) {
 
       try {
-          BufferedReader in = new BufferedReader(new FileReader(problemFileName));
+          BufferedReader in = new BufferedReader(new FileReader(renewableFileName));
           String line;
-
-          in.readLine();
-          in.readLine();
-
-          for (int i = 0; i < lowerLevelProblem.getNumberOfItems(); i++) {
-              in.readLine();
-          }
 
           for (int i = 0; i < this.numberOfVariables_; i++) {
               line = in.readLine();
