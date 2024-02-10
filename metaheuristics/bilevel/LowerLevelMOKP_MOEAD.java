@@ -115,11 +115,7 @@ public class LowerLevelMOKP_MOEAD {
         parameters.put("probability", crossoverProbability);
         crossover = new PartiallyMappedCrossoverCustom(parameters);
         algorithm.setInputParameter("repairAfterCrossoverMutation",0);
-        //thalis comment
-        //parameters = new HashMap() ;
-        //parameters.put("CR", 1.0) ;
-        //parameters.put("F", 0.5) ;
-        //crossover = CrossoverFactory.getCrossoverOperator("DifferentialEvolutionCrossover", parameters);
+        //crossover = new TwoPointCrossoverCustom(parameters);
 
         // Mutation operator
         //thalis - authors have replaced this mutation operator with "updateProduct", but not us
