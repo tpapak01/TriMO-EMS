@@ -122,6 +122,7 @@ public class MOEAD extends Algorithm {
     evaluations_ = 0;
     maxEvaluations = ((Integer) this.getInputParameter("maxEvaluations")).intValue();
     populationSize = ((Integer) this.getInputParameter("populationSize")).intValue();
+    int repairAfterCrossoverMutation = ((Integer) this.getInputParameter("repairAfterCrossoverMutation")).intValue();
     indicators = (QualityIndicator) getInputParameter("indicators");
 
     //thalis
@@ -234,6 +235,9 @@ public class MOEAD extends Algorithm {
           // Apply mutation, we keep the original bit flipping for now, not the "updateProduct"
           mutation.execute(child);
 
+          if (repairAfterCrossoverMutation == 1)
+            problemMOKP.repair(child);
+
           // Evaluation
           problem_.evaluate(child);
           evaluations_++;
@@ -241,6 +245,11 @@ public class MOEAD extends Algorithm {
         } else { // Best offspring
           mutation.execute(children[0]);
           mutation.execute(children[1]);
+
+          if (repairAfterCrossoverMutation == 1) {
+            problemMOKP.repair(children[0]);
+            problemMOKP.repair(children[1]);
+          }
 
           problem_.evaluate(children[0]);
           evaluations_++;
