@@ -125,6 +125,7 @@ public class LowerLevelMOKP_MOEAD {
         parameters = new HashMap();
         double mutationProbability = 0.01;
         parameters.put("probability", mutationProbability);
+        parameters.put("repair", 1);
         parameters.put("problem", problemMOKP);
         mutation = new BitFlipMutation(parameters);
         //thalis comment

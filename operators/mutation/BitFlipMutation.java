@@ -52,6 +52,7 @@ public class BitFlipMutation extends Mutation {
       IntSolutionType.class) ;
 
   private Double mutationProbability_ = null ;
+  private Integer repair = null;
   private static MOKP_Problem problemMOKP = null;         // The problem to solve
   
 	/**
@@ -62,6 +63,8 @@ public class BitFlipMutation extends Mutation {
 		super(parameters) ;
   	if (parameters.get("probability") != null)
   		mutationProbability_ = (Double) parameters.get("probability") ;
+  	if (parameters.get("repair") != null)
+		repair = (Integer) parameters.get("repair") ;
   	if (parameters.get("problem") != null)
 		problemMOKP = (MOKP_Problem) parameters.get("problem") ;
 	}
@@ -232,8 +235,11 @@ public class BitFlipMutation extends Mutation {
 
 		if (problemMOKP == null)
 			doMutation(mutationProbability_, solution);
-		else
+		else if (repair == 0){
+			doMutation(mutationProbability_, solution);
+		} else {
 			doCustomMutation(mutationProbability_, solution);
+		}
 		return solution;
 	} // execute
 } // BitFlipMutation
