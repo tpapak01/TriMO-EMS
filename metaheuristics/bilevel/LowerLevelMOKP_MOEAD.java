@@ -117,6 +117,7 @@ public class LowerLevelMOKP_MOEAD {
         algorithm.setInputParameter("repairAfterCrossoverMutation",0);
         //crossover = new TwoPointCrossoverCustom(parameters);
         //crossover = new SinglePointCrossover(parameters);
+        //crossover = new HUXCrossover(parameters);
 
         // Mutation operator
         //thalis - authors have replaced this mutation operator with "updateProduct", but not us
