@@ -293,8 +293,12 @@ public class MOKP_Problem extends Problem {
         return dissatisfaction;
     }
 
-    public double sum_of_cost_evaluate(Binary bin) throws JMException {
+    public double sum_of_cost_evaluate(Solution solution) throws JMException {
         double sum = 0;
+
+        Variable[] vars = solution.getDecisionVariables();
+        Binary bin = (Binary) vars[0];
+        double[] energyAllocatedPerUser = new double[numberOfUsers];
 
         for (int u = 0; u < numberOfUsers; u++) { // for each user
 
@@ -315,7 +319,12 @@ public class MOKP_Problem extends Problem {
                 l++;
             } // for i
 
+            energyAllocatedPerUser[u] = sum;
+            energyAllocatedPerUser[u] = Math.round(energyAllocatedPerUser[u]*100.0) / 100.0;
+
         } // for u
+
+        solution.setEnergyAllocatedPerUser(energyAllocatedPerUser);
 
         return sum;
     }
