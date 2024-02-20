@@ -6,8 +6,10 @@ import jmetal.core.Problem;
 import jmetal.core.SolutionSet;
 import jmetal.metaheuristics.moead.MOEAD;
 import jmetal.metaheuristics.nsgaII.NSGAII;
+import jmetal.operators.crossover.HUXCrossover;
 import jmetal.operators.crossover.PartiallyMappedCrossoverCustom;
 import jmetal.operators.mutation.BitFlipMutation;
+import jmetal.operators.mutation.SwapMutation;
 import jmetal.operators.selection.SelectionFactory;
 import jmetal.problems.MOKP_Problem;
 import jmetal.qualityIndicator.QualityIndicator;
@@ -68,14 +70,20 @@ public class LowerLevelMOKP_NSGAII {
         double crossoverProbability = 1.0;
         parameters.put("probability", crossoverProbability);
         crossover = new PartiallyMappedCrossoverCustom(parameters);
+        algorithm.setInputParameter("repairAfterCrossoverMutation",0);
+        //crossover = new TwoPointCrossoverCustom(parameters);
+        //crossover = new SinglePointCrossover(parameters);
+        //crossover = new HUXCrossover(parameters);
 
         // Mutation operator
         //thalis - authors have replaced this mutation operator with "updateProduct", but not us
         parameters = new HashMap();
         double mutationProbability = 0.01;
         parameters.put("probability", mutationProbability);
+        parameters.put("repair", 1);
         parameters.put("problem", problemMOKP);
         mutation = new BitFlipMutation(parameters);
+        //mutation = new SwapMutation(parameters);
 
         // Selection Operator
         parameters = null ;

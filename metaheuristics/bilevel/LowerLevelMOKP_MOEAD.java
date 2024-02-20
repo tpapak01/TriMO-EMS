@@ -4,6 +4,7 @@ import jmetal.core.*;
 import jmetal.metaheuristics.moead.MOEAD;
 import jmetal.operators.crossover.*;
 import jmetal.operators.mutation.BitFlipMutation;
+import jmetal.operators.mutation.SwapMutation;
 import jmetal.problems.MOKP_Problem;
 import jmetal.qualityIndicator.QualityIndicator;
 import jmetal.util.Configuration;
@@ -127,6 +128,7 @@ public class LowerLevelMOKP_MOEAD {
         parameters.put("repair", 1);
         parameters.put("problem", problemMOKP);
         mutation = new BitFlipMutation(parameters);
+        //mutation = new SwapMutation(parameters);
         //thalis comment
         //parameters = new HashMap() ;
         //parameters.put("probability", 1.0/problem.getNumberOfVariables()) ;

@@ -117,6 +117,7 @@ public class NSGAII extends Algorithm {
     //Read the parameters
     populationSize = ((Integer) getInputParameter("populationSize")).intValue();
     maxEvaluations = ((Integer) getInputParameter("maxEvaluations")).intValue();
+    int repairAfterCrossoverMutation = ((Integer) this.getInputParameter("repairAfterCrossoverMutation")).intValue();
     indicators = (QualityIndicator) getInputParameter("indicators");
 
     //Initialize the variables
@@ -161,6 +162,12 @@ public class NSGAII extends Algorithm {
           Solution[] offSpring = (Solution[]) crossoverOperator.execute(parents);
           mutationOperator.execute(offSpring[0]);
           mutationOperator.execute(offSpring[1]);
+
+          if (repairAfterCrossoverMutation == 1) {
+            problemMOKP.repair(offSpring[0]);
+            problemMOKP.repair(offSpring[1]);
+          }
+
           problem_.evaluate(offSpring[0]);
           //problem_.evaluateConstraints(offSpring[0]);
           problem_.evaluate(offSpring[1]);
