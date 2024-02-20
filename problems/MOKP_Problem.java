@@ -495,7 +495,11 @@ public class MOKP_Problem extends Problem {
             } // for i
 
             int dissatisfaction_denominator = requestedDevicesPerUser[u];
-            double user_dissatisfaction = 1.0 - (satisfaction_nominator / (double) dissatisfaction_denominator);
+            double user_dissatisfaction;
+            if (dissatisfaction_denominator == 0)
+                user_dissatisfaction = 0;
+            else
+                user_dissatisfaction = 1.0 - (satisfaction_nominator / (double) dissatisfaction_denominator);
             total_dissatisfaction += user_dissatisfaction;
 
             dissatisfactionPerUser[u] = user_dissatisfaction;
