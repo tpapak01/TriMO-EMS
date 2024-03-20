@@ -135,12 +135,16 @@ public class CostDistr extends Problem {
             //double result = upperLevel_evaluate_distance_from_produced(spentEnergy);
             double[] energySpent = lowerLevelSol.getSpentEnergy();
             double result = upperLevel_evaluate_XOR_distance_plus_weight(energySpent, costs);
+            //double selfConsumption = upperLevel_evaluate_XOR_distance(energySpent);
+            //lowerLevelSol.setSelfConsumption(selfConsumption);
             if (result < best_result){
                 best_result = result;
                 best_solution_index = s;
             }
 
         }
+
+        //lowerLevelSolutions.printObjectivesAndSelfToFile("LowerLevelParetoVisual/WithoutLocalSearch/" + 1 + "_FUN");
 
         solution.setObjective(0, best_result);
         // fill up extra data for analysis
