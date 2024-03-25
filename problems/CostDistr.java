@@ -37,6 +37,7 @@ public class CostDistr extends Problem {
 
     private static double best_upper_level_result = Double.MAX_VALUE;
     private static int fileID = 1;
+    private static int UL_evaluations = 0;
 
 
   public CostDistr(String renewableFileName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName, String costsName) {
@@ -174,6 +175,22 @@ public class CostDistr extends Problem {
             fileID++;
             */
         }
+
+        /*
+        if (UL_evaluations % 100 == 0) {
+            SolutionSet chosenSolutionSet = new SolutionSet(1);
+            chosenSolutionSet.add(chosenlowerLevelSol);
+            chosenSolutionSet.printObjectivesToFile("LowerLevelParetoVisual/WithoutLocalSearch/" + (fileID) + "_CHOSEN");
+            chosenSolutionSet.printObjectivesAndSelfToFile("LowerLevelParetoVisual/WithoutLocalSearch/" + (fileID) + "_SELF");
+
+            Ranking finalRanking = new Ranking(lowerLevelSolutions);
+            SolutionSet finalParetoFront = finalRanking.getSubfront(0);
+            finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/WithoutLocalSearch/" + (fileID) + "_FUN"); //check
+            fileID++;
+        }
+        UL_evaluations++;
+        
+         */
 
 
         //System.out.println(best_result);
