@@ -32,6 +32,15 @@ import java.util.Arrays;
  * Class representing a solution for a problem.
  */
 public class Solution implements Serializable {
+
+  private double selfConsumption;
+  public double getSelfConsumption(){
+    return selfConsumption;
+  }
+  public void setSelfConsumption(double selfConsumption){
+    this.selfConsumption = selfConsumption;
+  }
+
   private double[] spentEnergy;
   public double[] getSpentEnergy(){
     return spentEnergy;
