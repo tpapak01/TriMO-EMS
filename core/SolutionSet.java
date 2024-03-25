@@ -255,7 +255,7 @@ public class SolutionSet implements Serializable {
   }
 } // printObjectivesToFile
 
-  // Purpose: To know the actual final objective-value of the solution. Useless in paper
+
   public void printObjectivesAndSelfToFile(String path){
     try {
       /* Open the file */

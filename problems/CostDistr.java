@@ -145,6 +145,7 @@ public class CostDistr extends Problem {
 
         }
 
+        //AIAI self-cons graph
         //lowerLevelSolutions.printObjectivesAndSelfToFile("LowerLevelParetoVisual/" + 1 + "_FUN");
 
         solution.setObjective(0, best_result);
@@ -168,24 +169,34 @@ public class CostDistr extends Problem {
         if (best_upper_level_result > best_result) {
             best_upper_level_result = best_result;
             System.out.println(best_upper_level_result);
+
             /*
+            SolutionSet chosenSolutionSet = new SolutionSet(1);
+            chosenSolutionSet.add(chosenlowerLevelSol);
+            chosenSolutionSet.printObjectivesToFile("LowerLevelParetoVisual/" + (fileID) + "_CHOSEN");
+
+            SolutionSet upperLevelSet = new SolutionSet(1);
+            upperLevelSet. add(solution);
+            upperLevelSet.printObjectivesToFile("LowerLevelParetoVisual/" + (fileID) + "_SELF");
+
             Ranking finalRanking = new Ranking(lowerLevelSolutions);
             SolutionSet finalParetoFront = finalRanking.getSubfront(0);
-            finalParetoFront.printObjectivesToFile("LowerLevelParetoVisualNSGAII/" + (fileID) + "_FUN"); check
+            finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/" + (fileID) + "_FUN"); //check
             fileID++;
-            */
+            
+             */
+
         }
 
         /*
         if (UL_evaluations % 100 == 0) {
             SolutionSet chosenSolutionSet = new SolutionSet(1);
             chosenSolutionSet.add(chosenlowerLevelSol);
-            chosenSolutionSet.printObjectivesToFile("LowerLevelParetoVisual/WithoutLocalSearch/" + (fileID) + "_CHOSEN");
-            chosenSolutionSet.printObjectivesAndSelfToFile("LowerLevelParetoVisual/WithoutLocalSearch/" + (fileID) + "_SELF");
+            chosenSolutionSet.printObjectivesToFile("LowerLevelParetoVisual/" + (fileID) + "_CHOSEN");
 
             Ranking finalRanking = new Ranking(lowerLevelSolutions);
             SolutionSet finalParetoFront = finalRanking.getSubfront(0);
-            finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/WithoutLocalSearch/" + (fileID) + "_FUN"); //check
+            finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/" + (fileID) + "_FUN"); //check
             fileID++;
         }
         UL_evaluations++;
