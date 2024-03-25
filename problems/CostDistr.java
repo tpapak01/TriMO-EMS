@@ -145,6 +145,7 @@ public class CostDistr extends Problem {
 
         }
 
+	    //AIAI self-cons graph
         //lowerLevelSolutions.printObjectivesAndSelfToFile("LowerLevelParetoVisual/WithoutLocalSearch/" + 1 + "_FUN");
 
         solution.setObjective(0, best_result);
@@ -183,6 +184,10 @@ public class CostDistr extends Problem {
             chosenSolutionSet.add(chosenlowerLevelSol);
             chosenSolutionSet.printObjectivesToFile("LowerLevelParetoVisual/Misplacement/" + (fileID) + "_CHOSEN");
 
+	        SolutionSet upperLevelSet = new SolutionSet(1);
+            upperLevelSet.add(solution);
+            upperLevelSet.printObjectivesToFile("LowerLevelParetoVisual/Misplacement/" + (fileID) + "_SELF");
+
             Ranking finalRanking = new Ranking(lowerLevelSolutions);
             SolutionSet finalParetoFront = finalRanking.getSubfront(0);
             finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/Misplacement/" + (fileID) + "_FUN"); //check
@@ -196,12 +201,11 @@ public class CostDistr extends Problem {
         if (UL_evaluations % 100 == 0) {
             SolutionSet chosenSolutionSet = new SolutionSet(1);
             chosenSolutionSet.add(chosenlowerLevelSol);
-            chosenSolutionSet.printObjectivesToFile("LowerLevelParetoVisual/WithoutLocalSearch/" + (fileID) + "_CHOSEN");
-            chosenSolutionSet.printObjectivesAndSelfToFile("LowerLevelParetoVisual/WithoutLocalSearch/" + (fileID) + "_SELF");
+            chosenSolutionSet.printObjectivesToFile("LowerLevelParetoVisual/" + (fileID) + "_CHOSEN");
 
             Ranking finalRanking = new Ranking(lowerLevelSolutions);
             SolutionSet finalParetoFront = finalRanking.getSubfront(0);
-            finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/WithoutLocalSearch/" + (fileID) + "_FUN"); //check
+            finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/" + (fileID) + "_FUN"); //check
             fileID++;
         }
         UL_evaluations++;
