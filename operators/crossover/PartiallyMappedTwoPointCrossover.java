@@ -39,7 +39,7 @@ import java.util.List;
  * This class allows to apply a Two Point crossover operator using two parent
  * solutions.
  */
-public class PartiallyMappedCrossoverCustom extends Crossover {
+public class PartiallyMappedTwoPointCrossover extends Crossover {
   /**
    * Valid solution types to apply this operator
    */
@@ -54,7 +54,7 @@ public class PartiallyMappedCrossoverCustom extends Crossover {
    * Constructor
    * Creates a new instance of the two point crossover operator
    */
-  public PartiallyMappedCrossoverCustom(HashMap<String, Object> parameters) {
+  public PartiallyMappedTwoPointCrossover(HashMap<String, Object> parameters) {
   	super(parameters) ;
   	if (parameters.get("probability") != null)
   		crossoverProbability_ = (Double) parameters.get("probability") ;

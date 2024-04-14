@@ -2,14 +2,11 @@ package jmetal.metaheuristics.bilevel;
 
 import jmetal.core.Algorithm;
 import jmetal.core.Operator;
-import jmetal.core.Problem;
 import jmetal.core.SolutionSet;
-import jmetal.metaheuristics.moead.MOEAD;
 import jmetal.metaheuristics.nsgaII.NSGAII;
-import jmetal.operators.crossover.HUXCrossover;
-import jmetal.operators.crossover.PartiallyMappedCrossoverCustom;
+import jmetal.operators.crossover.PartiallyMappedHUXCrossover;
+import jmetal.operators.crossover.PartiallyMappedTwoPointCrossover;
 import jmetal.operators.mutation.BitFlipMutation;
-import jmetal.operators.mutation.SwapMutation;
 import jmetal.operators.selection.SelectionFactory;
 import jmetal.problems.MOKP_Problem;
 import jmetal.qualityIndicator.QualityIndicator;
@@ -69,7 +66,8 @@ public class LowerLevelMOKP_NSGAII {
         parameters = new HashMap();
         double crossoverProbability = 1.0;
         parameters.put("probability", crossoverProbability);
-        crossover = new PartiallyMappedCrossoverCustom(parameters);
+        //crossover = new PartiallyMappedTwoPointCrossover(parameters);
+        crossover = new PartiallyMappedHUXCrossover(parameters);
         algorithm.setInputParameter("repairAfterCrossoverMutation",0);
         //crossover = new TwoPointCrossoverCustom(parameters);
         //crossover = new SinglePointCrossover(parameters);

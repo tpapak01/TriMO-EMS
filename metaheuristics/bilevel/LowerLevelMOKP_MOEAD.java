@@ -4,7 +4,6 @@ import jmetal.core.*;
 import jmetal.metaheuristics.moead.MOEAD;
 import jmetal.operators.crossover.*;
 import jmetal.operators.mutation.BitFlipMutation;
-import jmetal.operators.mutation.SwapMutation;
 import jmetal.problems.MOKP_Problem;
 import jmetal.qualityIndicator.QualityIndicator;
 import jmetal.util.Configuration;
@@ -114,7 +113,8 @@ public class LowerLevelMOKP_MOEAD {
         parameters = new HashMap();
         double crossoverProbability = 1.0;
         parameters.put("probability", crossoverProbability);
-        crossover = new PartiallyMappedCrossoverCustom(parameters);
+        //crossover = new PartiallyMappedTwoPointCrossover(parameters);
+        crossover = new PartiallyMappedHUXCrossover(parameters);
         algorithm.setInputParameter("repairAfterCrossoverMutation",0);
         //crossover = new TwoPointCrossoverCustom(parameters);
         //crossover = new SinglePointCrossover(parameters);
