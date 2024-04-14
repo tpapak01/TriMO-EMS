@@ -4,6 +4,7 @@ import jmetal.core.*;
 import jmetal.metaheuristics.moead.MOEAD;
 import jmetal.operators.crossover.*;
 import jmetal.operators.mutation.BitFlipMutation;
+import jmetal.operators.mutation.SwapMutation;
 import jmetal.problems.MOKP_Problem;
 import jmetal.qualityIndicator.QualityIndicator;
 import jmetal.util.Configuration;
@@ -81,7 +82,7 @@ public class LowerLevelMOKP_MOEAD {
         } else {
             populationSize              = 100   ;
         }
-        algorithm.setInputParameter("populationSize",populationSize);
+        algorithm.setInputParameter("populationSize", 300);
         algorithm.setInputParameter("maxEvaluations",100000);
         //thalis comment
         //algorithm.setInputParameter("populationSize",300);
@@ -98,7 +99,7 @@ public class LowerLevelMOKP_MOEAD {
         //algorithm.setInputParameter("finalSize", 300) ; // used by MOEAD_DRA
 
         //thalis
-        algorithm.setInputParameter("T", 10) ; // number of neighbours per individual
+        algorithm.setInputParameter("T", 100) ; // number of neighbours per individual
         algorithm.setInputParameter("delta", 1.0) ; // 1 = parents always from neighbourhood = MOEAD
         algorithm.setInputParameter("nr", 10) ; // maximal number of solutions that can be updated in "updateProblem"
         //theta_ = 5.0; // used in PBI
@@ -114,19 +115,20 @@ public class LowerLevelMOKP_MOEAD {
         double crossoverProbability = 1.0;
         parameters.put("probability", crossoverProbability);
         crossover = new PartiallyMappedCrossoverCustom(parameters);
-        //thalis comment
-        //parameters = new HashMap() ;
-        //parameters.put("CR", 1.0) ;
-        //parameters.put("F", 0.5) ;
-        //crossover = CrossoverFactory.getCrossoverOperator("DifferentialEvolutionCrossover", parameters);
+        algorithm.setInputParameter("repairAfterCrossoverMutation",0);
+        //crossover = new TwoPointCrossoverCustom(parameters);
+        //crossover = new SinglePointCrossover(parameters);
+        //crossover = new HUXCrossover(parameters);
 
         // Mutation operator
         //thalis - authors have replaced this mutation operator with "updateProduct", but not us
         parameters = new HashMap();
         double mutationProbability = 0.01;
         parameters.put("probability", mutationProbability);
+        parameters.put("repair", 1);
         parameters.put("problem", problemMOKP);
         mutation = new BitFlipMutation(parameters);
+        //mutation = new SwapMutation(parameters);
         //thalis comment
         //parameters = new HashMap() ;
         //parameters.put("probability", 1.0/problem.getNumberOfVariables()) ;

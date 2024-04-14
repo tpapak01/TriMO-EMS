@@ -22,7 +22,11 @@
 package jmetal.operators.mutation;
 
 import jmetal.core.Solution;
+import jmetal.encodings.solutionType.BinaryRealSolutionType;
+import jmetal.encodings.solutionType.BinarySolutionType;
 import jmetal.encodings.solutionType.PermutationSolutionType;
+import jmetal.encodings.variable.Binary;
+import jmetal.encodings.variable.MOKP_BinarySolution;
 import jmetal.encodings.variable.Permutation;
 import jmetal.util.Configuration;
 import jmetal.util.JMException;
@@ -40,7 +44,10 @@ public class SwapMutation extends Mutation{
   /**
    * Valid solution types to apply this operator 
    */
-  private static final List VALID_TYPES = Arrays.asList(PermutationSolutionType.class) ;
+  private static final List VALID_TYPES = Arrays.asList(BinarySolutionType.class,
+		  BinaryRealSolutionType.class,
+		  MOKP_BinarySolution.class,
+		  PermutationSolutionType.class) ;
   
   private Double mutationProbability_ = null ;
 
@@ -94,7 +101,30 @@ public class SwapMutation extends Mutation{
 	        permutation[pos1] = permutation[pos2];
 	        permutation[pos2] = temp;    
 	      } // if
-	    } // if
+	    } else if (solution.getType().getClass() == BinarySolutionType.class ||
+			  solution.getType().getClass() == BinaryRealSolutionType.class ||
+			  solution.getType().getClass() == MOKP_BinarySolution.class) {
+
+			Binary bin = (Binary) solution.getDecisionVariables()[0];
+			permutationLength = bin.getNumberOfBits();
+			for (int j = 0; j < permutationLength; j++) {
+				if (PseudoRandom.randDouble() < probability) {
+					int pos1 = j;
+					int pos2 = PseudoRandom.randInt(0,permutationLength-1) ;
+					while (pos1 == pos2) {
+						if (pos1 == (permutationLength - 1))
+							pos2 = PseudoRandom.randInt(0, permutationLength - 2);
+						else
+							pos2 = PseudoRandom.randInt(pos1, permutationLength - 1);
+					}
+
+					// swap
+					boolean temp = bin.getIth(pos1);
+					bin.setIth(pos1, bin.getIth(pos2));
+					bin.setIth(pos2, temp);
+				}
+			}
+		}
 	    else  {
 	      Configuration.logger_.severe("SwapMutation.doMutation: invalid type. " +
 	          ""+ solution.getDecisionVariables()[0].getVariableType());

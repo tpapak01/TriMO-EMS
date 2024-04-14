@@ -278,8 +278,8 @@ public class C_Metric {
 			FileWriter cMetricWriterNSGAII = new FileWriter("LowerLevelParetoVisualNSGAII/cmetric.txt");
 			FileWriter cMetricWriterMOEAD = new FileWriter("LowerLevelParetoVisual/cmetric.txt");
 
-			String prefix1 = "LowerLevelParetoVisual/";
-			String prefix2 = "LowerLevelParetoVisualNSGAII/";
+			String prefix1 = "LowerLevelParetoVisual/WithLocalSearchD/";
+			String prefix2 = "LowerLevelParetoVisualNSGAII/WithLocalSearchD/";
 
 			// first calculate C metric of NSGAII (lower == better)
 			double cMetricMean = 0;

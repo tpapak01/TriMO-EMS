@@ -78,7 +78,7 @@ public class CostsMutation extends Mutation {
 			int numberOfItems = problem.getNumberOfItems();
 			int[] covered = solution.getDeviceToPreferenceMapping();
 			int[] coveredReverse = solution.getReverseDeviceToPreferenceMapping();
-			double[] w = problem.getWeightOfItems();
+			double[][] w = problem.getWeightOfItems();
 			XReal costs = problem.getCostOfUsage();
 			double[][] positionsChanged = new double[mutationRepeats_][5];
 			int index = 0;
@@ -128,7 +128,7 @@ public class CostsMutation extends Mutation {
 					if (tries > 20)
 						continue;
 
-					double cost = w[it] * cost_difference;
+					double cost = w[u][it] * cost_difference;
 					int step = Math.abs(old_step + distance);
 
 					positionsChanged[index][0] = oldPosition; //position

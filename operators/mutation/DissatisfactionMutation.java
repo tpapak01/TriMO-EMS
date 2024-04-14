@@ -78,7 +78,7 @@ public class DissatisfactionMutation extends Mutation {
 			int numberOfItems = problem.getNumberOfItems();
 			int[] covered = solution.getDeviceToPreferenceMapping();
 			int[] coveredReverse = solution.getReverseDeviceToPreferenceMapping();
-			double[] w = problem.getWeightOfItems();
+			double[][] w = problem.getWeightOfItems();
 			XReal costs = problem.getCostOfUsage();
 			double[][] positionsChanged = new double[mutationRepeats_][3];
 			int index = 0;
@@ -144,7 +144,7 @@ public class DissatisfactionMutation extends Mutation {
                     }
 
 					if (!exitLoop) {
-						double cost = w[it] * costs.getValue(newtimeslot);
+						double cost = w[u][it] * costs.getValue(newtimeslot);
 						//if (cost <= temperature) {
 							positionsChanged[index][0] = positionToMake1;
 							positionsChanged[index][1] = step; //step

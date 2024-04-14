@@ -51,10 +51,11 @@ public class UpperLevelCostDistr_gGA {
 
         String problemName = args[0];
         String problemUserPreferences = args[1];
-        String lowerLevelAlgorithmName = args[2];
+        String renewableName = args[2];
+        String lowerLevelAlgorithmName = args[3];
         String costsName = "";
-        if (args.length > 3)
-            costsName = args[3];
+        if (args.length > 4)
+            costsName = args[4];
         //initialize Lower Level algorithm
         MOKP_Problem lowerLevelProblem;
         if (lowerLevelAlgorithmName.equals("MOEAD"))
@@ -63,7 +64,7 @@ public class UpperLevelCostDistr_gGA {
             lowerLevelProblem = LowerLevelMOKP_NSGAII.initializeAlgorithm(problemName, problemUserPreferences);
 
         //thalis
-        problem = new CostDistr(problemName, lowerLevelProblem, lowerLevelAlgorithmName, costsName);
+        problem = new CostDistr(renewableName, lowerLevelProblem, lowerLevelAlgorithmName, costsName);
         //thalis comment
         //int bits = 512 ;
         //problem = new OneMax("Binary", bits);

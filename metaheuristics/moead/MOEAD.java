@@ -102,6 +102,7 @@ public class MOEAD extends Algorithm {
   }
 
     //statistical analysis
+    private static int execution = 0;
     private static double evals_mean = 0;
     private static double spread_mean = 0;
     private static double hypervolume_mean = 0;
@@ -307,7 +308,7 @@ public class MOEAD extends Algorithm {
 
     } while (evaluations_ < maxEvaluations && converged == false);
 
-
+    execution++;
 
     //thalis
     // Only feasible solutions
@@ -348,8 +349,12 @@ public class MOEAD extends Algorithm {
 
     } // for
 
+
+    //print final Pareto Front to file, and calculate/print hypervolume and spread (Delta)
     /*
-    //Calculate/print hypervolume and spread (Delta)
+    Ranking finalRanking = new Ranking(finalSet);
+    SolutionSet finalParetoFront = finalRanking.getSubfront(0);
+    finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/WithLocalSearchD/" + (execution) + "_FUN");
 
     double spread = indicators.getSpread(finalParetoFront);
     double hypervolume = indicators.getHypervolume(finalParetoFront);

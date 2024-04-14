@@ -114,6 +114,13 @@ public class gGA_CostDistr extends Algorithm {
     int generations_left_for_convergence = 10;
     int converged = generations_left_for_convergence;
     double best_solution = population.get(0).getObjective(0);
+    System.out.println("BEST SOL: " + best_solution);
+
+    boolean randomOffspring = true;
+    boolean doubleOffspring = !randomOffspring;
+    int iterations = populationSize - 2;
+    if (doubleOffspring)
+      iterations = populationSize / 2 - 1;
 
     while (evaluations < maxEvaluations && converged != 0) {
 
@@ -121,12 +128,6 @@ public class gGA_CostDistr extends Algorithm {
       offspringPopulation.add(new Solution(population.get(0))) ;	
       offspringPopulation.add(new Solution(population.get(1))) ;
 
-      boolean randomOffspring = true;
-      boolean doubleOffspring = !randomOffspring;
-      int iterations = populationSize - 2;
-      if (doubleOffspring)
-        iterations = populationSize / 2 - 1;
-        
       // Reproductive cycle: keep adding 2 offspring to the offspring population until it reaches the max size
       for (int i = 0 ; i < iterations; i++) {
         // Selection
@@ -189,6 +190,7 @@ public class gGA_CostDistr extends Algorithm {
         converged--;
       } else {
         best_solution = population.get(0).getObjective(0);
+        System.out.println("BEST SOL at " + evaluations + ": " + best_solution);
         converged = generations_left_for_convergence;
       }
 

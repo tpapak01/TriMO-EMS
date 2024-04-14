@@ -32,7 +32,15 @@ import java.util.Arrays;
  * Class representing a solution for a problem.
  */
 public class Solution implements Serializable {
-  //LOWER-LEVEL SOLUTION ATTRIBUTES
+
+  private double selfConsumption;
+  public double getSelfConsumption(){
+    return selfConsumption;
+  }
+  public void setSelfConsumption(double selfConsumption){
+    this.selfConsumption = selfConsumption;
+  }
+
   private double[] spentEnergy;
   public double[] getSpentEnergy(){
     return spentEnergy;
@@ -40,7 +48,6 @@ public class Solution implements Serializable {
   public void setSpentEnergy(double[] spentEnergy){
     this.spentEnergy = Arrays.copyOf(spentEnergy, spentEnergy.length);
   }
-
   private Binary lowerLevelVars;
   public Binary getLowerLevelVars(){
     return lowerLevelVars;
@@ -48,7 +55,6 @@ public class Solution implements Serializable {
   public void setLowerLevelVars(Binary vars){
     this.lowerLevelVars = new Binary(vars);
   }
-
   private double[] lowerLevelObj;
   public double[] getLowerLevelObj(){
     return lowerLevelObj;
@@ -56,7 +62,6 @@ public class Solution implements Serializable {
   public void setLowerLevelObj(double[] lowerLevelObj){
     this.lowerLevelObj = Arrays.copyOf(lowerLevelObj, lowerLevelObj.length);
   }
-
   private double[] dissatisfactionPerUser;
   public double[] getDissatisfactionPerUser(){
     return dissatisfactionPerUser;
@@ -64,7 +69,6 @@ public class Solution implements Serializable {
   public void setDissatisfactionPerUser(double[] dissatisfactionPerUser){
     this.dissatisfactionPerUser = Arrays.copyOf(dissatisfactionPerUser, dissatisfactionPerUser.length);
   }
-
   private double[] energyAllocatedPerUser;
   public double[] getEnergyAllocatedPerUser(){
     return energyAllocatedPerUser;
