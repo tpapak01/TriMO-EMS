@@ -61,7 +61,7 @@ public class LowerLevelMOKP_NSGAII {
         algorithm = new NSGAII(problemMOKP);
 
         // Algorithm parameters
-        algorithm.setInputParameter("populationSize",100);
+        algorithm.setInputParameter("populationSize",300);
         algorithm.setInputParameter("maxEvaluations",100000);
 
         // Crossover operator
