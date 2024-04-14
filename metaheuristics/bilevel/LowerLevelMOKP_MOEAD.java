@@ -82,7 +82,7 @@ public class LowerLevelMOKP_MOEAD {
         } else {
             populationSize              = 100   ;
         }
-        algorithm.setInputParameter("populationSize",populationSize);
+        algorithm.setInputParameter("populationSize", 300);
         algorithm.setInputParameter("maxEvaluations",100000);
         //thalis comment
         //algorithm.setInputParameter("populationSize",300);
@@ -114,21 +114,21 @@ public class LowerLevelMOKP_MOEAD {
         parameters = new HashMap();
         double crossoverProbability = 1.0;
         parameters.put("probability", crossoverProbability);
-        crossover = new PartiallyMappedCrossoverCustom(parameters);
-        algorithm.setInputParameter("repairAfterCrossoverMutation",0);
+        //crossover = new PartiallyMappedCrossoverCustom(parameters);
+        algorithm.setInputParameter("repairAfterCrossoverMutation",1);
         //crossover = new TwoPointCrossoverCustom(parameters);
         //crossover = new SinglePointCrossover(parameters);
-        //crossover = new HUXCrossover(parameters);
+        crossover = new HUXCrossover(parameters);
 
         // Mutation operator
         //thalis - authors have replaced this mutation operator with "updateProduct", but not us
         parameters = new HashMap();
         double mutationProbability = 0.01;
         parameters.put("probability", mutationProbability);
-        parameters.put("repair", 1);
+        parameters.put("repair", 0);
         parameters.put("problem", problemMOKP);
-        mutation = new BitFlipMutation(parameters);
-        //mutation = new SwapMutation(parameters);
+        //mutation = new BitFlipMutation(parameters);
+        mutation = new SwapMutation(parameters);
         //thalis comment
         //parameters = new HashMap() ;
         //parameters.put("probability", 1.0/problem.getNumberOfVariables()) ;
