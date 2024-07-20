@@ -108,6 +108,14 @@ public class Solution implements Serializable {
     this.reverseDeviceToPreferenceMapping = Arrays.copyOf(reverseDeviceToPreferenceMapping, reverseDeviceToPreferenceMapping.length);
   }
 
+  private SolutionSet LL_ND_pop;
+  public SolutionSet getLL_ND_pop(){
+    return LL_ND_pop;
+  }
+  public void setLL_ND_pop(SolutionSet LL_ND_pop){
+    this.LL_ND_pop = LL_ND_pop;
+  }
+
 	/**
 	 * Stores the problem 
 	 */
@@ -313,6 +321,9 @@ public class Solution implements Serializable {
     }
     if (solution.getReverseDeviceToPreferenceMapping() != null) {
       setReverseDeviceToPreferenceMapping(solution.getReverseDeviceToPreferenceMapping());
+    }
+    if (solution.getLL_ND_pop() != null) {
+      setLL_ND_pop(solution.getLL_ND_pop());
     }
   } // Solution
 

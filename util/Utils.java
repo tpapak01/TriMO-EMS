@@ -21,6 +21,8 @@
 
 package jmetal.util;
 
+import jmetal.core.SolutionSet;
+
 /**
  * Utilities methods to used by MOEA/D
  */
@@ -309,6 +311,12 @@ public class Utils {
 			}
 		}
 	}
+
+	public static SolutionSet DSS(SolutionSet pop, int popSize){
+		return null;
+	}
+
+
 
 }
 
