@@ -82,7 +82,7 @@ public class LowerLevelMOKP_MOEAD {
             populationSize              = 100   ;
         }
         algorithm.setInputParameter("populationSize", 300);
-        algorithm.setInputParameter("maxEvaluations",100000);
+        algorithm.setInputParameter("maxEvaluations",1000000);
         //thalis comment
         //algorithm.setInputParameter("populationSize",300);
         //algorithm.setInputParameter("maxEvaluations",150000);

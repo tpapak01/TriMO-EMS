@@ -22,19 +22,17 @@
 package jmetal.metaheuristics.moead;
 
 import jmetal.core.*;
-import jmetal.encodings.variable.ArrayReal;
 import jmetal.encodings.variable.Binary;
-import jmetal.encodings.variable.MOKP_BinarySolution;
 import jmetal.problems.MOKP_Problem;
 import jmetal.qualityIndicator.QualityIndicator;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
+
+import jmetal.util.RankingOnlyFirst;
 import jmetal.util.comparators.DominanceComparator;
-import jmetal.util.Ranking;
 
 import java.io.*;
 import java.util.Comparator;
-import java.util.StringTokenizer;
 import java.util.Vector;
 
 public class MOEAD extends Algorithm {
@@ -114,6 +112,7 @@ public class MOEAD extends Algorithm {
     int maxEvaluations;
     int populationSize;
     SolutionSet population;
+    SolutionSet extPopulation;
     Operator crossover;
     Operator mutation;
 
@@ -133,6 +132,8 @@ public class MOEAD extends Algorithm {
     //System.out.println("POPSIZE: "+ populationSize_) ;
 
     population = new SolutionSet(populationSize);
+    extPopulation = new SolutionSet(populationSize*2);
+    double prevHypervolume = 0;
 
     T_ = ((Integer) this.getInputParameter("T")).intValue();
     nr_ = ((Integer) this.getInputParameter("nr")).intValue();
@@ -174,10 +175,6 @@ public class MOEAD extends Algorithm {
     boolean passedOnce = false;
     //used for convergence
     boolean converged = false;
-    Ranking r = new Ranking(population);
-    SolutionSet pareto = r.getSubfront(0);
-    pareto.sort(comparator);
-    SolutionSet previousPareto = pareto;
 
     // STEP 2. Update
     do {
@@ -283,35 +280,26 @@ public class MOEAD extends Algorithm {
 
         // STEP 2.5. Update of solutions
         updateProblem(population, child, n, type);
-      } // for
 
+      } // for
 
       //convergence check
       if (evaluations_ > threshold){
-        threshold += 500;
-        Ranking ranking = new Ranking(population);
-        SolutionSet paretoFront = ranking.getSubfront(0);
-        paretoFront.sort(comparator);
+        threshold += 5000;
 
-        if (paretoFront.size() == previousPareto.size()) {
+        extPopulation = updateExternal(population, extPopulation);
+        extPopulation.sort(comparator);
+        converged = false;
+        double hypervolume = indicators.getHypervolume(extPopulation);
+        double diff = hypervolume - prevHypervolume;
+        if (diff < 0.001){
           converged = true;
-          for (int i = 0; i < paretoFront.size(); i++) {
-              Solution sol1 = paretoFront.get(i);
-              Solution sol2 = previousPareto.get(i);
-              for (int j = 0; j < sol1.getNumberOfObjectives(); j++) {
-                if (sol1.getObjective(j) != sol2.getObjective(j))
-                  converged = false;
-                  break;
-              }
-              if (converged == false) break;
-          }
         }
+        prevHypervolume = hypervolume;
 
         //print the evolution of the Pareto front over N generations
-        //if (converged == false && execution < 10)
-        //  paretoFront.printObjectivesToFile("LowerLevelParetoEvolution/" + execution + "_FUN_" + iteration++);
-
-        previousPareto = paretoFront;
+        //if (converged == false)
+        //  extPopulation.printObjectivesToFile("LowerLevelParetoEvolution/" + execution + "_FUN_" + iteration++);
       }
 
     } while (evaluations_ < maxEvaluations && converged == false);
@@ -319,29 +307,12 @@ public class MOEAD extends Algorithm {
     execution++;
 
     //thalis
-    // Only feasible solutions
-      /*
-    SolutionSet feasibleSet = new SolutionSet(population_.size());
-    for (int i = 0; i < population_.size();i++) {
-        feasibleSet.add(new Solution(population_.get(i)));
-    }
-
-       */
-
-    //thalis
-    //register Spent Energy of top solutions, to be used when comparing equal solutions
-    for (int i = 0; i < population.size(); i++) {
-      problemMOKP.calculateSpentEnergy(population.get(i));
-    }
-
-
-    //thalis
     // At last remove identical solutions, based not only on objective value, but also decision vector
-    SolutionSet finalSet = new SolutionSet(population.size());
-    finalSet.add(population.get(0));
+    SolutionSet finalSet = new SolutionSet(extPopulation.size());
+    finalSet.add(extPopulation.get(0));
 
-    for (int i = 1; i < population.size(); i++) {
-      Solution sol = population.get(i);
+    for (int i = 1; i < extPopulation.size(); i++) {
+      Solution sol = extPopulation.get(i);
       boolean existEqual = false;
 
       for (int j = 0; j < finalSet.size();j++) {
@@ -353,10 +324,15 @@ public class MOEAD extends Algorithm {
 
       if (existEqual) continue;
 
-      finalSet.add(population.get(i));
+      finalSet.add(extPopulation.get(i));
 
     } // for
 
+    //thalis
+    //register Spent Energy of top solutions
+    for (int i = 0; i < extPopulation.size(); i++) {
+      problemMOKP.calculateSpentEnergy(extPopulation.get(i));
+    }
 
     //print final Pareto Front to file, and calculate/print hypervolume and spread (Delta)
     /*
@@ -408,10 +384,14 @@ public class MOEAD extends Algorithm {
       if (sol1.getObjective(i) != sol2.getObjective(i))
         return false;
     }
-    double[] spentEnergy1 = sol1.getSpentEnergy();
-    double[] spentEnergy2 = sol2.getSpentEnergy();
-    for (int i=0; i<spentEnergy1.length; i++)
-      if (spentEnergy1[i] != spentEnergy2[i])
+
+    Variable[] vars1 = sol1.getDecisionVariables();
+    Binary bin1 = (Binary) vars1[0];
+    Variable[] vars2 = sol2.getDecisionVariables();
+    Binary bin2 = (Binary) vars2[0];
+    int len = bin1.getNumberOfBits();
+    for (int i=0; i<len; i++)
+      if (bin1.getIth(i) != bin2.getIth(i))
         return false;
     return true;
     /*
@@ -751,6 +731,32 @@ public class MOEAD extends Algorithm {
     }
     return fitness;
   } // fitnessEvaluation
+
+  SolutionSet updateExternal(SolutionSet population, SolutionSet external) {
+      for (int i = 0; i < population.size(); i++) {
+        Solution sol = population.get(i);
+        boolean existEqual = false;
+
+        for (int j = 0; j < external.size();j++) {
+          if (equalSolution(sol, external.get(j))) {
+            existEqual = true;
+            break;
+          }
+        }
+
+        if (existEqual) continue;
+
+        external.add(population.get(i));
+      } // for
+
+      //only keep the Pareto front of the solutions
+      RankingOnlyFirst toGetOnlyParetoOptimals = new RankingOnlyFirst(external);
+      SolutionSet paretoOptimal = toGetOnlyParetoOptimals.getSubfront(0);
+      external.clear();
+      for (int i = 0; i < paretoOptimal.size(); i++)
+        external.add(paretoOptimal.get(i));
+      return external;
+  }
 
 
 } // MOEAD
