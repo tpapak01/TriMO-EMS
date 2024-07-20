@@ -96,7 +96,7 @@ public class Fast_CostDistr extends Algorithm {
     double best_solution = population.get(0).getObjective(0);
     System.out.println("BEST SOL: " + best_solution);
 
-    int iterations = populationSize;
+    int iterations = populationSize/2;
 
     while (evaluations < maxEvaluations && converged != 0) {
 
@@ -114,30 +114,26 @@ public class Fast_CostDistr extends Algorithm {
         // Crossover
         Solution [] offspring = (Solution []) crossoverOperator.execute(parents);
 
-        Solution child;
-         //double offspring
-          // Mutation
-          mutationOperator.execute(offspring[0]);
-          mutationOperator.execute(offspring[1]);
 
-          // Evaluation of the new individuals
-          problem_.evaluate(offspring[0]);
-          problem_.evaluate(offspring[1]);
-          evaluations +=2;
+        //double offspring
+        // Mutation
+        mutationOperator.execute(offspring[0]);
+        mutationOperator.execute(offspring[1]);
 
-          // Replacement: the two new individuals are inserted in the offspring
-          //                population
-          offspringPopulation.add(offspring[0]) ;
-          offspringPopulation.add(offspring[1]) ;
+        // Evaluation of the new individuals
+        problem_.evaluate(offspring[0]);
+        problem_.evaluate(offspring[1]);
+        evaluations +=2;
+
+        // Replacement: the two new individuals are inserted in the offspring
+        //                population
+        offspringPopulation.add(offspring[0]) ;
+        offspringPopulation.add(offspring[1]) ;
 
       } // for
       
       // The offspring population is added to the new current population
-      SolutionSet popCombined = new SolutionSet(populationSize * 2);
-      for (int i = 0; i < populationSize; i++) {
-        popCombined.add(population.get(i)) ;
-        popCombined.add(offspringPopulation.get(i)) ;
-      }
+      SolutionSet popCombined = population.union(offspringPopulation);
       offspringPopulation.clear();
       population.clear();
       popCombined.sort(comparator);
