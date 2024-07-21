@@ -9,22 +9,22 @@ public class EuclideanDist {
 
         int N = Integer.parseInt(args[0]);
 
-        double[] a = new double[N];
-        double[] b = new double[N];
+        Double[] a = new Double[N];
+        Double[] b = new Double[N];
 
         euc.print(euc.init(a, rnd));
         euc.print(euc.init(b, rnd));
         System.out.println(euc.distance(a, b));
     }
 
-    private double[] init(double[] src, Random rnd) {
+    private Double[] init(Double[] src, Random rnd) {
         for (int i = 0; i < src.length; i++) {
             src[i] = rnd.nextDouble();
         }
         return src;
     }
 
-    private static double distance(double[] a, double[] b) {
+    public static double distance(Double[] a, Double[] b) {
         double diff_square_sum = 0.0;
         for (int i = 0; i < a.length; i++) {
             diff_square_sum += (a[i] - b[i]) * (a[i] - b[i]);
@@ -32,7 +32,7 @@ public class EuclideanDist {
         return Math.sqrt(diff_square_sum);
     }
 
-    private void print(double[] x) {
+    private void print(Double[] x) {
         for (int j = 0; j < x.length; j++) {
             System.out.print(" " + x[j] + " ");
         }
