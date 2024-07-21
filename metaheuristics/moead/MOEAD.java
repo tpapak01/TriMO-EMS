@@ -298,28 +298,6 @@ public class MOEAD extends Algorithm {
     execution++;
 
     //thalis
-    // At last remove identical solutions, based not only on objective value, but also decision vector
-    SolutionSet finalSet = new SolutionSet(extPopulation.size());
-    finalSet.add(extPopulation.get(0));
-
-    for (int i = 1; i < extPopulation.size(); i++) {
-      Solution sol = extPopulation.get(i);
-      boolean existEqual = false;
-
-      for (int j = 0; j < finalSet.size();j++) {
-        if (equalSolution(sol, finalSet.get(j))) {
-          existEqual = true;
-          break;
-        }
-      }
-
-      if (existEqual) continue;
-
-      finalSet.add(extPopulation.get(i));
-
-    } // for
-
-    //thalis
     //register Spent Energy of top solutions
     for (int i = 0; i < extPopulation.size(); i++) {
       problemMOKP.calculateSpentEnergy(extPopulation.get(i));
@@ -367,7 +345,7 @@ public class MOEAD extends Algorithm {
 
      */
 
-    return finalSet;
+    return extPopulation;
   }
 
   public boolean equalSolution (Solution sol1, Solution sol2) {
