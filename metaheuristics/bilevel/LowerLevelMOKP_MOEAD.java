@@ -159,9 +159,12 @@ public class LowerLevelMOKP_MOEAD {
     }
 
 
-    public static SolutionSet evaluate(XReal y) throws JMException, SecurityException, ClassNotFoundException {
+    public static SolutionSet evaluate(XReal y, Solution solution) throws JMException, SecurityException, ClassNotFoundException {
 
         problemMOKP.setCostOfUsage(y);
+        if (solution.isMarked())
+            algorithm.setInputParameter("initPopSolution", null);
+        else algorithm.setInputParameter("initPopSolution", solution.getLL_ND_pop());
 
         // Execute the Algorithm
         long initTime = System.currentTimeMillis();

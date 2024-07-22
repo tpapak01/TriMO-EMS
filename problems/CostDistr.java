@@ -116,10 +116,11 @@ public class CostDistr extends Problem {
 
         SolutionSet lowerLevelSolutions = null;
         XReal costs = new XReal(solution);
+
         try {
             if (this.lowerLevelAlgorithmName.equals("MOEAD"))
-                lowerLevelSolutions = LowerLevelMOKP_MOEAD.evaluate(costs);
-            else lowerLevelSolutions = LowerLevelMOKP_NSGAII.evaluate(costs);
+                lowerLevelSolutions = LowerLevelMOKP_MOEAD.evaluate(costs, solution);
+            else lowerLevelSolutions = LowerLevelMOKP_NSGAII.evaluate(costs, solution);
         } catch (ClassNotFoundException e){
             System.out.println("Exception at LowerLevelMOKP.evaluate: " + e.getMessage());
         }
@@ -166,6 +167,7 @@ public class CostDistr extends Problem {
         solution.setNonREpaid(nonREpaid);
         solution.setDeviceToPreferenceMapping(chosenlowerLevelSol.getDeviceToPreferenceMapping());
         solution.setReverseDeviceToPreferenceMapping(chosenlowerLevelSol.getReverseDeviceToPreferenceMapping());
+        solution.setLL_ND_pop(lowerLevelSolutions);
 
 
         if (best_upper_level_result > best_result) {

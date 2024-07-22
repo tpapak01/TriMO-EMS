@@ -222,7 +222,13 @@ public class Solution implements Serializable {
     objective_          = new double[numberOfObjectives];
     normalizedObjective_ = new double[numberOfObjectives];
   }
-  
+
+  public Solution(Problem problem, boolean initPopSolution) throws ClassNotFoundException{
+    this(problem);
+    if (initPopSolution)
+      marked();
+  }
+
   /** 
    * Constructor.
    * @param problem The problem to solve
@@ -259,6 +265,7 @@ public class Solution implements Serializable {
   	type_ = problem.getSolutionType() ;
     numberOfObjectives_ = problem.getNumberOfObjectives() ;
     objective_          = new double[numberOfObjectives_] ;
+    marked_             = false;
 
     // Setting initial values
     fitness_              = 0.0 ;
@@ -269,11 +276,11 @@ public class Solution implements Serializable {
 
     variable_ = variables ;
   } // Constructor
-  
-  /** 
-   * Copy constructor.
-   * @param solution Solution to copy.
-   */    
+
+    /**
+     * Copy constructor.
+     * @param solution Solution to copy.
+     */
   public Solution(Solution solution) {            
     problem_ = solution.problem_ ;
     type_ = solution.type_;
@@ -292,7 +299,7 @@ public class Solution implements Serializable {
     crowdingDistance_     = solution.getCrowdingDistance();
     kDistance_            = solution.getKDistance();                
     fitness_              = solution.getFitness();
-    marked_               = solution.isMarked();
+    marked_               = false;
     rank_                 = solution.getRank();
     location_             = solution.getLocation();
     if (solution.getSpentEnergy() != null){

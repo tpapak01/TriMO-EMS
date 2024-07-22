@@ -60,6 +60,7 @@ public class MOEAD extends Algorithm {
    * Normalize
    */
   boolean normalize_;
+  SolutionSet initPopSolution_;
   /**
    * delta: probability that parent solutions are selected from neighbourhood
    */
@@ -139,6 +140,7 @@ public class MOEAD extends Algorithm {
     nr_ = ((Integer) this.getInputParameter("nr")).intValue();
     delta_ = ((Double) this.getInputParameter("delta")).doubleValue();
     normalize_ = ((Boolean) this.getInputParameter("normalize")).booleanValue();
+    initPopSolution_ = ((SolutionSet) this.getInputParameter("initPopSolution"));
 
 /*
     T_ = (int) (0.1 * populationSize_);
@@ -307,6 +309,7 @@ public class MOEAD extends Algorithm {
     execution++;
 
     //thalis
+
     //register Spent Energy of top solutions
     for (int i = 0; i < extPopulation.size(); i++) {
       problemMOKP.calculateSpentEnergy(extPopulation.get(i));
@@ -468,8 +471,9 @@ public class MOEAD extends Algorithm {
     int numOfConstraints = problem_.getNumberOfConstraints();
     int numOfBits = numberOfUsers * numberOfItems * numOfConstraints;
 
-    for (int i = 0; i < populationSize; i++) {
-      Solution newSolution = new Solution(problem_);
+    if (initPopSolution_ == null) {
+      for (int i = 0; i < populationSize; i++) {
+        Solution newSolution = new Solution(problem_);
 
       /*
       // all devices
@@ -478,22 +482,37 @@ public class MOEAD extends Algorithm {
       }
        */
 
-      // zero devices
-      if (i == 0) {
-        newSolution.setDecisionVariables(updateSolution(numOfBits, false));
+        // zero devices
+        if (i == 0) {
+          newSolution.setDecisionVariables(updateSolution(numOfBits, false));
+        }
+
+        // all devices
+        if (i == populationSize - 1) {
+          newSolution.setDecisionVariables(updateSolution(numOfBits, true));
+        }
+
+        problemMOKP.repair(newSolution);
+
+        problem_.evaluate(newSolution);
+        evaluations_++;
+        population.add(newSolution);
+      } // for
+    } else {
+
+      for (int i = 0; i < initPopSolution_.size(); i++) {
+        population.add(initPopSolution_.get(i));
       }
 
-      // all devices
-      if (i == populationSize-1) {
-        newSolution.setDecisionVariables(updateSolution(numOfBits, true));
-      }
+      for (int i = initPopSolution_.size(); i < populationSize; i++) {
+        Solution newSolution = new Solution(problem_);
 
-      problemMOKP.repair(newSolution);
-
-      problem_.evaluate(newSolution);
-      evaluations_++;
-      population.add(newSolution) ;
-    } // for
+        problemMOKP.repair(newSolution);
+        problem_.evaluate(newSolution);
+        evaluations_++;
+        population.add(newSolution);
+      } // for
+    }
   }
 
   public Variable[] updateSolution(int numOfBits, Boolean val) {

@@ -54,6 +54,7 @@ public class NSGAII extends Algorithm {
    */
 
   private int evaluations_;
+  SolutionSet initPopSolution_;
 
   //thalis
   private static final Comparator dominance_ = new DominanceComparator();
@@ -119,6 +120,7 @@ public class NSGAII extends Algorithm {
     maxEvaluations = ((Integer) getInputParameter("maxEvaluations")).intValue();
     int repairAfterCrossoverMutation = ((Integer) this.getInputParameter("repairAfterCrossoverMutation")).intValue();
     indicators = (QualityIndicator) getInputParameter("indicators");
+    initPopSolution_ = ((SolutionSet) this.getInputParameter("initPopSolution"));
 
     //Initialize the variables
     population = new SolutionSet(populationSize);
@@ -391,8 +393,9 @@ public class NSGAII extends Algorithm {
     int numOfConstraints = problem_.getNumberOfConstraints();
     int numOfBits = numberOfUsers * numberOfItems * numOfConstraints;
 
-    for (int i = 0; i < populationSize; i++) {
-      Solution newSolution = new Solution(problem_);
+    if (initPopSolution_ == null) {
+      for (int i = 0; i < populationSize; i++) {
+        Solution newSolution = new Solution(problem_);
 
       /*
       // all devices
@@ -401,22 +404,37 @@ public class NSGAII extends Algorithm {
       }
        */
 
-      // zero devices
-      if (i == 0) {
-        newSolution.setDecisionVariables(updateSolution(numOfBits, false));
+        // zero devices
+        if (i == 0) {
+          newSolution.setDecisionVariables(updateSolution(numOfBits, false));
+        }
+
+        // all devices
+        if (i == populationSize - 1) {
+          newSolution.setDecisionVariables(updateSolution(numOfBits, true));
+        }
+
+        problemMOKP.repair(newSolution);
+
+        problem_.evaluate(newSolution);
+        evaluations_++;
+        population.add(newSolution);
+      } // for
+    } else {
+
+      for (int i = 0; i < initPopSolution_.size(); i++) {
+        population.add(initPopSolution_.get(i));
       }
 
-      // all devices
-      if (i == populationSize-1) {
-        newSolution.setDecisionVariables(updateSolution(numOfBits, true));
-      }
+      for (int i = initPopSolution_.size(); i < populationSize; i++) {
+        Solution newSolution = new Solution(problem_);
 
-      problemMOKP.repair(newSolution);
-
-      problem_.evaluate(newSolution);
-      evaluations_++;
-      population.add(newSolution) ;
-    } // for
+        problemMOKP.repair(newSolution);
+        problem_.evaluate(newSolution);
+        evaluations_++;
+        population.add(newSolution);
+      } // for
+    }
   }
 
   public Variable[] updateSolution(int numOfBits, Boolean val) {

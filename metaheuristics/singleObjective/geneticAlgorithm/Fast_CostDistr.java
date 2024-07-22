@@ -24,6 +24,7 @@ package jmetal.metaheuristics.singleObjective.geneticAlgorithm;
 import jmetal.core.*;
 import jmetal.encodings.variable.ArrayReal;
 import jmetal.problems.CostDistr;
+import jmetal.util.EuclideanDist;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
 
@@ -120,6 +121,22 @@ public class Fast_CostDistr extends Algorithm {
         mutationOperator.execute(offspring[0]);
         mutationOperator.execute(offspring[1]);
 
+        //attach to offspring the LL ND of the closest UL solution
+        double min_dist = Double.MAX_VALUE;
+        int min_index = -1;
+        for (int o = 0; o<2; o++) {
+          Double[] offspringVar = (((ArrayReal) offspring[o].getDecisionVariables()[0]).array_);
+          for (int j = 0; j < populationSize; j++) {
+            Double[] popSolutionVar = (((ArrayReal) population.get(j).getDecisionVariables()[0]).array_);
+            double dist = EuclideanDist.distance(offspringVar, popSolutionVar);
+            if (dist < min_dist){
+              min_dist = dist;
+              min_index = j;
+            }
+          }
+          offspring[o].setLL_ND_pop(population.get(min_index).getLL_ND_pop());
+        }
+
         // Evaluation of the new individuals
         problem_.evaluate(offspring[0]);
         problem_.evaluate(offspring[1]);
@@ -176,7 +193,7 @@ public class Fast_CostDistr extends Algorithm {
   public void initPopulation() throws JMException, ClassNotFoundException {
     if (problemCostDistr.getInputCosts() == null) {
       for (int i = 0; i < populationSize; i++) {
-        Solution newSolution = new Solution(problem_);
+        Solution newSolution = new Solution(problem_, true);
 
         problem_.evaluate(newSolution);
         evaluations++;
@@ -184,7 +201,7 @@ public class Fast_CostDistr extends Algorithm {
       } // for
     } else {
       for (int i = 0; i < populationSize; i++) {
-        Solution newSolution = new Solution(problem_);
+        Solution newSolution = new Solution(problem_, true);
         newSolution.setDecisionVariables(updateSolution(problemCostDistr.getInputCosts()));
         problem_.evaluate(newSolution);
         evaluations++;
