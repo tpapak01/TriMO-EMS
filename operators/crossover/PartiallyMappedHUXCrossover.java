@@ -96,12 +96,11 @@ public class PartiallyMappedHUXCrossover extends Crossover{
         for (int var = 0; var < parent1.getDecisionVariables().length; var++) {
 
           Binary offSpring0, offSpring1;
-          offSpring0 =
-                  (Binary) parent1.getDecisionVariables()[var].deepCopy();
-          offSpring1 =
-                  (Binary) parent2.getDecisionVariables()[var].deepCopy();
+          offSpring0 = (Binary) offSpring[0].getDecisionVariables()[var];
+          offSpring1 = (Binary) offSpring[1].getDecisionVariables()[var];
 
-          for (int i = 0; i < offSpring0.getNumberOfBits(); i++) {
+          int numOfBits = offSpring0.getNumberOfBits();
+          for (int i = 0; i < numOfBits; i++) {
               if (PseudoRandom.randDouble() < 0.5) {
 
                 boolean offspring0_set = offSpring0.getIth(i);
@@ -113,27 +112,24 @@ public class PartiallyMappedHUXCrossover extends Crossover{
                 //neighbour turned on device
                 if (offspring1_set){
                   if (offspring0_set) {
-                    //erase past
-                    int pastPreferenceCovered = covered0[i];
-                    coveredReverse0[pastPreferenceCovered] = -1;
+                    //erase who you currently cover
+                    coveredReverse0[covered0[i]] = -1;
                   } else {
                     offSpring0.bits_.set(i, true);
                   }
-                  //cover new and delete other spot covering the new
-                  int newPreferenceCovered = covered1_current;
-                  covered0[i] = newPreferenceCovered;
-                  if (coveredReverse0[newPreferenceCovered] != -1) {
-                    int previousCoverer = coveredReverse0[newPreferenceCovered];
+                  //cover new and delete any other spot covering the new
+                  covered0[i] = covered1_current;
+                  if (coveredReverse0[covered1_current] != -1) {
+                    int previousCoverer = coveredReverse0[covered1_current];
                     covered0[previousCoverer] = -1;
                     offSpring0.bits_.set(previousCoverer, false);
                   }
-                  coveredReverse0[newPreferenceCovered] = i;
-                  //neighbour has not turned on device
+                  coveredReverse0[covered1_current] = i;
+                //neighbour has not turned on device
                 } else {
                   if (offspring0_set) {
-                    //erase past
-                    int pastPreferenceCovered = covered0[i];
-                    coveredReverse0[pastPreferenceCovered] = -1;
+                    //erase who you currently cover
+                    coveredReverse0[covered0[i]] = -1;
                     covered0[i] = -1;
                     offSpring0.bits_.set(i, false);
                   }
@@ -143,27 +139,24 @@ public class PartiallyMappedHUXCrossover extends Crossover{
                 //neighbour turned on device
                 if (offspring0_set){
                   if (offspring1_set) {
-                    //erase past
-                    int pastPreferenceCovered = covered1[i];
-                    coveredReverse1[pastPreferenceCovered] = -1;
+                    //erase who you currently cover
+                    coveredReverse1[covered1[i]] = -1;
                   } else {
                     offSpring1.bits_.set(i, true);
                   }
                   //cover new and delete other spot covering the new
-                  int newPreferenceCovered = covered0_current;
-                  covered1[i] = newPreferenceCovered;
-                  if (coveredReverse1[newPreferenceCovered] != -1) {
-                    int previousCoverer = coveredReverse1[newPreferenceCovered];
+                  covered1[i] = covered0_current;
+                  if (coveredReverse1[covered0_current] != -1) {
+                    int previousCoverer = coveredReverse1[covered0_current];
                     covered1[previousCoverer] = -1;
                     offSpring1.bits_.set(previousCoverer, false);
                   }
-                  coveredReverse1[newPreferenceCovered] = i;
-                  //neighbour has not turned on device
+                  coveredReverse1[covered0_current] = i;
+                //neighbour has not turned on device
                 } else {
                   if (offspring1_set) {
-                    //erase past
-                    int pastPreferenceCovered = covered1[i];
-                    coveredReverse1[pastPreferenceCovered] = -1;
+                    //erase who you currently cover
+                    coveredReverse1[covered1[i]] = -1;
                     covered1[i] = -1;
                     offSpring1.bits_.set(i, false);
                   }
@@ -171,17 +164,17 @@ public class PartiallyMappedHUXCrossover extends Crossover{
               }
           }
 
-          offSpring[0].getDecisionVariables()[var] = offSpring0;
-          offSpring[1].getDecisionVariables()[var] = offSpring1;
-
         }
 
+        /*
         //7. Decode the results
         for (int i = 0; i < offSpring[0].getDecisionVariables().length; i++)
         {
           ((Binary)offSpring[0].getDecisionVariables()[i]).decode();
           ((Binary)offSpring[1].getDecisionVariables()[i]).decode();
         }
+
+         */
       }
     }catch (ClassCastException e1) {
 
