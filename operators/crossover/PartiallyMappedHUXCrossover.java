@@ -31,6 +31,7 @@ import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 
@@ -95,74 +96,87 @@ public class PartiallyMappedHUXCrossover extends Crossover{
       if (PseudoRandom.randDouble() < probability) {
         for (int var = 0; var < parent1.getDecisionVariables().length; var++) {
 
-          Binary offSpring0, offSpring1;
-          offSpring0 = (Binary) offSpring[0].getDecisionVariables()[var];
-          offSpring1 = (Binary) offSpring[1].getDecisionVariables()[var];
+          BitSet offSpring0, offSpring1;
+          offSpring0 = ((Binary) offSpring[0].getDecisionVariables()[var]).bits_;
+          offSpring1 = ((Binary) offSpring[1].getDecisionVariables()[var]).bits_;
 
-          int numOfBits = offSpring0.getNumberOfBits();
-          for (int i = 0; i < numOfBits; i++) {
-              if (PseudoRandom.randDouble() < 0.5) {
-
-                boolean offspring0_set = offSpring0.getIth(i);
-                boolean offspring1_set = offSpring1.getIth(i);
+          int i = -1;
+          do {
+            int i0 = offSpring0.nextSetBit(i+1);
+            int i1 = offSpring1.nextSetBit(i+1);
+            if (i0 == -1 && i1 == -1) break;
+            if (i0 == i1) {
+                i = i0;
                 int covered0_current = covered0[i];
                 int covered1_current = covered1[i];
+                if (covered0_current != covered1_current && PseudoRandom.randDouble() < 0.5) {
+                  //erase who you currently cover
+                  coveredReverse0[covered0_current] = -1;
+                  coveredReverse1[covered1_current] = -1;
 
-                //set offspring 0
-                //neighbour turned on device
-                if (offspring1_set){
-                  if (offspring0_set) {
-                    //erase who you currently cover
-                    coveredReverse0[covered0[i]] = -1;
-                  } else {
-                    offSpring0.bits_.set(i, true);
-                  }
-                  //cover new and delete any other spot covering the new
+                  //i0: cover new and delete any other spot covering the new
                   covered0[i] = covered1_current;
                   if (coveredReverse0[covered1_current] != -1) {
                     int previousCoverer = coveredReverse0[covered1_current];
                     covered0[previousCoverer] = -1;
-                    offSpring0.bits_.set(previousCoverer, false);
+                    offSpring0.set(previousCoverer, false);
                   }
                   coveredReverse0[covered1_current] = i;
-                //neighbour has not turned on device
-                } else {
-                  if (offspring0_set) {
-                    //erase who you currently cover
-                    coveredReverse0[covered0[i]] = -1;
-                    covered0[i] = -1;
-                    offSpring0.bits_.set(i, false);
-                  }
-                }
 
-                //set offspring 1
-                //neighbour turned on device
-                if (offspring0_set){
-                  if (offspring1_set) {
-                    //erase who you currently cover
-                    coveredReverse1[covered1[i]] = -1;
-                  } else {
-                    offSpring1.bits_.set(i, true);
-                  }
-                  //cover new and delete other spot covering the new
+                  //i1: cover new and delete other spot covering the new
                   covered1[i] = covered0_current;
                   if (coveredReverse1[covered0_current] != -1) {
                     int previousCoverer = coveredReverse1[covered0_current];
                     covered1[previousCoverer] = -1;
-                    offSpring1.bits_.set(previousCoverer, false);
+                    offSpring1.set(previousCoverer, false);
                   }
                   coveredReverse1[covered0_current] = i;
-                //neighbour has not turned on device
-                } else {
-                  if (offspring1_set) {
-                    //erase who you currently cover
-                    coveredReverse1[covered1[i]] = -1;
-                    covered1[i] = -1;
-                    offSpring1.bits_.set(i, false);
-                  }
                 }
-              }
-          }
+            } else if (i1 == -1 || (i0 != -1 && i0 < i1)) {
+                i = i0;
+                if (PseudoRandom.randDouble() < 0.5) {
+                  int covered0_current = covered0[i];
+
+                  //i0:
+                  //erase who you currently cover
+                  coveredReverse0[covered0_current] = -1;
+                  covered0[i] = -1;
+                  offSpring0.set(i, false);
+
+                  //i1:
+                  offSpring1.set(i, true);
+                  covered1[i] = covered0_current;
+                  if (coveredReverse1[covered0_current] != -1) {
+                    int previousCoverer = coveredReverse1[covered0_current];
+                    covered1[previousCoverer] = -1;
+                    offSpring1.set(previousCoverer, false);
+                  }
+                  coveredReverse1[covered0_current] = i;
+                }
+            } else {
+                i = i1;
+                if (PseudoRandom.randDouble() < 0.5) {
+                  int covered1_current = covered1[i];
+
+                  //i0:
+                  offSpring0.set(i, true);
+                  //i0: cover new and delete any other spot covering the new
+                  covered0[i] = covered1_current;
+                  if (coveredReverse0[covered1_current] != -1) {
+                    int previousCoverer = coveredReverse0[covered1_current];
+                    covered0[previousCoverer] = -1;
+                    offSpring0.set(previousCoverer, false);
+                  }
+                  coveredReverse0[covered1_current] = i;
+
+                  //i1:
+                  //erase who you currently cover
+                  coveredReverse1[covered1_current] = -1;
+                  covered1[i] = -1;
+                  offSpring1.set(i, false);
+                }
+            }
+          } while (true);
 
         }
 
@@ -176,7 +190,7 @@ public class PartiallyMappedHUXCrossover extends Crossover{
 
          */
       }
-    }catch (ClassCastException e1) {
+    } catch (ClassCastException e1) {
 
       Configuration.logger_.severe("HUXCrossover.doCrossover: Cannot perfom " +
           "SinglePointCrossover ") ;
