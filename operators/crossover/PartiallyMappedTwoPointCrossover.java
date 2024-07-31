@@ -32,6 +32,7 @@ import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 
@@ -74,130 +75,129 @@ public class PartiallyMappedTwoPointCrossover extends Crossover {
           Solution parent2) throws JMException {
     Solution[] offSpring = new Solution[2];
     offSpring[0] = new Solution(parent1);
-    int[] covered0 = offSpring[0].getDeviceToPreferenceMapping();
-    int[] coveredReverse0 = offSpring[0].getReverseDeviceToPreferenceMapping();
     offSpring[1] = new Solution(parent2);
-    int[] covered1 = offSpring[1].getDeviceToPreferenceMapping();
-    int[] coveredReverse1 = offSpring[1].getReverseDeviceToPreferenceMapping();
-
     try {
       if (PseudoRandom.randDouble() < probability) {
+
         if ((parent1.getType().getClass() == BinarySolutionType.class) ||
             (parent1.getType().getClass() == BinaryRealSolutionType.class ||
                 (parent1.getType().getClass() == MOKP_BinarySolution.class))) {
-          //1. Compute the total number of bits
-          int totalNumberOfBits = 0;
-          for (int i = 0; i < parent1.getDecisionVariables().length; i++) {
-            totalNumberOfBits +=
-                    ((Binary) parent1.getDecisionVariables()[i]).getNumberOfBits();
-          }
 
-          //2. Calculate the point to make the crossover
-          int crossoverPoint = PseudoRandom.randInt(0, totalNumberOfBits - 1);
+          int[] covered0 = offSpring[0].getDeviceToPreferenceMapping();
+          int[] coveredReverse0 = offSpring[0].getReverseDeviceToPreferenceMapping();
+          int[] covered1 = offSpring[1].getDeviceToPreferenceMapping();
+          int[] coveredReverse1 = offSpring[1].getReverseDeviceToPreferenceMapping();
 
-          int crossoverPointEnd = PseudoRandom.randInt(crossoverPoint, totalNumberOfBits - 1);
+          int numOfVars = parent1.getDecisionVariables().length;
+          for (int var = 0; var < numOfVars; var++) {
+            int totalNumberOfBits = ((Binary) parent1.getDecisionVariables()[var]).getNumberOfBits();
 
-          //3. Compute the encodings.variable containing the crossoverPoint bit
-          int variable = 0;
+            //2. Calculate the point to make the crossover
+            int crossoverPoint = PseudoRandom.randInt(0, totalNumberOfBits - 1);
 
-          //5. Make the crossover into the gene;
-          Binary offSpring0, offSpring1;
-          offSpring0 =
-                  (Binary) parent1.getDecisionVariables()[variable].deepCopy();
-          offSpring1 =
-                  (Binary) parent2.getDecisionVariables()[variable].deepCopy();
+            int crossoverPointEnd = PseudoRandom.randInt(crossoverPoint, totalNumberOfBits - 1);
 
-          for (int i = crossoverPoint;
-                  i <= crossoverPointEnd;
-                  i++) {
+            //5. Make the crossover into the gene;
+            BitSet offSpring0, offSpring1;
+            offSpring0 = ((Binary) offSpring[0].getDecisionVariables()[var]).bits_;
+            offSpring1 = ((Binary) offSpring[1].getDecisionVariables()[var]).bits_;
 
-            boolean offspring0_set = offSpring0.getIth(i);
-            boolean offspring1_set = offSpring1.getIth(i);
-            int covered0_current = covered0[i];
-            int covered1_current = covered1[i];
+            int i = crossoverPoint-1;
+            do {
+              int i0 = offSpring0.nextSetBit(i+1);
+              int i1 = offSpring1.nextSetBit(i+1);
+              if ((i0 > crossoverPointEnd && i1 > crossoverPointEnd) || (i0 == -1 && i1 == -1)) break;
+              if (i0 == i1) {
+                i = i0;
+                int covered0_current = covered0[i];
+                int covered1_current = covered1[i];
+                if (covered0_current != covered1_current) {
+                  //erase who you currently cover
+                  coveredReverse0[covered0_current] = -1;
+                  coveredReverse1[covered1_current] = -1;
 
-            //set offspring 0
-            //neighbour turned on device
-            if (offspring1_set){
-              if (offspring0_set) {
-                //erase past
-                int pastPreferenceCovered = covered0[i];
-                coveredReverse0[pastPreferenceCovered] = -1;
-              } else {
-                offSpring0.bits_.set(i, true);
-              }
-              //cover new and delete other spot covering the new
-              int newPreferenceCovered = covered1_current;
-              covered0[i] = newPreferenceCovered;
-              if (coveredReverse0[newPreferenceCovered] != -1) {
-                int previousCoverer = coveredReverse0[newPreferenceCovered];
-                covered0[previousCoverer] = -1;
-                offSpring0.bits_.set(previousCoverer, false);
-              }
-              coveredReverse0[newPreferenceCovered] = i;
-            //neighbour has not turned on device
-            } else {
-              if (offspring0_set) {
-                //erase past
-                int pastPreferenceCovered = covered0[i];
-                coveredReverse0[pastPreferenceCovered] = -1;
+                  //i0: cover new and delete any other spot covering the new
+                  covered0[i] = covered1_current;
+                  if (coveredReverse0[covered1_current] != -1) {
+                    int previousCoverer = coveredReverse0[covered1_current];
+                    covered0[previousCoverer] = -1;
+                    offSpring0.set(previousCoverer, false);
+                  }
+                  coveredReverse0[covered1_current] = i;
+
+                  //i1: cover new and delete other spot covering the new
+                  covered1[i] = covered0_current;
+                  if (coveredReverse1[covered0_current] != -1) {
+                    int previousCoverer = coveredReverse1[covered0_current];
+                    covered1[previousCoverer] = -1;
+                    offSpring1.set(previousCoverer, false);
+                  }
+                  coveredReverse1[covered0_current] = i;
+                }
+              } else if (i1 == -1 || (i0 != -1 && i0 < i1)) {
+                i = i0;
+                int covered0_current = covered0[i];
+
+                //i0:
+                //erase who you currently cover
+                coveredReverse0[covered0_current] = -1;
                 covered0[i] = -1;
-                offSpring0.bits_.set(i, false);
-              }
-            }
+                offSpring0.set(i, false);
 
-            //set offspring 1
-            //neighbour turned on device
-            if (offspring0_set){
-              if (offspring1_set) {
-                //erase past
-                int pastPreferenceCovered = covered1[i];
-                coveredReverse1[pastPreferenceCovered] = -1;
+                //i1:
+                offSpring1.set(i, true);
+                covered1[i] = covered0_current;
+                if (coveredReverse1[covered0_current] != -1) {
+                  int previousCoverer = coveredReverse1[covered0_current];
+                  covered1[previousCoverer] = -1;
+                  offSpring1.set(previousCoverer, false);
+                }
+                coveredReverse1[covered0_current] = i;
               } else {
-                offSpring1.bits_.set(i, true);
-              }
-              //cover new and delete other spot covering the new
-              int newPreferenceCovered = covered0_current;
-              covered1[i] = newPreferenceCovered;
-              if (coveredReverse1[newPreferenceCovered] != -1) {
-                int previousCoverer = coveredReverse1[newPreferenceCovered];
-                covered1[previousCoverer] = -1;
-                offSpring1.bits_.set(previousCoverer, false);
-              }
-              coveredReverse1[newPreferenceCovered] = i;
-              //neighbour has not turned on device
-            } else {
-              if (offspring1_set) {
-                //erase past
-                int pastPreferenceCovered = covered1[i];
-                coveredReverse1[pastPreferenceCovered] = -1;
+                i = i1;
+                int covered1_current = covered1[i];
+
+                //i0:
+                offSpring0.set(i, true);
+                //i0: cover new and delete any other spot covering the new
+                covered0[i] = covered1_current;
+                if (coveredReverse0[covered1_current] != -1) {
+                  int previousCoverer = coveredReverse0[covered1_current];
+                  covered0[previousCoverer] = -1;
+                  offSpring0.set(previousCoverer, false);
+                }
+                coveredReverse0[covered1_current] = i;
+
+                //i1:
+                //erase who you currently cover
+                coveredReverse1[covered1_current] = -1;
                 covered1[i] = -1;
-                offSpring1.bits_.set(i, false);
+                offSpring1.set(i, false);
               }
+            } while (true);
+
+            /*
+            //6. Apply the crossover to the other variables
+            for (int i = 1; i < numOfVars; i++) {
+              offSpring[0].getDecisionVariables()[i] =
+                      parent2.getDecisionVariables()[i].deepCopy();
+
+              offSpring[1].getDecisionVariables()[i] =
+                      parent1.getDecisionVariables()[i].deepCopy();
             }
 
+             */
 
           }
-
-          offSpring[0].getDecisionVariables()[variable] = offSpring0;
-          offSpring[1].getDecisionVariables()[variable] = offSpring1;
-
-          //6. Apply the crossover to the other variables
-          int numOfVars = offSpring[0].getDecisionVariables().length;
-          for (int i = 1; i < numOfVars; i++) {
-            offSpring[0].getDecisionVariables()[i] =
-                    parent2.getDecisionVariables()[i].deepCopy();
-
-            offSpring[1].getDecisionVariables()[i] =
-                    parent1.getDecisionVariables()[i].deepCopy();
-
-          }
-
+          /*
           //7. Decode the results
           for (int i = 0; i < numOfVars; i++) {
             ((Binary) offSpring[0].getDecisionVariables()[i]).decode();
             ((Binary) offSpring[1].getDecisionVariables()[i]).decode();
           }
+
+           */
+
         } // Binary or BinaryReal
         else { // Integer representation
           int crossoverPoint = PseudoRandom.randInt(0, parent1.numberOfVariables() - 1);
