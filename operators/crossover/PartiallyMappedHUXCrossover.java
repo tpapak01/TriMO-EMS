@@ -86,14 +86,15 @@ public class PartiallyMappedHUXCrossover extends Crossover{
                                 Solution parent2) throws JMException {
     Solution [] offSpring = new Solution[2];
     offSpring[0] = new Solution(parent1);
-    int[] covered0 = offSpring[0].getDeviceToPreferenceMapping();
-    int[] coveredReverse0 = offSpring[0].getReverseDeviceToPreferenceMapping();
     offSpring[1] = new Solution(parent2);
-    int[] covered1 = offSpring[1].getDeviceToPreferenceMapping();
-    int[] coveredReverse1 = offSpring[1].getReverseDeviceToPreferenceMapping();
-
     try {
       if (PseudoRandom.randDouble() < probability) {
+
+        int[] covered0 = offSpring[0].getDeviceToPreferenceMapping();
+        int[] coveredReverse0 = offSpring[0].getReverseDeviceToPreferenceMapping();
+        int[] covered1 = offSpring[1].getDeviceToPreferenceMapping();
+        int[] coveredReverse1 = offSpring[1].getReverseDeviceToPreferenceMapping();
+
         for (int var = 0; var < parent1.getDecisionVariables().length; var++) {
 
           BitSet offSpring0, offSpring1;
