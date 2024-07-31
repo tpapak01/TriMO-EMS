@@ -4,6 +4,7 @@ import jmetal.core.*;
 import jmetal.metaheuristics.moead.MOEAD;
 import jmetal.operators.crossover.*;
 import jmetal.operators.mutation.BitFlipMutation;
+import jmetal.operators.mutation.SwapMutation;
 import jmetal.problems.MOKP_Problem;
 import jmetal.qualityIndicator.QualityIndicator;
 import jmetal.util.Configuration;

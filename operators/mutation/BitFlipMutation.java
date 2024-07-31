@@ -36,6 +36,7 @@ import jmetal.util.PseudoRandom;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * This class implements a bit flip mutation operator.
@@ -81,19 +82,21 @@ public class BitFlipMutation extends Mutation {
 					(solution.getType().getClass() == BinaryRealSolutionType.class) ||
 					(solution.getType().getClass() == MOKP_BinarySolution.class)) {
 
-				for (int i = 0; i < solution.getDecisionVariables().length; i++) {
-					Binary bin = (Binary) solution.getDecisionVariables()[i];
+				for (int var = 0; var < solution.getDecisionVariables().length; var++) {
+					Binary bin = (Binary) solution.getDecisionVariables()[var];
 					int numOfBits = bin.getNumberOfBits();
-					for (int j = 0; j < numOfBits; j++) {
+					for (int i = 0; i < numOfBits; i++) {
 						if (PseudoRandom.randDouble() < probability) {
-							bin.bits_.flip(j);
+							bin.bits_.flip(i);
 						}
 					}
 				}
-
+				/*
 				for (int i = 0; i < solution.getDecisionVariables().length; i++) {
 					((Binary) solution.getDecisionVariables()[i]).decode();
 				}
+
+				 */
 			} // if
 			else { // Integer representation
 				for (int i = 0; i < solution.getDecisionVariables().length; i++)
@@ -116,93 +119,84 @@ public class BitFlipMutation extends Mutation {
 	public void doCustomMutation(double probability, Solution solution) throws JMException {
 		try {
 			boolean[] pref_vector = problemMOKP.getUserPreferenceVector();
-			int numberOfUsers = problemMOKP.getNumberOfUsers();
 			int numberOfConstraints_ = problemMOKP.getNumberOfConstraints();
 			int numberOfItems = problemMOKP.getNumberOfItems();
+			int consXitems = numberOfConstraints_* numberOfItems;
 			int[] max_shift = problemMOKP.getMax_shift();
 
-			for (int v = 0; v < solution.getDecisionVariables().length; v++) {
-				Binary bin = (Binary) solution.getDecisionVariables()[v];
+			for (int var = 0; var < solution.getDecisionVariables().length; var++) {
+				Binary bin = (Binary) solution.getDecisionVariables()[var];
+				int numOfBits = bin.getNumberOfBits();
 				int[] covered = solution.getDeviceToPreferenceMapping();
 				int[] coveredReverse = solution.getReverseDeviceToPreferenceMapping();
-
-
-				for (int u = 0; u < numberOfUsers; u++) { // for each user
-
-					int userIndex = u * numberOfConstraints_;
-					int l = 0;
-					for (int i = userIndex; i < userIndex + numberOfConstraints_; i++) { // for each objective
-						int itemIndex = i * numberOfItems;
-						int k = 0;
-						for (int j = itemIndex; j < itemIndex + numberOfItems; j++) { // for each bit
-							if (PseudoRandom.randDouble() < probability) {
-								//just delete current mapping
-								if (bin.getIth(j)) {
-									int preferenceCovered = covered[j];
-									covered[j] = -1;
-									coveredReverse[preferenceCovered] = -1;
-								} else {
-									//preferred
-									if (pref_vector[j]) {
-										if (coveredReverse[j] != -1){
-											int currentCoverer = coveredReverse[j];
-											covered[currentCoverer] = -1;
-											bin.bits_.flip(currentCoverer);
-										}
-										covered[j] = j;
-										coveredReverse[j] = j;
-									//not preferred
-									} else {
-										//find the satisfied slot, if it exists. If not, turn device OFF
-										int misplacement = 1;
-										int selected = -1;
-										int behind = l-1;
-										int front = l+1;
-										while (behind >= 0 || front < numberOfConstraints_){
-											if (max_shift[k] < misplacement){
-												break;
-											}
-											if (behind >= 0) {
-												int new_position = j-misplacement*numberOfItems;
-												boolean pref_behind = pref_vector[new_position];
-												if (pref_behind && coveredReverse[new_position] == -1) {
-													selected = new_position;
-													break;
-												}
-												behind--;
-											}
-											if (front < numberOfConstraints_) {
-												int new_position = j+misplacement*numberOfItems;
-												boolean pref_front = pref_vector[new_position];
-												if (pref_front && coveredReverse[new_position] == -1) {
-													selected = new_position;
-													break;
-												}
-												front++;
-											}
-											misplacement++;
-										}
-										if (selected != -1) {
-											//now that we found someone to cover, add satisfaction and secure that
-											//position so that noone else claims it in the future
-											covered[j] = selected;
-											coveredReverse[selected] = j;
-										} else {
-											//no slot found means ON-device does not belong here
-											bin.bits_.flip(j);
-										}
-
-									} //end of "not preferred so must find device to satisfy"
+				int mut_repetitions = (int) (numOfBits * mutationProbability_);
+				for (int r=0; r<mut_repetitions; r++){
+					int j = ThreadLocalRandom.current().nextInt(0, numOfBits);
+                    int u, t, it;
+                    u = j / consXitems;
+                    t = j % consXitems / numberOfItems;
+                    int userAndTime = u * consXitems + t * numberOfItems;
+                    it =  (userAndTime == 0 ? j : (j % userAndTime));
+					//just delete current mapping
+					if (bin.getIth(j)) {
+						int preferenceCovered = covered[j];
+						covered[j] = -1;
+						coveredReverse[preferenceCovered] = -1;
+					} else {
+						//preferred
+						if (pref_vector[j]) {
+							if (coveredReverse[j] != -1){
+								int currentCoverer = coveredReverse[j];
+								covered[currentCoverer] = -1;
+								bin.bits_.flip(currentCoverer);
+							}
+							covered[j] = j;
+							coveredReverse[j] = j;
+							//not preferred
+						} else {
+							//find the satisfied slot, if it exists. If not, turn device OFF
+							int misplacement = 1;
+							int selected = -1;
+							int behind = t-1;
+							int front = t+1;
+							while (behind >= 0 || front < numberOfConstraints_){
+								if (max_shift[it] < misplacement){
+									break;
 								}
+								if (behind >= 0) {
+									int new_position = j-misplacement*numberOfItems;
+									boolean pref_behind = pref_vector[new_position];
+									if (pref_behind && coveredReverse[new_position] == -1) {
+										selected = new_position;
+										break;
+									}
+									behind--;
+								}
+								if (front < numberOfConstraints_) {
+									int new_position = j+misplacement*numberOfItems;
+									boolean pref_front = pref_vector[new_position];
+									if (pref_front && coveredReverse[new_position] == -1) {
+										selected = new_position;
+										break;
+									}
+									front++;
+								}
+								misplacement++;
+							}
+							if (selected != -1) {
+								//now that we found someone to cover, add satisfaction and secure that
+								//position so that noone else claims it in the future
+								covered[j] = selected;
+								coveredReverse[selected] = j;
+							} else {
+								//no slot found means ON-device does not belong here
 								bin.bits_.flip(j);
-							} // end of probability check
-							k++;
-						} // for j
-						l++;
-					} // for i
-				} //for u
+							}
 
-
+						} //end of "not preferred so must find device to satisfy"
+					}
+					bin.bits_.flip(j);
+				}
 			}
 
 		} catch (ClassCastException e1) {

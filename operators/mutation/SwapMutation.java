@@ -35,6 +35,7 @@ import jmetal.util.PseudoRandom;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * This class implements a swap mutation. The solution type of the solution
@@ -105,24 +106,24 @@ public class SwapMutation extends Mutation{
 			  solution.getType().getClass() == BinaryRealSolutionType.class ||
 			  solution.getType().getClass() == MOKP_BinarySolution.class) {
 
-			Binary bin = (Binary) solution.getDecisionVariables()[0];
+	    	int var = 0;
+			Binary bin = (Binary) solution.getDecisionVariables()[var];
 			permutationLength = bin.getNumberOfBits();
-			for (int j = 0; j < permutationLength; j++) {
-				if (PseudoRandom.randDouble() < probability) {
-					int pos1 = j;
-					int pos2 = PseudoRandom.randInt(0,permutationLength-1) ;
-					while (pos1 == pos2) {
-						if (pos1 == (permutationLength - 1))
-							pos2 = PseudoRandom.randInt(0, permutationLength - 2);
-						else
-							pos2 = PseudoRandom.randInt(pos1, permutationLength - 1);
-					}
-
-					// swap
-					boolean temp = bin.getIth(pos1);
-					bin.setIth(pos1, bin.getIth(pos2));
-					bin.setIth(pos2, temp);
+			int mut_repetitions = (int) (permutationLength * mutationProbability_);
+			for (int r=0; r<mut_repetitions; r++) {
+				int pos1 = ThreadLocalRandom.current().nextInt(0, permutationLength);
+				int pos2 = PseudoRandom.randInt(0, permutationLength - 1);
+				while (pos1 == pos2) {
+					if (pos1 == (permutationLength - 1))
+						pos2 = PseudoRandom.randInt(0, permutationLength - 2);
+					else
+						pos2 = PseudoRandom.randInt(pos1, permutationLength - 1);
 				}
+
+				// swap
+				boolean temp = bin.getIth(pos1);
+				bin.setIth(pos1, bin.getIth(pos2));
+				bin.setIth(pos2, temp);
 			}
 		}
 	    else  {
