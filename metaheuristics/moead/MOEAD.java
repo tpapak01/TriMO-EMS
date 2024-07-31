@@ -285,13 +285,13 @@ public class MOEAD extends Algorithm {
 
       } // for
 
+      extPopulation = updateExternal(population, extPopulation);
+
       //convergence check
       if (evaluations_ > threshold){
         threshold += 5000;
 
-        extPopulation = updateExternal(population, extPopulation);
         extPopulation.sort(comparator);
-        converged = false;
         double hypervolume = indicators.getHypervolume(extPopulation);
         double diff = hypervolume - prevHypervolume;
         if (diff < 0.001){
