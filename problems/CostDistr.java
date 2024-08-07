@@ -16,6 +16,7 @@ import jmetal.metaheuristics.bilevel.LowerLevelMOKP_MOEAD;
 import jmetal.metaheuristics.bilevel.LowerLevelMOKP_NSGAII;
 import jmetal.util.JMException;
 import jmetal.util.Ranking;
+import jmetal.util.Utils;
 import jmetal.util.wrapper.XReal;
 
 import java.io.BufferedReader;
@@ -129,6 +130,12 @@ public class CostDistr extends Problem {
 
         double best_result = Double.MAX_VALUE;
         int best_solution_index = -1;
+        double[] target_desirability = new double[this.lowerLevelProblem.getNumberOfObjectives()];
+        target_desirability[0] = this.lowerLevelProblem.getObjectiveDesirability();
+        target_desirability[1] = 1 - target_desirability[0];
+        double[] nadirObjectiveValue = this.lowerLevelProblem.getNadirObjectiveValue();
+        double best_desirability = 100;
+        int best_desirability_index = -1;
 
         for (int s=0; s<lowerLevelSolutions.size(); s++) {
             Solution lowerLevelSol = lowerLevelSolutions.get(s);
@@ -137,21 +144,39 @@ public class CostDistr extends Problem {
             //double result = upperLevel_evaluate_distance_from_produced(spentEnergy);
             double[] energySpent = lowerLevelSol.getSpentEnergy();
             double result = upperLevel_evaluate_XOR_distance_plus_weight(energySpent, costs);
+            lowerLevelSol.setSelfConsumption(result);
             //double selfConsumption = upperLevel_evaluate_XOR_distance(energySpent);
-            //lowerLevelSol.setSelfConsumption(selfConsumption);
             if (result < best_result){
                 best_result = result;
                 best_solution_index = s;
             }
+            double desirability = Math.abs(target_desirability[0] - lowerLevelSol.getLambda()[0]);
+            if (desirability < best_desirability){
+                best_desirability = desirability;
+                best_desirability_index = s;
+            }
 
         }
 
-	    //AIAI self-cons graph
-        //lowerLevelSolutions.printObjectivesAndSelfToFile("LowerLevelParetoVisual/WithoutLocalSearch/" + 1 + "_FUN");
+        Solution bestSelfSol = lowerLevelSolutions.get(best_solution_index);
+        Solution bestDesSol = lowerLevelSolutions.get(best_desirability_index);
+        double worst_self = bestDesSol.getSelfConsumption();
+        double worst_des = Utils.AchievementScalarizationTcheby(bestSelfSol, bestDesSol, target_desirability, nadirObjectiveValue);
+        for (int s=0; s<lowerLevelSolutions.size(); s++) {
+            Solution lowerLevelSol = lowerLevelSolutions.get(s);
+            double selfCons = lowerLevelSol.getSelfConsumption();
+            double desirability = Utils.AchievementScalarizationTcheby(lowerLevelSol, bestDesSol, target_desirability, nadirObjectiveValue);
+            if (selfCons < worst_self &&
+                    desirability < worst_des) {
+                System.out.println("(" + selfCons + "," + desirability + ")");
+                System.out.println("[" + lowerLevelSol.getLambda()[0] + "," + lowerLevelSol.getLambda()[1] + "]");
+            }
+        }
+
 
         solution.setObjective(0, best_result);
         // fill up extra data for analysis
-        Solution chosenlowerLevelSol = lowerLevelSolutions.get(best_solution_index);
+        Solution chosenlowerLevelSol = bestSelfSol;
         Variable[] vars = chosenlowerLevelSol.getDecisionVariables();
         Binary bin = (Binary) vars[0];
         double[] energySpent = chosenlowerLevelSol.getSpentEnergy();

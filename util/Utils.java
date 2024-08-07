@@ -21,6 +21,7 @@
 
 package jmetal.util;
 
+import jmetal.core.Solution;
 import jmetal.core.SolutionSet;
 
 /**
@@ -315,6 +316,34 @@ public class Utils {
 	public static SolutionSet DSS(SolutionSet pop, int popSize){
 		return null;
 	}
+
+	public static double AchievementScalarizationTcheby(Solution individual, Solution z_, double[] weight,
+												 double[] nadirObjectiveValue) {
+		double fitness = 0.0;
+		double maxFun = -1.0e+30;
+
+		int numOfObjectives = individual.getNumberOfObjectives();
+		for (int n = 0; n < numOfObjectives; n++) {
+			double diff = Math.abs((individual.getObjective(n) - z_.getObjective(n)) / nadirObjectiveValue[n]);
+
+			double feval;
+			// make sure the multiplication with λ doesn't result in an absolute zero
+			if (weight[n] == 0) {
+				feval = 0.0001 * diff;
+			} else {
+				feval = weight[n] * diff;
+			}
+
+			//is this the maximum difference found so far?
+			if (feval > maxFun) {
+				maxFun = feval;
+			}
+		} // for
+
+		fitness = maxFun;
+
+		return fitness;
+	} // fitnessEvaluation
 
 
 

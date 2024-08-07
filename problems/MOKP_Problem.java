@@ -36,6 +36,7 @@ public class MOKP_Problem extends Problem {
     private XReal costOfUsage ; // capacity of each  knapsack .
     private int[] requestedDevicesPerUser;
     private double[] nadirObjectiveValue;
+    private double objectiveDesirability = 0;
 
   public MOKP_Problem(String problemName,String userPreferenceName) {
 	  this.setMaxmized_(false); // this problem is not to be maximized
@@ -134,6 +135,8 @@ public class MOKP_Problem extends Problem {
 
           } //u
 
+          objectiveDesirability = Double.parseDouble(in.readLine());
+
           in.close();
 
           System.out.println("Requested Energy Per Time ");
@@ -182,6 +185,10 @@ public class MOKP_Problem extends Problem {
 
     public double[] getNadirObjectiveValue(){
         return nadirObjectiveValue;
+    }
+
+    public double getObjectiveDesirability(){
+      return objectiveDesirability;
     }
 
     public void repair(Solution solution){
