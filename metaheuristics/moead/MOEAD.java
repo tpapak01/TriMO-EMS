@@ -493,7 +493,7 @@ public class MOEAD extends Algorithm {
         }
 
         problemMOKP.repair(newSolution);
-
+        newSolution.setLambda(new double[]{lambda_[i][0],lambda_[i][1]});
         problem_.evaluate(newSolution);
         evaluations_++;
         population.add(newSolution);
@@ -508,6 +508,7 @@ public class MOEAD extends Algorithm {
         Solution newSolution = new Solution(problem_);
 
         problemMOKP.repair(newSolution);
+        newSolution.setLambda(new double[]{lambda_[i][0],lambda_[i][1]});
         problem_.evaluate(newSolution);
         evaluations_++;
         population.add(newSolution);
@@ -682,7 +683,7 @@ public class MOEAD extends Algorithm {
       }
 
       if (flagDominate == -1) {// indiv is better
-        population.replace(k, new Solution(indiv));
+        population.replace(k, new Solution(indiv, lambda_[k]));
         time++;
       }
 

@@ -76,6 +76,15 @@ public class Solution implements Serializable {
   public void setEnergyAllocatedPerUser(double[] energyAllocatedPerUser){
     this.energyAllocatedPerUser = Arrays.copyOf(energyAllocatedPerUser, energyAllocatedPerUser.length);
   }
+
+  private double[] lambda = null;
+  public double[] getLambda(){
+    return lambda;
+  }
+  public void setLambda(double[] lambda){
+    this.lambda = lambda;
+  }
+
   private double energyDeviationFromProduced = -1;
   public double getEnergyDeviationFromProduced(){
     return energyDeviationFromProduced;
@@ -281,7 +290,7 @@ public class Solution implements Serializable {
      * Copy constructor.
      * @param solution Solution to copy.
      */
-  public Solution(Solution solution) {            
+  public Solution(Solution solution, double[] input_lambda) {
     problem_ = solution.problem_ ;
     type_ = solution.type_;
 
@@ -304,6 +313,60 @@ public class Solution implements Serializable {
     location_             = solution.getLocation();
     if (solution.getSpentEnergy() != null){
         setSpentEnergy(solution.getSpentEnergy());
+    }
+    if (solution.getLowerLevelVars() != null){
+      setLowerLevelVars(solution.getLowerLevelVars());
+    }
+    if (solution.getLowerLevelObj() != null){
+      setLowerLevelObj(solution.getLowerLevelObj());
+    }
+    if (solution.getDissatisfactionPerUser() != null){
+      setDissatisfactionPerUser(solution.getDissatisfactionPerUser());
+    }
+    if (solution.getEnergyAllocatedPerUser() != null){
+      setEnergyAllocatedPerUser(solution.getEnergyAllocatedPerUser());
+    }
+    if (solution.getEnergyDeviationFromProduced() != -1){
+      setEnergyDeviationFromProduced(solution.getEnergyDeviationFromProduced());
+    }
+    if (solution.getNonREpaid() != -1){
+      setNonREpaid(solution.getNonREpaid());
+    }
+    setLambda(input_lambda);
+    if (solution.getDeviceToPreferenceMapping() != null) {
+      setDeviceToPreferenceMapping(solution.getDeviceToPreferenceMapping());
+    }
+    if (solution.getReverseDeviceToPreferenceMapping() != null) {
+      setReverseDeviceToPreferenceMapping(solution.getReverseDeviceToPreferenceMapping());
+    }
+    if (solution.getLL_ND_pop() != null) {
+      setLL_ND_pop(solution.getLL_ND_pop());
+    }
+  } // Solution
+
+  public Solution(Solution solution) {
+    problem_ = solution.problem_ ;
+    type_ = solution.type_;
+
+    numberOfObjectives_ = solution.getNumberOfObjectives();
+    objective_ = new double[numberOfObjectives_];
+    normalizedObjective_ = new double[numberOfObjectives_];
+    for (int i = 0; i < objective_.length;i++) {
+      objective_[i] = solution.getObjective(i);
+      normalizedObjective_[i] =  solution.getNormalizedObjective(i);
+    }
+    variable_ = type_.copyVariables(solution.variable_) ;
+    overallConstraintViolation_  = solution.getOverallConstraintViolation();
+    numberOfViolatedConstraints_ = solution.getNumberOfViolatedConstraint();
+    distanceToSolutionSet_ = solution.getDistanceToSolutionSet();
+    crowdingDistance_     = solution.getCrowdingDistance();
+    kDistance_            = solution.getKDistance();
+    fitness_              = solution.getFitness();
+    marked_               = false;
+    rank_                 = solution.getRank();
+    location_             = solution.getLocation();
+    if (solution.getSpentEnergy() != null){
+      setSpentEnergy(solution.getSpentEnergy());
     }
     if (solution.getLowerLevelVars() != null){
       setLowerLevelVars(solution.getLowerLevelVars());
