@@ -35,6 +35,7 @@ public class CostDistr extends Problem {
     private double[] producedRE;
     private double[] inputCosts = null;
     private double totalProducedRE;
+    private double ULObjectiveDesirability = 0.1;
 
     private static double best_upper_level_result = Double.MAX_VALUE;
     private static int fileID = 1;
@@ -128,7 +129,7 @@ public class CostDistr extends Problem {
 
         int lsize = lowerLevelSolutions.size();
 
-        double best_result = Double.MAX_VALUE;
+        double best_self = Double.MAX_VALUE;
         int best_solution_index = -1;
         double[] target_desirability = new double[this.lowerLevelProblem.getNumberOfObjectives()];
         target_desirability[0] = this.lowerLevelProblem.getObjectiveDesirability();
@@ -146,8 +147,8 @@ public class CostDistr extends Problem {
             double result = upperLevel_evaluate_XOR_distance_plus_weight(energySpent, costs);
             lowerLevelSol.setSelfConsumption(result);
             //double selfConsumption = upperLevel_evaluate_XOR_distance(energySpent);
-            if (result < best_result){
-                best_result = result;
+            if (result < best_self){
+                best_self = result;
                 best_solution_index = s;
             }
             double desirability = Math.abs(target_desirability[0] - lowerLevelSol.getLambda()[0]);
@@ -155,28 +156,43 @@ public class CostDistr extends Problem {
                 best_desirability = desirability;
                 best_desirability_index = s;
             }
-
         }
 
         Solution bestSelfSol = lowerLevelSolutions.get(best_solution_index);
         Solution bestDesSol = lowerLevelSolutions.get(best_desirability_index);
         double worst_self = bestDesSol.getSelfConsumption();
         double worst_des = Utils.AchievementScalarizationTcheby(bestSelfSol, bestDesSol, target_desirability, nadirObjectiveValue);
-        for (int s=0; s<lowerLevelSolutions.size(); s++) {
-            Solution lowerLevelSol = lowerLevelSolutions.get(s);
-            double selfCons = lowerLevelSol.getSelfConsumption();
-            double desirability = Utils.AchievementScalarizationTcheby(lowerLevelSol, bestDesSol, target_desirability, nadirObjectiveValue);
-            if (selfCons < worst_self &&
-                    desirability < worst_des) {
-                System.out.println("(" + selfCons + "," + desirability + ")");
-                System.out.println("[" + lowerLevelSol.getLambda()[0] + "," + lowerLevelSol.getLambda()[1] + "]");
+
+        Solution chosenlowerLevelSol = null;
+        if (ULObjectiveDesirability == 1.0) {
+            solution.setObjective(0, best_self);
+            chosenlowerLevelSol = bestSelfSol;
+        } else if (ULObjectiveDesirability == 0.0){
+            solution.setObjective(0, worst_self);
+            chosenlowerLevelSol = bestDesSol;
+        } else {
+            double best_overall = Double.MAX_VALUE;
+            int best_overall_index = -1;
+            for (int s=0; s<lowerLevelSolutions.size(); s++) {
+                Solution lowerLevelSol = lowerLevelSolutions.get(s);
+                double DIM1 = lowerLevelSol.getSelfConsumption();
+                double DIM2_norm = Utils.AchievementScalarizationTcheby(lowerLevelSol, bestDesSol, target_desirability, nadirObjectiveValue);
+
+                //Use below to find solutions of 2D decision-making space
+                if (DIM1 < worst_self &&
+                        DIM2_norm < worst_des) {
+                    double DIM1_norm = (DIM1 - best_self) / (worst_self - best_self);
+                    double evaluation = (ULObjectiveDesirability * DIM1_norm) + ((1-ULObjectiveDesirability)*DIM2_norm);
+                    if (evaluation < best_overall){
+                        best_overall = evaluation;
+                        best_overall_index = s;
+                    }
+                }
             }
+            chosenlowerLevelSol = lowerLevelSolutions.get(best_overall_index);
+            solution.setObjective(0, chosenlowerLevelSol.getSelfConsumption());
         }
 
-
-        solution.setObjective(0, best_result);
-        // fill up extra data for analysis
-        Solution chosenlowerLevelSol = bestSelfSol;
         Variable[] vars = chosenlowerLevelSol.getDecisionVariables();
         Binary bin = (Binary) vars[0];
         double[] energySpent = chosenlowerLevelSol.getSpentEnergy();
@@ -195,8 +211,8 @@ public class CostDistr extends Problem {
         solution.setLL_ND_pop(lowerLevelSolutions);
 
 
-        if (best_upper_level_result > best_result) {
-            best_upper_level_result = best_result;
+        if (best_upper_level_result > best_self) {
+            best_upper_level_result = best_self;
             int[] covered = solution.getDeviceToPreferenceMapping();
             int count = 0;
             for (int i=0; i<covered.length; i++){
