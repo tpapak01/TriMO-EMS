@@ -129,7 +129,7 @@ public class BitFlipMutation extends Mutation {
 				int numOfBits = bin.getNumberOfBits();
 				int[] covered = solution.getDeviceToPreferenceMapping();
 				int[] coveredReverse = solution.getReverseDeviceToPreferenceMapping();
-				int mut_repetitions = (int) (numOfBits * mutationProbability_);
+				int mut_repetitions = (int) (numOfBits * probability);
 				for (int r=0; r<mut_repetitions; r++){
 					int j = ThreadLocalRandom.current().nextInt(0, numOfBits);
                     int u, t, it;
