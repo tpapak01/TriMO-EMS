@@ -129,6 +129,7 @@ public class CostDistr extends Problem {
 
         int lsize = lowerLevelSolutions.size();
 
+        //Identify optimistic and pessimistic solution
         double best_self = Double.MAX_VALUE;
         int best_solution_index = -1;
         double[] target_desirability = new double[this.lowerLevelProblem.getNumberOfObjectives()];
@@ -158,11 +159,26 @@ public class CostDistr extends Problem {
             }
         }
 
+        //Identify set of best solutions in 2D space using limits "worst_self" and "worst_des"
+        SolutionSet specialPareto = new SolutionSet(lowerLevelSolutions.size());
         Solution bestSelfSol = lowerLevelSolutions.get(best_solution_index);
         Solution bestDesSol = lowerLevelSolutions.get(best_desirability_index);
         double worst_self = bestDesSol.getSelfConsumption();
         double worst_des = Utils.AchievementScalarizationTcheby(bestSelfSol, bestDesSol, target_desirability, nadirObjectiveValue);
 
+        for (int s=0; s<lowerLevelSolutions.size(); s++) {
+            Solution lowerLevelSol = lowerLevelSolutions.get(s);
+            double DIM1 = lowerLevelSol.getSelfConsumption();
+            double DIM2_norm = Utils.AchievementScalarizationTcheby(lowerLevelSol, bestDesSol, target_desirability, nadirObjectiveValue);
+
+            //Use below to find solutions of 2D decision-making space
+            if (DIM1 < worst_self &&
+                    DIM2_norm < worst_des) {
+                specialPareto.add(lowerLevelSol);
+            }
+        }
+
+        //find best solution given UL and LL preferences (optimistic OR pessimistic OR in between)
         Solution chosenlowerLevelSol = null;
         if (ULObjectiveDesirability == 1.0) {
             solution.setObjective(0, best_self);
@@ -171,25 +187,21 @@ public class CostDistr extends Problem {
             solution.setObjective(0, worst_self);
             chosenlowerLevelSol = bestDesSol;
         } else {
+            //find best solution given UL and LL preferences (non-optimistic and non-pessimistic)
             double best_overall = Double.MAX_VALUE;
             int best_overall_index = -1;
-            for (int s=0; s<lowerLevelSolutions.size(); s++) {
-                Solution lowerLevelSol = lowerLevelSolutions.get(s);
-                double DIM1 = lowerLevelSol.getSelfConsumption();
+            for (int s=0; s<specialPareto.size(); s++) {
+                Solution lowerLevelSol = specialPareto.get(s);
+                double DIM1_norm = (lowerLevelSol.getSelfConsumption() - best_self) / (worst_self - best_self);
                 double DIM2_norm = Utils.AchievementScalarizationTcheby(lowerLevelSol, bestDesSol, target_desirability, nadirObjectiveValue);
 
-                //Use below to find solutions of 2D decision-making space
-                if (DIM1 < worst_self &&
-                        DIM2_norm < worst_des) {
-                    double DIM1_norm = (DIM1 - best_self) / (worst_self - best_self);
-                    double evaluation = (ULObjectiveDesirability * DIM1_norm) + ((1-ULObjectiveDesirability)*DIM2_norm);
-                    if (evaluation < best_overall){
-                        best_overall = evaluation;
-                        best_overall_index = s;
-                    }
+                double evaluation = (ULObjectiveDesirability * DIM1_norm) + ((1-ULObjectiveDesirability)*DIM2_norm);
+                if (evaluation < best_overall){
+                    best_overall = evaluation;
+                    best_overall_index = s;
                 }
             }
-            chosenlowerLevelSol = lowerLevelSolutions.get(best_overall_index);
+            chosenlowerLevelSol = specialPareto.get(best_overall_index);
             solution.setObjective(0, chosenlowerLevelSol.getSelfConsumption());
         }
 
@@ -208,7 +220,10 @@ public class CostDistr extends Problem {
         solution.setNonREpaid(nonREpaid);
         solution.setDeviceToPreferenceMapping(chosenlowerLevelSol.getDeviceToPreferenceMapping());
         solution.setReverseDeviceToPreferenceMapping(chosenlowerLevelSol.getReverseDeviceToPreferenceMapping());
-        solution.setLL_ND_pop(lowerLevelSolutions);
+        boolean sendSpecialPareto = true;
+        if (sendSpecialPareto)
+            solution.setLL_ND_pop(specialPareto);
+        else solution.setLL_ND_pop(lowerLevelSolutions);
 
 
         if (best_upper_level_result > best_self) {
