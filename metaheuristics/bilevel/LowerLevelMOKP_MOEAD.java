@@ -9,6 +9,7 @@ import jmetal.problems.MOKP_Problem;
 import jmetal.qualityIndicator.QualityIndicator;
 import jmetal.util.Configuration;
 import jmetal.util.JMException;
+import jmetal.util.comparators.LambdaComparator;
 import jmetal.util.comparators.ObjectiveComparator;
 import jmetal.util.wrapper.XReal;
 
@@ -146,9 +147,12 @@ public class LowerLevelMOKP_MOEAD {
 
         /* Comparator */
         Comparator comparator;
+        //if (problemMOKP.isMaxmized())
+        //    comparator = new ObjectiveComparator(0, false) ; // Single objective comparator
+        //else comparator = new ObjectiveComparator(0, true) ; // Single objective comparator
         if (problemMOKP.isMaxmized())
-            comparator = new ObjectiveComparator(0, true) ; // Single objective comparator
-        else comparator = new ObjectiveComparator(0) ; // Single objective comparator
+            comparator = new LambdaComparator(0, false) ; // Single objective comparator
+        else comparator = new LambdaComparator(0, true) ; // Single objective comparator
         algorithm.setInputParameter("comparator", comparator);
 
         // Add the indicator object to the algorithm

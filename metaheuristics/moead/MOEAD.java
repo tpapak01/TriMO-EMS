@@ -183,6 +183,11 @@ public class MOEAD extends Algorithm {
       int[] permutation = new int[populationSize];
       Utils.randomPermutation(permutation, populationSize);
 
+      //if (evaluations_ > threshold && initPopSolution_ != null) {
+      //  extPopulation = updateExternal(population, extPopulation);
+      //  extPopulation.printObjectivesToFile("LowerLevelParetoEvolution/" + execution + "_FUN_" + iteration++);
+      //}
+
       for (int i = 0; i < populationSize; i++) {
         // iterate through the population in random (permutation) order, or the normal order
         int n = permutation[i]; // or int n = i;
@@ -290,7 +295,7 @@ public class MOEAD extends Algorithm {
       //convergence check
       if (evaluations_ > threshold){
         threshold += 5000;
-
+        //sort based on LAMBDA
         extPopulation.sort(comparator);
         double hypervolume = indicators.getHypervolume(extPopulation);
         double diff = hypervolume - prevHypervolume;
@@ -300,7 +305,7 @@ public class MOEAD extends Algorithm {
         prevHypervolume = hypervolume;
 
         //print the evolution of the Pareto front over N generations
-        //if (converged == false)
+        //if (converged == false && initPopSolution_ != null)
         //  extPopulation.printObjectivesToFile("LowerLevelParetoEvolution/" + execution + "_FUN_" + iteration++);
       }
 
@@ -475,13 +480,6 @@ public class MOEAD extends Algorithm {
       for (int i = 0; i < populationSize; i++) {
         Solution newSolution = new Solution(problem_);
 
-      /*
-      // all devices
-      if (i == 1) {
-        newSolution.setDecisionVariables(updateSolution(numOfBits, true));
-      }
-       */
-
         // zero devices
         if (i == 0) {
           newSolution.setDecisionVariables(updateSolution(numOfBits, false));
@@ -500,19 +498,62 @@ public class MOEAD extends Algorithm {
       } // for
     } else {
 
-      for (int i = 0; i < initPopSolution_.size(); i++) {
-        population.add(initPopSolution_.get(i));
+      //remove identical lambdas (already sorted)
+      for (int i=0; i<initPopSolution_.size()-1; i++){
+        Solution sol1 = initPopSolution_.get(i);
+        Solution sol2 = initPopSolution_.get(i+1);
+        if (sol1.getLambda().equals(sol2.getLambda())) {
+          double[] lambda = sol1.getLambda();
+          if (lambda[0] > lambda[1]) {
+            if (sol1.getObjective(0) < sol2.getObjective(0))
+              initPopSolution_.remove(i+1);
+            else initPopSolution_.remove(i);
+          } else {
+            if (sol1.getObjective(1) < sol2.getObjective(1))
+              initPopSolution_.remove(i+1);
+            else initPopSolution_.remove(i);
+          }
+        }
       }
 
-      for (int i = initPopSolution_.size(); i < populationSize; i++) {
-        Solution newSolution = new Solution(problem_);
+      //FILL POPULATION WHILE ADDING FROM INIT_POP IF LAMBDA MATCHES
+      int initPopIndex = 0;
+      int initPopSize = initPopSolution_.size();
+      System.out.println("Init size: " + initPopSize);
+      Solution toAdd = initPopSolution_.get(initPopIndex);
+      double[] lambda = toAdd.getLambda();
+      boolean emptiedInitPopSolution = false;
+      Solution newSolution;
+      for (int i = 0; i < populationSize; i++) {
+        if (!emptiedInitPopSolution && lambda_[i][0] == lambda[0] && lambda_[i][1] == lambda[1]){
+          newSolution = new Solution(toAdd);
+          //problemMOKP.repair(toAdd); //not needed
+          newSolution.setLambda(lambda);
+          problem_.evaluate(newSolution);
+          evaluations_++;
+          population.add(newSolution);
 
+          initPopIndex++;
+          if (initPopIndex < initPopSize) {
+            toAdd = initPopSolution_.get(initPopIndex);
+            lambda = toAdd.getLambda();
+          } else emptiedInitPopSolution = true;
+          continue;
+        } else if (i == 0) {
+          newSolution = new Solution(problem_);
+          newSolution.setDecisionVariables(updateSolution(numOfBits, false));
+        } else if (i == populationSize - 1) {
+          newSolution = new Solution(problem_);
+          newSolution.setDecisionVariables(updateSolution(numOfBits, true));
+        } else {
+          newSolution = new Solution(problem_);
+        }
         problemMOKP.repair(newSolution);
-        newSolution.setLambda(new double[]{lambda_[i][0],lambda_[i][1]});
+        newSolution.setLambda(new double[]{lambda_[i][0], lambda_[i][1]});
         problem_.evaluate(newSolution);
         evaluations_++;
         population.add(newSolution);
-      } // for
+      }
     }
   }
 
