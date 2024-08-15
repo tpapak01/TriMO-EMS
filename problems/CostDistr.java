@@ -160,12 +160,15 @@ public class CostDistr extends Problem {
         }
 
         //Identify set of best solutions in 2D space using limits "worst_self" and "worst_des"
+        //and add them to the special Pareto, along with the UL and LL preferred solution
         SolutionSet specialPareto = new SolutionSet(lowerLevelSolutions.size());
         Solution bestSelfSol = lowerLevelSolutions.get(best_solution_index);
         Solution bestDesSol = lowerLevelSolutions.get(best_desirability_index);
         double worst_self = bestDesSol.getSelfConsumption();
         double worst_des = Utils.AchievementScalarizationTcheby(bestSelfSol, bestDesSol, target_desirability, nadirObjectiveValue);
 
+        specialPareto.add(bestSelfSol);
+        specialPareto.add(bestDesSol);
         for (int s=0; s<lowerLevelSolutions.size(); s++) {
             Solution lowerLevelSol = lowerLevelSolutions.get(s);
             double DIM1 = lowerLevelSol.getSelfConsumption();

@@ -519,7 +519,6 @@ public class MOEAD extends Algorithm {
       //FILL POPULATION WHILE ADDING FROM INIT_POP IF LAMBDA MATCHES
       int initPopIndex = 0;
       int initPopSize = initPopSolution_.size();
-      System.out.println("Init size: " + initPopSize);
       Solution toAdd = initPopSolution_.get(initPopIndex);
       double[] lambda = toAdd.getLambda();
       boolean emptiedInitPopSolution = false;
