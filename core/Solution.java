@@ -431,6 +431,15 @@ public class Solution implements Serializable {
     if (solution.getLL_ND_pop() != null) {
       setLL_ND_pop(solution.getLL_ND_pop());
     }
+    if (solution.getLL_Special_pop() != null) {
+      setLL_Special_pop(solution.getLL_Special_pop());
+    }
+    if (solution.getLL_Reverse_pop() != null) {
+      setLL_Reverse_pop(solution.getLL_Reverse_pop());
+    }
+    if (solution.getLL_Random_pop() != null) {
+      setLL_Random_pop(solution.getLL_Random_pop());
+    }
     if (solution.getReferencePop() != null){
       setReferencePop(solution.getReferencePop());
     }

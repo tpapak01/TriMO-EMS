@@ -115,7 +115,9 @@ public class CostDistr extends Problem {
     public double getTotalProducedRE(){
         return totalProducedRE;
     }
-  
+
+    int execution = 0;
+
 	@Override
 	public void evaluate(Solution solution) throws JMException {
 
@@ -130,8 +132,6 @@ public class CostDistr extends Problem {
         } catch (ClassNotFoundException e){
             System.out.println("Exception at LowerLevelMOKP.evaluate: " + e.getMessage());
         }
-
-        int lsize = lowerLevelSolutions.size();
 
         //Identify optimistic and pessimistic solution
         double best_self = Double.MAX_VALUE;
@@ -165,14 +165,14 @@ public class CostDistr extends Problem {
 
         //Identify set of best solutions in 2D space using limits "worst_self" and "worst_des"
         //and add them to the special Pareto, along with the UL and LL preferred solution
-        SolutionSet specialPareto = new SolutionSet(lowerLevelSolutions.size());
-        SolutionSet randomPareto = new SolutionSet(lowerLevelSolutions.size());
-        SolutionSet reversePareto = new SolutionSet(lowerLevelSolutions.size());
-
         Solution bestSelfSol = lowerLevelSolutions.get(best_solution_index);
         Solution bestDesSol = lowerLevelSolutions.get(best_desirability_index);
         double worst_self = bestDesSol.getSelfConsumption();
         double worst_des = Utils.AchievementScalarizationTcheby(bestSelfSol, bestDesSol, target_desirability, nadirObjectiveValue);
+
+        SolutionSet specialPareto = new SolutionSet(lowerLevelSolutions.size());
+        SolutionSet randomPareto = new SolutionSet(lowerLevelSolutions.size());
+        SolutionSet reversePareto = new SolutionSet(lowerLevelSolutions.size());
 
         specialPareto.add(bestSelfSol); randomPareto.add(bestSelfSol);
         specialPareto.add(bestDesSol); randomPareto.add(bestDesSol);
@@ -245,32 +245,18 @@ public class CostDistr extends Problem {
         solution.setDeviceToPreferenceMapping(chosenlowerLevelSol.getDeviceToPreferenceMapping());
         solution.setReverseDeviceToPreferenceMapping(chosenlowerLevelSol.getReverseDeviceToPreferenceMapping());
 
-        solution.setLL_ND_pop(lowerLevelSolutions);
-        solution.setLL_Special_pop(specialPareto);
-        solution.setLL_Reverse_pop(reversePareto);
-        solution.setLL_Random_pop(randomPareto);
-
-        if (execType == 0 && solution.isMarked() == false){
+        if (solution.isMarked()) {
+            solution.setLL_ND_pop(lowerLevelSolutions);
+            solution.setLL_Special_pop(specialPareto);
+            solution.setLL_Reverse_pop(reversePareto);
+            solution.setLL_Random_pop(randomPareto);
+        } else if (execType == 0 && solution.isMarked() == false){
             if (solution.getReferencePop() != null){
                 int problem = 1111;
             } else {
+                execution++;
                 solution.setReferencePop(specialPareto);
-                SolutionSet referencePop = solution.getReferencePop();
-                double[][] solutionFront = new double[specialPareto.size()][2];
-                double[][] trueFront = new double[referencePop.size()][2];
-                for (int i=0; i<referencePop.size(); i++){
-                    Solution sol = referencePop.get(i);
-                    for (int j=0; j<2; j++){
-                        solutionFront[i][j] = sol.getObjective(j);
-                        trueFront[i][j] = sol.getObjective(j);
-                    }
-                }
-                InvertedGenerationalDistance qualityIndicator = new InvertedGenerationalDistance();
-                double value = qualityIndicator.invertedGenerationalDistance(
-                        solutionFront,
-                        trueFront,
-                        2);
-                System.out.println("Type:" + execType + ", val:" + value);
+                specialPareto.printObjectivesToFile("LowerLevelParetoEvolution/" + execution + "_FUN_" + execType);
             }
         } else if (solution.isMarked() == false){
             //time to compare specialParetos
@@ -289,6 +275,8 @@ public class CostDistr extends Problem {
                     solutionFront[i][j] = sol.getObjective(j);
                 }
             }
+
+            specialPareto.printObjectivesToFile("LowerLevelParetoEvolution/" + execution + "_FUN_" + execType);
 
             InvertedGenerationalDistance qualityIndicator = new InvertedGenerationalDistance();
             double value = qualityIndicator.invertedGenerationalDistance(
