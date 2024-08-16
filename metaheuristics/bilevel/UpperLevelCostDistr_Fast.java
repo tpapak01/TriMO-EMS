@@ -82,7 +82,7 @@ public class UpperLevelCostDistr_Fast {
         /* Algorithm parameters*/
         //algorithm.setInputParameter("populationSize",4); //must be even number
         //algorithm.setInputParameter("maxEvaluations", 2500);
-        algorithm.setInputParameter("populationSize", 100); //must be even number
+        algorithm.setInputParameter("populationSize", 300); //must be even number
         if (costsName.equals(""))
             algorithm.setInputParameter("maxEvaluations", 1000000);
         else

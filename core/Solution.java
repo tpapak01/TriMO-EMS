@@ -125,6 +125,42 @@ public class Solution implements Serializable {
     this.LL_ND_pop = LL_ND_pop;
   }
 
+  private SolutionSet LL_Special_pop;
+  public SolutionSet getLL_Special_pop(){
+    return LL_Special_pop;
+  }
+  public void setLL_Special_pop(SolutionSet LL_Special_pop){
+    this.LL_Special_pop = LL_Special_pop;
+  }
+
+  private SolutionSet LL_Reverse_pop;
+  public SolutionSet getLL_Reverse_pop(){
+    return LL_Reverse_pop;
+  }
+  public void setLL_Reverse_pop(SolutionSet LL_Reverse_pop){ this.LL_Reverse_pop = LL_Reverse_pop;
+  }
+
+  private SolutionSet LL_Random_pop;
+  public SolutionSet getLL_Random_pop(){
+    return LL_Random_pop;
+  }
+  public void setLL_Random_pop(SolutionSet LL_Random_pop){ this.LL_Random_pop = LL_Random_pop;
+  }
+
+  private SolutionSet referencePop;
+  public SolutionSet getReferencePop(){
+    return referencePop;
+  }
+  public void setReferencePop(SolutionSet referencePop){ this.referencePop = referencePop;
+  }
+
+  private int execType = 0;
+  public int getExecType(){
+    return execType;
+  }
+  public void setExecType(int execType){ this.execType = execType;
+  }
+
 	/**
 	 * Stores the problem 
 	 */
@@ -394,6 +430,9 @@ public class Solution implements Serializable {
     }
     if (solution.getLL_ND_pop() != null) {
       setLL_ND_pop(solution.getLL_ND_pop());
+    }
+    if (solution.getReferencePop() != null){
+      setReferencePop(solution.getReferencePop());
     }
   } // Solution
 

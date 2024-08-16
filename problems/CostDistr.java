@@ -14,6 +14,7 @@ import jmetal.encodings.solutionType.ArrayRealSolutionType;
 import jmetal.encodings.variable.Binary;
 import jmetal.metaheuristics.bilevel.LowerLevelMOKP_MOEAD;
 import jmetal.metaheuristics.bilevel.LowerLevelMOKP_NSGAII;
+import jmetal.qualityIndicator.InvertedGenerationalDistance;
 import jmetal.util.JMException;
 import jmetal.util.Ranking;
 import jmetal.util.Utils;
@@ -22,6 +23,8 @@ import jmetal.util.wrapper.XReal;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 
 
 public class CostDistr extends Problem {
@@ -118,6 +121,7 @@ public class CostDistr extends Problem {
 
         SolutionSet lowerLevelSolutions = null;
         XReal costs = new XReal(solution);
+        int execType = solution.getExecType();
 
         try {
             if (this.lowerLevelAlgorithmName.equals("MOEAD"))
@@ -162,13 +166,17 @@ public class CostDistr extends Problem {
         //Identify set of best solutions in 2D space using limits "worst_self" and "worst_des"
         //and add them to the special Pareto, along with the UL and LL preferred solution
         SolutionSet specialPareto = new SolutionSet(lowerLevelSolutions.size());
+        SolutionSet randomPareto = new SolutionSet(lowerLevelSolutions.size());
+        SolutionSet reversePareto = new SolutionSet(lowerLevelSolutions.size());
+
         Solution bestSelfSol = lowerLevelSolutions.get(best_solution_index);
         Solution bestDesSol = lowerLevelSolutions.get(best_desirability_index);
         double worst_self = bestDesSol.getSelfConsumption();
         double worst_des = Utils.AchievementScalarizationTcheby(bestSelfSol, bestDesSol, target_desirability, nadirObjectiveValue);
 
-        specialPareto.add(bestSelfSol);
-        specialPareto.add(bestDesSol);
+        specialPareto.add(bestSelfSol); randomPareto.add(bestSelfSol);
+        specialPareto.add(bestDesSol); randomPareto.add(bestDesSol);
+        int counter = 0;
         for (int s=0; s<lowerLevelSolutions.size(); s++) {
             Solution lowerLevelSol = lowerLevelSolutions.get(s);
             double DIM1 = lowerLevelSol.getSelfConsumption();
@@ -178,7 +186,20 @@ public class CostDistr extends Problem {
             if (DIM1 < worst_self &&
                     DIM2_norm < worst_des) {
                 specialPareto.add(lowerLevelSol);
-            }
+                counter++;
+            } else reversePareto.add(lowerLevelSol);
+        }
+
+        Integer[] arr = new Integer[lowerLevelSolutions.size()];
+        for (int i = 0; i < arr.length; i++) {
+            arr[i] = i;
+        }
+        Collections.shuffle(Arrays.asList(arr));
+        for (int k=0; k<counter; k++) {
+            if (arr[k] != best_solution_index && arr[k] != best_desirability_index) {
+                Solution lowerLevelSol = lowerLevelSolutions.get(arr[k]);
+                randomPareto.add(lowerLevelSol);
+            } else counter++;
         }
 
         //find best solution given UL and LL preferences (optimistic OR pessimistic OR in between)
@@ -223,11 +244,59 @@ public class CostDistr extends Problem {
         solution.setNonREpaid(nonREpaid);
         solution.setDeviceToPreferenceMapping(chosenlowerLevelSol.getDeviceToPreferenceMapping());
         solution.setReverseDeviceToPreferenceMapping(chosenlowerLevelSol.getReverseDeviceToPreferenceMapping());
-        boolean sendSpecialPareto = true;
-        if (sendSpecialPareto)
-            solution.setLL_ND_pop(specialPareto);
-        else solution.setLL_ND_pop(lowerLevelSolutions);
 
+        solution.setLL_ND_pop(lowerLevelSolutions);
+        solution.setLL_Special_pop(specialPareto);
+        solution.setLL_Reverse_pop(reversePareto);
+        solution.setLL_Random_pop(randomPareto);
+
+        if (execType == 0 && solution.isMarked() == false){
+            if (solution.getReferencePop() != null){
+                int problem = 1111;
+            } else {
+                solution.setReferencePop(specialPareto);
+                SolutionSet referencePop = solution.getReferencePop();
+                double[][] solutionFront = new double[specialPareto.size()][2];
+                double[][] trueFront = new double[referencePop.size()][2];
+                for (int i=0; i<referencePop.size(); i++){
+                    Solution sol = referencePop.get(i);
+                    for (int j=0; j<2; j++){
+                        solutionFront[i][j] = sol.getObjective(j);
+                        trueFront[i][j] = sol.getObjective(j);
+                    }
+                }
+                InvertedGenerationalDistance qualityIndicator = new InvertedGenerationalDistance();
+                double value = qualityIndicator.invertedGenerationalDistance(
+                        solutionFront,
+                        trueFront,
+                        2);
+                System.out.println("Type:" + execType + ", val:" + value);
+            }
+        } else if (solution.isMarked() == false){
+            //time to compare specialParetos
+            SolutionSet referencePop = solution.getReferencePop();
+            double[][] trueFront = new double[referencePop.size()][2];
+            for (int i=0; i<referencePop.size(); i++){
+                Solution sol = referencePop.get(i);
+                for (int j=0; j<2; j++){
+                    trueFront[i][j] = sol.getObjective(j);
+                }
+            }
+            double[][] solutionFront = new double[specialPareto.size()][2];
+            for (int i=0; i<specialPareto.size(); i++){
+                Solution sol = specialPareto.get(i);
+                for (int j=0; j<2; j++){
+                    solutionFront[i][j] = sol.getObjective(j);
+                }
+            }
+
+            InvertedGenerationalDistance qualityIndicator = new InvertedGenerationalDistance();
+            double value = qualityIndicator.invertedGenerationalDistance(
+                    solutionFront,
+                    trueFront,
+                    2);
+            System.out.println("Type:" + execType + ", val:" + value);
+        }
 
         if (best_upper_level_result > best_self) {
             best_upper_level_result = best_self;

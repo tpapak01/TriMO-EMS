@@ -135,11 +135,34 @@ public class Fast_CostDistr extends Algorithm {
             }
           }
           offspring[o].setLL_ND_pop(population.get(min_index).getLL_ND_pop());
+          offspring[o].setLL_Special_pop(population.get(min_index).getLL_Special_pop());
+          offspring[o].setLL_Reverse_pop(population.get(min_index).getLL_Reverse_pop());
+          offspring[o].setLL_Random_pop(population.get(min_index).getLL_Random_pop());
         }
 
         // Evaluation of the new individuals
+        offspring[0].setExecType(0);
         problem_.evaluate(offspring[0]);
+        Solution sol1 = new Solution(offspring[0]); sol1.setExecType(1);
+        problem_.evaluate(sol1);
+        Solution sol2 = new Solution(offspring[0]); sol2.setExecType(2);
+        problem_.evaluate(sol2);
+        Solution sol3 = new Solution(offspring[0]); sol3.setExecType(3);
+        problem_.evaluate(sol3);
+        Solution sol4 = new Solution(offspring[0]); sol4.setExecType(4);
+        problem_.evaluate(sol4);
+
+        offspring[1].setExecType(0);
         problem_.evaluate(offspring[1]);
+        Solution sol11 = new Solution(offspring[1]); sol11.setExecType(1);
+        problem_.evaluate(sol11);
+        Solution sol22 = new Solution(offspring[1]); sol22.setExecType(2);
+        problem_.evaluate(sol22);
+        Solution sol33 = new Solution(offspring[1]); sol33.setExecType(3);
+        problem_.evaluate(sol33);
+        Solution sol44 = new Solution(offspring[1]); sol44.setExecType(4);
+        problem_.evaluate(sol44);
+
         evaluations +=2;
 
         // Replacement: the two new individuals are inserted in the offspring
