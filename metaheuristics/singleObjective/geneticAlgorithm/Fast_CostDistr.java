@@ -182,14 +182,8 @@ public class Fast_CostDistr extends Algorithm {
         population.add(popCombined.get(i)) ;
       }
 
-      //check for convergence
-      if (population.get(0).getObjective(0) >= best_solution){
-        converged--;
-      } else {
-        best_solution = population.get(0).getObjective(0);
-        System.out.println("BEST SOL at " + evaluations + ": " + best_solution);
-        converged = generations_left_for_convergence;
-      }
+      converged = 0;
+
 
     } // while
     

@@ -85,6 +85,33 @@ public class CostDistr extends Problem {
     private static double best_cmetric;
     private static int best_cmetric_ind;
 
+    private static double avg_0_hyp = 0;
+    private static double avg_1_hyp = 0;
+    private static double avg_2_hyp = 0;
+    private static double avg_3_hyp = 0;
+    private static double avg_4_hyp = 0;
+    private static double avg_0_spr = 0;
+    private static double avg_1_spr = 0;
+    private static double avg_2_spr = 0;
+    private static double avg_3_spr = 0;
+    private static double avg_4_spr = 0;
+    private static double avg_0_nds = 0;
+    private static double avg_1_nds = 0;
+    private static double avg_2_nds = 0;
+    private static double avg_3_nds = 0;
+    private static double avg_4_nds = 0;
+    private static double avg_0_time = 0;
+    private static double avg_1_time = 0;
+    private static double avg_2_time = 0;
+    private static double avg_3_time = 0;
+    private static double avg_4_time = 0;
+    private static double avg_0_cmetric = 0;
+    private static double cmetric_0_against_best = 0;
+    private static double avg_1_cmetric = 0;
+    private static double avg_2_cmetric = 0;
+    private static double avg_3_cmetric = 0;
+    private static double avg_4_cmetric = 0;
+
 
   public CostDistr(String renewableFileName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName, String costsName) {
 	  this.setMaxmized_(false); // this problem is not to be maximized
@@ -308,20 +335,24 @@ public class CostDistr extends Problem {
                 best_nds = -1; best_nds_ind = -1;
                 best_time = 10000; best_time_ind = -1;
                 double hypervolume = indicators.getHypervolume(specialPareto);
+                avg_0_hyp += hypervolume;
                 if (hypervolume > best_hyp) {
                     best_hyp = hypervolume;
                     best_hyp_ind = execType;
                 }
                 double spread = indicators.getSpread(specialPareto);
+                avg_0_spr += spread;
                 if (spread < best_spr) {
                     best_spr = spread;
                     best_spr_ind = execType;
                 }
                 int nds = specialPareto.size();
+                avg_0_nds += nds;
                 if (nds < best_nds) {
                     best_nds = nds;
                     best_nds_ind = execType;
                 }
+                avg_0_time += estimatedTime;
                 if (estimatedTime < best_time){
                     best_time = estimatedTime;
                     best_time_ind = execType;
@@ -381,12 +412,33 @@ public class CostDistr extends Problem {
             C_Metric epf = new C_Metric("LowerLevelParetoEvolution/FUN_1",
                     "LowerLevelParetoEvolution/FUN_2", 2);
             double cMetric = (float) epf.num_of_dominated_B / (float) epf.nds_B;
-            File file1 = new File("LowerLevelParetoEvolution/FUN_1"); file1.delete();
-            File file2 = new File("LowerLevelParetoEvolution/FUN_2"); file2.delete();
             if (cMetric > best_cmetric){
                 best_cmetric = cMetric;
-                best_cmetric_ind = execType;
+                C_Metric epfReverse = new C_Metric("LowerLevelParetoEvolution/FUN_2",
+                        "LowerLevelParetoEvolution/FUN_1", 2);
+                double cMetricReverse = (float) epfReverse.num_of_dominated_B / (float) epfReverse.nds_B;
+                cmetric_0_against_best = cMetricReverse;
+                if (cMetricReverse > cMetric)
+                    best_cmetric_ind = 0;
+                else best_cmetric_ind = execType;
+
             }
+            File file1 = new File("LowerLevelParetoEvolution/FUN_1"); file1.delete();
+            File file2 = new File("LowerLevelParetoEvolution/FUN_2"); file2.delete();
+
+            switch(execType){
+                case 1: avg_1_hyp += hypervolume; avg_1_spr += spread; avg_1_nds += nds;
+                        avg_1_time += estimatedTime; avg_1_cmetric += cMetric; break;
+                case 2: avg_2_hyp += hypervolume; avg_2_spr += spread; avg_2_nds += nds;
+                        avg_2_time += estimatedTime; avg_2_cmetric += cMetric; break;
+                case 3: avg_3_hyp += hypervolume; avg_3_spr += spread; avg_3_nds += nds;
+                        avg_3_time += estimatedTime; avg_3_cmetric += cMetric; break;
+                case 4: avg_4_hyp += hypervolume; avg_4_spr += spread; avg_4_nds += nds;
+                        avg_4_time += estimatedTime; avg_4_cmetric += cMetric; break;
+                default: break;
+            }
+
+            //now find winner of this iteration
             if (execType == 4){
                 switch(best_hyp_ind){
                     case 0: wins_0_hyp++; break;
@@ -420,6 +472,7 @@ public class CostDistr extends Problem {
                     case 4: wins_4_time++; break;
                     default: break;
                 }
+                avg_0_cmetric += cmetric_0_against_best;
                 switch(best_cmetric_ind){
                     case 0: wins_0_cmetric++; break;
                     case 1: wins_1_cmetric++; break;
@@ -428,11 +481,19 @@ public class CostDistr extends Problem {
                     case 4: wins_4_cmetric++; break;
                     default: break;
                 }
-                System.out.println("Hyp:" + wins_0_hyp + " " + wins_1_hyp + " " + wins_2_hyp + " " + wins_3_hyp + " " + wins_4_hyp);
-                System.out.println("Spr:" + wins_0_spr + " " + wins_1_spr + " " + wins_2_spr + " " + wins_3_spr + " " + wins_4_spr);
-                System.out.println("Nds:" + wins_0_nds + " " + wins_1_nds + " " + wins_2_nds + " " + wins_3_nds + " " + wins_4_nds);
-                System.out.println("Tim:" + wins_0_time + " " + wins_1_time + " " + wins_2_time + " " + wins_3_time + " " + wins_4_time);
-                System.out.println("Cme:" + wins_0_cmetric + " " + wins_1_cmetric + " " + wins_2_cmetric + " " + wins_3_cmetric + " " + wins_4_cmetric);
+                if (execution % 10 == 0) {
+                    System.out.println("WIN Hyp:" + wins_0_hyp + " " + wins_1_hyp + " " + wins_2_hyp + " " + wins_3_hyp + " " + wins_4_hyp);
+                    System.out.println("WIN Spr:" + wins_0_spr + " " + wins_1_spr + " " + wins_2_spr + " " + wins_3_spr + " " + wins_4_spr);
+                    System.out.println("WIN Nds:" + wins_0_nds + " " + wins_1_nds + " " + wins_2_nds + " " + wins_3_nds + " " + wins_4_nds);
+                    System.out.println("WIN Tim:" + wins_0_time + " " + wins_1_time + " " + wins_2_time + " " + wins_3_time + " " + wins_4_time);
+                    System.out.println("WIN Cme:" + wins_0_cmetric + " " + wins_1_cmetric + " " + wins_2_cmetric + " " + wins_3_cmetric + " " + wins_4_cmetric);
+
+                    System.out.println("AVG Hyp:" + avg_0_hyp/execution + " " + avg_1_hyp/execution + " " + avg_2_hyp/execution + " " + avg_3_hyp/execution + " " + avg_4_hyp/execution);
+                    System.out.println("AVG Spr:" + avg_0_spr/execution + " " + avg_1_spr/execution + " " + avg_2_spr/execution + " " + avg_3_spr/execution + " " + avg_4_spr/execution);
+                    System.out.println("AVG Nds:" + avg_0_nds/execution + " " + avg_1_nds/execution + " " + avg_2_nds/execution + " " + avg_3_nds/execution + " " + avg_4_nds/execution);
+                    System.out.println("AVG Tim:" + avg_0_time/execution + " " + avg_1_time/execution + " " + avg_2_time/execution + " " + avg_3_time/execution + " " + avg_4_time/execution);
+                    System.out.println("AVG Cme:" + avg_0_cmetric/execution + " " + avg_1_cmetric/execution + " " + avg_2_cmetric/execution + " " + avg_3_cmetric/execution + " " + avg_4_cmetric/execution);
+                }
             }
             //System.out.println("val:" + hypervolume);
             //specialPareto.printObjectivesToFile("LowerLevelParetoEvolution/" + execution + "_FUN_" + execType);
