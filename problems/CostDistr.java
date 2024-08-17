@@ -22,10 +22,7 @@ import jmetal.util.Ranking;
 import jmetal.util.Utils;
 import jmetal.util.wrapper.XReal;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -112,6 +109,34 @@ public class CostDistr extends Problem {
     private static double avg_3_cmetric = 0;
     private static double avg_4_cmetric = 0;
 
+    private static FileWriter hypWriter_0;
+    private static FileWriter hypWriter_1;
+    private static FileWriter hypWriter_2;
+    private static FileWriter hypWriter_3;
+    private static FileWriter hypWriter_4;
+    private static FileWriter sprWriter_0;
+    private static FileWriter sprWriter_1;
+    private static FileWriter sprWriter_2;
+    private static FileWriter sprWriter_3;
+    private static FileWriter sprWriter_4;
+    private static FileWriter ndsWriter_0;
+    private static FileWriter ndsWriter_1;
+    private static FileWriter ndsWriter_2;
+    private static FileWriter ndsWriter_3;
+    private static FileWriter ndsWriter_4;
+    private static FileWriter timWriter_0;
+    private static FileWriter timWriter_1;
+    private static FileWriter timWriter_2;
+    private static FileWriter timWriter_3;
+    private static FileWriter timWriter_4;
+    private static FileWriter cmeWriter_0;
+    private static FileWriter cmeWriter_1;
+    private static FileWriter cmeWriter_2;
+    private static FileWriter cmeWriter_3;
+    private static FileWriter cmeWriter_4;
+
+
+
 
   public CostDistr(String renewableFileName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName, String costsName) {
 	  this.setMaxmized_(false); // this problem is not to be maximized
@@ -136,6 +161,40 @@ public class CostDistr extends Problem {
       this.loadProblem(fileName, costsFileName);
       this.solutionType_ = new ArrayRealSolutionType(this);
       indicators = new QualityIndicator(this.lowerLevelProblem, "OPTIMAL_PARETO") ;
+
+      try {
+          hypWriter_0 = new FileWriter("LowerLevelParetoVisual/hyp0.txt");
+          hypWriter_1 = new FileWriter("LowerLevelParetoVisual/hyp1.txt");
+          hypWriter_2 = new FileWriter("LowerLevelParetoVisual/hyp2.txt");
+          hypWriter_3 = new FileWriter("LowerLevelParetoVisual/hyp3.txt");
+          hypWriter_4 = new FileWriter("LowerLevelParetoVisual/hyp4.txt");
+
+          sprWriter_0 = new FileWriter("LowerLevelParetoVisual/spr0.txt");
+          sprWriter_1 = new FileWriter("LowerLevelParetoVisual/spr1.txt");
+          sprWriter_2 = new FileWriter("LowerLevelParetoVisual/spr2.txt");
+          sprWriter_3 = new FileWriter("LowerLevelParetoVisual/spr3.txt");
+          sprWriter_4 = new FileWriter("LowerLevelParetoVisual/spr4.txt");
+
+          ndsWriter_0 = new FileWriter("LowerLevelParetoVisual/nds0.txt");
+          ndsWriter_1 = new FileWriter("LowerLevelParetoVisual/nds1.txt");
+          ndsWriter_2 = new FileWriter("LowerLevelParetoVisual/nds2.txt");
+          ndsWriter_3 = new FileWriter("LowerLevelParetoVisual/nds3.txt");
+          ndsWriter_4 = new FileWriter("LowerLevelParetoVisual/nds4.txt");
+
+          timWriter_0 = new FileWriter("LowerLevelParetoVisual/tim0.txt");
+          timWriter_1 = new FileWriter("LowerLevelParetoVisual/tim1.txt");
+          timWriter_2 = new FileWriter("LowerLevelParetoVisual/tim2.txt");
+          timWriter_3 = new FileWriter("LowerLevelParetoVisual/tim3.txt");
+          timWriter_4 = new FileWriter("LowerLevelParetoVisual/tim4.txt");
+
+          cmeWriter_0 = new FileWriter("LowerLevelParetoVisual/cme0.txt");
+          cmeWriter_1 = new FileWriter("LowerLevelParetoVisual/cme1.txt");
+          cmeWriter_2 = new FileWriter("LowerLevelParetoVisual/cme2.txt");
+          cmeWriter_3 = new FileWriter("LowerLevelParetoVisual/cme3.txt");
+          cmeWriter_4 = new FileWriter("LowerLevelParetoVisual/cme4.txt");
+      } catch (IOException e) {
+          e.printStackTrace();
+      }
 
   }  // 
 
@@ -333,32 +392,41 @@ public class CostDistr extends Problem {
                 best_hyp = -100; best_hyp_ind = -1;
                 best_spr = 100; best_spr_ind = -1;
                 best_nds = -1; best_nds_ind = -1;
-                best_time = 10000; best_time_ind = -1;
-                double hypervolume = indicators.getHypervolume(specialPareto);
-                avg_0_hyp += hypervolume;
-                if (hypervolume > best_hyp) {
-                    best_hyp = hypervolume;
-                    best_hyp_ind = execType;
+                best_time = 100000; best_time_ind = -1;
+                best_cmetric = -1; best_cmetric_ind = -1;
+                try {
+                    double hypervolume = indicators.getHypervolume(specialPareto);
+                    hypWriter_0.write(hypervolume + "\n");
+                    avg_0_hyp += hypervolume;
+                    if (hypervolume > best_hyp) {
+                        best_hyp = hypervolume;
+                        best_hyp_ind = execType;
+                    }
+                    double spread = indicators.getSpread(specialPareto);
+                    sprWriter_0.write(spread + "\n");
+                    avg_0_spr += spread;
+                    if (spread < best_spr) {
+                        best_spr = spread;
+                        best_spr_ind = execType;
+                    }
+                    int nds = specialPareto.size();
+                    ndsWriter_0.write(nds + "\n");
+                    avg_0_nds += nds;
+                    if (nds < best_nds) {
+                        best_nds = nds;
+                        best_nds_ind = execType;
+                    }
+                    timWriter_0.write(estimatedTime + "\n");
+                    avg_0_time += estimatedTime;
+                    if (estimatedTime < best_time){
+                        best_time = estimatedTime;
+                        best_time_ind = execType;
+                    }
+                    //System.out.println("val:" + hypervolume);
+                    //specialPareto.printObjectivesToFile("LowerLevelParetoEvolution/" + execution + "_FUN_" + execType);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                double spread = indicators.getSpread(specialPareto);
-                avg_0_spr += spread;
-                if (spread < best_spr) {
-                    best_spr = spread;
-                    best_spr_ind = execType;
-                }
-                int nds = specialPareto.size();
-                avg_0_nds += nds;
-                if (nds < best_nds) {
-                    best_nds = nds;
-                    best_nds_ind = execType;
-                }
-                avg_0_time += estimatedTime;
-                if (estimatedTime < best_time){
-                    best_time = estimatedTime;
-                    best_time_ind = execType;
-                }
-                //System.out.println("val:" + hypervolume);
-                //specialPareto.printObjectivesToFile("LowerLevelParetoEvolution/" + execution + "_FUN_" + execType);
             }
         } else if (solution.isMarked() == false){
 
@@ -426,16 +494,61 @@ public class CostDistr extends Problem {
             File file1 = new File("LowerLevelParetoEvolution/FUN_1"); file1.delete();
             File file2 = new File("LowerLevelParetoEvolution/FUN_2"); file2.delete();
 
-            switch(execType){
-                case 1: avg_1_hyp += hypervolume; avg_1_spr += spread; avg_1_nds += nds;
-                        avg_1_time += estimatedTime; avg_1_cmetric += cMetric; break;
-                case 2: avg_2_hyp += hypervolume; avg_2_spr += spread; avg_2_nds += nds;
-                        avg_2_time += estimatedTime; avg_2_cmetric += cMetric; break;
-                case 3: avg_3_hyp += hypervolume; avg_3_spr += spread; avg_3_nds += nds;
-                        avg_3_time += estimatedTime; avg_3_cmetric += cMetric; break;
-                case 4: avg_4_hyp += hypervolume; avg_4_spr += spread; avg_4_nds += nds;
-                        avg_4_time += estimatedTime; avg_4_cmetric += cMetric; break;
-                default: break;
+            try {
+                switch (execType) {
+                    case 1:
+                        avg_1_hyp += hypervolume;
+                        avg_1_spr += spread;
+                        avg_1_nds += nds;
+                        avg_1_time += estimatedTime;
+                        avg_1_cmetric += cMetric;
+                        hypWriter_1.write(hypervolume + "\n");
+                        sprWriter_1.write(spread + "\n");
+                        ndsWriter_1.write(nds + "\n");
+                        timWriter_1.write(estimatedTime + "\n");
+                        cmeWriter_1.write(cMetric + "\n");
+                        break;
+                    case 2:
+                        avg_2_hyp += hypervolume;
+                        avg_2_spr += spread;
+                        avg_2_nds += nds;
+                        avg_2_time += estimatedTime;
+                        avg_2_cmetric += cMetric;
+                        hypWriter_2.write(hypervolume + "\n");
+                        sprWriter_2.write(spread + "\n");
+                        ndsWriter_2.write(nds + "\n");
+                        timWriter_2.write(estimatedTime + "\n");
+                        cmeWriter_2.write(cMetric + "\n");
+                        break;
+                    case 3:
+                        avg_3_hyp += hypervolume;
+                        avg_3_spr += spread;
+                        avg_3_nds += nds;
+                        avg_3_time += estimatedTime;
+                        avg_3_cmetric += cMetric;
+                        hypWriter_3.write(hypervolume + "\n");
+                        sprWriter_3.write(spread + "\n");
+                        ndsWriter_3.write(nds + "\n");
+                        timWriter_3.write(estimatedTime + "\n");
+                        cmeWriter_3.write(cMetric + "\n");
+                        break;
+                    case 4:
+                        avg_4_hyp += hypervolume;
+                        avg_4_spr += spread;
+                        avg_4_nds += nds;
+                        avg_4_time += estimatedTime;
+                        avg_4_cmetric += cMetric;
+                        hypWriter_4.write(hypervolume + "\n");
+                        sprWriter_4.write(spread + "\n");
+                        ndsWriter_4.write(nds + "\n");
+                        timWriter_4.write(estimatedTime + "\n");
+                        cmeWriter_4.write(cMetric + "\n");
+                        break;
+                    default:
+                        break;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
             //now find winner of this iteration
@@ -472,6 +585,11 @@ public class CostDistr extends Problem {
                     case 4: wins_4_time++; break;
                     default: break;
                 }
+                try {
+                    cmeWriter_0.write(cmetric_0_against_best + "\n");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 avg_0_cmetric += cmetric_0_against_best;
                 switch(best_cmetric_ind){
                     case 0: wins_0_cmetric++; break;
@@ -493,6 +611,41 @@ public class CostDistr extends Problem {
                     System.out.println("AVG Nds:" + avg_0_nds/execution + " " + avg_1_nds/execution + " " + avg_2_nds/execution + " " + avg_3_nds/execution + " " + avg_4_nds/execution);
                     System.out.println("AVG Tim:" + avg_0_time/execution + " " + avg_1_time/execution + " " + avg_2_time/execution + " " + avg_3_time/execution + " " + avg_4_time/execution);
                     System.out.println("AVG Cme:" + avg_0_cmetric/execution + " " + avg_1_cmetric/execution + " " + avg_2_cmetric/execution + " " + avg_3_cmetric/execution + " " + avg_4_cmetric/execution);
+                }
+                if (execution == 10){
+                    try {
+                        hypWriter_0.close();
+                        hypWriter_1.close();
+                        hypWriter_2.close();
+                        hypWriter_3.close();
+                        hypWriter_4.close();
+
+                        sprWriter_0.close();
+                        sprWriter_1.close();
+                        sprWriter_2.close();
+                        sprWriter_3.close();
+                        sprWriter_4.close();
+
+                        ndsWriter_0.close();
+                        ndsWriter_1.close();
+                        ndsWriter_2.close();
+                        ndsWriter_3.close();
+                        ndsWriter_4.close();
+
+                        timWriter_0.close();
+                        timWriter_1.close();
+                        timWriter_2.close();
+                        timWriter_3.close();
+                        timWriter_4.close();
+
+                        cmeWriter_0.close();
+                        cmeWriter_1.close();
+                        cmeWriter_2.close();
+                        cmeWriter_3.close();
+                        cmeWriter_4.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
             //System.out.println("val:" + hypervolume);
