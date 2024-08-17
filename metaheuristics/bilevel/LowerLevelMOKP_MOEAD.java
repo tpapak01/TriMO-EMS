@@ -196,6 +196,10 @@ public class LowerLevelMOKP_MOEAD {
         long initTime = System.currentTimeMillis();
         SolutionSet population = algorithm.execute();
         long estimatedTime = System.currentTimeMillis() - initTime;
+        //if (solution.isMarked() == false) {
+        //    System.out.print("Type:" + execType + ", time:" + (estimatedTime) + ",");
+        //}
+
         /*
         try {
             execution++;

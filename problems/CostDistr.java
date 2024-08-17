@@ -15,12 +15,15 @@ import jmetal.encodings.variable.Binary;
 import jmetal.metaheuristics.bilevel.LowerLevelMOKP_MOEAD;
 import jmetal.metaheuristics.bilevel.LowerLevelMOKP_NSGAII;
 import jmetal.qualityIndicator.InvertedGenerationalDistance;
+import jmetal.qualityIndicator.QualityIndicator;
+import jmetal.util.C_Metric;
 import jmetal.util.JMException;
 import jmetal.util.Ranking;
 import jmetal.util.Utils;
 import jmetal.util.wrapper.XReal;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
@@ -43,6 +46,44 @@ public class CostDistr extends Problem {
     private static double best_upper_level_result = Double.MAX_VALUE;
     private static int fileID = 1;
     private static int UL_evaluations = 0;
+    private static QualityIndicator indicators;
+
+    private static int wins_0_hyp = 0;
+    private static int wins_1_hyp = 0;
+    private static int wins_2_hyp = 0;
+    private static int wins_3_hyp = 0;
+    private static int wins_4_hyp = 0;
+    private static int wins_0_spr = 0;
+    private static int wins_1_spr = 0;
+    private static int wins_2_spr = 0;
+    private static int wins_3_spr = 0;
+    private static int wins_4_spr = 0;
+    private static int wins_0_nds = 0;
+    private static int wins_1_nds = 0;
+    private static int wins_2_nds = 0;
+    private static int wins_3_nds = 0;
+    private static int wins_4_nds = 0;
+    private static int wins_0_time = 0;
+    private static int wins_1_time = 0;
+    private static int wins_2_time = 0;
+    private static int wins_3_time = 0;
+    private static int wins_4_time = 0;
+    private static int wins_0_cmetric = 0;
+    private static int wins_1_cmetric = 0;
+    private static int wins_2_cmetric = 0;
+    private static int wins_3_cmetric = 0;
+    private static int wins_4_cmetric = 0;
+
+    private static double best_hyp;
+    private static int best_hyp_ind;
+    private static double best_spr;
+    private static int best_spr_ind;
+    private static int best_nds;
+    private static int best_nds_ind;
+    private static long best_time;
+    private static int best_time_ind;
+    private static double best_cmetric;
+    private static int best_cmetric_ind;
 
 
   public CostDistr(String renewableFileName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName, String costsName) {
@@ -67,6 +108,7 @@ public class CostDistr extends Problem {
       //simply read the input textfile
       this.loadProblem(fileName, costsFileName);
       this.solutionType_ = new ArrayRealSolutionType(this);
+      indicators = new QualityIndicator(this.lowerLevelProblem, "OPTIMAL_PARETO") ;
 
   }  // 
 
@@ -124,10 +166,14 @@ public class CostDistr extends Problem {
         SolutionSet lowerLevelSolutions = null;
         XReal costs = new XReal(solution);
         int execType = solution.getExecType();
+        long estimatedTime = 0;
 
         try {
-            if (this.lowerLevelAlgorithmName.equals("MOEAD"))
+            if (this.lowerLevelAlgorithmName.equals("MOEAD")) {
+                long initTime = System.currentTimeMillis();
                 lowerLevelSolutions = LowerLevelMOKP_MOEAD.evaluate(costs, solution);
+                estimatedTime = System.currentTimeMillis() - initTime;
+            }
             else lowerLevelSolutions = LowerLevelMOKP_NSGAII.evaluate(costs, solution);
         } catch (ClassNotFoundException e){
             System.out.println("Exception at LowerLevelMOKP.evaluate: " + e.getMessage());
@@ -256,10 +302,37 @@ public class CostDistr extends Problem {
             } else {
                 execution++;
                 solution.setReferencePop(specialPareto);
-                specialPareto.printObjectivesToFile("LowerLevelParetoEvolution/" + execution + "_FUN_" + execType);
+
+                best_hyp = -100; best_hyp_ind = -1;
+                best_spr = 100; best_spr_ind = -1;
+                best_nds = -1; best_nds_ind = -1;
+                best_time = 10000; best_time_ind = -1;
+                double hypervolume = indicators.getHypervolume(specialPareto);
+                if (hypervolume > best_hyp) {
+                    best_hyp = hypervolume;
+                    best_hyp_ind = execType;
+                }
+                double spread = indicators.getSpread(specialPareto);
+                if (spread < best_spr) {
+                    best_spr = spread;
+                    best_spr_ind = execType;
+                }
+                int nds = specialPareto.size();
+                if (nds < best_nds) {
+                    best_nds = nds;
+                    best_nds_ind = execType;
+                }
+                if (estimatedTime < best_time){
+                    best_time = estimatedTime;
+                    best_time_ind = execType;
+                }
+                //System.out.println("val:" + hypervolume);
+                //specialPareto.printObjectivesToFile("LowerLevelParetoEvolution/" + execution + "_FUN_" + execType);
             }
         } else if (solution.isMarked() == false){
+
             //time to compare specialParetos
+            /*
             SolutionSet referencePop = solution.getReferencePop();
             double[][] trueFront = new double[referencePop.size()][2];
             for (int i=0; i<referencePop.size(); i++){
@@ -276,14 +349,93 @@ public class CostDistr extends Problem {
                 }
             }
 
-            specialPareto.printObjectivesToFile("LowerLevelParetoEvolution/" + execution + "_FUN_" + execType);
-
             InvertedGenerationalDistance qualityIndicator = new InvertedGenerationalDistance();
             double value = qualityIndicator.invertedGenerationalDistance(
                     solutionFront,
                     trueFront,
                     2);
             System.out.println("Type:" + execType + ", val:" + value);
+
+             */
+            double hypervolume = indicators.getHypervolume(specialPareto);
+            if (hypervolume > best_hyp) {
+                best_hyp = hypervolume;
+                best_hyp_ind = execType;
+            }
+            double spread = indicators.getSpread(specialPareto);
+            if (spread < best_spr) {
+                best_spr = spread;
+                best_spr_ind = execType;
+            }
+            int nds = specialPareto.size();
+            if (nds > best_nds) {
+                best_nds = nds;
+                best_nds_ind = execType;
+            }
+            if (estimatedTime < best_time){
+                best_time = estimatedTime;
+                best_time_ind = execType;
+            }
+            specialPareto.printObjectivesToFile("LowerLevelParetoEvolution/FUN_1");
+            solution.getReferencePop().printObjectivesToFile("LowerLevelParetoEvolution/FUN_2");
+            C_Metric epf = new C_Metric("LowerLevelParetoEvolution/FUN_1",
+                    "LowerLevelParetoEvolution/FUN_2", 2);
+            double cMetric = (float) epf.num_of_dominated_B / (float) epf.nds_B;
+            File file1 = new File("LowerLevelParetoEvolution/FUN_1"); file1.delete();
+            File file2 = new File("LowerLevelParetoEvolution/FUN_2"); file2.delete();
+            if (cMetric > best_cmetric){
+                best_cmetric = cMetric;
+                best_cmetric_ind = execType;
+            }
+            if (execType == 4){
+                switch(best_hyp_ind){
+                    case 0: wins_0_hyp++; break;
+                    case 1: wins_1_hyp++; break;
+                    case 2: wins_2_hyp++; break;
+                    case 3: wins_3_hyp++; break;
+                    case 4: wins_4_hyp++; break;
+                    default: break;
+                }
+                switch(best_spr_ind){
+                    case 0: wins_0_spr++; break;
+                    case 1: wins_1_spr++; break;
+                    case 2: wins_2_spr++; break;
+                    case 3: wins_3_spr++; break;
+                    case 4: wins_4_spr++; break;
+                    default: break;
+                }
+                switch(best_nds_ind){
+                    case 0: wins_0_nds++; break;
+                    case 1: wins_1_nds++; break;
+                    case 2: wins_2_nds++; break;
+                    case 3: wins_3_nds++; break;
+                    case 4: wins_4_nds++; break;
+                    default: break;
+                }
+                switch(best_time_ind){
+                    case 0: wins_0_time++; break;
+                    case 1: wins_1_time++; break;
+                    case 2: wins_2_time++; break;
+                    case 3: wins_3_time++; break;
+                    case 4: wins_4_time++; break;
+                    default: break;
+                }
+                switch(best_cmetric_ind){
+                    case 0: wins_0_cmetric++; break;
+                    case 1: wins_1_cmetric++; break;
+                    case 2: wins_2_cmetric++; break;
+                    case 3: wins_3_cmetric++; break;
+                    case 4: wins_4_cmetric++; break;
+                    default: break;
+                }
+                System.out.println("Hyp:" + wins_0_hyp + " " + wins_1_hyp + " " + wins_2_hyp + " " + wins_3_hyp + " " + wins_4_hyp);
+                System.out.println("Spr:" + wins_0_spr + " " + wins_1_spr + " " + wins_2_spr + " " + wins_3_spr + " " + wins_4_spr);
+                System.out.println("Nds:" + wins_0_nds + " " + wins_1_nds + " " + wins_2_nds + " " + wins_3_nds + " " + wins_4_nds);
+                System.out.println("Tim:" + wins_0_time + " " + wins_1_time + " " + wins_2_time + " " + wins_3_time + " " + wins_4_time);
+                System.out.println("Cme:" + wins_0_cmetric + " " + wins_1_cmetric + " " + wins_2_cmetric + " " + wins_3_cmetric + " " + wins_4_cmetric);
+            }
+            //System.out.println("val:" + hypervolume);
+            //specialPareto.printObjectivesToFile("LowerLevelParetoEvolution/" + execution + "_FUN_" + execType);
         }
 
         if (best_upper_level_result > best_self) {

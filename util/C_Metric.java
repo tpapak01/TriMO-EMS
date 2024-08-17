@@ -36,8 +36,8 @@ public class C_Metric {
 	List<Point> points_ = new LinkedList<Point>(); // the final non-dominated list to be filled
 	boolean minimization_problem = true;
 
-	int num_of_dominated_B;
-	int nds_B;
+	public int num_of_dominated_B;
+	public int nds_B;
 
 	private class Point {
 		double [] vector_;
