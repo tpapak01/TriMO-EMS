@@ -612,7 +612,7 @@ public class CostDistr extends Problem {
                     System.out.println("AVG Tim:" + avg_0_time/execution + " " + avg_1_time/execution + " " + avg_2_time/execution + " " + avg_3_time/execution + " " + avg_4_time/execution);
                     System.out.println("AVG Cme:" + avg_0_cmetric/execution + " " + avg_1_cmetric/execution + " " + avg_2_cmetric/execution + " " + avg_3_cmetric/execution + " " + avg_4_cmetric/execution);
                 }
-                if (execution == 10){
+                if (execution == 1000){
                     try {
                         hypWriter_0.close();
                         hypWriter_1.close();
