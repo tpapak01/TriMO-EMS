@@ -303,11 +303,11 @@ public class CostDistr extends Problem {
         double worst_des = Utils.AchievementScalarizationTcheby(bestSelfSol, bestDesSol, target_desirability, nadirObjectiveValue);
 
         SolutionSet specialPareto = new SolutionSet(lowerLevelSolutions.size());
-        SolutionSet randomPareto = new SolutionSet(lowerLevelSolutions.size());
+        SolutionSet plusSpecialPareto = new SolutionSet(lowerLevelSolutions.size());
         SolutionSet reversePareto = new SolutionSet(lowerLevelSolutions.size());
 
-        specialPareto.add(bestSelfSol); randomPareto.add(bestSelfSol);
-        specialPareto.add(bestDesSol); randomPareto.add(bestDesSol);
+        specialPareto.add(bestSelfSol); plusSpecialPareto.add(bestSelfSol);
+        specialPareto.add(bestDesSol); plusSpecialPareto.add(bestDesSol);
         int counter = 0;
         for (int s=0; s<lowerLevelSolutions.size(); s++) {
             Solution lowerLevelSol = lowerLevelSolutions.get(s);
@@ -318,10 +318,12 @@ public class CostDistr extends Problem {
             if (DIM1 < worst_self &&
                     DIM2_norm < worst_des) {
                 specialPareto.add(lowerLevelSol);
+                plusSpecialPareto.add(lowerLevelSol);
                 counter++;
             } else reversePareto.add(lowerLevelSol);
         }
 
+        /*
         Integer[] arr = new Integer[lowerLevelSolutions.size()];
         for (int i = 0; i < arr.length; i++) {
             arr[i] = i;
@@ -333,6 +335,8 @@ public class CostDistr extends Problem {
                 randomPareto.add(lowerLevelSol);
             } else counter++;
         }
+
+         */
 
         //find best solution given UL and LL preferences (optimistic OR pessimistic OR in between)
         Solution chosenlowerLevelSol = null;
@@ -381,13 +385,13 @@ public class CostDistr extends Problem {
             solution.setLL_ND_pop(lowerLevelSolutions);
             solution.setLL_Special_pop(specialPareto);
             solution.setLL_Reverse_pop(reversePareto);
-            solution.setLL_Random_pop(randomPareto);
+            solution.setLL_Random_pop(plusSpecialPareto);
         } else if (execType == 0 && solution.isMarked() == false){
             if (solution.getReferencePop() != null){
                 int problem = 1111;
             } else {
                 execution++;
-                solution.setReferencePop(specialPareto);
+                solution.setReferencePop(lowerLevelSolutions);
 
                 best_hyp = -100; best_hyp_ind = -1;
                 best_spr = 100; best_spr_ind = -1;
@@ -395,21 +399,21 @@ public class CostDistr extends Problem {
                 best_time = 100000; best_time_ind = -1;
                 best_cmetric = -1; best_cmetric_ind = -1;
                 try {
-                    double hypervolume = indicators.getHypervolume(specialPareto);
+                    double hypervolume = indicators.getHypervolume(lowerLevelSolutions);
                     hypWriter_0.write(hypervolume + "\n");
                     avg_0_hyp += hypervolume;
                     if (hypervolume > best_hyp) {
                         best_hyp = hypervolume;
                         best_hyp_ind = execType;
                     }
-                    double spread = indicators.getSpread(specialPareto);
+                    double spread = indicators.getSpread(lowerLevelSolutions);
                     sprWriter_0.write(spread + "\n");
                     avg_0_spr += spread;
                     if (spread < best_spr) {
                         best_spr = spread;
                         best_spr_ind = execType;
                     }
-                    int nds = specialPareto.size();
+                    int nds = lowerLevelSolutions.size();
                     ndsWriter_0.write(nds + "\n");
                     avg_0_nds += nds;
                     if (nds < best_nds) {
@@ -423,14 +427,14 @@ public class CostDistr extends Problem {
                         best_time_ind = execType;
                     }
                     //System.out.println("val:" + hypervolume);
-                    //specialPareto.printObjectivesToFile("LowerLevelParetoEvolution/" + execution + "_FUN_" + execType);
+                    //lowerLevelSolutions.printObjectivesToFile("LowerLevelParetoEvolution/" + execution + "_FUN_" + execType);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         } else if (solution.isMarked() == false){
 
-            //time to compare specialParetos
+            //time to compare lowerLevelSolutionss
             /*
             SolutionSet referencePop = solution.getReferencePop();
             double[][] trueFront = new double[referencePop.size()][2];
@@ -440,9 +444,9 @@ public class CostDistr extends Problem {
                     trueFront[i][j] = sol.getObjective(j);
                 }
             }
-            double[][] solutionFront = new double[specialPareto.size()][2];
-            for (int i=0; i<specialPareto.size(); i++){
-                Solution sol = specialPareto.get(i);
+            double[][] solutionFront = new double[lowerLevelSolutions.size()][2];
+            for (int i=0; i<lowerLevelSolutions.size(); i++){
+                Solution sol = lowerLevelSolutions.get(i);
                 for (int j=0; j<2; j++){
                     solutionFront[i][j] = sol.getObjective(j);
                 }
@@ -456,17 +460,17 @@ public class CostDistr extends Problem {
             System.out.println("Type:" + execType + ", val:" + value);
 
              */
-            double hypervolume = indicators.getHypervolume(specialPareto);
+            double hypervolume = indicators.getHypervolume(lowerLevelSolutions);
             if (hypervolume > best_hyp) {
                 best_hyp = hypervolume;
                 best_hyp_ind = execType;
             }
-            double spread = indicators.getSpread(specialPareto);
+            double spread = indicators.getSpread(lowerLevelSolutions);
             if (spread < best_spr) {
                 best_spr = spread;
                 best_spr_ind = execType;
             }
-            int nds = specialPareto.size();
+            int nds = lowerLevelSolutions.size();
             if (nds > best_nds) {
                 best_nds = nds;
                 best_nds_ind = execType;
@@ -475,7 +479,7 @@ public class CostDistr extends Problem {
                 best_time = estimatedTime;
                 best_time_ind = execType;
             }
-            specialPareto.printObjectivesToFile("LowerLevelParetoEvolution/FUN_1");
+            lowerLevelSolutions.printObjectivesToFile("LowerLevelParetoEvolution/FUN_1");
             solution.getReferencePop().printObjectivesToFile("LowerLevelParetoEvolution/FUN_2");
             C_Metric epf = new C_Metric("LowerLevelParetoEvolution/FUN_1",
                     "LowerLevelParetoEvolution/FUN_2", 2);
@@ -649,7 +653,7 @@ public class CostDistr extends Problem {
                 }
             }
             //System.out.println("val:" + hypervolume);
-            //specialPareto.printObjectivesToFile("LowerLevelParetoEvolution/" + execution + "_FUN_" + execType);
+            //lowerLevelSolutions.printObjectivesToFile("LowerLevelParetoEvolution/" + execution + "_FUN_" + execType);
         }
 
         if (best_upper_level_result > best_self) {
