@@ -259,11 +259,12 @@ public class CostDistr extends Problem {
                 long initTime = System.currentTimeMillis();
                 lowerLevelSolutions = LowerLevelMOKP_MOEAD.evaluate(costs, solution);
                 estimatedTime = System.currentTimeMillis() - initTime;
-            }
-            else lowerLevelSolutions = LowerLevelMOKP_NSGAII.evaluate(costs, solution);
-        } catch (ClassNotFoundException e){
+            } else lowerLevelSolutions = LowerLevelMOKP_NSGAII.evaluate(costs, solution);
+        } catch (ClassNotFoundException e) {
             System.out.println("Exception at LowerLevelMOKP.evaluate: " + e.getMessage());
         }
+
+        int lsize = lowerLevelSolutions.size();
 
         //Identify optimistic and pessimistic solution
         double best_self = Double.MAX_VALUE;
@@ -275,7 +276,7 @@ public class CostDistr extends Problem {
         double best_desirability = 100;
         int best_desirability_index = -1;
 
-        for (int s=0; s<lowerLevelSolutions.size(); s++) {
+        for (int s = 0; s < lsize; s++) {
             Solution lowerLevelSol = lowerLevelSolutions.get(s);
 
             // do upper-level evaluation = finding deviation from available RE
@@ -284,12 +285,12 @@ public class CostDistr extends Problem {
             double result = upperLevel_evaluate_XOR_distance_plus_weight(energySpent, costs);
             lowerLevelSol.setSelfConsumption(result);
             //double selfConsumption = upperLevel_evaluate_XOR_distance(energySpent);
-            if (result < best_self){
+            if (result < best_self) {
                 best_self = result;
                 best_solution_index = s;
             }
             double desirability = Math.abs(target_desirability[0] - lowerLevelSol.getLambda()[0]);
-            if (desirability < best_desirability){
+            if (desirability < best_desirability) {
                 best_desirability = desirability;
                 best_desirability_index = s;
             }
@@ -302,41 +303,73 @@ public class CostDistr extends Problem {
         double worst_self = bestDesSol.getSelfConsumption();
         double worst_des = Utils.AchievementScalarizationTcheby(bestSelfSol, bestDesSol, target_desirability, nadirObjectiveValue);
 
-        SolutionSet specialPareto = new SolutionSet(lowerLevelSolutions.size());
-        SolutionSet plusSpecialPareto = new SolutionSet(lowerLevelSolutions.size());
-        SolutionSet reversePareto = new SolutionSet(lowerLevelSolutions.size());
+        SolutionSet pareto1 = null;
+        SolutionSet pareto2 = null;
+        SolutionSet pareto3 = null;
+        SolutionSet pareto4 = null;
 
-        specialPareto.add(bestSelfSol); plusSpecialPareto.add(bestSelfSol);
-        specialPareto.add(bestDesSol); plusSpecialPareto.add(bestDesSol);
-        int counter = 0;
-        for (int s=0; s<lowerLevelSolutions.size(); s++) {
-            Solution lowerLevelSol = lowerLevelSolutions.get(s);
-            double DIM1 = lowerLevelSol.getSelfConsumption();
-            double DIM2_norm = Utils.AchievementScalarizationTcheby(lowerLevelSol, bestDesSol, target_desirability, nadirObjectiveValue);
+        if (solution.isMarked()) {
 
-            //Use below to find solutions of 2D decision-making space
-            if (DIM1 < worst_self &&
-                    DIM2_norm < worst_des) {
-                specialPareto.add(lowerLevelSol);
-                plusSpecialPareto.add(lowerLevelSol);
-                counter++;
-            } else reversePareto.add(lowerLevelSol);
+            pareto1 = new SolutionSet(lowerLevelSolutions.size());
+            pareto2 = new SolutionSet(lowerLevelSolutions.size());
+            pareto3 = new SolutionSet(lowerLevelSolutions.size());
+            pareto4 = new SolutionSet(lowerLevelSolutions.size());
+
+            boolean[] alreadyUsed = new boolean[lsize];
+
+            pareto1.add(bestSelfSol);
+            pareto2.add(bestSelfSol);
+            pareto3.add(bestSelfSol);
+            pareto4.add(bestSelfSol);
+            pareto1.add(bestDesSol);
+            pareto2.add(bestDesSol);
+            pareto3.add(bestDesSol);
+            pareto4.add(bestDesSol);
+            alreadyUsed[best_solution_index] = true;
+            alreadyUsed[best_desirability_index] = true;
+
+            for (int s = 0; s < lsize; s++) {
+                Solution lowerLevelSol = lowerLevelSolutions.get(s);
+                double DIM1 = lowerLevelSol.getSelfConsumption();
+                double DIM2_norm = Utils.AchievementScalarizationTcheby(lowerLevelSol, bestDesSol, target_desirability, nadirObjectiveValue);
+
+                //Use below to find solutions of 2D decision-making space
+                if (DIM1 < worst_self &&
+                        DIM2_norm < worst_des) {
+                    pareto1.add(lowerLevelSol);
+                    pareto2.add(lowerLevelSol);
+                    pareto3.add(lowerLevelSol);
+                    pareto4.add(lowerLevelSol);
+                    alreadyUsed[s] = true;
+                }
+            }
+
+            for (int i = 0; i < lsize; i = i + 50) {
+                if (!alreadyUsed[i]) {
+                    Solution lowerLevelSol = lowerLevelSolutions.get(i);
+                    pareto1.add(lowerLevelSol);
+                }
+            }
+            for (int i = 0; i < lsize; i = i + 25) {
+                if (!alreadyUsed[i]) {
+                    Solution lowerLevelSol = lowerLevelSolutions.get(i);
+                    pareto2.add(lowerLevelSol);
+                }
+            }
+            for (int i = 0; i < lsize; i = i + 13) {
+                if (!alreadyUsed[i]) {
+                    Solution lowerLevelSol = lowerLevelSolutions.get(i);
+                    pareto3.add(lowerLevelSol);
+                }
+            }
+            for (int i = 0; i < lsize; i = i + 5) {
+                if (!alreadyUsed[i]) {
+                    Solution lowerLevelSol = lowerLevelSolutions.get(i);
+                    pareto4.add(lowerLevelSol);
+                }
+            }
+
         }
-
-        /*
-        Integer[] arr = new Integer[lowerLevelSolutions.size()];
-        for (int i = 0; i < arr.length; i++) {
-            arr[i] = i;
-        }
-        Collections.shuffle(Arrays.asList(arr));
-        for (int k=0; k<counter; k++) {
-            if (arr[k] != best_solution_index && arr[k] != best_desirability_index) {
-                Solution lowerLevelSol = lowerLevelSolutions.get(arr[k]);
-                randomPareto.add(lowerLevelSol);
-            } else counter++;
-        }
-
-         */
 
         //find best solution given UL and LL preferences (optimistic OR pessimistic OR in between)
         Solution chosenlowerLevelSol = null;
@@ -347,22 +380,7 @@ public class CostDistr extends Problem {
             solution.setObjective(0, worst_self);
             chosenlowerLevelSol = bestDesSol;
         } else {
-            //find best solution given UL and LL preferences (non-optimistic and non-pessimistic)
-            double best_overall = Double.MAX_VALUE;
-            int best_overall_index = -1;
-            for (int s=0; s<specialPareto.size(); s++) {
-                Solution lowerLevelSol = specialPareto.get(s);
-                double DIM1_norm = (lowerLevelSol.getSelfConsumption() - best_self) / (worst_self - best_self);
-                double DIM2_norm = Utils.AchievementScalarizationTcheby(lowerLevelSol, bestDesSol, target_desirability, nadirObjectiveValue);
-
-                double evaluation = (ULObjectiveDesirability * DIM1_norm) + ((1-ULObjectiveDesirability)*DIM2_norm);
-                if (evaluation < best_overall){
-                    best_overall = evaluation;
-                    best_overall_index = s;
-                }
-            }
-            chosenlowerLevelSol = specialPareto.get(best_overall_index);
-            solution.setObjective(0, chosenlowerLevelSol.getSelfConsumption());
+            int nothing = 0;
         }
 
         Variable[] vars = chosenlowerLevelSol.getDecisionVariables();
@@ -382,10 +400,10 @@ public class CostDistr extends Problem {
         solution.setReverseDeviceToPreferenceMapping(chosenlowerLevelSol.getReverseDeviceToPreferenceMapping());
 
         if (solution.isMarked()) {
-            solution.setLL_ND_pop(lowerLevelSolutions);
-            solution.setLL_Special_pop(specialPareto);
-            solution.setLL_Reverse_pop(reversePareto);
-            solution.setLL_Random_pop(plusSpecialPareto);
+            solution.setLL_ND_pop(pareto1);
+            solution.setLL_Special_pop(pareto2);
+            solution.setLL_Reverse_pop(pareto3);
+            solution.setLL_Random_pop(pareto4);
         } else if (execType == 0 && solution.isMarked() == false){
             if (solution.getReferencePop() != null){
                 int problem = 1111;
@@ -413,7 +431,7 @@ public class CostDistr extends Problem {
                         best_spr = spread;
                         best_spr_ind = execType;
                     }
-                    int nds = lowerLevelSolutions.size();
+                    int nds = lsize;
                     ndsWriter_0.write(nds + "\n");
                     avg_0_nds += nds;
                     if (nds < best_nds) {
@@ -444,8 +462,8 @@ public class CostDistr extends Problem {
                     trueFront[i][j] = sol.getObjective(j);
                 }
             }
-            double[][] solutionFront = new double[lowerLevelSolutions.size()][2];
-            for (int i=0; i<lowerLevelSolutions.size(); i++){
+            double[][] solutionFront = new double[lsize][2];
+            for (int i=0; i<lsize; i++){
                 Solution sol = lowerLevelSolutions.get(i);
                 for (int j=0; j<2; j++){
                     solutionFront[i][j] = sol.getObjective(j);
@@ -470,7 +488,7 @@ public class CostDistr extends Problem {
                 best_spr = spread;
                 best_spr_ind = execType;
             }
-            int nds = lowerLevelSolutions.size();
+            int nds = lsize;
             if (nds > best_nds) {
                 best_nds = nds;
                 best_nds_ind = execType;
