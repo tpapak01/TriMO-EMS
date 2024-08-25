@@ -115,9 +115,24 @@ public class LowerLevelMOKP_NSGAII {
     public static SolutionSet evaluate(XReal y, Solution solution) throws JMException, SecurityException, ClassNotFoundException {
 
         problemMOKP.setCostOfUsage(y);
-        if (solution.isMarked())
+        int execType = solution.getExecType();
+        if (solution.isMarked()) {
             algorithm.setInputParameter("initPopSolution", null);
-        else algorithm.setInputParameter("initPopSolution", solution.getLL_ND_pop());
+        } else {
+            switch (execType) {
+                case 0:
+                    algorithm.setInputParameter("initPopSolution", null);
+                    break;
+                case 1:
+                    algorithm.setInputParameter("initPopSolution", solution.getLL_ND_pop());
+                    break;
+                case 2:
+                    algorithm.setInputParameter("initPopSolution", solution.getLL_Special_pop());
+                    break;
+                default:
+                    break;
+            }
+        }
 
         // Execute the Algorithm
         long initTime = System.currentTimeMillis();

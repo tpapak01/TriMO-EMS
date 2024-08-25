@@ -265,6 +265,8 @@ public class CostDistr extends Problem {
             System.out.println("Exception at LowerLevelMOKP.evaluate: " + e.getMessage());
         }
 
+        int lsize = lowerLevelSolutions.size();
+
         //Identify optimistic and pessimistic solution
         double best_self = Double.MAX_VALUE;
         int best_solution_index = -1;
@@ -275,7 +277,7 @@ public class CostDistr extends Problem {
         double best_desirability = 100;
         int best_desirability_index = -1;
 
-        for (int s=0; s<lowerLevelSolutions.size(); s++) {
+        for (int s=0; s<lsize; s++) {
             Solution lowerLevelSol = lowerLevelSolutions.get(s);
 
             // do upper-level evaluation = finding deviation from available RE
@@ -307,14 +309,14 @@ public class CostDistr extends Problem {
         double worst_self = bestDesSol.getSelfConsumption();
         double worst_des = Utils.AchievementScalarizationTcheby(bestSelfSol, bestDesSol, target_desirability, nadirObjectiveValue);
 
-        SolutionSet specialPareto = new SolutionSet(lowerLevelSolutions.size());
-        SolutionSet plusSpecialPareto = new SolutionSet(lowerLevelSolutions.size());
-        SolutionSet reversePareto = new SolutionSet(lowerLevelSolutions.size());
+        SolutionSet specialPareto = new SolutionSet(lsize);
+        SolutionSet plusSpecialPareto = new SolutionSet(lsize);
+        SolutionSet reversePareto = new SolutionSet(lsize);
 
         specialPareto.add(bestSelfSol); plusSpecialPareto.add(bestSelfSol);
         specialPareto.add(bestDesSol); plusSpecialPareto.add(bestDesSol);
         int counter = 0;
-        for (int s=0; s<lowerLevelSolutions.size(); s++) {
+        for (int s=0; s<lsize; s++) {
             Solution lowerLevelSol = lowerLevelSolutions.get(s);
             double DIM1 = lowerLevelSol.getSelfConsumption();
             double DIM2_norm = Utils.AchievementScalarizationTcheby(lowerLevelSol, bestDesSol, target_desirability, nadirObjectiveValue);
@@ -329,7 +331,7 @@ public class CostDistr extends Problem {
         }
 
         /*
-        Integer[] arr = new Integer[lowerLevelSolutions.size()];
+        Integer[] arr = new Integer[lsize];
         for (int i = 0; i < arr.length; i++) {
             arr[i] = i;
         }
@@ -418,7 +420,7 @@ public class CostDistr extends Problem {
                         best_spr = spread;
                         best_spr_ind = execType;
                     }
-                    int nds = lowerLevelSolutions.size();
+                    int nds = lsize;
                     ndsWriter_0.write(nds + "\n");
                     avg_0_nds += nds;
                     if (nds < best_nds) {
@@ -449,8 +451,8 @@ public class CostDistr extends Problem {
                     trueFront[i][j] = sol.getObjective(j);
                 }
             }
-            double[][] solutionFront = new double[lowerLevelSolutions.size()][2];
-            for (int i=0; i<lowerLevelSolutions.size(); i++){
+            double[][] solutionFront = new double[lsize][2];
+            for (int i=0; i<lsize; i++){
                 Solution sol = lowerLevelSolutions.get(i);
                 for (int j=0; j<2; j++){
                     solutionFront[i][j] = sol.getObjective(j);
@@ -475,7 +477,7 @@ public class CostDistr extends Problem {
                 best_spr = spread;
                 best_spr_ind = execType;
             }
-            int nds = lowerLevelSolutions.size();
+            int nds = lsize;
             if (nds > best_nds) {
                 best_nds = nds;
                 best_nds_ind = execType;
