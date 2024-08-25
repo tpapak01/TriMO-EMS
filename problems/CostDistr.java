@@ -152,7 +152,12 @@ public class CostDistr extends Problem {
                 best_self = result;
                 best_solution_index = s;
             }
-            double desirability = Math.abs(target_desirability[0] - lowerLevelSol.getLambda()[0]);
+            double desirability;
+            if (lowerLevelSol.getLambda() == null){
+                double position = s / (double) lsize;
+                desirability = Math.abs(target_desirability[0] - position);
+            } else
+                desirability = Math.abs(target_desirability[0] - lowerLevelSol.getLambda()[0]);
             if (desirability < best_desirability){
                 best_desirability = desirability;
                 best_desirability_index = s;
