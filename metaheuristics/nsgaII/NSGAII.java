@@ -25,10 +25,7 @@ import jmetal.core.*;
 import jmetal.encodings.variable.Binary;
 import jmetal.problems.MOKP_Problem;
 import jmetal.qualityIndicator.QualityIndicator;
-import jmetal.util.Distance;
-import jmetal.util.JMException;
-import jmetal.util.PseudoRandom;
-import jmetal.util.Ranking;
+import jmetal.util.*;
 import jmetal.util.comparators.CrowdingComparator;
 import jmetal.util.comparators.DominanceComparator;
 
@@ -262,13 +259,13 @@ public class NSGAII extends Algorithm {
        */
 
       if (evaluations_ > threshold){
-        threshold += 500;
-        Ranking convRanking = new Ranking(population);
+        threshold += 5000;
+        RankingOnlyFirst convRanking = new RankingOnlyFirst(population);
         SolutionSet paretoFront = convRanking.getSubfront(0);
         double hypervolume = indicators.getHypervolume(paretoFront);
 
         double diff = hypervolume - previousHypervolume;
-        if (diff <= 0)
+        if (diff <= 0.001)
           converged = true;
         //else if (execution < 10)
         //  paretoFront.printObjectivesToFile("LowerLevelParetoEvolutionNSGAII/" + execution + "_FUN_" + iteration++);
@@ -285,8 +282,8 @@ public class NSGAII extends Algorithm {
 
 
     // Return the first non-dominated front
-    Ranking ranking = new Ranking(population);
-    SolutionSet paretoFront = ranking.getSubfront(0);
+    RankingOnlyFirst toGetOnlyParetoOptimals = new RankingOnlyFirst(population);
+    SolutionSet paretoFront = toGetOnlyParetoOptimals.getSubfront(0);
     population = paretoFront;
     population.sort(comparator) ;
 
@@ -422,18 +419,37 @@ public class NSGAII extends Algorithm {
       } // for
     } else {
 
+      Solution newSolution;
+      boolean extreme1Exists = false;
+      boolean extreme2Exists = false;
       for (int i = 0; i < initPopSolution_.size(); i++) {
-        population.add(initPopSolution_.get(i));
+        Solution toAdd = initPopSolution_.get(i);
+        if (toAdd.getObjective(1) == 0)
+          extreme1Exists = true;
+        if (toAdd.getObjective(0) == 0)
+          extreme2Exists = true;
+        newSolution = new Solution(toAdd);
+        problem_.evaluate(newSolution);
+        evaluations_++;
+        population.add(newSolution);
       }
 
       for (int i = initPopSolution_.size(); i < populationSize; i++) {
-        Solution newSolution = new Solution(problem_);
-
+        if (i == initPopSolution_.size() && !extreme1Exists) {
+          newSolution = new Solution(problem_);
+          newSolution.setDecisionVariables(updateSolution(numOfBits, false));
+        } else if (i == populationSize - 1 && !extreme2Exists) {
+          newSolution = new Solution(problem_);
+          newSolution.setDecisionVariables(updateSolution(numOfBits, true));
+        } else {
+          newSolution = new Solution(problem_);
+        }
         problemMOKP.repair(newSolution);
         problem_.evaluate(newSolution);
         evaluations_++;
         population.add(newSolution);
-      } // for
+      }
+
     }
   }
 
