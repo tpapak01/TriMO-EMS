@@ -33,7 +33,7 @@ import java.util.Arrays;
  */
 public class Solution implements Serializable {
 
-  private double selfConsumption;
+  private double selfConsumption = -1;
   public double getSelfConsumption(){
     return selfConsumption;
   }
@@ -42,9 +42,7 @@ public class Solution implements Serializable {
   }
 
   private double[] spentEnergy;
-  public double[] getSpentEnergy(){
-    return spentEnergy;
-  }
+  public double[] getSpentEnergy(){ return spentEnergy; }
   public void setSpentEnergy(double[] spentEnergy){
     this.spentEnergy = Arrays.copyOf(spentEnergy, spentEnergy.length);
   }
@@ -55,6 +53,7 @@ public class Solution implements Serializable {
   public void setLowerLevelVars(Binary vars){
     this.lowerLevelVars = new Binary(vars);
   }
+
   private double[] lowerLevelObj;
   public double[] getLowerLevelObj(){
     return lowerLevelObj;
@@ -78,9 +77,7 @@ public class Solution implements Serializable {
   }
 
   private double[] lambda = null;
-  public double[] getLambda(){
-    return lambda;
-  }
+  public double[] getLambda(){ return lambda; }
   public void setLambda(double[] lambda){
     this.lambda = lambda;
   }
@@ -118,9 +115,7 @@ public class Solution implements Serializable {
   }
 
   private SolutionSet LL_ND_pop;
-  public SolutionSet getLL_ND_pop(){
-    return LL_ND_pop;
-  }
+  public SolutionSet getLL_ND_pop(){ return LL_ND_pop; }
   public void setLL_ND_pop(SolutionSet LL_ND_pop){
     this.LL_ND_pop = LL_ND_pop;
   }
@@ -347,6 +342,9 @@ public class Solution implements Serializable {
     marked_               = false;
     rank_                 = solution.getRank();
     location_             = solution.getLocation();
+    if (solution.getSelfConsumption() != -1){
+      setSelfConsumption(solution.getSelfConsumption());
+    }
     if (solution.getSpentEnergy() != null){
         setSpentEnergy(solution.getSpentEnergy());
     }
@@ -378,6 +376,18 @@ public class Solution implements Serializable {
     if (solution.getLL_ND_pop() != null) {
       setLL_ND_pop(solution.getLL_ND_pop());
     }
+    if (solution.getLL_Special_pop() != null) {
+      setLL_Special_pop(solution.getLL_Special_pop());
+    }
+    if (solution.getLL_Reverse_pop() != null) {
+      setLL_Reverse_pop(solution.getLL_Reverse_pop());
+    }
+    if (solution.getLL_Random_pop() != null) {
+      setLL_Random_pop(solution.getLL_Random_pop());
+    }
+    if (solution.getReferencePop() != null){
+      setReferencePop(solution.getReferencePop());
+    }
   } // Solution
 
   public Solution(Solution solution) {
@@ -401,6 +411,9 @@ public class Solution implements Serializable {
     marked_               = false;
     rank_                 = solution.getRank();
     location_             = solution.getLocation();
+    if (solution.getSelfConsumption() != -1){
+      setSelfConsumption(solution.getSelfConsumption());
+    }
     if (solution.getSpentEnergy() != null){
       setSpentEnergy(solution.getSpentEnergy());
     }
