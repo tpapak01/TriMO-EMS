@@ -147,13 +147,15 @@ public class LowerLevelMOKP_MOEAD {
 
         /* Comparator */
         Comparator comparator;
-        //if (problemMOKP.isMaxmized())
-        //    comparator = new ObjectiveComparator(0, false) ; // Single objective comparator
-        //else comparator = new ObjectiveComparator(0, true) ; // Single objective comparator
         if (problemMOKP.isMaxmized())
-            comparator = new LambdaComparator(0, false) ; // Single objective comparator
-        else comparator = new LambdaComparator(0, true) ; // Single objective comparator
+            comparator = new ObjectiveComparator(0, false) ; // Single objective comparator
+        else comparator = new ObjectiveComparator(0, true) ; // Single objective comparator
         algorithm.setInputParameter("comparator", comparator);
+        Comparator lambdaComparator;
+        if (problemMOKP.isMaxmized())
+            lambdaComparator = new LambdaComparator(0, false) ; // Single objective comparator
+        else lambdaComparator = new LambdaComparator(0, true) ; // Single objective comparator
+        algorithm.setInputParameter("lambdaComparator", lambdaComparator);
 
         // Add the indicator object to the algorithm
         algorithm.setInputParameter("indicators", indicators) ;
