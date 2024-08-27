@@ -47,6 +47,10 @@ public class MOEAD extends Algorithm {
    */
   //Vector<Vector<Double>> lambda_ ; 
   double[][] lambda_;
+  public double[][] getLambda_(){
+    return lambda_;
+  }
+
   private double[] nadirObjectiveValue;
   /**
    * T: neighbour size
@@ -127,6 +131,7 @@ public class MOEAD extends Algorithm {
 
     //thalis
     String rpType = this.getInputParameter("rpType").toString();
+    Comparator  lambdaComparator;
     Comparator  comparator;
 
     dataDirectory_ = this.getInputParameter("dataDirectory").toString();
@@ -154,6 +159,7 @@ public class MOEAD extends Algorithm {
     lambda_ = new double[populationSize][problem_.getNumberOfObjectives()];
 
     //Read the operators
+    lambdaComparator = (Comparator) this.getInputParameter("lambdaComparator");
     comparator = (Comparator) this.getInputParameter("comparator");
     crossover = operators_.get("crossover"); // default: DE crossover
     mutation = operators_.get("mutation");  // default: polynomial mutation
@@ -165,7 +171,7 @@ public class MOEAD extends Algorithm {
     initNeighborhood(populationSize);
 
     // STEP 1.2. Initialize population
-    initPopulation(population, populationSize);
+    initPopulation(population, populationSize, lambdaComparator);
 
     // STEP 1.3. Initialize z_
     initIdealPoint(population, populationSize, rpType);
@@ -296,7 +302,7 @@ public class MOEAD extends Algorithm {
       if (evaluations_ > threshold){
         threshold += 5000;
         //sort based on LAMBDA
-        extPopulation.sort(comparator);
+        extPopulation.sort(lambdaComparator);
         double hypervolume = indicators.getHypervolume(extPopulation);
         double diff = hypervolume - prevHypervolume;
         if (diff < 0.001){
@@ -469,7 +475,7 @@ public class MOEAD extends Algorithm {
   /**
    * 
    */
-  public void initPopulation(SolutionSet population, int populationSize) throws JMException, ClassNotFoundException {
+  public void initPopulation(SolutionSet population, int populationSize, Comparator lambdaComparator) throws JMException, ClassNotFoundException {
 
     int numberOfUsers = problemMOKP.getNumberOfUsers();
     int numberOfItems = problemMOKP.getNumberOfItems();
@@ -498,12 +504,15 @@ public class MOEAD extends Algorithm {
       } // for
     } else {
 
-      //remove identical lambdas (already sorted)
+      //sort then remove identical lambdas
+      initPopSolution_.sort(lambdaComparator);
       for (int i=0; i<initPopSolution_.size()-1; i++){
         Solution sol1 = initPopSolution_.get(i);
         Solution sol2 = initPopSolution_.get(i+1);
-        if (sol1.getLambda().equals(sol2.getLambda())) {
-          double[] lambda = sol1.getLambda();
+        double[] solLambda1 = sol1.getLambda();
+        double[] solLambda2 = sol2.getLambda();
+        if (solLambda1[0] == solLambda2[0] && solLambda1[1] == solLambda2[1]) {
+          double[] lambda = solLambda1;
           if (lambda[0] > lambda[1]) {
             if (sol1.getObjective(0) < sol2.getObjective(0))
               initPopSolution_.remove(i+1);
@@ -512,6 +521,7 @@ public class MOEAD extends Algorithm {
             if (sol1.getObjective(1) < sol2.getObjective(1))
               initPopSolution_.remove(i+1);
             else initPopSolution_.remove(i);
+            i--;
           }
         }
       }
@@ -525,9 +535,8 @@ public class MOEAD extends Algorithm {
       Solution newSolution;
       for (int i = 0; i < populationSize; i++) {
         if (!emptiedInitPopSolution && lambda_[i][0] == lambda[0] && lambda_[i][1] == lambda[1]){
-          newSolution = new Solution(toAdd);
+          newSolution = new Solution(toAdd, lambda);
           //problemMOKP.repair(toAdd); //not needed
-          newSolution.setLambda(lambda);
           problem_.evaluate(newSolution);
           evaluations_++;
           population.add(newSolution);
@@ -734,7 +743,7 @@ public class MOEAD extends Algorithm {
     }
   } // updateProblem
 
-  double fitnessFunction(Solution individual, double[] lambda) {
+  public double fitnessFunction(Solution individual, double[] lambda) {
     double fitness;
     fitness = 0.0;
 
