@@ -14,14 +14,14 @@ import jmetal.encodings.solutionType.ArrayRealSolutionType;
 import jmetal.encodings.variable.Binary;
 import jmetal.metaheuristics.bilevel.LowerLevelMOKP_MOEAD;
 import jmetal.metaheuristics.bilevel.LowerLevelMOKP_NSGAII;
+import jmetal.metaheuristics.moead.MOEAD;
 import jmetal.util.JMException;
-import jmetal.util.Ranking;
 import jmetal.util.Utils;
+import jmetal.util.comparators.ObjectiveComparator;
 import jmetal.util.wrapper.XReal;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.util.Comparator;
 
 
 public class CostDistr extends Problem {
@@ -40,6 +40,7 @@ public class CostDistr extends Problem {
     private static double best_upper_level_result = Double.MAX_VALUE;
     private static int fileID = 1;
     private static int UL_evaluations = 0;
+    private static Comparator comparator;
 
 
   public CostDistr(String renewableFileName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName, String costsName) {
@@ -64,6 +65,9 @@ public class CostDistr extends Problem {
       //simply read the input textfile
       this.loadProblem(fileName, costsFileName);
       this.solutionType_ = new ArrayRealSolutionType(this);
+      if (this.lowerLevelProblem.isMaxmized())
+          comparator = new ObjectiveComparator(0, false) ; // Single objective comparator
+      else comparator = new ObjectiveComparator(0, true) ; // Single objective comparator
 
   }  // 
 
@@ -112,7 +116,7 @@ public class CostDistr extends Problem {
     public double getTotalProducedRE(){
         return totalProducedRE;
     }
-  
+
 	@Override
 	public void evaluate(Solution solution) throws JMException {
 
@@ -172,9 +176,51 @@ public class CostDistr extends Problem {
         double worst_self = bestDesSol.getSelfConsumption();
         double worst_des = Utils.AchievementScalarizationTcheby(bestSelfSol, bestDesSol, target_desirability, nadirObjectiveValue);
 
-        specialPareto.add(bestSelfSol);
+    	specialPareto.add(bestSelfSol);
         specialPareto.add(bestDesSol);
-        for (int s=0; s<lsize; s++) {
+
+	    MOEAD algo = (MOEAD)LowerLevelMOKP_MOEAD.algorithm;
+	    int popSize = LowerLevelMOKP_MOEAD.popSize;
+
+        //create temporary external that is sorted by objective
+        SolutionSet newExternal = new SolutionSet(lsize);
+        for (int i=0; i<lsize; i++)
+            newExternal.add(lowerLevelSolutions.get(i));
+        newExternal.sort(comparator);
+
+        double[][] lambda = algo.getLambda_();
+
+        //create archive from temporary external
+        SolutionSet archive = new SolutionSet(popSize);
+        int exIdx = 0;
+        Solution externalToAdd = newExternal.get(exIdx);
+
+        Solution newSol = new Solution(externalToAdd, lambda[0]);
+        archive.add(newSol);
+
+        Solution currentArchiveSol = newSol;
+        exIdx++;
+        externalToAdd = newExternal.get(exIdx);
+        for (int i=1; i<popSize; i++){
+
+            double f1 = algo.fitnessFunction(currentArchiveSol, lambda[i]);
+            double f2 = algo.fitnessFunction(externalToAdd, lambda[i]);
+            // if f2 smaller than f1, f2 (externalToAdd) is better
+            if (f2 <= f1) {
+                newSol = new Solution(externalToAdd, lambda[i]);
+                archive.add(newSol);
+                currentArchiveSol = externalToAdd;
+                exIdx++;
+                if (exIdx < newExternal.size())
+                    externalToAdd = newExternal.get(exIdx);
+            }
+            else {
+                newSol = new Solution(currentArchiveSol, lambda[i]);
+                archive.add(newSol);
+            }
+        }
+
+        for (int s = 0; s < lsize; s++) {
             Solution lowerLevelSol = lowerLevelSolutions.get(s);
             double DIM1 = lowerLevelSol.getSelfConsumption();
             double DIM2_norm = Utils.AchievementScalarizationTcheby(lowerLevelSol, bestDesSol, target_desirability, nadirObjectiveValue);
@@ -184,6 +230,11 @@ public class CostDistr extends Problem {
                     DIM2_norm < worst_des) {
                 specialPareto.add(lowerLevelSol);
             }
+        }
+
+        for (int i = 0; i < lsize; i = i + 25) {
+            Solution lowerLevelSol = lowerLevelSolutions.get(i);
+            specialPareto.add(lowerLevelSol);
         }
 
         //find best solution given UL and LL preferences (optimistic OR pessimistic OR in between)
