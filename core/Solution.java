@@ -149,6 +149,13 @@ public class Solution implements Serializable {
   public void setReferencePop(SolutionSet referencePop){ this.referencePop = referencePop;
   }
 
+  private SolutionSet archive;
+  public SolutionSet getArchive(){
+    return archive;
+  }
+  public void setArchive(SolutionSet archive){ this.archive = archive;
+  }
+
   private int execType = 0;
   public int getExecType(){
     return execType;

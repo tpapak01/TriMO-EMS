@@ -14,17 +14,20 @@ import jmetal.encodings.solutionType.ArrayRealSolutionType;
 import jmetal.encodings.variable.Binary;
 import jmetal.metaheuristics.bilevel.LowerLevelMOKP_MOEAD;
 import jmetal.metaheuristics.bilevel.LowerLevelMOKP_NSGAII;
+import jmetal.metaheuristics.moead.MOEAD;
 import jmetal.qualityIndicator.InvertedGenerationalDistance;
 import jmetal.qualityIndicator.QualityIndicator;
 import jmetal.util.C_Metric;
 import jmetal.util.JMException;
 import jmetal.util.Ranking;
 import jmetal.util.Utils;
+import jmetal.util.comparators.ObjectiveComparator;
 import jmetal.util.wrapper.XReal;
 
 import java.io.*;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 
 
 public class CostDistr extends Problem {
@@ -44,6 +47,7 @@ public class CostDistr extends Problem {
     private static int fileID = 1;
     private static int UL_evaluations = 0;
     private static QualityIndicator indicators;
+    private static Comparator comparator;
 
     private static int wins_0_hyp = 0;
     private static int wins_1_hyp = 0;
@@ -161,6 +165,9 @@ public class CostDistr extends Problem {
       this.loadProblem(fileName, costsFileName);
       this.solutionType_ = new ArrayRealSolutionType(this);
       indicators = new QualityIndicator(this.lowerLevelProblem, "OPTIMAL_PARETO") ;
+      if (this.lowerLevelProblem.isMaxmized())
+          comparator = new ObjectiveComparator(0, false) ; // Single objective comparator
+      else comparator = new ObjectiveComparator(0, true) ; // Single objective comparator
 
       try {
           hypWriter_0 = new FileWriter("LowerLevelParetoVisual/hyp0.txt");
@@ -310,23 +317,61 @@ public class CostDistr extends Problem {
 
         if (solution.isMarked()) {
 
-            pareto1 = new SolutionSet(lowerLevelSolutions.size());
-            pareto2 = new SolutionSet(lowerLevelSolutions.size());
-            pareto3 = new SolutionSet(lowerLevelSolutions.size());
-            pareto4 = new SolutionSet(lowerLevelSolutions.size());
+            MOEAD algo = (MOEAD)LowerLevelMOKP_MOEAD.algorithm;
+            int popSize = LowerLevelMOKP_MOEAD.popSize;
 
-            boolean[] alreadyUsed = new boolean[lsize];
+            //create temporary external that is sorted by objective
+            SolutionSet newExternal = new SolutionSet(lsize);
+            for (int i=0; i<lsize; i++)
+                newExternal.add(lowerLevelSolutions.get(i));
+            newExternal.sort(comparator);
+
+            double[][] lambda = algo.getLambda_();
+
+            //create archive from temporary external
+            SolutionSet archive = new SolutionSet(popSize);
+            int exIdx = 0;
+            Solution externalToAdd = newExternal.get(exIdx);
+
+            Solution newSol = new Solution(externalToAdd, lambda[0]);
+            archive.add(newSol);
+
+            Solution currentArchiveSol = newSol;
+            exIdx++;
+            externalToAdd = newExternal.get(exIdx);
+            for (int i=1; i<popSize; i++){
+
+                double f1 = algo.fitnessFunction(currentArchiveSol, lambda[i]);
+                double f2 = algo.fitnessFunction(externalToAdd, lambda[i]);
+                // if f2 smaller than f1, f2 (externalToAdd) is better
+                if (f2 <= f1) {
+                    newSol = new Solution(externalToAdd, lambda[i]);
+                    archive.add(newSol);
+                    currentArchiveSol = externalToAdd;
+                    exIdx++;
+                    if (exIdx < newExternal.size())
+                        externalToAdd = newExternal.get(exIdx);
+                }
+                else {
+                    newSol = new Solution(currentArchiveSol, lambda[i]);
+                    archive.add(newSol);
+                }
+            }
+
+            pareto1 = new SolutionSet(popSize);
+            pareto2 = new SolutionSet(popSize);
+            pareto3 = new SolutionSet(popSize);
+            pareto4 = new SolutionSet(popSize);
 
             pareto1.add(bestSelfSol);
             pareto2.add(bestSelfSol);
             pareto3.add(bestSelfSol);
             pareto4.add(bestSelfSol);
+
             pareto1.add(bestDesSol);
             pareto2.add(bestDesSol);
             pareto3.add(bestDesSol);
             pareto4.add(bestDesSol);
-            alreadyUsed[best_solution_index] = true;
-            alreadyUsed[best_desirability_index] = true;
 
             for (int s = 0; s < lsize; s++) {
                 Solution lowerLevelSol = lowerLevelSolutions.get(s);
@@ -340,33 +385,24 @@ public class CostDistr extends Problem {
                     pareto2.add(lowerLevelSol);
                     pareto3.add(lowerLevelSol);
                     pareto4.add(lowerLevelSol);
-                    alreadyUsed[s] = true;
                 }
             }
 
-            for (int i = 0; i < lsize; i = i + 50) {
-                if (!alreadyUsed[i]) {
-                    Solution lowerLevelSol = lowerLevelSolutions.get(i);
-                    pareto1.add(lowerLevelSol);
-                }
+            for (int i = 0; i < popSize; i = i + 50) {
+                Solution lowerLevelSol = archive.get(i);
+                pareto1.add(lowerLevelSol);
             }
-            for (int i = 0; i < lsize; i = i + 25) {
-                if (!alreadyUsed[i]) {
-                    Solution lowerLevelSol = lowerLevelSolutions.get(i);
-                    pareto2.add(lowerLevelSol);
-                }
+            for (int i = 0; i < popSize; i = i + 25) {
+                Solution lowerLevelSol = archive.get(i);
+                pareto2.add(lowerLevelSol);
             }
-            for (int i = 0; i < lsize; i = i + 13) {
-                if (!alreadyUsed[i]) {
-                    Solution lowerLevelSol = lowerLevelSolutions.get(i);
-                    pareto3.add(lowerLevelSol);
-                }
+            for (int i = 0; i < popSize; i = i + 13) {
+                Solution lowerLevelSol = archive.get(i);
+                pareto3.add(lowerLevelSol);
             }
-            for (int i = 0; i < lsize; i = i + 5) {
-                if (!alreadyUsed[i]) {
-                    Solution lowerLevelSol = lowerLevelSolutions.get(i);
-                    pareto4.add(lowerLevelSol);
-                }
+            for (int i = 0; i < popSize; i = i + 5) {
+                Solution lowerLevelSol = archive.get(i);
+                pareto4.add(lowerLevelSol);
             }
 
         }
