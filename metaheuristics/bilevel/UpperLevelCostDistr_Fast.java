@@ -58,11 +58,11 @@ public class UpperLevelCostDistr_Fast {
         if (args.length > 4)
             costsName = args[4];
         //initialize Lower Level algorithm
-        MOKP_Problem lowerLevelProblem;
+        MOKP_Problem lowerLevelProblem = new MOKP_Problem(problemName, problemUserPreferences);
         if (lowerLevelAlgorithmName.equals("MOEAD"))
-            lowerLevelProblem = LowerLevelMOKP_MOEAD.initializeAlgorithm(problemName, problemUserPreferences);
+            LowerLevelMOKP_MOEAD.initializeAlgorithm(lowerLevelProblem);
         else
-            lowerLevelProblem = LowerLevelMOKP_NSGAII.initializeAlgorithm(problemName, problemUserPreferences);
+            LowerLevelMOKP_NSGAII.initializeAlgorithm(lowerLevelProblem);
 
         //thalis
         problem = new CostDistr(renewableName, lowerLevelProblem, lowerLevelAlgorithmName, costsName);

@@ -33,7 +33,7 @@ public class LowerLevelMOKP_MOEAD {
     private static double time_mean = 0;
     private static FileWriter timeWriter;
 
-    public static MOKP_Problem initializeAlgorithm(String problemName, String problemUserPreferences) throws SecurityException, IOException {
+    public static void initializeAlgorithm(Problem lowerLevelProblem) throws SecurityException, IOException {
 
 
         Operator crossover ;         // Crossover operator
@@ -51,7 +51,7 @@ public class LowerLevelMOKP_MOEAD {
         indicators = null ;
 
         //thalis
-        problemMOKP = new MOKP_Problem(problemName, problemUserPreferences);
+        problemMOKP = (MOKP_Problem) lowerLevelProblem;
         //thalis comment, default option
         //problem = new Kursawe("Real", 3);
         //problem = new Kursawe("BinaryReal", 3);
@@ -163,8 +163,6 @@ public class LowerLevelMOKP_MOEAD {
         algorithm.setInputParameter("indicators", indicators) ;
 
         //timeWriter = new FileWriter("LowerLevelParetoVisual/time.txt");
-
-        return problemMOKP;
     }
 
 
