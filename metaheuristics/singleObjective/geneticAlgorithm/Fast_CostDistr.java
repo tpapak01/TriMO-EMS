@@ -40,6 +40,7 @@ public class Fast_CostDistr extends Algorithm {
   private CostDistr problemCostDistr;
   private int populationSize;
   private SolutionSet population;
+  private SolutionSet populationNSGAII;
   int evaluations;
 
  /**
@@ -75,6 +76,7 @@ public class Fast_CostDistr extends Algorithm {
    
     // Initialize the variables
     population          = new SolutionSet(populationSize) ;
+    populationNSGAII    = new SolutionSet(populationSize) ;
     
     evaluations  = 0;                
 
@@ -90,6 +92,7 @@ public class Fast_CostDistr extends Algorithm {
 
     // Sort population
     population.sort(comparator) ;
+    populationNSGAII.sort(comparator);
 
     //Convergence
     int generations_left_for_convergence = 10;
@@ -121,6 +124,11 @@ public class Fast_CostDistr extends Algorithm {
         mutationOperator.execute(offspring[0]);
         mutationOperator.execute(offspring[1]);
 
+        //Offspring is ready, now create same for NSGAII
+        Solution [] offspringNSGAII = new Solution[2];
+        offspringNSGAII[0] = new Solution(offspring[0]);
+        offspringNSGAII[1] = new Solution(offspring[1]);
+
         //attach to offspring the LL ND of the closest UL solution
         double min_dist = Double.MAX_VALUE;
         int min_index = -1;
@@ -137,10 +145,30 @@ public class Fast_CostDistr extends Algorithm {
           offspring[o].setLL_ND_pop(population.get(min_index).getLL_ND_pop());
           offspring[o].setLL_Special_pop(population.get(min_index).getLL_Special_pop());
           offspring[o].setLL_Reverse_pop(population.get(min_index).getLL_Reverse_pop());
-          offspring[o].setLL_Random_pop(population.get(min_index).getLL_Random_pop());
+          //offspring[o].setLL_Random_pop(population.get(min_index).getLL_Random_pop());
+        }
+
+        //NSGAII - attach to offspringNSGAII the LL ND of the closest UL solution
+        min_dist = Double.MAX_VALUE;
+        min_index = -1;
+        for (int o = 0; o<2; o++) {
+          Double[] offspringVar = (((ArrayReal) offspringNSGAII[o].getDecisionVariables()[0]).array_);
+          for (int j = 0; j < populationSize; j++) {
+            Double[] popSolutionVar = (((ArrayReal) populationNSGAII.get(j).getDecisionVariables()[0]).array_);
+            double dist = EuclideanDist.distance(offspringVar, popSolutionVar);
+            if (dist < min_dist){
+              min_dist = dist;
+              min_index = j;
+            }
+          }
+          offspringNSGAII[o].setLL_ND_pop(populationNSGAII.get(min_index).getLL_ND_pop());
+          offspringNSGAII[o].setLL_Special_pop(populationNSGAII.get(min_index).getLL_Special_pop());
+          //offspringNSGAII[o].setLL_Reverse_pop(populationNSGAII.get(min_index).getLL_Reverse_pop());
+          //offspringNSGAII[o].setLL_Random_pop(populationNSGAII.get(min_index).getLL_Random_pop());
         }
 
         // Evaluation of the new individuals
+        problemCostDistr.changeAlgorithm("MOEAD");
         offspring[0].setExecType(0);
         problem_.evaluate(offspring[0]);
         Solution sol1 = new Solution(offspring[0]); sol1.setExecType(1);
@@ -149,9 +177,18 @@ public class Fast_CostDistr extends Algorithm {
         problem_.evaluate(sol2);
         Solution sol3 = new Solution(offspring[0]); sol3.setExecType(3);
         problem_.evaluate(sol3);
-        //Solution sol4 = new Solution(offspring[0]); sol4.setExecType(4);
-        //problem_.evaluate(sol4);
 
+        problemCostDistr.changeAlgorithm("NSGAII");
+        offspringNSGAII[0].setExecType(4);
+        problem_.evaluate(offspringNSGAII[0]);
+        Solution sol4 = new Solution(offspringNSGAII[0]); sol1.setExecType(5);
+        problem_.evaluate(sol1);
+        Solution sol5 = new Solution(offspringNSGAII[0]); sol2.setExecType(6);
+        problem_.evaluate(sol2);
+
+        //----------------------------------------------------------------------------------
+
+        problemCostDistr.changeAlgorithm("MOEAD");
         offspring[1].setExecType(0);
         problem_.evaluate(offspring[1]);
         Solution sol11 = new Solution(offspring[1]); sol11.setExecType(1);
@@ -160,8 +197,15 @@ public class Fast_CostDistr extends Algorithm {
         problem_.evaluate(sol22);
         Solution sol33 = new Solution(offspring[1]); sol33.setExecType(3);
         problem_.evaluate(sol33);
-        //Solution sol44 = new Solution(offspring[1]); sol44.setExecType(4);
-        //problem_.evaluate(sol44);
+
+        problemCostDistr.changeAlgorithm("NSGAII");
+        offspringNSGAII[1].setExecType(4);
+        problem_.evaluate(offspringNSGAII[1]);
+        Solution sol44 = new Solution(offspringNSGAII[1]); sol1.setExecType(5);
+        problem_.evaluate(sol1);
+        Solution sol55 = new Solution(offspringNSGAII[1]); sol2.setExecType(6);
+        problem_.evaluate(sol2);
+
 
         evaluations +=2;
 
@@ -210,11 +254,21 @@ public class Fast_CostDistr extends Algorithm {
   public void initPopulation() throws JMException, ClassNotFoundException {
     if (problemCostDistr.getInputCosts() == null) {
       for (int i = 0; i < populationSize; i++) {
+        problemCostDistr.changeAlgorithm("MOEAD");
         Solution newSolution = new Solution(problem_, true);
 
         problem_.evaluate(newSolution);
         evaluations++;
         population.add(newSolution);
+
+        //NSGAII
+        problemCostDistr.changeAlgorithm("NSGAII");
+        Solution solNSGAII = new Solution(newSolution);
+        solNSGAII.setDecisionVariables(newSolution.getDecisionVariables());
+        solNSGAII.marked();
+
+        problem_.evaluate(solNSGAII);
+        populationNSGAII.add(solNSGAII);
       } // for
     } else {
       for (int i = 0; i < populationSize; i++) {
