@@ -1,9 +1,6 @@
 package jmetal.metaheuristics.bilevel;
 
-import jmetal.core.Algorithm;
-import jmetal.core.Operator;
-import jmetal.core.Solution;
-import jmetal.core.SolutionSet;
+import jmetal.core.*;
 import jmetal.metaheuristics.nsgaII.NSGAII;
 import jmetal.operators.crossover.PartiallyMappedHUXCrossover;
 import jmetal.operators.crossover.PartiallyMappedTwoPointCrossover;
@@ -29,13 +26,14 @@ public class LowerLevelMOKP_NSGAII {
     public static FileHandler fileHandler_ ; // FileHandler object
     public static MOKP_Problem problemMOKP;         // The problem to solve
     public static Algorithm algorithm ;         // The algorithm to use
+    public static int popSize;
 
     // statistical analysis
     private static int execution = 0;
     private static double time_mean = 0;
     private static FileWriter timeWriter;
 
-    public static MOKP_Problem initializeAlgorithm(String problemName, String problemUserPreferences) throws SecurityException, IOException {
+    public static void initializeAlgorithm(Problem lowerLevelProblem) throws SecurityException, IOException {
 
 
         Operator crossover ;         // Crossover operator
@@ -52,14 +50,15 @@ public class LowerLevelMOKP_NSGAII {
         logger_.addHandler(fileHandler_) ;
 
         //thalis
-        problemMOKP = new MOKP_Problem(problemName, problemUserPreferences);
+        problemMOKP = (MOKP_Problem) lowerLevelProblem;
 
         indicators = new QualityIndicator(problemMOKP, "OPTIMAL_PARETO") ;
 
         algorithm = new NSGAII(problemMOKP);
 
         // Algorithm parameters
-        algorithm.setInputParameter("populationSize",300);
+        popSize = 300;
+        algorithm.setInputParameter("populationSize",popSize);
         algorithm.setInputParameter("maxEvaluations",100000);
 
         // Crossover operator
@@ -107,8 +106,6 @@ public class LowerLevelMOKP_NSGAII {
         algorithm.setInputParameter("indicators", indicators) ;
 
         //timeWriter = new FileWriter("LowerLevelParetoVisualNSGAII/time.txt");
-
-        return problemMOKP;
     }
 
 
