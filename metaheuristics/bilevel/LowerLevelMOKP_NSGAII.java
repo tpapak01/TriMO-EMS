@@ -29,6 +29,7 @@ public class LowerLevelMOKP_NSGAII {
     public static FileHandler fileHandler_ ; // FileHandler object
     public static MOKP_Problem problemMOKP;         // The problem to solve
     public static Algorithm algorithm ;         // The algorithm to use
+    public static int popSize;
 
     // statistical analysis
     private static int execution = 0;
@@ -59,7 +60,8 @@ public class LowerLevelMOKP_NSGAII {
         algorithm = new NSGAII(problemMOKP);
 
         // Algorithm parameters
-        algorithm.setInputParameter("populationSize",300);
+        popSize = 300;
+        algorithm.setInputParameter("populationSize",popSize);
         algorithm.setInputParameter("maxEvaluations",100000);
 
         // Crossover operator

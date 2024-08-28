@@ -14,17 +14,21 @@ import jmetal.encodings.solutionType.ArrayRealSolutionType;
 import jmetal.encodings.variable.Binary;
 import jmetal.metaheuristics.bilevel.LowerLevelMOKP_MOEAD;
 import jmetal.metaheuristics.bilevel.LowerLevelMOKP_NSGAII;
+import jmetal.metaheuristics.moead.MOEAD;
+import jmetal.metaheuristics.nsgaII.NSGAII;
 import jmetal.qualityIndicator.InvertedGenerationalDistance;
 import jmetal.qualityIndicator.QualityIndicator;
 import jmetal.util.C_Metric;
 import jmetal.util.JMException;
 import jmetal.util.Ranking;
 import jmetal.util.Utils;
+import jmetal.util.comparators.ObjectiveComparator;
 import jmetal.util.wrapper.XReal;
 
 import java.io.*;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 
 
 public class CostDistr extends Problem {
@@ -44,6 +48,7 @@ public class CostDistr extends Problem {
     private static int fileID = 1;
     private static int UL_evaluations = 0;
     private static QualityIndicator indicators;
+    private static Comparator comparator;
 
     private static int wins_0_hyp = 0;
     private static int wins_1_hyp = 0;
@@ -161,37 +166,40 @@ public class CostDistr extends Problem {
       this.loadProblem(fileName, costsFileName);
       this.solutionType_ = new ArrayRealSolutionType(this);
       indicators = new QualityIndicator(this.lowerLevelProblem, "OPTIMAL_PARETO") ;
+      if (this.lowerLevelProblem.isMaxmized())
+          comparator = new ObjectiveComparator(0, false) ; // Single objective comparator
+      else comparator = new ObjectiveComparator(0, true) ; // Single objective comparator
 
       try {
           hypWriter_0 = new FileWriter("LowerLevelParetoVisual/hyp0.txt");
           hypWriter_1 = new FileWriter("LowerLevelParetoVisual/hyp1.txt");
           hypWriter_2 = new FileWriter("LowerLevelParetoVisual/hyp2.txt");
           hypWriter_3 = new FileWriter("LowerLevelParetoVisual/hyp3.txt");
-          hypWriter_4 = new FileWriter("LowerLevelParetoVisual/hyp4.txt");
+          //hypWriter_4 = new FileWriter("LowerLevelParetoVisual/hyp4.txt");
 
           sprWriter_0 = new FileWriter("LowerLevelParetoVisual/spr0.txt");
           sprWriter_1 = new FileWriter("LowerLevelParetoVisual/spr1.txt");
           sprWriter_2 = new FileWriter("LowerLevelParetoVisual/spr2.txt");
           sprWriter_3 = new FileWriter("LowerLevelParetoVisual/spr3.txt");
-          sprWriter_4 = new FileWriter("LowerLevelParetoVisual/spr4.txt");
+          //sprWriter_4 = new FileWriter("LowerLevelParetoVisual/spr4.txt");
 
           ndsWriter_0 = new FileWriter("LowerLevelParetoVisual/nds0.txt");
           ndsWriter_1 = new FileWriter("LowerLevelParetoVisual/nds1.txt");
           ndsWriter_2 = new FileWriter("LowerLevelParetoVisual/nds2.txt");
           ndsWriter_3 = new FileWriter("LowerLevelParetoVisual/nds3.txt");
-          ndsWriter_4 = new FileWriter("LowerLevelParetoVisual/nds4.txt");
+          //ndsWriter_4 = new FileWriter("LowerLevelParetoVisual/nds4.txt");
 
           timWriter_0 = new FileWriter("LowerLevelParetoVisual/tim0.txt");
           timWriter_1 = new FileWriter("LowerLevelParetoVisual/tim1.txt");
           timWriter_2 = new FileWriter("LowerLevelParetoVisual/tim2.txt");
           timWriter_3 = new FileWriter("LowerLevelParetoVisual/tim3.txt");
-          timWriter_4 = new FileWriter("LowerLevelParetoVisual/tim4.txt");
+          //timWriter_4 = new FileWriter("LowerLevelParetoVisual/tim4.txt");
 
           cmeWriter_0 = new FileWriter("LowerLevelParetoVisual/cme0.txt");
           cmeWriter_1 = new FileWriter("LowerLevelParetoVisual/cme1.txt");
           cmeWriter_2 = new FileWriter("LowerLevelParetoVisual/cme2.txt");
           cmeWriter_3 = new FileWriter("LowerLevelParetoVisual/cme3.txt");
-          cmeWriter_4 = new FileWriter("LowerLevelParetoVisual/cme4.txt");
+          //cmeWriter_4 = new FileWriter("LowerLevelParetoVisual/cme4.txt");
       } catch (IOException e) {
           e.printStackTrace();
       }
@@ -245,6 +253,7 @@ public class CostDistr extends Problem {
     }
 
     int execution = 0;
+    static int execTypeLimit;
 
 	@Override
 	public void evaluate(Solution solution) throws JMException {
@@ -256,11 +265,17 @@ public class CostDistr extends Problem {
 
         try {
             if (this.lowerLevelAlgorithmName.equals("MOEAD")) {
+                execTypeLimit = 3;
                 long initTime = System.currentTimeMillis();
                 lowerLevelSolutions = LowerLevelMOKP_MOEAD.evaluate(costs, solution);
                 estimatedTime = System.currentTimeMillis() - initTime;
             }
-            else lowerLevelSolutions = LowerLevelMOKP_NSGAII.evaluate(costs, solution);
+            else {
+                execTypeLimit = 2;
+                long initTime = System.currentTimeMillis();
+                lowerLevelSolutions = LowerLevelMOKP_NSGAII.evaluate(costs, solution);
+                estimatedTime = System.currentTimeMillis() - initTime;
+            }
         } catch (ClassNotFoundException e){
             System.out.println("Exception at LowerLevelMOKP.evaluate: " + e.getMessage());
         }
@@ -310,40 +325,121 @@ public class CostDistr extends Problem {
         double worst_des = Utils.AchievementScalarizationTcheby(bestSelfSol, bestDesSol, target_desirability, nadirObjectiveValue);
 
         SolutionSet specialPareto = new SolutionSet(lsize);
-        SolutionSet plusSpecialPareto = new SolutionSet(lsize);
-        SolutionSet reversePareto = new SolutionSet(lsize);
+        SolutionSet archivePareto = null;
+        //SolutionSet replacePareto = new SolutionSet(lsize);
 
-        specialPareto.add(bestSelfSol); plusSpecialPareto.add(bestSelfSol);
-        specialPareto.add(bestDesSol); plusSpecialPareto.add(bestDesSol);
-        int counter = 0;
-        for (int s=0; s<lsize; s++) {
-            Solution lowerLevelSol = lowerLevelSolutions.get(s);
-            double DIM1 = lowerLevelSol.getSelfConsumption();
-            double DIM2_norm = Utils.AchievementScalarizationTcheby(lowerLevelSol, bestDesSol, target_desirability, nadirObjectiveValue);
+        if (solution.isMarked()) {
 
-            //Use below to find solutions of 2D decision-making space
-            if (DIM1 < worst_self &&
-                    DIM2_norm < worst_des) {
-                specialPareto.add(lowerLevelSol);
-                plusSpecialPareto.add(lowerLevelSol);
-                counter++;
-            } else reversePareto.add(lowerLevelSol);
+            if (this.lowerLevelAlgorithmName.equals("MOEAD")) {
+
+                MOEAD algo = (MOEAD) LowerLevelMOKP_MOEAD.algorithm;
+                int popSize = LowerLevelMOKP_MOEAD.popSize;
+
+                //create temporary external that is sorted by objective
+                SolutionSet newExternal = new SolutionSet(lsize);
+                for (int i = 0; i < lsize; i++)
+                    newExternal.add(lowerLevelSolutions.get(i));
+                newExternal.sort(comparator);
+
+                double[][] lambda = algo.getLambda_();
+
+                //create archive from temporary external
+                SolutionSet archive = new SolutionSet(popSize);
+                int exIdx = 0;
+                Solution externalToAdd = newExternal.get(exIdx);
+
+                Solution newSol = new Solution(externalToAdd, lambda[0]);
+                archive.add(newSol);
+
+                Solution currentArchiveSol = newSol;
+                exIdx++;
+                externalToAdd = newExternal.get(exIdx);
+                for (int i = 1; i < popSize; i++) {
+
+                    double f1 = algo.fitnessFunction(currentArchiveSol, lambda[i]);
+                    double f2 = algo.fitnessFunction(externalToAdd, lambda[i]);
+                    // if f2 smaller than f1, f2 (externalToAdd) is better
+                    if (f2 <= f1) {
+                        newSol = new Solution(externalToAdd, lambda[i]);
+                        archive.add(newSol);
+                        currentArchiveSol = externalToAdd;
+                        exIdx++;
+                        if (exIdx < newExternal.size())
+                            externalToAdd = newExternal.get(exIdx);
+                    } else {
+                        newSol = new Solution(currentArchiveSol, lambda[i]);
+                        archive.add(newSol);
+                    }
+                }
+
+                archivePareto = new SolutionSet(popSize);
+
+                archivePareto.add(bestSelfSol);
+                specialPareto.add(bestSelfSol);
+
+                archivePareto.add(bestDesSol);
+                specialPareto.add(bestDesSol);
+
+                for (int s = 0; s < lsize; s++) {
+                    Solution lowerLevelSol = lowerLevelSolutions.get(s);
+                    double DIM1 = lowerLevelSol.getSelfConsumption();
+                    double DIM2_norm = Utils.AchievementScalarizationTcheby(lowerLevelSol, bestDesSol, target_desirability, nadirObjectiveValue);
+
+                    //Use below to find solutions of 2D decision-making space
+                    if (DIM1 < worst_self &&
+                            DIM2_norm < worst_des) {
+                        specialPareto.add(lowerLevelSol);
+                        archivePareto.add(lowerLevelSol);
+                        //counter++;
+                    }// else reversePareto.add(lowerLevelSol);
+                }
+
+                /*
+                Integer[] arr = new Integer[lsize];
+                for (int i = 0; i < arr.length; i++) {
+                        arr[i] = i;
+                }
+                Collections.shuffle(Arrays.asList(arr));
+                for (int k=0; k<counter; k++) {
+                        if (arr[k] != best_solution_index && arr[k] != best_desirability_index) {
+                            Solution lowerLevelSol = lowerLevelSolutions.get(arr[k]);
+                            randomPareto.add(lowerLevelSol);
+                        } else counter++;
+                }
+                */
+
+                for (int i = 0; i < popSize; i = i + 25) {
+                    Solution lowerLevelSol = archive.get(i);
+                    archivePareto.add(lowerLevelSol);
+                }
+
+
+            }
+            //NSGA-II
+            else {
+
+                NSGAII algo = (NSGAII) LowerLevelMOKP_NSGAII.algorithm;
+                int popSize = LowerLevelMOKP_NSGAII.popSize;
+
+                specialPareto.add(bestSelfSol);
+
+                specialPareto.add(bestDesSol);
+
+                for (int s = 0; s < lsize; s++) {
+                    Solution lowerLevelSol = lowerLevelSolutions.get(s);
+                    double DIM1 = lowerLevelSol.getSelfConsumption();
+                    double DIM2_norm = Utils.AchievementScalarizationTcheby(lowerLevelSol, bestDesSol, target_desirability, nadirObjectiveValue);
+
+                    //Use below to find solutions of 2D decision-making space
+                    if (DIM1 < worst_self &&
+                            DIM2_norm < worst_des) {
+                        specialPareto.add(lowerLevelSol);
+                    }
+                }
+
+            }
+
         }
-
-        /*
-        Integer[] arr = new Integer[lsize];
-        for (int i = 0; i < arr.length; i++) {
-            arr[i] = i;
-        }
-        Collections.shuffle(Arrays.asList(arr));
-        for (int k=0; k<counter; k++) {
-            if (arr[k] != best_solution_index && arr[k] != best_desirability_index) {
-                Solution lowerLevelSol = lowerLevelSolutions.get(arr[k]);
-                randomPareto.add(lowerLevelSol);
-            } else counter++;
-        }
-
-         */
 
         //find best solution given UL and LL preferences (optimistic OR pessimistic OR in between)
         Solution chosenlowerLevelSol = null;
@@ -354,22 +450,7 @@ public class CostDistr extends Problem {
             solution.setObjective(0, worst_self);
             chosenlowerLevelSol = bestDesSol;
         } else {
-            //find best solution given UL and LL preferences (non-optimistic and non-pessimistic)
-            double best_overall = Double.MAX_VALUE;
-            int best_overall_index = -1;
-            for (int s=0; s<specialPareto.size(); s++) {
-                Solution lowerLevelSol = specialPareto.get(s);
-                double DIM1_norm = (lowerLevelSol.getSelfConsumption() - best_self) / (worst_self - best_self);
-                double DIM2_norm = Utils.AchievementScalarizationTcheby(lowerLevelSol, bestDesSol, target_desirability, nadirObjectiveValue);
-
-                double evaluation = (ULObjectiveDesirability * DIM1_norm) + ((1-ULObjectiveDesirability)*DIM2_norm);
-                if (evaluation < best_overall){
-                    best_overall = evaluation;
-                    best_overall_index = s;
-                }
-            }
-            chosenlowerLevelSol = specialPareto.get(best_overall_index);
-            solution.setObjective(0, chosenlowerLevelSol.getSelfConsumption());
+            int nothing = 0;
         }
 
         Variable[] vars = chosenlowerLevelSol.getDecisionVariables();
@@ -391,14 +472,15 @@ public class CostDistr extends Problem {
         if (solution.isMarked()) {
             solution.setLL_ND_pop(lowerLevelSolutions);
             solution.setLL_Special_pop(specialPareto);
-            solution.setLL_Reverse_pop(reversePareto);
-            solution.setLL_Random_pop(plusSpecialPareto);
+            solution.setLL_Reverse_pop(archivePareto);
+            //solution.setLL_Random_pop(replacePareto);
         } else if (execType == 0 && solution.isMarked() == false){
             if (solution.getReferencePop() != null){
                 int problem = 1111;
             } else {
                 execution++;
                 solution.setReferencePop(lowerLevelSolutions);
+                lowerLevelSolutions.printObjectivesToFile("LowerLevelParetoEvolution/FUN_2" + execution);
 
                 best_hyp = -100; best_hyp_ind = -1;
                 best_spr = 100; best_spr_ind = -1;
@@ -486,15 +568,14 @@ public class CostDistr extends Problem {
                 best_time = estimatedTime;
                 best_time_ind = execType;
             }
-            lowerLevelSolutions.printObjectivesToFile("LowerLevelParetoEvolution/FUN_1");
-            solution.getReferencePop().printObjectivesToFile("LowerLevelParetoEvolution/FUN_2");
-            C_Metric epf = new C_Metric("LowerLevelParetoEvolution/FUN_1",
-                    "LowerLevelParetoEvolution/FUN_2", 2);
+            lowerLevelSolutions.printObjectivesToFile("LowerLevelParetoEvolution/FUN_1" + execution);
+            C_Metric epf = new C_Metric("LowerLevelParetoEvolution/FUN_1" + execution,
+                    "LowerLevelParetoEvolution/FUN_2" + execution, 2);
             double cMetric = (float) epf.num_of_dominated_B / (float) epf.nds_B;
             if (cMetric > best_cmetric){
                 best_cmetric = cMetric;
-                C_Metric epfReverse = new C_Metric("LowerLevelParetoEvolution/FUN_2",
-                        "LowerLevelParetoEvolution/FUN_1", 2);
+                C_Metric epfReverse = new C_Metric("LowerLevelParetoEvolution/FUN_2" + execution,
+                        "LowerLevelParetoEvolution/FUN_1" + execution, 2);
                 double cMetricReverse = (float) epfReverse.num_of_dominated_B / (float) epfReverse.nds_B;
                 cmetric_0_against_best = cMetricReverse;
                 if (cMetricReverse > cMetric)
@@ -502,8 +583,7 @@ public class CostDistr extends Problem {
                 else best_cmetric_ind = execType;
 
             }
-            File file1 = new File("LowerLevelParetoEvolution/FUN_1"); file1.delete();
-            File file2 = new File("LowerLevelParetoEvolution/FUN_2"); file2.delete();
+            File file1 = new File("LowerLevelParetoEvolution/FUN_1" + execution); file1.delete();
 
             try {
                 switch (execType) {
@@ -563,7 +643,7 @@ public class CostDistr extends Problem {
             }
 
             //now find winner of this iteration
-            if (execType == 4){
+            if (execType == execTypeLimit){
                 switch(best_hyp_ind){
                     case 0: wins_0_hyp++; break;
                     case 1: wins_1_hyp++; break;
@@ -629,31 +709,31 @@ public class CostDistr extends Problem {
                         hypWriter_1.close();
                         hypWriter_2.close();
                         hypWriter_3.close();
-                        hypWriter_4.close();
+                        //hypWriter_4.close();
 
                         sprWriter_0.close();
                         sprWriter_1.close();
                         sprWriter_2.close();
                         sprWriter_3.close();
-                        sprWriter_4.close();
+                        //sprWriter_4.close();
 
                         ndsWriter_0.close();
                         ndsWriter_1.close();
                         ndsWriter_2.close();
                         ndsWriter_3.close();
-                        ndsWriter_4.close();
+                        //ndsWriter_4.close();
 
                         timWriter_0.close();
                         timWriter_1.close();
                         timWriter_2.close();
                         timWriter_3.close();
-                        timWriter_4.close();
+                        //timWriter_4.close();
 
                         cmeWriter_0.close();
                         cmeWriter_1.close();
                         cmeWriter_2.close();
                         cmeWriter_3.close();
-                        cmeWriter_4.close();
+                        //cmeWriter_4.close();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
