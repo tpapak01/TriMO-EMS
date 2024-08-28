@@ -26,7 +26,6 @@ import jmetal.encodings.variable.ArrayReal;
 import jmetal.problems.CostDistr;
 import jmetal.util.EuclideanDist;
 import jmetal.util.JMException;
-import jmetal.util.PseudoRandom;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -279,85 +278,6 @@ public class Fast_CostDistr extends Algorithm {
         population.add(newSolution);
       } // for
     }
-  } // initPopulation
-
-  public void initPopulationCostDistr(double[] producedRE) throws JMException, ClassNotFoundException {
-    double[] costsToSend = new double[problem_.getNumberOfVariables()];
-    double RE_min = Double.MAX_VALUE;
-    double RE_max = Double.MIN_VALUE;
-    for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
-      if (producedRE[j] < RE_min){
-        RE_min = producedRE[j];
-      }
-      if (producedRE[j] > RE_max){
-        RE_max = producedRE[j];
-      }
-    }
-
-    for (int i = 0; i < populationSize; i++) {
-      Solution newSolution = new Solution(problem_);
-
-      //1) normalized costs to send - MIN MAX = LIMITS (so 0 and 1 exist)
-      if (i == 0) {
-        for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
-          costsToSend[j] = 1 - ((producedRE[j] - RE_min) / (RE_max - RE_min));
-        }
-        newSolution.setDecisionVariables(updateSolution(costsToSend));
-      }
-
-      //2) deduct RE from upper limit
-      if (i == 1) {
-        for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
-          costsToSend[j] = problem_.getUpperLimit(j) - producedRE[j];
-        }
-        newSolution.setDecisionVariables(updateSolution(costsToSend));
-      }
-
-      //3) deduct RE from double the upper limit
-      if (i == 2) {
-        for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
-          costsToSend[j] = problem_.getUpperLimit(j)*2 - producedRE[j];
-        }
-        newSolution.setDecisionVariables(updateSolution(costsToSend));
-      }
-
-      //4) deduct RE from triple the upper limit
-      if (i == 3) {
-        for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
-          costsToSend[j] = problem_.getUpperLimit(j)*3 - producedRE[j];
-        }
-        newSolution.setDecisionVariables(updateSolution(costsToSend));
-      }
-
-      //5) deduct RE from quadruple the upper limit
-      if (i == 4) {
-        for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
-          costsToSend[j] = problem_.getUpperLimit(j)*4 - producedRE[j];
-        }
-        newSolution.setDecisionVariables(updateSolution(costsToSend));
-      }
-
-      //6) normalized costs to send, but PERCENTAGE (MIN MAX = LIMITS (so 0 and 100 exist)
-      if (i == 5) {
-        for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
-          costsToSend[j] = (1 - ((producedRE[j] - RE_min) / (RE_max - RE_min))) * 100;
-        }
-        newSolution.setDecisionVariables(updateSolution(costsToSend));
-      }
-
-      //7) deduct RE from upper limit, then make PERCENTAGE
-      if (i == 6) {
-        double multiplier = 100 / problem_.getUpperLimit(0);
-        for (int j = 0; j < problem_.getNumberOfVariables(); j++) {
-          costsToSend[j] = (problem_.getUpperLimit(j) - producedRE[j]) * multiplier;
-        }
-        newSolution.setDecisionVariables(updateSolution(costsToSend));
-      }
-
-      problem_.evaluate(newSolution);
-      evaluations++;
-      population.add(newSolution) ;
-    } // for
   } // initPopulation
 
   public Variable[] updateSolution(double[] costsToSend) throws JMException {

@@ -1,9 +1,6 @@
 package jmetal.metaheuristics.bilevel;
 
-import jmetal.core.Algorithm;
-import jmetal.core.Operator;
-import jmetal.core.Solution;
-import jmetal.core.SolutionSet;
+import jmetal.core.*;
 import jmetal.metaheuristics.nsgaII.NSGAII;
 import jmetal.operators.crossover.PartiallyMappedHUXCrossover;
 import jmetal.operators.crossover.PartiallyMappedTwoPointCrossover;
@@ -36,7 +33,7 @@ public class LowerLevelMOKP_NSGAII {
     private static double time_mean = 0;
     private static FileWriter timeWriter;
 
-    public static MOKP_Problem initializeAlgorithm(String problemName, String problemUserPreferences) throws SecurityException, IOException {
+    public static void initializeAlgorithm(Problem lowerLevelProblem) throws SecurityException, IOException {
 
 
         Operator crossover ;         // Crossover operator
@@ -53,7 +50,7 @@ public class LowerLevelMOKP_NSGAII {
         logger_.addHandler(fileHandler_) ;
 
         //thalis
-        problemMOKP = new MOKP_Problem(problemName, problemUserPreferences);
+        problemMOKP = (MOKP_Problem) lowerLevelProblem;
 
         indicators = new QualityIndicator(problemMOKP, "OPTIMAL_PARETO") ;
 
@@ -109,8 +106,6 @@ public class LowerLevelMOKP_NSGAII {
         algorithm.setInputParameter("indicators", indicators) ;
 
         //timeWriter = new FileWriter("LowerLevelParetoVisualNSGAII/time.txt");
-
-        return problemMOKP;
     }
 
 
