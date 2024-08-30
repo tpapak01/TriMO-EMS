@@ -22,6 +22,7 @@
 package jmetal.core;
 
 import jmetal.util.Configuration;
+import jmetal.util.Utils;
 
 import java.io.*;
 import java.util.*;
@@ -387,7 +388,7 @@ public class SolutionSet implements Serializable {
       BufferedWriter bw      = new BufferedWriter(osw)        ;
 
       for (Solution aSolutionsList_ : solutionsList_) {
-        double std = calculateStandardDeviation(aSolutionsList_.getDissatisfactionPerUser());
+        double std = Utils.calculateStandardDeviation(aSolutionsList_.getDissatisfactionPerUser());
         bw.write(Double.toString(std));
         bw.newLine();
         //}
@@ -433,7 +434,7 @@ public class SolutionSet implements Serializable {
       BufferedWriter bw      = new BufferedWriter(osw)        ;
 
       for (Solution aSolutionsList_ : solutionsList_) {
-        double std = calculateStandardDeviation(aSolutionsList_.getEnergyAllocatedPerUser());
+        double std = Utils.calculateStandardDeviation(aSolutionsList_.getEnergyAllocatedPerUser());
         bw.write(Double.toString(std));
         bw.newLine();
         //}
@@ -693,27 +694,6 @@ public class SolutionSet implements Serializable {
 
   public int getCapacity() {
     return capacity_ ;
-  }
-
-  public static double calculateStandardDeviation(double[] array) {
-
-    // get the sum of array
-    double sum = 0.0;
-    for (double i : array) {
-      sum += i;
-    }
-
-    // get the mean of array
-    int length = array.length;
-    double mean = sum / length;
-
-    // calculate the standard deviation
-    double standardDeviation = 0.0;
-    for (double num : array) {
-      standardDeviation += Math.pow(num - mean, 2);
-    }
-
-    return Math.sqrt(standardDeviation / length);
   }
 
 } // SolutionSet
