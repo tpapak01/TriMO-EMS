@@ -140,7 +140,9 @@ public class CostDistr extends Problem {
     private static FileWriter cmeWriter_4;
 
 
-
+    private static boolean createStatistics = true;
+    private static boolean writeParetosToFile = true;
+    private static String writeParetoPath = "LowerLevelParetoVisual/Texperiments/";
 
   public CostDistr(String renewableFileName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName, String costsName) {
 	  this.setMaxmized_(false); // this problem is not to be maximized
@@ -169,38 +171,40 @@ public class CostDistr extends Problem {
           comparator = new ObjectiveComparator(0, false) ; // Single objective comparator
       else comparator = new ObjectiveComparator(0, true) ; // Single objective comparator
 
-      try {
-          hypWriter_0 = new FileWriter("LowerLevelParetoVisual/hyp0.txt");
-          hypWriter_1 = new FileWriter("LowerLevelParetoVisual/hyp1.txt");
-          hypWriter_2 = new FileWriter("LowerLevelParetoVisual/hyp2.txt");
-          hypWriter_3 = new FileWriter("LowerLevelParetoVisual/hyp3.txt");
-          hypWriter_4 = new FileWriter("LowerLevelParetoVisual/hyp4.txt");
+      if (createStatistics) {
+          try {
+              hypWriter_0 = new FileWriter("LowerLevelParetoVisual/hyp0.txt");
+              hypWriter_1 = new FileWriter("LowerLevelParetoVisual/hyp1.txt");
+              hypWriter_2 = new FileWriter("LowerLevelParetoVisual/hyp2.txt");
+              hypWriter_3 = new FileWriter("LowerLevelParetoVisual/hyp3.txt");
+              hypWriter_4 = new FileWriter("LowerLevelParetoVisual/hyp4.txt");
 
-          sprWriter_0 = new FileWriter("LowerLevelParetoVisual/spr0.txt");
-          sprWriter_1 = new FileWriter("LowerLevelParetoVisual/spr1.txt");
-          sprWriter_2 = new FileWriter("LowerLevelParetoVisual/spr2.txt");
-          sprWriter_3 = new FileWriter("LowerLevelParetoVisual/spr3.txt");
-          sprWriter_4 = new FileWriter("LowerLevelParetoVisual/spr4.txt");
+              sprWriter_0 = new FileWriter("LowerLevelParetoVisual/spr0.txt");
+              sprWriter_1 = new FileWriter("LowerLevelParetoVisual/spr1.txt");
+              sprWriter_2 = new FileWriter("LowerLevelParetoVisual/spr2.txt");
+              sprWriter_3 = new FileWriter("LowerLevelParetoVisual/spr3.txt");
+              sprWriter_4 = new FileWriter("LowerLevelParetoVisual/spr4.txt");
 
-          ndsWriter_0 = new FileWriter("LowerLevelParetoVisual/nds0.txt");
-          ndsWriter_1 = new FileWriter("LowerLevelParetoVisual/nds1.txt");
-          ndsWriter_2 = new FileWriter("LowerLevelParetoVisual/nds2.txt");
-          ndsWriter_3 = new FileWriter("LowerLevelParetoVisual/nds3.txt");
-          ndsWriter_4 = new FileWriter("LowerLevelParetoVisual/nds4.txt");
+              ndsWriter_0 = new FileWriter("LowerLevelParetoVisual/nds0.txt");
+              ndsWriter_1 = new FileWriter("LowerLevelParetoVisual/nds1.txt");
+              ndsWriter_2 = new FileWriter("LowerLevelParetoVisual/nds2.txt");
+              ndsWriter_3 = new FileWriter("LowerLevelParetoVisual/nds3.txt");
+              ndsWriter_4 = new FileWriter("LowerLevelParetoVisual/nds4.txt");
 
-          timWriter_0 = new FileWriter("LowerLevelParetoVisual/tim0.txt");
-          timWriter_1 = new FileWriter("LowerLevelParetoVisual/tim1.txt");
-          timWriter_2 = new FileWriter("LowerLevelParetoVisual/tim2.txt");
-          timWriter_3 = new FileWriter("LowerLevelParetoVisual/tim3.txt");
-          timWriter_4 = new FileWriter("LowerLevelParetoVisual/tim4.txt");
+              timWriter_0 = new FileWriter("LowerLevelParetoVisual/tim0.txt");
+              timWriter_1 = new FileWriter("LowerLevelParetoVisual/tim1.txt");
+              timWriter_2 = new FileWriter("LowerLevelParetoVisual/tim2.txt");
+              timWriter_3 = new FileWriter("LowerLevelParetoVisual/tim3.txt");
+              timWriter_4 = new FileWriter("LowerLevelParetoVisual/tim4.txt");
 
-          cmeWriter_0 = new FileWriter("LowerLevelParetoVisual/cme0.txt");
-          cmeWriter_1 = new FileWriter("LowerLevelParetoVisual/cme1.txt");
-          cmeWriter_2 = new FileWriter("LowerLevelParetoVisual/cme2.txt");
-          cmeWriter_3 = new FileWriter("LowerLevelParetoVisual/cme3.txt");
-          cmeWriter_4 = new FileWriter("LowerLevelParetoVisual/cme4.txt");
-      } catch (IOException e) {
-          e.printStackTrace();
+              cmeWriter_0 = new FileWriter("LowerLevelParetoVisual/cme0.txt");
+              cmeWriter_1 = new FileWriter("LowerLevelParetoVisual/cme1.txt");
+              cmeWriter_2 = new FileWriter("LowerLevelParetoVisual/cme2.txt");
+              cmeWriter_3 = new FileWriter("LowerLevelParetoVisual/cme3.txt");
+              cmeWriter_4 = new FileWriter("LowerLevelParetoVisual/cme4.txt");
+          } catch (IOException e) {
+              e.printStackTrace();
+          }
       }
 
   }  // 
@@ -447,43 +451,53 @@ public class CostDistr extends Problem {
                 execution++;
                 solution.setReferencePop(lowerLevelSolutions);
 
-                best_hyp = -100; best_hyp_ind = -1;
-                best_spr = 100; best_spr_ind = -1;
-                best_nds = -1; best_nds_ind = -1;
-                best_time = 100000; best_time_ind = -1;
-                best_cmetric = -1; best_cmetric_ind = -1;
-                try {
-                    double hypervolume = indicators.getHypervolume(lowerLevelSolutions);
-                    hypWriter_0.write(hypervolume + "\n");
-                    avg_0_hyp += hypervolume;
-                    if (hypervolume > best_hyp) {
-                        best_hyp = hypervolume;
-                        best_hyp_ind = execType;
+                if (writeParetosToFile)
+                    lowerLevelSolutions.printObjectivesToFile(writeParetoPath + (execution) + "_FUN_" + execType);
+
+                if (createStatistics) {
+                    best_hyp = -100;
+                    best_hyp_ind = -1;
+                    best_spr = 100;
+                    best_spr_ind = -1;
+                    best_nds = -1;
+                    best_nds_ind = -1;
+                    best_time = 100000;
+                    best_time_ind = -1;
+                    best_cmetric = -1;
+                    best_cmetric_ind = -1;
+                    try {
+                        double hypervolume = indicators.getHypervolume(lowerLevelSolutions);
+                        hypWriter_0.write(hypervolume + "\n");
+                        avg_0_hyp += hypervolume;
+                        if (hypervolume > best_hyp) {
+                            best_hyp = hypervolume;
+                            best_hyp_ind = execType;
+                        }
+                        double spread = indicators.getSpread(lowerLevelSolutions);
+                        sprWriter_0.write(spread + "\n");
+                        avg_0_spr += spread;
+                        if (spread < best_spr) {
+                            best_spr = spread;
+                            best_spr_ind = execType;
+                        }
+                        int nds = lsize;
+                        ndsWriter_0.write(nds + "\n");
+                        avg_0_nds += nds;
+                        if (nds < best_nds) {
+                            best_nds = nds;
+                            best_nds_ind = execType;
+                        }
+                        timWriter_0.write(estimatedTime + "\n");
+                        avg_0_time += estimatedTime;
+                        if (estimatedTime < best_time) {
+                            best_time = estimatedTime;
+                            best_time_ind = execType;
+                        }
+                        //System.out.println("val:" + hypervolume);
+                        //lowerLevelSolutions.printObjectivesToFile("LowerLevelParetoEvolution/" + execution + "_FUN_" + execType);
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                    double spread = indicators.getSpread(lowerLevelSolutions);
-                    sprWriter_0.write(spread + "\n");
-                    avg_0_spr += spread;
-                    if (spread < best_spr) {
-                        best_spr = spread;
-                        best_spr_ind = execType;
-                    }
-                    int nds = lsize;
-                    ndsWriter_0.write(nds + "\n");
-                    avg_0_nds += nds;
-                    if (nds < best_nds) {
-                        best_nds = nds;
-                        best_nds_ind = execType;
-                    }
-                    timWriter_0.write(estimatedTime + "\n");
-                    avg_0_time += estimatedTime;
-                    if (estimatedTime < best_time){
-                        best_time = estimatedTime;
-                        best_time_ind = execType;
-                    }
-                    //System.out.println("val:" + hypervolume);
-                    //lowerLevelSolutions.printObjectivesToFile("LowerLevelParetoEvolution/" + execution + "_FUN_" + execType);
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
             }
         } else if (solution.isMarked() == false){
@@ -514,200 +528,263 @@ public class CostDistr extends Problem {
             System.out.println("Type:" + execType + ", val:" + value);
 
              */
-            double hypervolume = indicators.getHypervolume(lowerLevelSolutions);
-            if (hypervolume > best_hyp) {
-                best_hyp = hypervolume;
-                best_hyp_ind = execType;
-            }
-            double spread = indicators.getSpread(lowerLevelSolutions);
-            if (spread < best_spr) {
-                best_spr = spread;
-                best_spr_ind = execType;
-            }
-            int nds = lsize;
-            if (nds > best_nds) {
-                best_nds = nds;
-                best_nds_ind = execType;
-            }
-            if (estimatedTime < best_time){
-                best_time = estimatedTime;
-                best_time_ind = execType;
-            }
-            lowerLevelSolutions.printObjectivesToFile("LowerLevelParetoEvolution/FUN_1");
-            solution.getReferencePop().printObjectivesToFile("LowerLevelParetoEvolution/FUN_2");
-            C_Metric epf = new C_Metric("LowerLevelParetoEvolution/FUN_1",
-                    "LowerLevelParetoEvolution/FUN_2", 2);
-            double cMetric = (float) epf.num_of_dominated_B / (float) epf.nds_B;
-            if (cMetric > best_cmetric){
-                best_cmetric = cMetric;
-                C_Metric epfReverse = new C_Metric("LowerLevelParetoEvolution/FUN_2",
-                        "LowerLevelParetoEvolution/FUN_1", 2);
-                double cMetricReverse = (float) epfReverse.num_of_dominated_B / (float) epfReverse.nds_B;
-                cmetric_0_against_best = cMetricReverse;
-                if (cMetricReverse > cMetric)
-                    best_cmetric_ind = 0;
-                else best_cmetric_ind = execType;
 
-            }
-            File file1 = new File("LowerLevelParetoEvolution/FUN_1"); file1.delete();
-            File file2 = new File("LowerLevelParetoEvolution/FUN_2"); file2.delete();
+            if (writeParetosToFile)
+                lowerLevelSolutions.printObjectivesToFile(writeParetoPath + (execution) + "_FUN_" + execType);
 
-            try {
-                switch (execType) {
-                    case 1:
-                        avg_1_hyp += hypervolume;
-                        avg_1_spr += spread;
-                        avg_1_nds += nds;
-                        avg_1_time += estimatedTime;
-                        avg_1_cmetric += cMetric;
-                        hypWriter_1.write(hypervolume + "\n");
-                        sprWriter_1.write(spread + "\n");
-                        ndsWriter_1.write(nds + "\n");
-                        timWriter_1.write(estimatedTime + "\n");
-                        cmeWriter_1.write(cMetric + "\n");
-                        break;
-                    case 2:
-                        avg_2_hyp += hypervolume;
-                        avg_2_spr += spread;
-                        avg_2_nds += nds;
-                        avg_2_time += estimatedTime;
-                        avg_2_cmetric += cMetric;
-                        hypWriter_2.write(hypervolume + "\n");
-                        sprWriter_2.write(spread + "\n");
-                        ndsWriter_2.write(nds + "\n");
-                        timWriter_2.write(estimatedTime + "\n");
-                        cmeWriter_2.write(cMetric + "\n");
-                        break;
-                    case 3:
-                        avg_3_hyp += hypervolume;
-                        avg_3_spr += spread;
-                        avg_3_nds += nds;
-                        avg_3_time += estimatedTime;
-                        avg_3_cmetric += cMetric;
-                        hypWriter_3.write(hypervolume + "\n");
-                        sprWriter_3.write(spread + "\n");
-                        ndsWriter_3.write(nds + "\n");
-                        timWriter_3.write(estimatedTime + "\n");
-                        cmeWriter_3.write(cMetric + "\n");
-                        break;
-                    case 4:
-                        avg_4_hyp += hypervolume;
-                        avg_4_spr += spread;
-                        avg_4_nds += nds;
-                        avg_4_time += estimatedTime;
-                        avg_4_cmetric += cMetric;
-                        hypWriter_4.write(hypervolume + "\n");
-                        sprWriter_4.write(spread + "\n");
-                        ndsWriter_4.write(nds + "\n");
-                        timWriter_4.write(estimatedTime + "\n");
-                        cmeWriter_4.write(cMetric + "\n");
-                        break;
-                    default:
-                        break;
+            if (createStatistics) {
+                double hypervolume = indicators.getHypervolume(lowerLevelSolutions);
+                if (hypervolume > best_hyp) {
+                    best_hyp = hypervolume;
+                    best_hyp_ind = execType;
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                double spread = indicators.getSpread(lowerLevelSolutions);
+                if (spread < best_spr) {
+                    best_spr = spread;
+                    best_spr_ind = execType;
+                }
+                int nds = lsize;
+                if (nds > best_nds) {
+                    best_nds = nds;
+                    best_nds_ind = execType;
+                }
+                if (estimatedTime < best_time) {
+                    best_time = estimatedTime;
+                    best_time_ind = execType;
+                }
+                lowerLevelSolutions.printObjectivesToFile("LowerLevelParetoEvolution/FUN_1");
+                solution.getReferencePop().printObjectivesToFile("LowerLevelParetoEvolution/FUN_2");
+                C_Metric epf = new C_Metric("LowerLevelParetoEvolution/FUN_1",
+                        "LowerLevelParetoEvolution/FUN_2", 2);
+                double cMetric = (float) epf.num_of_dominated_B / (float) epf.nds_B;
+                if (cMetric > best_cmetric) {
+                    best_cmetric = cMetric;
+                    C_Metric epfReverse = new C_Metric("LowerLevelParetoEvolution/FUN_2",
+                            "LowerLevelParetoEvolution/FUN_1", 2);
+                    double cMetricReverse = (float) epfReverse.num_of_dominated_B / (float) epfReverse.nds_B;
+                    cmetric_0_against_best = cMetricReverse;
+                    if (cMetricReverse > cMetric)
+                        best_cmetric_ind = 0;
+                    else best_cmetric_ind = execType;
 
-            //now find winner of this iteration
-            if (execType == 4){
-                switch(best_hyp_ind){
-                    case 0: wins_0_hyp++; break;
-                    case 1: wins_1_hyp++; break;
-                    case 2: wins_2_hyp++; break;
-                    case 3: wins_3_hyp++; break;
-                    case 4: wins_4_hyp++; break;
-                    default: break;
                 }
-                switch(best_spr_ind){
-                    case 0: wins_0_spr++; break;
-                    case 1: wins_1_spr++; break;
-                    case 2: wins_2_spr++; break;
-                    case 3: wins_3_spr++; break;
-                    case 4: wins_4_spr++; break;
-                    default: break;
-                }
-                switch(best_nds_ind){
-                    case 0: wins_0_nds++; break;
-                    case 1: wins_1_nds++; break;
-                    case 2: wins_2_nds++; break;
-                    case 3: wins_3_nds++; break;
-                    case 4: wins_4_nds++; break;
-                    default: break;
-                }
-                switch(best_time_ind){
-                    case 0: wins_0_time++; break;
-                    case 1: wins_1_time++; break;
-                    case 2: wins_2_time++; break;
-                    case 3: wins_3_time++; break;
-                    case 4: wins_4_time++; break;
-                    default: break;
-                }
+                File file1 = new File("LowerLevelParetoEvolution/FUN_1");
+                file1.delete();
+                File file2 = new File("LowerLevelParetoEvolution/FUN_2");
+                file2.delete();
+
                 try {
-                    cmeWriter_0.write(cmetric_0_against_best + "\n");
+                    switch (execType) {
+                        case 1:
+                            avg_1_hyp += hypervolume;
+                            avg_1_spr += spread;
+                            avg_1_nds += nds;
+                            avg_1_time += estimatedTime;
+                            avg_1_cmetric += cMetric;
+                            hypWriter_1.write(hypervolume + "\n");
+                            sprWriter_1.write(spread + "\n");
+                            ndsWriter_1.write(nds + "\n");
+                            timWriter_1.write(estimatedTime + "\n");
+                            cmeWriter_1.write(cMetric + "\n");
+                            break;
+                        case 2:
+                            avg_2_hyp += hypervolume;
+                            avg_2_spr += spread;
+                            avg_2_nds += nds;
+                            avg_2_time += estimatedTime;
+                            avg_2_cmetric += cMetric;
+                            hypWriter_2.write(hypervolume + "\n");
+                            sprWriter_2.write(spread + "\n");
+                            ndsWriter_2.write(nds + "\n");
+                            timWriter_2.write(estimatedTime + "\n");
+                            cmeWriter_2.write(cMetric + "\n");
+                            break;
+                        case 3:
+                            avg_3_hyp += hypervolume;
+                            avg_3_spr += spread;
+                            avg_3_nds += nds;
+                            avg_3_time += estimatedTime;
+                            avg_3_cmetric += cMetric;
+                            hypWriter_3.write(hypervolume + "\n");
+                            sprWriter_3.write(spread + "\n");
+                            ndsWriter_3.write(nds + "\n");
+                            timWriter_3.write(estimatedTime + "\n");
+                            cmeWriter_3.write(cMetric + "\n");
+                            break;
+                        case 4:
+                            avg_4_hyp += hypervolume;
+                            avg_4_spr += spread;
+                            avg_4_nds += nds;
+                            avg_4_time += estimatedTime;
+                            avg_4_cmetric += cMetric;
+                            hypWriter_4.write(hypervolume + "\n");
+                            sprWriter_4.write(spread + "\n");
+                            ndsWriter_4.write(nds + "\n");
+                            timWriter_4.write(estimatedTime + "\n");
+                            cmeWriter_4.write(cMetric + "\n");
+                            break;
+                        default:
+                            break;
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                avg_0_cmetric += cmetric_0_against_best;
-                switch(best_cmetric_ind){
-                    case 0: wins_0_cmetric++; break;
-                    case 1: wins_1_cmetric++; break;
-                    case 2: wins_2_cmetric++; break;
-                    case 3: wins_3_cmetric++; break;
-                    case 4: wins_4_cmetric++; break;
-                    default: break;
-                }
-                if (execution % 10 == 0) {
-                    System.out.println("WIN Hyp:" + wins_0_hyp + " " + wins_1_hyp + " " + wins_2_hyp + " " + wins_3_hyp + " " + wins_4_hyp);
-                    System.out.println("WIN Spr:" + wins_0_spr + " " + wins_1_spr + " " + wins_2_spr + " " + wins_3_spr + " " + wins_4_spr);
-                    System.out.println("WIN Nds:" + wins_0_nds + " " + wins_1_nds + " " + wins_2_nds + " " + wins_3_nds + " " + wins_4_nds);
-                    System.out.println("WIN Tim:" + wins_0_time + " " + wins_1_time + " " + wins_2_time + " " + wins_3_time + " " + wins_4_time);
-                    System.out.println("WIN Cme:" + wins_0_cmetric + " " + wins_1_cmetric + " " + wins_2_cmetric + " " + wins_3_cmetric + " " + wins_4_cmetric);
 
-                    System.out.println("AVG Hyp:" + avg_0_hyp/execution + " " + avg_1_hyp/execution + " " + avg_2_hyp/execution + " " + avg_3_hyp/execution + " " + avg_4_hyp/execution);
-                    System.out.println("AVG Spr:" + avg_0_spr/execution + " " + avg_1_spr/execution + " " + avg_2_spr/execution + " " + avg_3_spr/execution + " " + avg_4_spr/execution);
-                    System.out.println("AVG Nds:" + avg_0_nds/execution + " " + avg_1_nds/execution + " " + avg_2_nds/execution + " " + avg_3_nds/execution + " " + avg_4_nds/execution);
-                    System.out.println("AVG Tim:" + avg_0_time/execution + " " + avg_1_time/execution + " " + avg_2_time/execution + " " + avg_3_time/execution + " " + avg_4_time/execution);
-                    System.out.println("AVG Cme:" + avg_0_cmetric/execution + " " + avg_1_cmetric/execution + " " + avg_2_cmetric/execution + " " + avg_3_cmetric/execution + " " + avg_4_cmetric/execution);
-                }
-                if (execution == 1000){
+                //now find winner of this iteration
+                if (execType == 4) {
+                    switch (best_hyp_ind) {
+                        case 0:
+                            wins_0_hyp++;
+                            break;
+                        case 1:
+                            wins_1_hyp++;
+                            break;
+                        case 2:
+                            wins_2_hyp++;
+                            break;
+                        case 3:
+                            wins_3_hyp++;
+                            break;
+                        case 4:
+                            wins_4_hyp++;
+                            break;
+                        default:
+                            break;
+                    }
+                    switch (best_spr_ind) {
+                        case 0:
+                            wins_0_spr++;
+                            break;
+                        case 1:
+                            wins_1_spr++;
+                            break;
+                        case 2:
+                            wins_2_spr++;
+                            break;
+                        case 3:
+                            wins_3_spr++;
+                            break;
+                        case 4:
+                            wins_4_spr++;
+                            break;
+                        default:
+                            break;
+                    }
+                    switch (best_nds_ind) {
+                        case 0:
+                            wins_0_nds++;
+                            break;
+                        case 1:
+                            wins_1_nds++;
+                            break;
+                        case 2:
+                            wins_2_nds++;
+                            break;
+                        case 3:
+                            wins_3_nds++;
+                            break;
+                        case 4:
+                            wins_4_nds++;
+                            break;
+                        default:
+                            break;
+                    }
+                    switch (best_time_ind) {
+                        case 0:
+                            wins_0_time++;
+                            break;
+                        case 1:
+                            wins_1_time++;
+                            break;
+                        case 2:
+                            wins_2_time++;
+                            break;
+                        case 3:
+                            wins_3_time++;
+                            break;
+                        case 4:
+                            wins_4_time++;
+                            break;
+                        default:
+                            break;
+                    }
                     try {
-                        hypWriter_0.close();
-                        hypWriter_1.close();
-                        hypWriter_2.close();
-                        hypWriter_3.close();
-                        hypWriter_4.close();
-
-                        sprWriter_0.close();
-                        sprWriter_1.close();
-                        sprWriter_2.close();
-                        sprWriter_3.close();
-                        sprWriter_4.close();
-
-                        ndsWriter_0.close();
-                        ndsWriter_1.close();
-                        ndsWriter_2.close();
-                        ndsWriter_3.close();
-                        ndsWriter_4.close();
-
-                        timWriter_0.close();
-                        timWriter_1.close();
-                        timWriter_2.close();
-                        timWriter_3.close();
-                        timWriter_4.close();
-
-                        cmeWriter_0.close();
-                        cmeWriter_1.close();
-                        cmeWriter_2.close();
-                        cmeWriter_3.close();
-                        cmeWriter_4.close();
+                        cmeWriter_0.write(cmetric_0_against_best + "\n");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    avg_0_cmetric += cmetric_0_against_best;
+                    switch (best_cmetric_ind) {
+                        case 0:
+                            wins_0_cmetric++;
+                            break;
+                        case 1:
+                            wins_1_cmetric++;
+                            break;
+                        case 2:
+                            wins_2_cmetric++;
+                            break;
+                        case 3:
+                            wins_3_cmetric++;
+                            break;
+                        case 4:
+                            wins_4_cmetric++;
+                            break;
+                        default:
+                            break;
+                    }
+                    if (execution % 10 == 0) {
+                        System.out.println("WIN Hyp:" + wins_0_hyp + " " + wins_1_hyp + " " + wins_2_hyp + " " + wins_3_hyp + " " + wins_4_hyp);
+                        System.out.println("WIN Spr:" + wins_0_spr + " " + wins_1_spr + " " + wins_2_spr + " " + wins_3_spr + " " + wins_4_spr);
+                        System.out.println("WIN Nds:" + wins_0_nds + " " + wins_1_nds + " " + wins_2_nds + " " + wins_3_nds + " " + wins_4_nds);
+                        System.out.println("WIN Tim:" + wins_0_time + " " + wins_1_time + " " + wins_2_time + " " + wins_3_time + " " + wins_4_time);
+                        System.out.println("WIN Cme:" + wins_0_cmetric + " " + wins_1_cmetric + " " + wins_2_cmetric + " " + wins_3_cmetric + " " + wins_4_cmetric);
+
+                        System.out.println("AVG Hyp:" + avg_0_hyp / execution + " " + avg_1_hyp / execution + " " + avg_2_hyp / execution + " " + avg_3_hyp / execution + " " + avg_4_hyp / execution);
+                        System.out.println("AVG Spr:" + avg_0_spr / execution + " " + avg_1_spr / execution + " " + avg_2_spr / execution + " " + avg_3_spr / execution + " " + avg_4_spr / execution);
+                        System.out.println("AVG Nds:" + avg_0_nds / execution + " " + avg_1_nds / execution + " " + avg_2_nds / execution + " " + avg_3_nds / execution + " " + avg_4_nds / execution);
+                        System.out.println("AVG Tim:" + avg_0_time / execution + " " + avg_1_time / execution + " " + avg_2_time / execution + " " + avg_3_time / execution + " " + avg_4_time / execution);
+                        System.out.println("AVG Cme:" + avg_0_cmetric / execution + " " + avg_1_cmetric / execution + " " + avg_2_cmetric / execution + " " + avg_3_cmetric / execution + " " + avg_4_cmetric / execution);
+                    }
+                    if (execution == 1000) {
+                        try {
+                            hypWriter_0.close();
+                            hypWriter_1.close();
+                            hypWriter_2.close();
+                            hypWriter_3.close();
+                            hypWriter_4.close();
+
+                            sprWriter_0.close();
+                            sprWriter_1.close();
+                            sprWriter_2.close();
+                            sprWriter_3.close();
+                            sprWriter_4.close();
+
+                            ndsWriter_0.close();
+                            ndsWriter_1.close();
+                            ndsWriter_2.close();
+                            ndsWriter_3.close();
+                            ndsWriter_4.close();
+
+                            timWriter_0.close();
+                            timWriter_1.close();
+                            timWriter_2.close();
+                            timWriter_3.close();
+                            timWriter_4.close();
+
+                            cmeWriter_0.close();
+                            cmeWriter_1.close();
+                            cmeWriter_2.close();
+                            cmeWriter_3.close();
+                            cmeWriter_4.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
+                //System.out.println("val:" + hypervolume);
+                //lowerLevelSolutions.printObjectivesToFile("LowerLevelParetoEvolution/" + execution + "_FUN_" + execType);
             }
-            //System.out.println("val:" + hypervolume);
-            //lowerLevelSolutions.printObjectivesToFile("LowerLevelParetoEvolution/" + execution + "_FUN_" + execType);
         }
 
         if (best_upper_level_result > best_self) {
