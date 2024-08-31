@@ -24,6 +24,13 @@ package jmetal.util;
 import jmetal.core.Solution;
 import jmetal.core.SolutionSet;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.stream.Stream;
+
 /**
  * Utilities methods to used by MOEA/D
  */
@@ -364,6 +371,29 @@ public class Utils {
 		}
 
 		return Math.sqrt(standardDeviation / length);
+	}
+
+	public static double[] readFileIntoArray(String filename) throws FileNotFoundException {
+		// arraylist to store strings
+		List<Double> listOfStrings
+				= new ArrayList<Double>();
+
+		// load content of file based on specific delimiter
+		Scanner sc = new Scanner(new FileReader(filename))
+				.useDelimiter("\n");
+		String str;
+
+		// checking end of file
+		while (sc.hasNext()) {
+			str = sc.next();
+
+			// adding each string to arraylist
+			listOfStrings.add(Double.parseDouble(str));
+		}
+
+		// convert any arraylist to array
+		Double[] array = listOfStrings.toArray(new Double[0]);
+		return Stream.of(array).mapToDouble(Double::doubleValue).toArray();
 	}
 
 

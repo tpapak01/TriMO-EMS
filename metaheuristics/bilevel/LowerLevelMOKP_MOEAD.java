@@ -179,7 +179,7 @@ public class LowerLevelMOKP_MOEAD {
                     algorithm.setInputParameter("initPopSolution", null);
                     break;
                 case 1:
-                    algorithm.setInputParameter("T", 100) ;
+                    algorithm.setInputParameter("T", 50) ;
                     algorithm.setInputParameter("initPopSolution", solution.getLL_ND_pop());
                     break;
                 case 2:
