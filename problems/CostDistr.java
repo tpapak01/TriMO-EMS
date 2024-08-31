@@ -143,6 +143,8 @@ public class CostDistr extends Problem {
     private static boolean createStatistics = true;
     private static boolean writeParetosToFile = true;
     private static String writeParetoPath = "LowerLevelParetoVisual/Texperiments/";
+    private static int execution = 0;
+    private static int ULpopSize = 1000;
 
   public CostDistr(String renewableFileName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName, String costsName) {
 	  this.setMaxmized_(false); // this problem is not to be maximized
@@ -254,8 +256,6 @@ public class CostDistr extends Problem {
     public double getTotalProducedRE(){
         return totalProducedRE;
     }
-
-    int execution = 0;
 
 	@Override
 	public void evaluate(Solution solution) throws JMException {
@@ -445,10 +445,10 @@ public class CostDistr extends Problem {
             solution.setLL_Reverse_pop(pareto3);
             solution.setLL_Random_pop(pareto4);
         } else if (execType == 0 && solution.isMarked() == false){
+            execution++;
             if (solution.getReferencePop() != null){
                 int problem = 1111;
             } else {
-                execution++;
                 solution.setReferencePop(lowerLevelSolutions);
 
                 if (writeParetosToFile)
@@ -733,7 +733,7 @@ public class CostDistr extends Problem {
                         default:
                             break;
                     }
-                    if (execution == 1000) {
+                    if (execution == ULpopSize) {
                         try {
                             hypWriter_0.close();
                             hypWriter_1.close();
@@ -767,7 +767,9 @@ public class CostDistr extends Problem {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        if (execution % 10 == 0) {
+			            int execStop = 10;
+                        if (execStop > ULpopSize) execStop = ULpopSize;
+                        if (execution % execStop == 0) {
                             System.out.println("WIN Hyp:" + wins_0_hyp + " " + wins_1_hyp + " " + wins_2_hyp + " " + wins_3_hyp + " " + wins_4_hyp);
                             System.out.println("WIN Spr:" + wins_0_spr + " " + wins_1_spr + " " + wins_2_spr + " " + wins_3_spr + " " + wins_4_spr);
                             System.out.println("WIN Nds:" + wins_0_nds + " " + wins_1_nds + " " + wins_2_nds + " " + wins_3_nds + " " + wins_4_nds);
