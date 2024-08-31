@@ -21,6 +21,7 @@
 
 package jmetal.util;
 
+import jmetal.core.Problem;
 import jmetal.core.Solution;
 import jmetal.core.SolutionSet;
 
@@ -394,6 +395,31 @@ public class Utils {
 		// convert any arraylist to array
 		Double[] array = listOfStrings.toArray(new Double[0]);
 		return Stream.of(array).mapToDouble(Double::doubleValue).toArray();
+	}
+
+	public static SolutionSet readFileIntoSolutionSet(Problem lowerLevelProblem, String filename) throws FileNotFoundException, ClassNotFoundException {
+		SolutionSet set = new SolutionSet(300);
+
+		// load content of file based on specific delimiter
+		Scanner sc = new Scanner(new FileReader(filename))
+				.useDelimiter(" ");
+		String str;
+
+		// checking end of file
+		while (sc.hasNext()) {
+			Solution sol = new Solution(lowerLevelProblem);
+
+			str = sc.next();
+			if (str.trim().isEmpty())
+				break;
+			sol.setObjective(0, Double.parseDouble(str));
+
+			str = sc.next();
+			sol.setObjective(1, Double.parseDouble(str));
+			set.add(sol);
+		}
+
+		return set;
 	}
 
 
