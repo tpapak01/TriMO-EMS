@@ -733,19 +733,6 @@ public class CostDistr extends Problem {
                         default:
                             break;
                     }
-                    if (execution % 10 == 0) {
-                        System.out.println("WIN Hyp:" + wins_0_hyp + " " + wins_1_hyp + " " + wins_2_hyp + " " + wins_3_hyp + " " + wins_4_hyp);
-                        System.out.println("WIN Spr:" + wins_0_spr + " " + wins_1_spr + " " + wins_2_spr + " " + wins_3_spr + " " + wins_4_spr);
-                        System.out.println("WIN Nds:" + wins_0_nds + " " + wins_1_nds + " " + wins_2_nds + " " + wins_3_nds + " " + wins_4_nds);
-                        System.out.println("WIN Tim:" + wins_0_time + " " + wins_1_time + " " + wins_2_time + " " + wins_3_time + " " + wins_4_time);
-                        System.out.println("WIN Cme:" + wins_0_cmetric + " " + wins_1_cmetric + " " + wins_2_cmetric + " " + wins_3_cmetric + " " + wins_4_cmetric);
-
-                        System.out.println("AVG Hyp:" + avg_0_hyp / execution + " " + avg_1_hyp / execution + " " + avg_2_hyp / execution + " " + avg_3_hyp / execution + " " + avg_4_hyp / execution);
-                        System.out.println("AVG Spr:" + avg_0_spr / execution + " " + avg_1_spr / execution + " " + avg_2_spr / execution + " " + avg_3_spr / execution + " " + avg_4_spr / execution);
-                        System.out.println("AVG Nds:" + avg_0_nds / execution + " " + avg_1_nds / execution + " " + avg_2_nds / execution + " " + avg_3_nds / execution + " " + avg_4_nds / execution);
-                        System.out.println("AVG Tim:" + avg_0_time / execution + " " + avg_1_time / execution + " " + avg_2_time / execution + " " + avg_3_time / execution + " " + avg_4_time / execution);
-                        System.out.println("AVG Cme:" + avg_0_cmetric / execution + " " + avg_1_cmetric / execution + " " + avg_2_cmetric / execution + " " + avg_3_cmetric / execution + " " + avg_4_cmetric / execution);
-                    }
                     if (execution == 1000) {
                         try {
                             hypWriter_0.close();
@@ -779,6 +766,129 @@ public class CostDistr extends Problem {
                             cmeWriter_4.close();
                         } catch (IOException e) {
                             e.printStackTrace();
+                        }
+                        if (execution % 10 == 0) {
+                            System.out.println("WIN Hyp:" + wins_0_hyp + " " + wins_1_hyp + " " + wins_2_hyp + " " + wins_3_hyp + " " + wins_4_hyp);
+                            System.out.println("WIN Spr:" + wins_0_spr + " " + wins_1_spr + " " + wins_2_spr + " " + wins_3_spr + " " + wins_4_spr);
+                            System.out.println("WIN Nds:" + wins_0_nds + " " + wins_1_nds + " " + wins_2_nds + " " + wins_3_nds + " " + wins_4_nds);
+                            System.out.println("WIN Tim:" + wins_0_time + " " + wins_1_time + " " + wins_2_time + " " + wins_3_time + " " + wins_4_time);
+                            System.out.println("WIN Cme:" + wins_0_cmetric + " " + wins_1_cmetric + " " + wins_2_cmetric + " " + wins_3_cmetric + " " + wins_4_cmetric);
+
+                            System.out.println("AVG Hyp:" + avg_0_hyp / execution + " " + avg_1_hyp / execution + " " + avg_2_hyp / execution + " " + avg_3_hyp / execution + " " + avg_4_hyp / execution);
+                            System.out.println("AVG Spr:" + avg_0_spr / execution + " " + avg_1_spr / execution + " " + avg_2_spr / execution + " " + avg_3_spr / execution + " " + avg_4_spr / execution);
+                            System.out.println("AVG Nds:" + avg_0_nds / execution + " " + avg_1_nds / execution + " " + avg_2_nds / execution + " " + avg_3_nds / execution + " " + avg_4_nds / execution);
+                            System.out.println("AVG Tim:" + avg_0_time / execution + " " + avg_1_time / execution + " " + avg_2_time / execution + " " + avg_3_time / execution + " " + avg_4_time / execution);
+                            System.out.println("AVG Cme:" + avg_0_cmetric / execution + " " + avg_1_cmetric / execution + " " + avg_2_cmetric / execution + " " + avg_3_cmetric / execution + " " + avg_4_cmetric / execution);
+
+                            //hyp
+                            double std_0_hyp = 0; double[] hyp0;
+                            double std_1_hyp = 0; double[] hyp1;
+                            double std_2_hyp = 0; double[] hyp2;
+                            double std_3_hyp = 0; double[] hyp3;
+                            double std_4_hyp = 0; double[] hyp4;
+                            try {
+                                hyp0 = Utils.readFileIntoArray("LowerLevelParetoVisual/hyp0.txt");
+                                std_0_hyp = Utils.calculateStandardDeviation(hyp0);
+                                hyp1 = Utils.readFileIntoArray("LowerLevelParetoVisual/hyp1.txt");
+                                std_1_hyp = Utils.calculateStandardDeviation(hyp1);
+                                hyp2 = Utils.readFileIntoArray("LowerLevelParetoVisual/hyp2.txt");
+                                std_2_hyp = Utils.calculateStandardDeviation(hyp2);
+                                hyp3 = Utils.readFileIntoArray("LowerLevelParetoVisual/hyp3.txt");
+                                std_3_hyp = Utils.calculateStandardDeviation(hyp3);
+                                hyp4 = Utils.readFileIntoArray("LowerLevelParetoVisual/hyp4.txt");
+                                std_4_hyp = Utils.calculateStandardDeviation(hyp4);
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                            System.out.println("STD Hyp:" + std_0_hyp + " " + std_1_hyp + " " + std_2_hyp + " " + std_3_hyp + " " + std_4_hyp);
+
+                            //spr
+                            double std_0_spr = 0; double[] spr0;
+                            double std_1_spr = 0; double[] spr1;
+                            double std_2_spr = 0; double[] spr2;
+                            double std_3_spr = 0; double[] spr3;
+                            double std_4_spr = 0; double[] spr4;
+                            try {
+                                spr0 = Utils.readFileIntoArray("LowerLevelParetoVisual/spr0.txt");
+                                std_0_spr = Utils.calculateStandardDeviation(spr0);
+                                spr1 = Utils.readFileIntoArray("LowerLevelParetoVisual/spr1.txt");
+                                std_1_spr = Utils.calculateStandardDeviation(spr1);
+                                spr2 = Utils.readFileIntoArray("LowerLevelParetoVisual/spr2.txt");
+                                std_2_spr = Utils.calculateStandardDeviation(spr2);
+                                spr3 = Utils.readFileIntoArray("LowerLevelParetoVisual/spr3.txt");
+                                std_3_spr = Utils.calculateStandardDeviation(spr3);
+                                spr4 = Utils.readFileIntoArray("LowerLevelParetoVisual/spr4.txt");
+                                std_4_spr = Utils.calculateStandardDeviation(spr4);
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                            System.out.println("STD Spr:" + std_0_spr + " " + std_1_spr + " " + std_2_spr + " " + std_3_spr + " " + std_4_spr);
+
+                            //nds
+                            double std_0_nds = 0; double[] nds0;
+                            double std_1_nds = 0; double[] nds1;
+                            double std_2_nds = 0; double[] nds2;
+                            double std_3_nds = 0; double[] nds3;
+                            double std_4_nds = 0; double[] nds4;
+                            try {
+                                nds0 = Utils.readFileIntoArray("LowerLevelParetoVisual/nds0.txt");
+                                std_0_nds = Utils.calculateStandardDeviation(nds0);
+                                nds1 = Utils.readFileIntoArray("LowerLevelParetoVisual/nds1.txt");
+                                std_1_nds = Utils.calculateStandardDeviation(nds1);
+                                nds2 = Utils.readFileIntoArray("LowerLevelParetoVisual/nds2.txt");
+                                std_2_nds = Utils.calculateStandardDeviation(nds2);
+                                nds3 = Utils.readFileIntoArray("LowerLevelParetoVisual/nds3.txt");
+                                std_3_nds = Utils.calculateStandardDeviation(nds3);
+                                nds4 = Utils.readFileIntoArray("LowerLevelParetoVisual/nds4.txt");
+                                std_4_nds = Utils.calculateStandardDeviation(nds4);
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                            System.out.println("STD Nds:" + std_0_nds + " " + std_1_nds + " " + std_2_nds + " " + std_3_nds + " " + std_4_nds);
+
+                            //tim
+                            double std_0_tim = 0; double[] tim0;
+                            double std_1_tim = 0; double[] tim1;
+                            double std_2_tim = 0; double[] tim2;
+                            double std_3_tim = 0; double[] tim3;
+                            double std_4_tim = 0; double[] tim4;
+                            try {
+                                tim0 = Utils.readFileIntoArray("LowerLevelParetoVisual/tim0.txt");
+                                std_0_tim = Utils.calculateStandardDeviation(tim0);
+                                tim1 = Utils.readFileIntoArray("LowerLevelParetoVisual/tim1.txt");
+                                std_1_tim = Utils.calculateStandardDeviation(tim1);
+                                tim2 = Utils.readFileIntoArray("LowerLevelParetoVisual/tim2.txt");
+                                std_2_tim = Utils.calculateStandardDeviation(tim2);
+                                tim3 = Utils.readFileIntoArray("LowerLevelParetoVisual/tim3.txt");
+                                std_3_tim = Utils.calculateStandardDeviation(tim3);
+                                tim4 = Utils.readFileIntoArray("LowerLevelParetoVisual/tim4.txt");
+                                std_4_tim = Utils.calculateStandardDeviation(tim4);
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                            System.out.println("STD Tim:" + std_0_tim + " " + std_1_tim + " " + std_2_tim + " " + std_3_tim + " " + std_4_tim);
+
+                            //cme
+                            double std_0_cme = 0; double[] cme0;
+                            double std_1_cme = 0; double[] cme1;
+                            double std_2_cme = 0; double[] cme2;
+                            double std_3_cme = 0; double[] cme3;
+                            double std_4_cme = 0; double[] cme4;
+                            try {
+                                cme0 = Utils.readFileIntoArray("LowerLevelParetoVisual/cme0.txt");
+                                std_0_cme = Utils.calculateStandardDeviation(cme0);
+                                cme1 = Utils.readFileIntoArray("LowerLevelParetoVisual/cme1.txt");
+                                std_1_cme = Utils.calculateStandardDeviation(cme1);
+                                cme2 = Utils.readFileIntoArray("LowerLevelParetoVisual/cme2.txt");
+                                std_2_cme = Utils.calculateStandardDeviation(cme2);
+                                cme3 = Utils.readFileIntoArray("LowerLevelParetoVisual/cme3.txt");
+                                std_3_cme = Utils.calculateStandardDeviation(cme3);
+                                cme4 = Utils.readFileIntoArray("LowerLevelParetoVisual/cme4.txt");
+                                std_4_cme = Utils.calculateStandardDeviation(cme4);
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                            System.out.println("STD Cme:" + std_0_cme + " " + std_1_cme + " " + std_2_cme + " " + std_3_cme + " " + std_4_cme);
                         }
                     }
                 }
