@@ -150,6 +150,10 @@ public class Fast_CostDistr extends Algorithm {
         problem_.evaluate(sol3);
         Solution sol4 = new Solution(offspring[0]); sol4.setExecType(4);
         problem_.evaluate(sol4);
+        Solution sol5 = new Solution(offspring[0]); sol5.setExecType(5);
+        problem_.evaluate(sol5);
+        Solution sol6 = new Solution(offspring[0]); sol6.setExecType(6);
+        problem_.evaluate(sol6);
 
         offspring[1].setExecType(0);
         problem_.evaluate(offspring[1]);
@@ -161,6 +165,10 @@ public class Fast_CostDistr extends Algorithm {
         problem_.evaluate(sol33);
         Solution sol44 = new Solution(offspring[1]); sol44.setExecType(4);
         problem_.evaluate(sol44);
+        Solution sol55 = new Solution(offspring[1]); sol55.setExecType(5);
+        problem_.evaluate(sol55);
+        Solution sol66 = new Solution(offspring[1]); sol66.setExecType(6);
+        problem_.evaluate(sol66);
 
         evaluations +=2;
 
