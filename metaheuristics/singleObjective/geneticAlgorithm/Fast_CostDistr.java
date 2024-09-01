@@ -176,14 +176,16 @@ public class Fast_CostDistr extends Algorithm {
         problem_.evaluate(sol2);
         Solution sol3 = new Solution(offspring[0]); sol3.setExecType(3);
         problem_.evaluate(sol3);
+        Solution sol4 = new Solution(offspring[0]); sol4.setExecType(4);
+        problem_.evaluate(sol4);
 
         problemCostDistr.changeAlgorithm("NSGAII");
-        offspringNSGAII[0].setExecType(4);
+        offspringNSGAII[0].setExecType(5);
         problem_.evaluate(offspringNSGAII[0]);
-        Solution sol4 = new Solution(offspringNSGAII[0]); sol1.setExecType(5);
-        problem_.evaluate(sol1);
-        Solution sol5 = new Solution(offspringNSGAII[0]); sol2.setExecType(6);
-        problem_.evaluate(sol2);
+        Solution sol6 = new Solution(offspringNSGAII[0]); sol6.setExecType(6);
+        problem_.evaluate(sol6);
+        Solution sol7 = new Solution(offspringNSGAII[0]); sol7.setExecType(7);
+        problem_.evaluate(sol7);
 
         //----------------------------------------------------------------------------------
 
@@ -196,14 +198,16 @@ public class Fast_CostDistr extends Algorithm {
         problem_.evaluate(sol22);
         Solution sol33 = new Solution(offspring[1]); sol33.setExecType(3);
         problem_.evaluate(sol33);
+        Solution sol44 = new Solution(offspring[1]); sol44.setExecType(4);
+        problem_.evaluate(sol44);
 
         problemCostDistr.changeAlgorithm("NSGAII");
-        offspringNSGAII[1].setExecType(4);
+        offspringNSGAII[1].setExecType(5);
         problem_.evaluate(offspringNSGAII[1]);
-        Solution sol44 = new Solution(offspringNSGAII[1]); sol1.setExecType(5);
-        problem_.evaluate(sol1);
-        Solution sol55 = new Solution(offspringNSGAII[1]); sol2.setExecType(6);
-        problem_.evaluate(sol2);
+        Solution sol66 = new Solution(offspringNSGAII[1]); sol66.setExecType(6);
+        problem_.evaluate(sol66);
+        Solution sol77 = new Solution(offspringNSGAII[1]); sol77.setExecType(7);
+        problem_.evaluate(sol77);
 
 
         evaluations +=2;

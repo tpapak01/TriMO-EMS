@@ -117,13 +117,13 @@ public class LowerLevelMOKP_NSGAII {
             algorithm.setInputParameter("initPopSolution", null);
         } else {
             switch (execType) {
-                case 4:
+                case 5:
                     algorithm.setInputParameter("initPopSolution", null);
                     break;
-                case 5:
+                case 6:
                     algorithm.setInputParameter("initPopSolution", solution.getLL_ND_pop());
                     break;
-                case 6:
+                case 7:
                     algorithm.setInputParameter("initPopSolution", solution.getLL_Special_pop());
                     break;
                 default:

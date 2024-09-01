@@ -183,16 +183,16 @@ public class LowerLevelMOKP_MOEAD {
                     algorithm.setInputParameter("initPopSolution", solution.getLL_ND_pop());
                     break;
                 case 2:
-                    algorithm.setInputParameter("T", 50) ;
-                    algorithm.setInputParameter("initPopSolution", solution.getLL_Special_pop());
+                    algorithm.setInputParameter("T", 26) ;
+                    algorithm.setInputParameter("initPopSolution", solution.getLL_ND_pop());
                     break;
                 case 3:
                     algorithm.setInputParameter("T", 50) ;
-                    algorithm.setInputParameter("initPopSolution", solution.getLL_Reverse_pop());
+                    algorithm.setInputParameter("initPopSolution", solution.getLL_Special_pop());
                     break;
                 case 4:
-                    //not used
-                    algorithm.setInputParameter("initPopSolution", solution.getLL_Random_pop());
+                    algorithm.setInputParameter("T", 50) ;
+                    algorithm.setInputParameter("initPopSolution", solution.getLL_Reverse_pop());
                     break;
                 default:
                     break;
