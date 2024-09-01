@@ -186,18 +186,22 @@ public class LowerLevelMOKP_MOEAD {
                     algorithm.setInputParameter("initPopSolution", null);
                     break;
                 case 3:
+                    algorithm.setInputParameter("T", 10) ; // number of neighbours per individual
+                    algorithm.setInputParameter("initPopSolution", null);
+                    break;
+                case 4:
                     algorithm.setInputParameter("T", 100) ; // number of neighbours per individual
                     algorithm.setInputParameter("initPopSolution", solution.getLL_ND_pop());
                     break;
-                case 4:
+                case 5:
                     algorithm.setInputParameter("T", 50) ; // number of neighbours per individual
                     algorithm.setInputParameter("initPopSolution", solution.getLL_Special_pop());
                     break;
-                case 5:
+                case 6:
                     algorithm.setInputParameter("T", 26) ; // number of neighbours per individual
                     algorithm.setInputParameter("initPopSolution", solution.getLL_Reverse_pop());
                     break;
-                case 6:
+                case 7:
                     algorithm.setInputParameter("T", 10) ; // number of neighbours per individual
                     algorithm.setInputParameter("initPopSolution", solution.getLL_Random_pop());
                     break;
