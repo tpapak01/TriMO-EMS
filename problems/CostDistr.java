@@ -170,71 +170,76 @@ public class CostDistr extends Problem {
 
         //Identify set of best solutions in 2D space using limits "worst_self" and "worst_des"
         //and add them to the special Pareto, along with the UL and LL preferred solution
-        SolutionSet specialPareto = new SolutionSet(lsize);
         Solution bestSelfSol = lowerLevelSolutions.get(best_solution_index);
         Solution bestDesSol = lowerLevelSolutions.get(best_desirability_index);
         double worst_self = bestDesSol.getSelfConsumption();
         double worst_des = Utils.AchievementScalarizationTcheby(bestSelfSol, bestDesSol, target_desirability, nadirObjectiveValue);
 
-    	specialPareto.add(bestSelfSol);
-        specialPareto.add(bestDesSol);
+        SolutionSet specialPareto;
+        if (this.lowerLevelAlgorithmName.equals("MOEAD")) {
 
-	    MOEAD algo = (MOEAD)LowerLevelMOKP_MOEAD.algorithm;
-	    int popSize = LowerLevelMOKP_MOEAD.popSize;
+            MOEAD algo = (MOEAD) LowerLevelMOKP_MOEAD.algorithm;
+            int popSize = LowerLevelMOKP_MOEAD.popSize;
+            specialPareto = new SolutionSet(popSize);
 
-        //create temporary external that is sorted by objective
-        SolutionSet newExternal = new SolutionSet(lsize);
-        for (int i=0; i<lsize; i++)
-            newExternal.add(lowerLevelSolutions.get(i));
-        newExternal.sort(comparator);
+            //create temporary external that is sorted by objective
+            SolutionSet newExternal = new SolutionSet(lsize);
+            for (int i = 0; i < lsize; i++)
+                newExternal.add(lowerLevelSolutions.get(i));
+            newExternal.sort(comparator);
 
-        double[][] lambda = algo.getLambda_();
+            double[][] lambda = algo.getLambda_();
 
-        //create archive from temporary external
-        SolutionSet archive = new SolutionSet(popSize);
-        int exIdx = 0;
-        Solution externalToAdd = newExternal.get(exIdx);
+            //create archive from temporary external
+            SolutionSet archive = new SolutionSet(popSize);
+            int exIdx = 0;
+            Solution externalToAdd = newExternal.get(exIdx);
 
-        Solution newSol = new Solution(externalToAdd, lambda[0]);
-        archive.add(newSol);
+            Solution newSol = new Solution(externalToAdd, lambda[0]);
+            archive.add(newSol);
 
-        Solution currentArchiveSol = newSol;
-        exIdx++;
-        externalToAdd = newExternal.get(exIdx);
-        for (int i=1; i<popSize; i++){
+            Solution currentArchiveSol = newSol;
+            exIdx++;
+            externalToAdd = newExternal.get(exIdx);
+            for (int i = 1; i < popSize; i++) {
 
-            double f1 = algo.fitnessFunction(currentArchiveSol, lambda[i]);
-            double f2 = algo.fitnessFunction(externalToAdd, lambda[i]);
-            // if f2 smaller than f1, f2 (externalToAdd) is better
-            if (f2 <= f1) {
-                newSol = new Solution(externalToAdd, lambda[i]);
-                archive.add(newSol);
-                currentArchiveSol = externalToAdd;
-                exIdx++;
-                if (exIdx < newExternal.size())
-                    externalToAdd = newExternal.get(exIdx);
+                double f1 = algo.fitnessFunction(currentArchiveSol, lambda[i]);
+                double f2 = algo.fitnessFunction(externalToAdd, lambda[i]);
+                // if f2 smaller than f1, f2 (externalToAdd) is better
+                if (f2 <= f1) {
+                    newSol = new Solution(externalToAdd, lambda[i]);
+                    archive.add(newSol);
+                    currentArchiveSol = externalToAdd;
+                    exIdx++;
+                    if (exIdx < newExternal.size())
+                        externalToAdd = newExternal.get(exIdx);
+                } else {
+                    newSol = new Solution(currentArchiveSol, lambda[i]);
+                    archive.add(newSol);
+                }
             }
-            else {
-                newSol = new Solution(currentArchiveSol, lambda[i]);
-                archive.add(newSol);
+
+            specialPareto.add(bestSelfSol);
+            specialPareto.add(bestDesSol);
+
+            for (int s = 0; s < lsize; s++) {
+                Solution lowerLevelSol = lowerLevelSolutions.get(s);
+                double DIM1 = lowerLevelSol.getSelfConsumption();
+                double DIM2_norm = Utils.AchievementScalarizationTcheby(lowerLevelSol, bestDesSol, target_desirability, nadirObjectiveValue);
+
+                //Use below to find solutions of 2D decision-making space
+                if (DIM1 < worst_self &&
+                        DIM2_norm < worst_des) {
+                    specialPareto.add(lowerLevelSol);
+                }
             }
-        }
 
-        for (int s = 0; s < lsize; s++) {
-            Solution lowerLevelSol = lowerLevelSolutions.get(s);
-            double DIM1 = lowerLevelSol.getSelfConsumption();
-            double DIM2_norm = Utils.AchievementScalarizationTcheby(lowerLevelSol, bestDesSol, target_desirability, nadirObjectiveValue);
-
-            //Use below to find solutions of 2D decision-making space
-            if (DIM1 < worst_self &&
-                    DIM2_norm < worst_des) {
+            for (int i = 0; i < lsize; i = i + 25) {
+                Solution lowerLevelSol = lowerLevelSolutions.get(i);
                 specialPareto.add(lowerLevelSol);
             }
-        }
-
-        for (int i = 0; i < lsize; i = i + 25) {
-            Solution lowerLevelSol = lowerLevelSolutions.get(i);
-            specialPareto.add(lowerLevelSol);
+        } else {
+            specialPareto = lowerLevelSolutions;
         }
 
         //find best solution given UL and LL preferences (optimistic OR pessimistic OR in between)
@@ -279,11 +284,7 @@ public class CostDistr extends Problem {
         solution.setNonREpaid(nonREpaid);
         solution.setDeviceToPreferenceMapping(chosenlowerLevelSol.getDeviceToPreferenceMapping());
         solution.setReverseDeviceToPreferenceMapping(chosenlowerLevelSol.getReverseDeviceToPreferenceMapping());
-        boolean sendSpecialPareto = true;
-        if (sendSpecialPareto)
-            solution.setLL_ND_pop(specialPareto);
-        else solution.setLL_ND_pop(lowerLevelSolutions);
-
+        solution.setLL_ND_pop(specialPareto);
 
         if (best_upper_level_result > best_self) {
             best_upper_level_result = best_self;
