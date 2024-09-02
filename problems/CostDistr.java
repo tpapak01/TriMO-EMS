@@ -188,7 +188,7 @@ public class CostDistr extends Problem {
     private static boolean createStatistics = true;
     private static boolean writeParetosToFile = true;
     private static String writeParetoPath = "LowerLevelParetoVisual/Texperiments/";
-    private static int execution = 0;
+    private static int execution = 1;
     private static int ULpopSize = 1000;
     private static int execPrint = 10;
 
@@ -500,20 +500,20 @@ public class CostDistr extends Problem {
         solution.setDeviceToPreferenceMapping(chosenlowerLevelSol.getDeviceToPreferenceMapping());
         solution.setReverseDeviceToPreferenceMapping(chosenlowerLevelSol.getReverseDeviceToPreferenceMapping());
 
+        String writeParetoPathFull = writeParetoPath + (execution) + "_FUN_";
         if (solution.isMarked()) {
             solution.setLL_ND_pop(pareto1);
             solution.setLL_Special_pop(pareto2);
             solution.setLL_Reverse_pop(pareto3);
             solution.setLL_Random_pop(pareto4);
         } else if (execType == 0 && solution.isMarked() == false){
-            execution++;
             if (solution.getReferencePop() != null){
                 int problem = 1111;
             } else {
                 solution.setReferencePop(lowerLevelSolutions);
 
                 if (writeParetosToFile)
-                    lowerLevelSolutions.printObjectivesToFile(writeParetoPath + (execution) + "_FUN_" + execType);
+                    lowerLevelSolutions.printObjectivesToFile(writeParetoPathFull + execType);
 
                 if (createStatistics) {
                     best_hyp = -100;
@@ -554,8 +554,6 @@ public class CostDistr extends Problem {
                             best_time = estimatedTime;
                             best_time_ind = execType;
                         }
-                        //System.out.println("val:" + hypervolume);
-                        //lowerLevelSolutions.printObjectivesToFile("LowerLevelParetoEvolution/" + execution + "_FUN_" + execType);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -591,7 +589,7 @@ public class CostDistr extends Problem {
              */
 
             if (writeParetosToFile)
-                lowerLevelSolutions.printObjectivesToFile(writeParetoPath + (execution) + "_FUN_" + execType);
+                lowerLevelSolutions.printObjectivesToFile(writeParetoPathFull + execType);
 
             if (createStatistics) {
                 double hypervolume = indicators.getHypervolume(lowerLevelSolutions);
@@ -613,15 +611,13 @@ public class CostDistr extends Problem {
                     best_time = estimatedTime;
                     best_time_ind = execType;
                 }
-                lowerLevelSolutions.printObjectivesToFile("LowerLevelParetoEvolution/FUN_1");
-                solution.getReferencePop().printObjectivesToFile("LowerLevelParetoEvolution/FUN_2");
-                C_Metric epf = new C_Metric("LowerLevelParetoEvolution/FUN_1",
-                        "LowerLevelParetoEvolution/FUN_2", 2);
+                C_Metric epf = new C_Metric(writeParetoPathFull + execType,
+                        writeParetoPathFull + 0, 2);
                 double cMetric = (float) epf.num_of_dominated_B / (float) epf.nds_B;
                 if (cMetric > best_cmetric) {
                     best_cmetric = cMetric;
-                    C_Metric epfReverse = new C_Metric("LowerLevelParetoEvolution/FUN_2",
-                            "LowerLevelParetoEvolution/FUN_1", 2);
+                    C_Metric epfReverse = new C_Metric(writeParetoPathFull + 0,
+                            writeParetoPathFull + execType, 2);
                     double cMetricReverse = (float) epfReverse.num_of_dominated_B / (float) epfReverse.nds_B;
                     cmetric_0_against_best = cMetricReverse;
                     if (cMetricReverse > cMetric)
@@ -629,10 +625,6 @@ public class CostDistr extends Problem {
                     else best_cmetric_ind = execType;
 
                 }
-                File file1 = new File("LowerLevelParetoEvolution/FUN_1");
-                file1.delete();
-                File file2 = new File("LowerLevelParetoEvolution/FUN_2");
-                file2.delete();
 
                 try {
                     switch (execType) {
@@ -1094,9 +1086,8 @@ public class CostDistr extends Problem {
                             e.printStackTrace();
                         }
                     }
+                    execution++;
                 }
-                //System.out.println("val:" + hypervolume);
-                //lowerLevelSolutions.printObjectivesToFile("LowerLevelParetoEvolution/" + execution + "_FUN_" + execType);
             }
         }
 
