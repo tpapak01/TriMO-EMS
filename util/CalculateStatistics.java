@@ -153,10 +153,10 @@ public class CalculateStatistics {
     private static FileWriter cmeWriter_6;
     private static FileWriter cmeWriter_7;
 
-    private static FileWriter cmeWriter1_4;
-    private static FileWriter cmeWriter4_1;
-    private static double avg1_4_cmetric = 0;
-    private static double avg4_1_cmetric = 0;
+    private static FileWriter cmeWriter1_5;
+    private static FileWriter cmeWriter5_1;
+    private static double avg1_5_cmetric = 0;
+    private static double avg5_1_cmetric = 0;
 
 
     public static void main(String args[]) throws FileNotFoundException, ClassNotFoundException {
@@ -212,8 +212,8 @@ public class CalculateStatistics {
             cmeWriter_5 = new FileWriter("LowerLevelParetoVisual/cme5.txt");
             cmeWriter_6 = new FileWriter("LowerLevelParetoVisual/cme6.txt");
             cmeWriter_7 = new FileWriter("LowerLevelParetoVisual/cme7.txt");
-            cmeWriter1_4 = new FileWriter("LowerLevelParetoVisual/cme1_4.txt");
-            cmeWriter4_1 = new FileWriter("LowerLevelParetoVisual/cme4_1.txt");
+            cmeWriter1_5 = new FileWriter("LowerLevelParetoVisual/cme1_5.txt");
+            cmeWriter5_1 = new FileWriter("LowerLevelParetoVisual/cme5_1.txt");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -558,19 +558,19 @@ public class CalculateStatistics {
 
                     epf = new C_Metric(
                             writeParetoPathFull + "1",
-                            writeParetoPathFull + "4", 2);
+                            writeParetoPathFull + "5", 2);
                     cMetric = (float) epf.num_of_dominated_B / (float) epf.nds_B;
 
                     C_Metric epfReverse = new C_Metric(
-                            writeParetoPathFull + "4",
+                            writeParetoPathFull + "5",
                             writeParetoPathFull + "1", 2);
                     double cMetricReverse = (float) epfReverse.num_of_dominated_B / (float) epfReverse.nds_B;
 
-                    avg1_4_cmetric += cMetric;
-                    avg4_1_cmetric += cMetricReverse;
+                    avg1_5_cmetric += cMetric;
+                    avg5_1_cmetric += cMetricReverse;
                     try {
-                        cmeWriter1_4.write(cMetric + "\n");
-                        cmeWriter4_1.write(cMetricReverse + "\n");
+                        cmeWriter1_5.write(cMetric + "\n");
+                        cmeWriter5_1.write(cMetricReverse + "\n");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -623,8 +623,8 @@ public class CalculateStatistics {
                             cmeWriter_6.close();
                             cmeWriter_7.close();
 
-                            cmeWriter1_4.close();
-                            cmeWriter4_1.close();
+                            cmeWriter1_5.close();
+                            cmeWriter5_1.close();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -641,7 +641,7 @@ public class CalculateStatistics {
                             System.out.println("AVG Tim:" + avg_0_time / execution + " " + avg_1_time / execution + " " + avg_2_time / execution + " " + avg_3_time / execution + " " + avg_4_time / execution + " " + avg_5_time / execution + " " + avg_6_time / execution + " " + avg_7_time / execution);
                             System.out.println("AVG Cme:" + avg_0_cmetric / execution + " " + avg_1_cmetric / execution + " " + avg_2_cmetric / execution + " " + avg_3_cmetric / execution + " " + avg_4_cmetric / execution + " " + avg_5_cmetric / execution + " " + avg_6_cmetric / execution + " " + avg_7_cmetric / execution);
 
-                            System.out.println("AVG Cme14:" + avg1_4_cmetric / execution + " " + avg4_1_cmetric / execution);
+                            System.out.println("AVG Cme14:" + avg1_5_cmetric / execution + " " + avg5_1_cmetric / execution);
 
                             //hyp
                             double std_0_hyp = 0;
