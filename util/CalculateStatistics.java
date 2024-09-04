@@ -15,7 +15,7 @@ public class CalculateStatistics {
     private static QualityIndicator indicators;
     private static String writeParetoPath = "LowerLevelParetoVisual/KnowledgeTransfer/";
     private static String writeParetoPathFull = null;
-    private static int ULpopSize = 1000;
+    private static int ULpopSize = 100;
     private static int execPrint = 10;
 
     private static int wins_0_hyp = 0;

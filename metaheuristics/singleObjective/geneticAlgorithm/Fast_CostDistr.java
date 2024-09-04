@@ -141,10 +141,12 @@ public class Fast_CostDistr extends Algorithm {
               min_index = j;
             }
           }
-          offspring[o].setLL_ND_pop(population.get(min_index).getLL_ND_pop());
-          offspring[o].setLL_Special_pop(population.get(min_index).getLL_Special_pop());
-          offspring[o].setLL_Reverse_pop(population.get(min_index).getLL_Reverse_pop());
-          //offspring[o].setLL_Random_pop(population.get(min_index).getLL_Random_pop());
+          Solution closest = population.get(min_index);
+          offspring[o].setLL_ND_pop(closest.getLL_ND_pop());
+          offspring[o].setLL_Special_pop(closest.getLL_Special_pop());
+          offspring[o].setLL_Reverse_pop(closest.getLL_Reverse_pop());
+          offspring[o].setLL_Random_pop(closest.getLL_Random_pop());
+          offspring[o].setReferencePop(closest.getReferencePop());
         }
 
         //NSGAII - attach to offspringNSGAII the LL ND of the closest UL solution
@@ -160,8 +162,9 @@ public class Fast_CostDistr extends Algorithm {
               min_index = j;
             }
           }
-          offspringNSGAII[o].setLL_ND_pop(populationNSGAII.get(min_index).getLL_ND_pop());
-          offspringNSGAII[o].setLL_Special_pop(populationNSGAII.get(min_index).getLL_Special_pop());
+          Solution closest = populationNSGAII.get(min_index);
+          offspringNSGAII[o].setLL_ND_pop(closest.getLL_ND_pop());
+          //offspringNSGAII[o].setLL_Special_pop(populationNSGAII.get(min_index).getLL_Special_pop());
           //offspringNSGAII[o].setLL_Reverse_pop(populationNSGAII.get(min_index).getLL_Reverse_pop());
           //offspringNSGAII[o].setLL_Random_pop(populationNSGAII.get(min_index).getLL_Random_pop());
         }
@@ -178,14 +181,20 @@ public class Fast_CostDistr extends Algorithm {
         problem_.evaluate(sol3);
         Solution sol4 = new Solution(offspring[0]); sol4.setExecType(4);
         problem_.evaluate(sol4);
+        Solution sol5 = new Solution(offspring[1]); sol5.setExecType(5);
+        problem_.evaluate(sol5);
+        Solution sol6 = new Solution(offspring[1]); sol6.setExecType(6);
+        problem_.evaluate(sol6);
+        Solution sol7 = new Solution(offspring[1]); sol7.setExecType(7);
+        problem_.evaluate(sol7);
+        Solution sol8 = new Solution(offspring[1]); sol8.setExecType(8);
+        problem_.evaluate(sol8);
 
         problemCostDistr.changeAlgorithm("NSGAII");
-        offspringNSGAII[0].setExecType(5);
+        offspringNSGAII[0].setExecType(9);
         problem_.evaluate(offspringNSGAII[0]);
-        Solution sol6 = new Solution(offspringNSGAII[0]); sol6.setExecType(6);
-        problem_.evaluate(sol6);
-        Solution sol7 = new Solution(offspringNSGAII[0]); sol7.setExecType(7);
-        problem_.evaluate(sol7);
+        Solution sol0 = new Solution(offspringNSGAII[0]); sol0.setExecType(10);
+        problem_.evaluate(sol0);
 
         //----------------------------------------------------------------------------------
 
@@ -200,14 +209,20 @@ public class Fast_CostDistr extends Algorithm {
         problem_.evaluate(sol33);
         Solution sol44 = new Solution(offspring[1]); sol44.setExecType(4);
         problem_.evaluate(sol44);
+        Solution sol55 = new Solution(offspring[1]); sol55.setExecType(5);
+        problem_.evaluate(sol55);
+        Solution sol66 = new Solution(offspring[1]); sol66.setExecType(6);
+        problem_.evaluate(sol66);
+        Solution sol77 = new Solution(offspring[1]); sol77.setExecType(7);
+        problem_.evaluate(sol77);
+        Solution sol88 = new Solution(offspring[1]); sol88.setExecType(8);
+        problem_.evaluate(sol88);
 
         problemCostDistr.changeAlgorithm("NSGAII");
-        offspringNSGAII[1].setExecType(5);
+        offspringNSGAII[1].setExecType(9);
         problem_.evaluate(offspringNSGAII[1]);
-        Solution sol66 = new Solution(offspringNSGAII[1]); sol66.setExecType(6);
-        problem_.evaluate(sol66);
-        Solution sol77 = new Solution(offspringNSGAII[1]); sol77.setExecType(7);
-        problem_.evaluate(sol77);
+        Solution sol00 = new Solution(offspringNSGAII[1]); sol00.setExecType(10);
+        problem_.evaluate(sol00);
 
 
         evaluations +=2;

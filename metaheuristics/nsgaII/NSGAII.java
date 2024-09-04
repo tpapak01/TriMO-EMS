@@ -265,7 +265,7 @@ public class NSGAII extends Algorithm {
         double hypervolume = indicators.getHypervolume(paretoFront);
 
         double diff = hypervolume - previousHypervolume;
-        if (diff <= 0.001)
+        if (diff <= 0.000001)
           converged = true;
         //else if (execution < 10)
         //  paretoFront.printObjectivesToFile("LowerLevelParetoEvolutionNSGAII/" + execution + "_FUN_" + iteration++);

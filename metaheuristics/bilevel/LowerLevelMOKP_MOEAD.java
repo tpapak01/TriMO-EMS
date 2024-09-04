@@ -102,7 +102,7 @@ public class LowerLevelMOKP_MOEAD {
         //algorithm.setInputParameter("finalSize", 300) ; // used by MOEAD_DRA
 
         //thalis
-        algorithm.setInputParameter("T", 50) ; // number of neighbours per individual
+        algorithm.setInputParameter("T", 51) ; // number of neighbours per individual
         algorithm.setInputParameter("delta", 1.0) ; // 1 = parents always from neighbourhood = MOEAD
         algorithm.setInputParameter("nr", 10) ; // maximal number of solutions that can be updated in "updateProblem"
         //theta_ = 5.0; // used in PBI
@@ -175,24 +175,40 @@ public class LowerLevelMOKP_MOEAD {
         } else {
             switch (execType) {
                 case 0:
-                    algorithm.setInputParameter("T", 50) ;
-                    algorithm.setInputParameter("initPopSolution", null);
+                    algorithm.setInputParameter("T", 51) ;
+                    algorithm.setInputParameter("initPopSolution", solution.getLL_ND_pop());
                     break;
                 case 1:
-                    algorithm.setInputParameter("T", 50) ;
+                    algorithm.setInputParameter("T", 25) ;
                     algorithm.setInputParameter("initPopSolution", solution.getLL_ND_pop());
                     break;
                 case 2:
-                    algorithm.setInputParameter("T", 26) ;
+                    algorithm.setInputParameter("T", 11) ;
                     algorithm.setInputParameter("initPopSolution", solution.getLL_ND_pop());
                     break;
                 case 3:
-                    algorithm.setInputParameter("T", 50) ;
-                    algorithm.setInputParameter("initPopSolution", solution.getLL_Special_pop());
+                    algorithm.setInputParameter("T", 5) ;
+                    algorithm.setInputParameter("initPopSolution", solution.getLL_ND_pop());
                     break;
                 case 4:
-                    algorithm.setInputParameter("T", 50) ;
+                    algorithm.setInputParameter("T", 51) ;
+                    algorithm.setInputParameter("initPopSolution", solution.getLL_Special_pop());
+                    break;
+                case 5:
+                    algorithm.setInputParameter("T", 25) ;
                     algorithm.setInputParameter("initPopSolution", solution.getLL_Reverse_pop());
+                    break;
+                case 6:
+                    algorithm.setInputParameter("T", 11) ;
+                    algorithm.setInputParameter("initPopSolution", solution.getLL_Random_pop());
+                    break;
+                case 7:
+                    algorithm.setInputParameter("T", 5) ;
+                    algorithm.setInputParameter("initPopSolution", solution.getReferencePop());
+                    break;
+                case 8:
+                    algorithm.setInputParameter("T", 25) ;
+                    algorithm.setInputParameter("initPopSolution", null);
                     break;
                 default:
                     break;

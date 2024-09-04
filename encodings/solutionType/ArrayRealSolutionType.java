@@ -47,7 +47,7 @@ public class ArrayRealSolutionType extends SolutionType {
 		Variable [] variables = new Variable[1];
 		
 		//variables[0] = new ArrayReal(problem_.getNumberOfVariables(), problem_);
-		variables[0] = new ArrayReal(problem_.getNumberOfVariables(), problem_, 0.454545);
+		variables[0] = new ArrayReal(problem_.getNumberOfVariables(), problem_, 0.22);
 		return variables ;
 	} // createVariables
 	

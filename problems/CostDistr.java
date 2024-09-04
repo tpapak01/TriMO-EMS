@@ -54,6 +54,10 @@ public class CostDistr extends Problem {
     private static int wins_5_hyp = 0;
     private static int wins_6_hyp = 0;
     private static int wins_7_hyp = 0;
+    private static int wins_8_hyp = 0;
+    private static int wins_9_hyp = 0;
+    private static int wins_10_hyp = 0;
+
     private static int wins_0_spr = 0;
     private static int wins_1_spr = 0;
     private static int wins_2_spr = 0;
@@ -62,6 +66,10 @@ public class CostDistr extends Problem {
     private static int wins_5_spr = 0;
     private static int wins_6_spr = 0;
     private static int wins_7_spr = 0;
+    private static int wins_8_spr = 0;
+    private static int wins_9_spr = 0;
+    private static int wins_10_spr = 0;
+
     private static int wins_0_nds = 0;
     private static int wins_1_nds = 0;
     private static int wins_2_nds = 0;
@@ -70,6 +78,10 @@ public class CostDistr extends Problem {
     private static int wins_5_nds = 0;
     private static int wins_6_nds = 0;
     private static int wins_7_nds = 0;
+    private static int wins_8_nds = 0;
+    private static int wins_9_nds = 0;
+    private static int wins_10_nds = 0;
+
     private static int wins_0_time = 0;
     private static int wins_1_time = 0;
     private static int wins_2_time = 0;
@@ -78,6 +90,10 @@ public class CostDistr extends Problem {
     private static int wins_5_time = 0;
     private static int wins_6_time = 0;
     private static int wins_7_time = 0;
+    private static int wins_8_time = 0;
+    private static int wins_9_time = 0;
+    private static int wins_10_time = 0;
+
     private static int wins_0_cmetric = 0;
     private static int wins_1_cmetric = 0;
     private static int wins_2_cmetric = 0;
@@ -86,6 +102,9 @@ public class CostDistr extends Problem {
     private static int wins_5_cmetric = 0;
     private static int wins_6_cmetric = 0;
     private static int wins_7_cmetric = 0;
+    private static int wins_8_cmetric = 0;
+    private static int wins_9_cmetric = 0;
+    private static int wins_10_cmetric = 0;
 
     private static double best_hyp;
     private static int best_hyp_ind;
@@ -95,7 +114,6 @@ public class CostDistr extends Problem {
     private static int best_nds_ind;
     private static long best_time;
     private static int best_time_ind;
-    private static double best_cmetric;
     private static int best_cmetric_ind;
 
     private static double avg_0_hyp = 0;
@@ -106,6 +124,10 @@ public class CostDistr extends Problem {
     private static double avg_5_hyp = 0;
     private static double avg_6_hyp = 0;
     private static double avg_7_hyp = 0;
+    private static double avg_8_hyp = 0;
+    private static double avg_9_hyp = 0;
+    private static double avg_10_hyp = 0;
+
     private static double avg_0_spr = 0;
     private static double avg_1_spr = 0;
     private static double avg_2_spr = 0;
@@ -114,6 +136,10 @@ public class CostDistr extends Problem {
     private static double avg_5_spr = 0;
     private static double avg_6_spr = 0;
     private static double avg_7_spr = 0;
+    private static double avg_8_spr = 0;
+    private static double avg_9_spr = 0;
+    private static double avg_10_spr = 0;
+
     private static double avg_0_nds = 0;
     private static double avg_1_nds = 0;
     private static double avg_2_nds = 0;
@@ -122,6 +148,10 @@ public class CostDistr extends Problem {
     private static double avg_5_nds = 0;
     private static double avg_6_nds = 0;
     private static double avg_7_nds = 0;
+    private static double avg_8_nds = 0;
+    private static double avg_9_nds = 0;
+    private static double avg_10_nds = 0;
+
     private static double avg_0_time = 0;
     private static double avg_1_time = 0;
     private static double avg_2_time = 0;
@@ -130,8 +160,11 @@ public class CostDistr extends Problem {
     private static double avg_5_time = 0;
     private static double avg_6_time = 0;
     private static double avg_7_time = 0;
+    private static double avg_8_time = 0;
+    private static double avg_9_time = 0;
+    private static double avg_10_time = 0;
+
     private static double avg_0_cmetric = 0;
-    private static double cmetric_0_against_best = 0;
     private static double avg_1_cmetric = 0;
     private static double avg_2_cmetric = 0;
     private static double avg_3_cmetric = 0;
@@ -139,6 +172,9 @@ public class CostDistr extends Problem {
     private static double avg_5_cmetric = 0;
     private static double avg_6_cmetric = 0;
     private static double avg_7_cmetric = 0;
+    private static double avg_8_cmetric = 0;
+    private static double avg_9_cmetric = 0;
+    private static double avg_10_cmetric = 0;
 
     private static FileWriter hypWriter_0;
     private static FileWriter hypWriter_1;
@@ -148,6 +184,10 @@ public class CostDistr extends Problem {
     private static FileWriter hypWriter_5;
     private static FileWriter hypWriter_6;
     private static FileWriter hypWriter_7;
+    private static FileWriter hypWriter_8;
+    private static FileWriter hypWriter_9;
+    private static FileWriter hypWriter_10;
+
     private static FileWriter sprWriter_0;
     private static FileWriter sprWriter_1;
     private static FileWriter sprWriter_2;
@@ -156,6 +196,10 @@ public class CostDistr extends Problem {
     private static FileWriter sprWriter_5;
     private static FileWriter sprWriter_6;
     private static FileWriter sprWriter_7;
+    private static FileWriter sprWriter_8;
+    private static FileWriter sprWriter_9;
+    private static FileWriter sprWriter_10;
+
     private static FileWriter ndsWriter_0;
     private static FileWriter ndsWriter_1;
     private static FileWriter ndsWriter_2;
@@ -164,6 +208,10 @@ public class CostDistr extends Problem {
     private static FileWriter ndsWriter_5;
     private static FileWriter ndsWriter_6;
     private static FileWriter ndsWriter_7;
+    private static FileWriter ndsWriter_8;
+    private static FileWriter ndsWriter_9;
+    private static FileWriter ndsWriter_10;
+
     private static FileWriter timWriter_0;
     private static FileWriter timWriter_1;
     private static FileWriter timWriter_2;
@@ -172,6 +220,10 @@ public class CostDistr extends Problem {
     private static FileWriter timWriter_5;
     private static FileWriter timWriter_6;
     private static FileWriter timWriter_7;
+    private static FileWriter timWriter_8;
+    private static FileWriter timWriter_9;
+    private static FileWriter timWriter_10;
+
     private static FileWriter cmeWriter_0;
     private static FileWriter cmeWriter_1;
     private static FileWriter cmeWriter_2;
@@ -180,12 +232,15 @@ public class CostDistr extends Problem {
     private static FileWriter cmeWriter_5;
     private static FileWriter cmeWriter_6;
     private static FileWriter cmeWriter_7;
+    private static FileWriter cmeWriter_8;
+    private static FileWriter cmeWriter_9;
+    private static FileWriter cmeWriter_10;
 
 
     private static boolean createStatistics = true;
     private static boolean writeParetosToFile = true;
     private static String writeParetoPath = "LowerLevelParetoVisual/KnowledgeTransfer/";
-    private static int ULpopSize = 1000;
+    private static int ULpopSize = 100;
     private static int execution = 1;
     int execPrint = 10;
 
@@ -226,6 +281,9 @@ public class CostDistr extends Problem {
               hypWriter_5 = new FileWriter("LowerLevelParetoVisual/hyp5.txt");
               hypWriter_6 = new FileWriter("LowerLevelParetoVisual/hyp6.txt");
               hypWriter_7 = new FileWriter("LowerLevelParetoVisual/hyp7.txt");
+              hypWriter_8 = new FileWriter("LowerLevelParetoVisual/hyp8.txt");
+              hypWriter_9 = new FileWriter("LowerLevelParetoVisual/hyp9.txt");
+              hypWriter_10 = new FileWriter("LowerLevelParetoVisual/hyp10.txt");
 
               sprWriter_0 = new FileWriter("LowerLevelParetoVisual/spr0.txt");
               sprWriter_1 = new FileWriter("LowerLevelParetoVisual/spr1.txt");
@@ -235,6 +293,9 @@ public class CostDistr extends Problem {
               sprWriter_5 = new FileWriter("LowerLevelParetoVisual/spr5.txt");
               sprWriter_6 = new FileWriter("LowerLevelParetoVisual/spr6.txt");
               sprWriter_7 = new FileWriter("LowerLevelParetoVisual/spr7.txt");
+              sprWriter_8 = new FileWriter("LowerLevelParetoVisual/spr8.txt");
+              sprWriter_9 = new FileWriter("LowerLevelParetoVisual/spr9.txt");
+              sprWriter_10 = new FileWriter("LowerLevelParetoVisual/spr10.txt");
 
               ndsWriter_0 = new FileWriter("LowerLevelParetoVisual/nds0.txt");
               ndsWriter_1 = new FileWriter("LowerLevelParetoVisual/nds1.txt");
@@ -244,6 +305,9 @@ public class CostDistr extends Problem {
               ndsWriter_5 = new FileWriter("LowerLevelParetoVisual/nds5.txt");
               ndsWriter_6 = new FileWriter("LowerLevelParetoVisual/nds6.txt");
               ndsWriter_7 = new FileWriter("LowerLevelParetoVisual/nds7.txt");
+              ndsWriter_8 = new FileWriter("LowerLevelParetoVisual/nds8.txt");
+              ndsWriter_9 = new FileWriter("LowerLevelParetoVisual/nds9.txt");
+              ndsWriter_10 = new FileWriter("LowerLevelParetoVisual/nds10.txt");
 
               timWriter_0 = new FileWriter("LowerLevelParetoVisual/tim0.txt");
               timWriter_1 = new FileWriter("LowerLevelParetoVisual/tim1.txt");
@@ -253,6 +317,9 @@ public class CostDistr extends Problem {
               timWriter_5 = new FileWriter("LowerLevelParetoVisual/tim5.txt");
               timWriter_6 = new FileWriter("LowerLevelParetoVisual/tim6.txt");
               timWriter_7 = new FileWriter("LowerLevelParetoVisual/tim7.txt");
+              timWriter_8 = new FileWriter("LowerLevelParetoVisual/tim8.txt");
+              timWriter_9 = new FileWriter("LowerLevelParetoVisual/tim9.txt");
+              timWriter_10 = new FileWriter("LowerLevelParetoVisual/tim10.txt");
 
               cmeWriter_0 = new FileWriter("LowerLevelParetoVisual/cme0.txt");
               cmeWriter_1 = new FileWriter("LowerLevelParetoVisual/cme1.txt");
@@ -262,6 +329,9 @@ public class CostDistr extends Problem {
               cmeWriter_5 = new FileWriter("LowerLevelParetoVisual/cme5.txt");
               cmeWriter_6 = new FileWriter("LowerLevelParetoVisual/cme6.txt");
               cmeWriter_7 = new FileWriter("LowerLevelParetoVisual/cme7.txt");
+              cmeWriter_8 = new FileWriter("LowerLevelParetoVisual/cme8.txt");
+              cmeWriter_9 = new FileWriter("LowerLevelParetoVisual/cme9.txt");
+              cmeWriter_10 = new FileWriter("LowerLevelParetoVisual/cme10.txt");
           } catch (IOException e) {
               e.printStackTrace();
           }
@@ -387,8 +457,10 @@ public class CostDistr extends Problem {
         double worst_self = bestDesSol.getSelfConsumption();
         double worst_des = Utils.AchievementScalarizationTcheby(bestSelfSol, bestDesSol, target_desirability, nadirObjectiveValue);
 
-        SolutionSet specialPareto = new SolutionSet(lsize);
-        SolutionSet archivePareto = null;
+        SolutionSet specialPareto = null;
+        SolutionSet reversePareto = null;
+        SolutionSet randomPareto = null;
+        SolutionSet referencePareto = null;
         //SolutionSet replacePareto = new SolutionSet(lsize);
 
         if (solution.isMarked()) {
@@ -435,14 +507,18 @@ public class CostDistr extends Problem {
                     }
                 }
 
-                archivePareto = new SolutionSet(popSize);
+                specialPareto = new SolutionSet(popSize);
+                reversePareto = new SolutionSet(popSize);
+                randomPareto = new SolutionSet(popSize);
+                referencePareto = new SolutionSet(popSize);
 
-                archivePareto.add(bestSelfSol);
-                specialPareto.add(bestSelfSol);
+                //archivePareto.add(bestSelfSol);
+                //specialPareto.add(bestSelfSol);
 
-                archivePareto.add(bestDesSol);
-                specialPareto.add(bestDesSol);
+                //archivePareto.add(bestDesSol);
+                //specialPareto.add(bestDesSol);
 
+                /*
                 for (int s = 0; s < lsize; s++) {
                     Solution lowerLevelSol = lowerLevelSolutions.get(s);
                     double DIM1 = lowerLevelSol.getSelfConsumption();
@@ -456,6 +532,8 @@ public class CostDistr extends Problem {
                         //counter++;
                     }// else reversePareto.add(lowerLevelSol);
                 }
+
+                 */
 
                 /*
                 Integer[] arr = new Integer[lsize];
@@ -473,7 +551,19 @@ public class CostDistr extends Problem {
 
                 for (int i = 0; i < popSize; i = i + 25) {
                     Solution lowerLevelSol = archive.get(i);
-                    archivePareto.add(lowerLevelSol);
+                    specialPareto.add(lowerLevelSol);
+                }
+                for (int i = 0; i < popSize; i = i + 12) {
+                    Solution lowerLevelSol = archive.get(i);
+                    reversePareto.add(lowerLevelSol);
+                }
+                for (int i = 0; i < popSize; i = i + 5) {
+                    Solution lowerLevelSol = archive.get(i);
+                    randomPareto.add(lowerLevelSol);
+                }
+                for (int i = 0; i < popSize; i = i + 2) {
+                    Solution lowerLevelSol = archive.get(i);
+                    referencePareto.add(lowerLevelSol);
                 }
 
 
@@ -484,10 +574,11 @@ public class CostDistr extends Problem {
                 NSGAII algo = (NSGAII) LowerLevelMOKP_NSGAII.algorithm;
                 int popSize = LowerLevelMOKP_NSGAII.popSize;
 
-                specialPareto.add(bestSelfSol);
+                //specialPareto.add(bestSelfSol);
 
-                specialPareto.add(bestDesSol);
+                //specialPareto.add(bestDesSol);
 
+                /*
                 for (int s = 0; s < lsize; s++) {
                     Solution lowerLevelSol = lowerLevelSolutions.get(s);
                     double DIM1 = lowerLevelSol.getSelfConsumption();
@@ -499,6 +590,8 @@ public class CostDistr extends Problem {
                         specialPareto.add(lowerLevelSol);
                     }
                 }
+
+                 */
 
             }
 
@@ -537,66 +630,62 @@ public class CostDistr extends Problem {
             if (this.lowerLevelAlgorithmName.equals("MOEAD")) {
                 solution.setLL_ND_pop(lowerLevelSolutions);
                 solution.setLL_Special_pop(specialPareto);
-                solution.setLL_Reverse_pop(archivePareto);
-                //solution.setLL_Random_pop(replacePareto);
+                solution.setLL_Reverse_pop(reversePareto);
+                solution.setLL_Random_pop(randomPareto);
+                solution.setReferencePop(referencePareto);
             } else {
                 solution.setLL_ND_pop(lowerLevelSolutions);
-                solution.setLL_Special_pop(specialPareto);
+                //solution.setLL_Special_pop(specialPareto);
             }
         } else if (execType == 0 && solution.isMarked() == false){
             if (this.lowerLevelAlgorithmName.equals("MOEAD")) {
-                if (solution.getReferencePop() != null){
-                    int problem = 1111;
-                } else {
-                    solution.setReferencePop(lowerLevelSolutions);
 
-                    if (writeParetosToFile)
-                        lowerLevelSolutions.printObjectivesToFile(writeParetoPathFull + execType);
+                if (writeParetosToFile)
+                    lowerLevelSolutions.printObjectivesToFile(writeParetoPathFull + execType);
 
-                    if (createStatistics) {
-                        best_hyp = -100;
-                        best_hyp_ind = -1;
-                        best_spr = 100;
-                        best_spr_ind = -1;
-                        best_nds = -1;
-                        best_nds_ind = -1;
-                        best_time = 100000;
-                        best_time_ind = -1;
-                        best_cmetric = -1;
-                        best_cmetric_ind = -1;
-                        try {
-                            double hypervolume = indicators.getHypervolume(lowerLevelSolutions);
-                            hypWriter_0.write(hypervolume + "\n");
-                            avg_0_hyp += hypervolume;
-                            if (hypervolume > best_hyp) {
-                                best_hyp = hypervolume;
-                                best_hyp_ind = execType;
-                            }
-                            double spread = indicators.getSpread(lowerLevelSolutions);
-                            sprWriter_0.write(spread + "\n");
-                            avg_0_spr += spread;
-                            if (spread < best_spr) {
-                                best_spr = spread;
-                                best_spr_ind = execType;
-                            }
-                            int nds = lsize;
-                            ndsWriter_0.write(nds + "\n");
-                            avg_0_nds += nds;
-                            if (nds < best_nds) {
-                                best_nds = nds;
-                                best_nds_ind = execType;
-                            }
-                            timWriter_0.write(estimatedTime + "\n");
-                            avg_0_time += estimatedTime;
-                            if (estimatedTime < best_time) {
-                                best_time = estimatedTime;
-                                best_time_ind = execType;
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                if (createStatistics) {
+                    best_hyp = -100;
+                    best_hyp_ind = -1;
+                    best_spr = 100;
+                    best_spr_ind = -1;
+                    best_nds = -1;
+                    best_nds_ind = -1;
+                    best_time = 100000;
+                    best_time_ind = -1;
+                    best_cmetric_ind = -1;
+                    try {
+                        double hypervolume = indicators.getHypervolume(lowerLevelSolutions);
+                        hypWriter_0.write(hypervolume + "\n");
+                        avg_0_hyp += hypervolume;
+                        if (hypervolume > best_hyp) {
+                            best_hyp = hypervolume;
+                            best_hyp_ind = execType;
                         }
+                        double spread = indicators.getSpread(lowerLevelSolutions);
+                        sprWriter_0.write(spread + "\n");
+                        avg_0_spr += spread;
+                        if (spread < best_spr) {
+                            best_spr = spread;
+                            best_spr_ind = execType;
+                        }
+                        int nds = lsize;
+                        ndsWriter_0.write(nds + "\n");
+                        avg_0_nds += nds;
+                        if (nds < best_nds) {
+                            best_nds = nds;
+                            best_nds_ind = execType;
+                        }
+                        timWriter_0.write(estimatedTime + "\n");
+                        avg_0_time += estimatedTime;
+                        if (estimatedTime < best_time) {
+                            best_time = estimatedTime;
+                            best_time_ind = execType;
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
+
             } else {
                 int problem = 1111;
             }
@@ -652,19 +741,23 @@ public class CostDistr extends Problem {
                     best_time = estimatedTime;
                     best_time_ind = execType;
                 }
-                C_Metric epf = new C_Metric(writeParetoPathFull + execType,
-                        writeParetoPathFull + 0, 2);
-                double cMetric = (float) epf.num_of_dominated_B / (float) epf.nds_B;
-                if (cMetric > best_cmetric) {
-                    best_cmetric = cMetric;
-                    C_Metric epfReverse = new C_Metric(writeParetoPathFull + 0,
-                            writeParetoPathFull + execType, 2);
-                    double cMetricReverse = (float) epfReverse.num_of_dominated_B / (float) epfReverse.nds_B;
-                    cmetric_0_against_best = cMetricReverse;
-                    if (cMetricReverse > cMetric)
-                        best_cmetric_ind = 0;
-                    else best_cmetric_ind = execType;
 
+                int enemy = -1;
+                if (execType >=4 && execType <=7)
+                    enemy = execType - 4;
+                else if (execType >=9)
+                    enemy = 8;
+
+                double cMetric = 0;
+                double cMetricReverse = 0;
+                if (enemy != -1) {
+                    C_Metric epf = new C_Metric(writeParetoPathFull + execType,
+                            writeParetoPathFull + enemy, 2);
+                    cMetric = (float) epf.num_of_dominated_B / (float) epf.nds_B;
+
+                    C_Metric epfReverse = new C_Metric(writeParetoPathFull + enemy,
+                            writeParetoPathFull + execType, 2);
+                    cMetricReverse = (float) epfReverse.num_of_dominated_B / (float) epfReverse.nds_B;
                 }
 
                 try {
@@ -674,36 +767,30 @@ public class CostDistr extends Problem {
                             avg_1_spr += spread;
                             avg_1_nds += nds;
                             avg_1_time += estimatedTime;
-                            avg_1_cmetric += cMetric;
                             hypWriter_1.write(hypervolume + "\n");
                             sprWriter_1.write(spread + "\n");
                             ndsWriter_1.write(nds + "\n");
                             timWriter_1.write(estimatedTime + "\n");
-                            cmeWriter_1.write(cMetric + "\n");
                             break;
                         case 2:
                             avg_2_hyp += hypervolume;
                             avg_2_spr += spread;
                             avg_2_nds += nds;
                             avg_2_time += estimatedTime;
-                            avg_2_cmetric += cMetric;
                             hypWriter_2.write(hypervolume + "\n");
                             sprWriter_2.write(spread + "\n");
                             ndsWriter_2.write(nds + "\n");
                             timWriter_2.write(estimatedTime + "\n");
-                            cmeWriter_2.write(cMetric + "\n");
                             break;
                         case 3:
                             avg_3_hyp += hypervolume;
                             avg_3_spr += spread;
                             avg_3_nds += nds;
                             avg_3_time += estimatedTime;
-                            avg_3_cmetric += cMetric;
                             hypWriter_3.write(hypervolume + "\n");
                             sprWriter_3.write(spread + "\n");
                             ndsWriter_3.write(nds + "\n");
                             timWriter_3.write(estimatedTime + "\n");
-                            cmeWriter_3.write(cMetric + "\n");
                             break;
                         case 4:
                             avg_4_hyp += hypervolume;
@@ -711,11 +798,13 @@ public class CostDistr extends Problem {
                             avg_4_nds += nds;
                             avg_4_time += estimatedTime;
                             avg_4_cmetric += cMetric;
+                            avg_0_cmetric += cMetricReverse;
                             hypWriter_4.write(hypervolume + "\n");
                             sprWriter_4.write(spread + "\n");
                             ndsWriter_4.write(nds + "\n");
                             timWriter_4.write(estimatedTime + "\n");
                             cmeWriter_4.write(cMetric + "\n");
+                            cmeWriter_0.write(cMetricReverse + "\n");
                             break;
                         case 5:
                             avg_5_hyp += hypervolume;
@@ -723,11 +812,13 @@ public class CostDistr extends Problem {
                             avg_5_nds += nds;
                             avg_5_time += estimatedTime;
                             avg_5_cmetric += cMetric;
+                            avg_1_cmetric += cMetricReverse;
                             hypWriter_5.write(hypervolume + "\n");
                             sprWriter_5.write(spread + "\n");
                             ndsWriter_5.write(nds + "\n");
                             timWriter_5.write(estimatedTime + "\n");
                             cmeWriter_5.write(cMetric + "\n");
+                            cmeWriter_1.write(cMetricReverse + "\n");
                             break;
                         case 6:
                             avg_6_hyp += hypervolume;
@@ -735,11 +826,13 @@ public class CostDistr extends Problem {
                             avg_6_nds += nds;
                             avg_6_time += estimatedTime;
                             avg_6_cmetric += cMetric;
+                            avg_2_cmetric += cMetricReverse;
                             hypWriter_6.write(hypervolume + "\n");
                             sprWriter_6.write(spread + "\n");
                             ndsWriter_6.write(nds + "\n");
                             timWriter_6.write(estimatedTime + "\n");
                             cmeWriter_6.write(cMetric + "\n");
+                            cmeWriter_2.write(cMetricReverse + "\n");
                             break;
                         case 7:
                             avg_7_hyp += hypervolume;
@@ -747,11 +840,49 @@ public class CostDistr extends Problem {
                             avg_7_nds += nds;
                             avg_7_time += estimatedTime;
                             avg_7_cmetric += cMetric;
+                            avg_3_cmetric += cMetricReverse;
                             hypWriter_7.write(hypervolume + "\n");
                             sprWriter_7.write(spread + "\n");
                             ndsWriter_7.write(nds + "\n");
                             timWriter_7.write(estimatedTime + "\n");
                             cmeWriter_7.write(cMetric + "\n");
+                            cmeWriter_3.write(cMetricReverse + "\n");
+                            break;
+                        case 8:
+                            avg_8_hyp += hypervolume;
+                            avg_8_spr += spread;
+                            avg_8_nds += nds;
+                            avg_8_time += estimatedTime;
+                            hypWriter_8.write(hypervolume + "\n");
+                            sprWriter_8.write(spread + "\n");
+                            ndsWriter_8.write(nds + "\n");
+                            timWriter_8.write(estimatedTime + "\n");
+                            break;
+                        case 9:
+                            avg_9_hyp += hypervolume;
+                            avg_9_spr += spread;
+                            avg_9_nds += nds;
+                            avg_9_time += estimatedTime;
+                            avg_9_cmetric += cMetric;
+                            hypWriter_9.write(hypervolume + "\n");
+                            sprWriter_9.write(spread + "\n");
+                            ndsWriter_9.write(nds + "\n");
+                            timWriter_9.write(estimatedTime + "\n");
+                            cmeWriter_9.write(cMetric + "\n");
+                            break;
+                        case 10:
+                            avg_10_hyp += hypervolume;
+                            avg_10_spr += spread;
+                            avg_10_nds += nds;
+                            avg_10_time += estimatedTime;
+                            avg_10_cmetric += cMetric;
+                            avg_8_cmetric += cMetricReverse;
+                            hypWriter_10.write(hypervolume + "\n");
+                            sprWriter_10.write(spread + "\n");
+                            ndsWriter_10.write(nds + "\n");
+                            timWriter_10.write(estimatedTime + "\n");
+                            cmeWriter_10.write(cMetric + "\n");
+                            cmeWriter_8.write(cMetricReverse + "\n");
                             break;
                         default:
                             break;
@@ -761,7 +892,7 @@ public class CostDistr extends Problem {
                 }
 
                 //now find winner of this iteration
-                if (execType == 7) {
+                if (execType == 10) {
                     switch (best_hyp_ind) {
                         case 0:
                             wins_0_hyp++;
@@ -786,6 +917,15 @@ public class CostDistr extends Problem {
                             break;
                         case 7:
                             wins_7_hyp++;
+                            break;
+                        case 8:
+                            wins_8_hyp++;
+                            break;
+                        case 9:
+                            wins_9_hyp++;
+                            break;
+                        case 10:
+                            wins_10_hyp++;
                             break;
                         default:
                             break;
@@ -815,6 +955,15 @@ public class CostDistr extends Problem {
                         case 7:
                             wins_7_spr++;
                             break;
+                        case 8:
+                            wins_8_spr++;
+                            break;
+                        case 9:
+                            wins_9_spr++;
+                            break;
+                        case 10:
+                            wins_10_spr++;
+                            break;
                         default:
                             break;
                     }
@@ -842,6 +991,15 @@ public class CostDistr extends Problem {
                             break;
                         case 7:
                             wins_7_nds++;
+                            break;
+                        case 8:
+                            wins_8_nds++;
+                            break;
+                        case 9:
+                            wins_9_nds++;
+                            break;
+                        case 10:
+                            wins_10_nds++;
                             break;
                         default:
                             break;
@@ -871,15 +1029,18 @@ public class CostDistr extends Problem {
                         case 7:
                             wins_7_time++;
                             break;
+                        case 8:
+                            wins_8_time++;
+                            break;
+                        case 9:
+                            wins_9_time++;
+                            break;
+                        case 10:
+                            wins_10_time++;
+                            break;
                         default:
                             break;
                     }
-                    try {
-                        cmeWriter_0.write(cmetric_0_against_best + "\n");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    avg_0_cmetric += cmetric_0_against_best;
                     switch (best_cmetric_ind) {
                         case 0:
                             wins_0_cmetric++;
@@ -905,21 +1066,30 @@ public class CostDistr extends Problem {
                         case 7:
                             wins_7_cmetric++;
                             break;
+                        case 8:
+                            wins_8_cmetric++;
+                            break;
+                        case 9:
+                            wins_9_cmetric++;
+                            break;
+                        case 10:
+                            wins_10_cmetric++;
+                            break;
                         default:
                             break;
                     }
                     if (execution % execPrint == 0) {
-                        System.out.println("WIN Hyp:" + wins_0_hyp + " " + wins_1_hyp + " " + wins_2_hyp + " " + wins_3_hyp + " " + wins_4_hyp + " " + wins_5_hyp + " " + wins_6_hyp + " " + wins_7_hyp);
-                        System.out.println("WIN Spr:" + wins_0_spr + " " + wins_1_spr + " " + wins_2_spr + " " + wins_3_spr + " " + wins_4_spr + " " + wins_5_spr + " " + wins_6_spr + " " + wins_7_spr);
-                        System.out.println("WIN Nds:" + wins_0_nds + " " + wins_1_nds + " " + wins_2_nds + " " + wins_3_nds + " " + wins_4_nds + " " + wins_5_nds + " " + wins_6_nds + " " + wins_7_nds);
-                        System.out.println("WIN Tim:" + wins_0_time + " " + wins_1_time + " " + wins_2_time + " " + wins_3_time + " " + wins_4_time + " " + wins_5_time + " " + wins_6_time + " " + wins_7_time);
-                        System.out.println("WIN Cme:" + wins_0_cmetric + " " + wins_1_cmetric + " " + wins_2_cmetric + " " + wins_3_cmetric + " " + wins_4_cmetric + " " + wins_5_cmetric + " " + wins_6_cmetric + " " + wins_7_cmetric);
+                        System.out.println("WIN Hyp:" + wins_0_hyp + " " + wins_1_hyp + " " + wins_2_hyp + " " + wins_3_hyp + " " + wins_4_hyp + " " + wins_5_hyp + " " + wins_6_hyp + " " + wins_7_hyp + " " + wins_8_hyp + " " + wins_9_hyp + " " + wins_10_hyp);
+                        System.out.println("WIN Spr:" + wins_0_spr + " " + wins_1_spr + " " + wins_2_spr + " " + wins_3_spr + " " + wins_4_spr + " " + wins_5_spr + " " + wins_6_spr + " " + wins_7_spr + " " + wins_8_spr + " " + wins_9_spr + " " + wins_10_spr);
+                        System.out.println("WIN Nds:" + wins_0_nds + " " + wins_1_nds + " " + wins_2_nds + " " + wins_3_nds + " " + wins_4_nds + " " + wins_5_nds + " " + wins_6_nds + " " + wins_7_nds + " " + wins_8_nds + " " + wins_9_nds + " " + wins_10_nds);
+                        System.out.println("WIN Tim:" + wins_0_time + " " + wins_1_time + " " + wins_2_time + " " + wins_3_time + " " + wins_4_time + " " + wins_5_time + " " + wins_6_time + " " + wins_7_time + " " + wins_8_time + " " + wins_9_time + " " + wins_10_time);
+                        System.out.println("WIN Cme:" + wins_0_cmetric + " " + wins_1_cmetric + " " + wins_2_cmetric + " " + wins_3_cmetric + " " + wins_4_cmetric + " " + wins_5_cmetric + " " + wins_6_cmetric + " " + wins_7_cmetric + " " + wins_8_cmetric + " " + wins_9_cmetric + " " + wins_10_cmetric);
 
-                        System.out.println("AVG Hyp:" + avg_0_hyp / execution + " " + avg_1_hyp / execution + " " + avg_2_hyp / execution + " " + avg_3_hyp / execution + " " + avg_4_hyp / execution + " " + avg_5_hyp / execution + " " + avg_6_hyp / execution + " " + avg_7_hyp / execution);
-                        System.out.println("AVG Spr:" + avg_0_spr / execution + " " + avg_1_spr / execution + " " + avg_2_spr / execution + " " + avg_3_spr / execution + " " + avg_4_spr / execution + " " + avg_5_spr / execution + " " + avg_6_spr / execution + " " + avg_7_spr / execution);
-                        System.out.println("AVG Nds:" + avg_0_nds / execution + " " + avg_1_nds / execution + " " + avg_2_nds / execution + " " + avg_3_nds / execution + " " + avg_4_nds / execution + " " + avg_5_nds / execution + " " + avg_6_nds / execution + " " + avg_7_nds / execution);
-                        System.out.println("AVG Tim:" + avg_0_time / execution + " " + avg_1_time / execution + " " + avg_2_time / execution + " " + avg_3_time / execution + " " + avg_4_time / execution + " " + avg_5_time / execution + " " + avg_6_time / execution + " " + avg_7_time / execution);
-                        System.out.println("AVG Cme:" + avg_0_cmetric / execution + " " + avg_1_cmetric / execution + " " + avg_2_cmetric / execution + " " + avg_3_cmetric / execution + " " + avg_4_cmetric / execution + " " + avg_5_cmetric / execution + " " + avg_6_cmetric / execution + " " + avg_7_cmetric / execution);
+                        System.out.println("AVG Hyp:" + avg_0_hyp / execution + " " + avg_1_hyp / execution + " " + avg_2_hyp / execution + " " + avg_3_hyp / execution + " " + avg_4_hyp / execution + " " + avg_5_hyp / execution + " " + avg_6_hyp / execution + " " + avg_7_hyp / execution + " " + avg_8_hyp / execution + " " + avg_9_hyp / execution + " " + avg_10_hyp / execution);
+                        System.out.println("AVG Spr:" + avg_0_spr / execution + " " + avg_1_spr / execution + " " + avg_2_spr / execution + " " + avg_3_spr / execution + " " + avg_4_spr / execution + " " + avg_5_spr / execution + " " + avg_6_spr / execution + " " + avg_7_spr / execution + " " + avg_8_spr / execution + " " + avg_9_spr / execution + " " + avg_10_spr / execution);
+                        System.out.println("AVG Nds:" + avg_0_nds / execution + " " + avg_1_nds / execution + " " + avg_2_nds / execution + " " + avg_3_nds / execution + " " + avg_4_nds / execution + " " + avg_5_nds / execution + " " + avg_6_nds / execution + " " + avg_7_nds / execution + " " + avg_8_nds / execution + " " + avg_9_nds / execution + " " + avg_10_nds / execution);
+                        System.out.println("AVG Tim:" + avg_0_time / execution + " " + avg_1_time / execution + " " + avg_2_time / execution + " " + avg_3_time / execution + " " + avg_4_time / execution + " " + avg_5_time / execution + " " + avg_6_time / execution + " " + avg_7_time / execution + " " + avg_8_time / execution + " " + avg_9_time / execution + " " + avg_10_time / execution);
+                        System.out.println("AVG Cme:" + avg_0_cmetric / execution + " " + avg_1_cmetric / execution + " " + avg_2_cmetric / execution + " " + avg_3_cmetric / execution + " " + avg_4_cmetric / execution + " " + avg_5_cmetric / execution + " " + avg_6_cmetric / execution + " " + avg_7_cmetric / execution + " " + avg_8_cmetric / execution + " " + avg_9_cmetric / execution + " " + avg_10_cmetric / execution);
                     }
                     if (execution == ULpopSize) {
                         try {
@@ -931,6 +1101,9 @@ public class CostDistr extends Problem {
                             hypWriter_5.close();
                             hypWriter_6.close();
                             hypWriter_7.close();
+                            hypWriter_8.close();
+                            hypWriter_9.close();
+                            hypWriter_10.close();
 
                             sprWriter_0.close();
                             sprWriter_1.close();
@@ -940,6 +1113,9 @@ public class CostDistr extends Problem {
                             sprWriter_5.close();
                             sprWriter_6.close();
                             sprWriter_7.close();
+                            sprWriter_8.close();
+                            sprWriter_9.close();
+                            sprWriter_10.close();
 
                             ndsWriter_0.close();
                             ndsWriter_1.close();
@@ -949,6 +1125,9 @@ public class CostDistr extends Problem {
                             ndsWriter_5.close();
                             ndsWriter_6.close();
                             ndsWriter_7.close();
+                            ndsWriter_8.close();
+                            ndsWriter_9.close();
+                            ndsWriter_10.close();
 
                             timWriter_0.close();
                             timWriter_1.close();
@@ -958,6 +1137,9 @@ public class CostDistr extends Problem {
                             timWriter_5.close();
                             timWriter_6.close();
                             timWriter_7.close();
+                            timWriter_8.close();
+                            timWriter_9.close();
+                            timWriter_10.close();
 
                             cmeWriter_0.close();
                             cmeWriter_1.close();
@@ -967,6 +1149,9 @@ public class CostDistr extends Problem {
                             cmeWriter_5.close();
                             cmeWriter_6.close();
                             cmeWriter_7.close();
+                            cmeWriter_8.close();
+                            cmeWriter_9.close();
+                            cmeWriter_10.close();
 
                             //hyp
                             double std_0_hyp = 0;
@@ -985,6 +1170,12 @@ public class CostDistr extends Problem {
                             double[] hyp6;
                             double std_7_hyp = 0;
                             double[] hyp7;
+                            double std_8_hyp = 0;
+                            double[] hyp8;
+                            double std_9_hyp = 0;
+                            double[] hyp9;
+                            double std_10_hyp = 0;
+                            double[] hyp10;
                             try {
                                 hyp0 = Utils.readFileIntoArray("LowerLevelParetoVisual/hyp0.txt");
                                 std_0_hyp = Utils.calculateStandardDeviation(hyp0);
@@ -1002,10 +1193,16 @@ public class CostDistr extends Problem {
                                 std_6_hyp = Utils.calculateStandardDeviation(hyp6);
                                 hyp7 = Utils.readFileIntoArray("LowerLevelParetoVisual/hyp7.txt");
                                 std_7_hyp = Utils.calculateStandardDeviation(hyp7);
+                                hyp8 = Utils.readFileIntoArray("LowerLevelParetoVisual/hyp8.txt");
+                                std_8_hyp = Utils.calculateStandardDeviation(hyp8);
+                                hyp9 = Utils.readFileIntoArray("LowerLevelParetoVisual/hyp9.txt");
+                                std_9_hyp = Utils.calculateStandardDeviation(hyp9);
+                                hyp10 = Utils.readFileIntoArray("LowerLevelParetoVisual/hyp10.txt");
+                                std_10_hyp = Utils.calculateStandardDeviation(hyp10);
                             } catch (FileNotFoundException e) {
                                 e.printStackTrace();
                             }
-                            System.out.println("STD Hyp:" + std_0_hyp + " " + std_1_hyp + " " + std_2_hyp + " " + std_3_hyp + " " + std_4_hyp + " " + std_5_hyp + " " + std_6_hyp + " " + std_7_hyp);
+                            System.out.println("STD Hyp:" + std_0_hyp + " " + std_1_hyp + " " + std_2_hyp + " " + std_3_hyp + " " + std_4_hyp + " " + std_5_hyp + " " + std_6_hyp + " " + std_7_hyp + " " + std_8_hyp + " " + std_9_hyp + " " + std_10_hyp);
 
                             //spr
                             double std_0_spr = 0;
@@ -1024,6 +1221,12 @@ public class CostDistr extends Problem {
                             double[] spr6;
                             double std_7_spr = 0;
                             double[] spr7;
+                            double std_8_spr = 0;
+                            double[] spr8;
+                            double std_9_spr = 0;
+                            double[] spr9;
+                            double std_10_spr = 0;
+                            double[] spr10;
                             try {
                                 spr0 = Utils.readFileIntoArray("LowerLevelParetoVisual/spr0.txt");
                                 std_0_spr = Utils.calculateStandardDeviation(spr0);
@@ -1041,10 +1244,16 @@ public class CostDistr extends Problem {
                                 std_6_spr = Utils.calculateStandardDeviation(spr6);
                                 spr7 = Utils.readFileIntoArray("LowerLevelParetoVisual/spr7.txt");
                                 std_7_spr = Utils.calculateStandardDeviation(spr7);
+                                spr8 = Utils.readFileIntoArray("LowerLevelParetoVisual/spr8.txt");
+                                std_8_spr = Utils.calculateStandardDeviation(spr8);
+                                spr9 = Utils.readFileIntoArray("LowerLevelParetoVisual/spr9.txt");
+                                std_9_spr = Utils.calculateStandardDeviation(spr9);
+                                spr10 = Utils.readFileIntoArray("LowerLevelParetoVisual/spr10.txt");
+                                std_10_spr = Utils.calculateStandardDeviation(spr10);
                             } catch (FileNotFoundException e) {
                                 e.printStackTrace();
                             }
-                            System.out.println("STD Spr:" + std_0_spr + " " + std_1_spr + " " + std_2_spr + " " + std_3_spr + " " + std_4_spr + " " + std_5_spr + " " + std_6_spr + " " + std_7_spr);
+                            System.out.println("STD Spr:" + std_0_spr + " " + std_1_spr + " " + std_2_spr + " " + std_3_spr + " " + std_4_spr + " " + std_5_spr + " " + std_6_spr + " " + std_7_spr + " " + std_8_spr + " " + std_9_spr + " " + std_10_spr);
 
                             //nds
                             double std_0_nds = 0;
@@ -1063,6 +1272,12 @@ public class CostDistr extends Problem {
                             double[] nds6;
                             double std_7_nds = 0;
                             double[] nds7;
+                            double std_8_nds = 0;
+                            double[] nds8;
+                            double std_9_nds = 0;
+                            double[] nds9;
+                            double std_10_nds = 0;
+                            double[] nds10;
                             try {
                                 nds0 = Utils.readFileIntoArray("LowerLevelParetoVisual/nds0.txt");
                                 std_0_nds = Utils.calculateStandardDeviation(nds0);
@@ -1080,10 +1295,17 @@ public class CostDistr extends Problem {
                                 std_6_nds = Utils.calculateStandardDeviation(nds6);
                                 nds7 = Utils.readFileIntoArray("LowerLevelParetoVisual/nds7.txt");
                                 std_7_nds = Utils.calculateStandardDeviation(nds7);
+                                nds8 = Utils.readFileIntoArray("LowerLevelParetoVisual/nds8.txt");
+                                std_8_nds = Utils.calculateStandardDeviation(nds8);
+                                nds9 = Utils.readFileIntoArray("LowerLevelParetoVisual/nds9.txt");
+                                std_9_nds = Utils.calculateStandardDeviation(nds9);
+                                nds10 = Utils.readFileIntoArray("LowerLevelParetoVisual/nds10.txt");
+                                std_10_nds = Utils.calculateStandardDeviation(nds10);
+
                             } catch (FileNotFoundException e) {
                                 e.printStackTrace();
                             }
-                            System.out.println("STD Nds:" + std_0_nds + " " + std_1_nds + " " + std_2_nds + " " + std_3_nds + " " + std_4_nds + " " + std_5_nds + " " + std_6_nds + " " + std_7_nds);
+                            System.out.println("STD Nds:" + std_0_nds + " " + std_1_nds + " " + std_2_nds + " " + std_3_nds + " " + std_4_nds + " " + std_5_nds + " " + std_6_nds + " " + std_7_nds + " " + std_8_nds + " " + std_9_nds + " " + std_10_nds);
 
                             //tim
                             double std_0_tim = 0;
@@ -1102,6 +1324,12 @@ public class CostDistr extends Problem {
                             double[] tim6;
                             double std_7_tim = 0;
                             double[] tim7;
+                            double std_8_tim = 0;
+                            double[] tim8;
+                            double std_9_tim = 0;
+                            double[] tim9;
+                            double std_10_tim = 0;
+                            double[] tim10;
                             try {
                                 tim0 = Utils.readFileIntoArray("LowerLevelParetoVisual/tim0.txt");
                                 std_0_tim = Utils.calculateStandardDeviation(tim0);
@@ -1119,10 +1347,16 @@ public class CostDistr extends Problem {
                                 std_6_tim = Utils.calculateStandardDeviation(tim6);
                                 tim7 = Utils.readFileIntoArray("LowerLevelParetoVisual/tim7.txt");
                                 std_7_tim = Utils.calculateStandardDeviation(tim7);
+                                tim8 = Utils.readFileIntoArray("LowerLevelParetoVisual/tim8.txt");
+                                std_8_tim = Utils.calculateStandardDeviation(tim8);
+                                tim9 = Utils.readFileIntoArray("LowerLevelParetoVisual/tim9.txt");
+                                std_9_tim = Utils.calculateStandardDeviation(tim9);
+                                tim10 = Utils.readFileIntoArray("LowerLevelParetoVisual/tim10.txt");
+                                std_10_tim = Utils.calculateStandardDeviation(tim10);
                             } catch (FileNotFoundException e) {
                                 e.printStackTrace();
                             }
-                            System.out.println("STD Tim:" + std_0_tim + " " + std_1_tim + " " + std_2_tim + " " + std_3_tim + " " + std_4_tim + " " + std_5_tim + " " + std_6_tim + " " + std_7_tim);
+                            System.out.println("STD Tim:" + std_0_tim + " " + std_1_tim + " " + std_2_tim + " " + std_3_tim + " " + std_4_tim + " " + std_5_tim + " " + std_6_tim + " " + std_7_tim + " " + std_8_tim + " " + std_9_tim + " " + std_10_tim);
 
                             //cme
                             double std_0_cme = 0;
@@ -1141,6 +1375,12 @@ public class CostDistr extends Problem {
                             double[] cme6;
                             double std_7_cme = 0;
                             double[] cme7;
+                            double std_8_cme = 0;
+                            double[] cme8;
+                            double std_9_cme = 0;
+                            double[] cme9;
+                            double std_10_cme = 0;
+                            double[] cme10;
                             try {
                                 cme0 = Utils.readFileIntoArray("LowerLevelParetoVisual/cme0.txt");
                                 std_0_cme = Utils.calculateStandardDeviation(cme0);
@@ -1158,10 +1398,16 @@ public class CostDistr extends Problem {
                                 std_6_cme = Utils.calculateStandardDeviation(cme6);
                                 cme7 = Utils.readFileIntoArray("LowerLevelParetoVisual/cme7.txt");
                                 std_7_cme = Utils.calculateStandardDeviation(cme7);
+                                cme8 = Utils.readFileIntoArray("LowerLevelParetoVisual/cme8.txt");
+                                std_8_cme = Utils.calculateStandardDeviation(cme8);
+                                cme9 = Utils.readFileIntoArray("LowerLevelParetoVisual/cme9.txt");
+                                std_9_cme = Utils.calculateStandardDeviation(cme9);
+                                cme10 = Utils.readFileIntoArray("LowerLevelParetoVisual/cme10.txt");
+                                std_10_cme = Utils.calculateStandardDeviation(cme10);
                             } catch (FileNotFoundException e) {
                                 e.printStackTrace();
                             }
-                            System.out.println("STD Cme:" + std_0_cme + " " + std_1_cme + " " + std_2_cme + " " + std_3_cme + " " + std_4_cme + " " + std_5_cme + " " + std_6_cme + " " + std_7_cme);
+                            System.out.println("STD Cme:" + std_0_cme + " " + std_1_cme + " " + std_2_cme + " " + std_3_cme + " " + std_4_cme + " " + std_5_cme + " " + std_6_cme + " " + std_7_cme + " " + std_8_cme + " " + std_9_cme + " " + std_10_cme);
 
                         } catch (IOException e) {
                             e.printStackTrace();

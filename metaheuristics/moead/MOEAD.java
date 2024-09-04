@@ -305,7 +305,7 @@ public class MOEAD extends Algorithm {
         extPopulation.sort(lambdaComparator);
         double hypervolume = indicators.getHypervolume(extPopulation);
         double diff = hypervolume - prevHypervolume;
-        if (diff < 0.001){
+        if (diff < 0.000001){
           converged = true;
         }
         prevHypervolume = hypervolume;
