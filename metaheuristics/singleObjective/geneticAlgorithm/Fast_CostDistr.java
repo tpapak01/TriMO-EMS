@@ -133,10 +133,11 @@ public class Fast_CostDistr extends Algorithm {
               min_index = j;
             }
           }
-          offspring[o].setLL_ND_pop(population.get(min_index).getLL_ND_pop());
-          offspring[o].setLL_Special_pop(population.get(min_index).getLL_Special_pop());
-          offspring[o].setLL_Reverse_pop(population.get(min_index).getLL_Reverse_pop());
-          offspring[o].setLL_Random_pop(population.get(min_index).getLL_Random_pop());
+          Solution closest = population.get(min_index);
+          offspring[o].setLL_ND_pop(closest.getLL_ND_pop());
+          offspring[o].setLL_Special_pop(closest.getLL_Special_pop());
+          offspring[o].setLL_Reverse_pop(closest.getLL_Reverse_pop());
+          offspring[o].setLL_Random_pop(closest.getLL_Random_pop());
         }
 
         // Evaluation of the new individuals

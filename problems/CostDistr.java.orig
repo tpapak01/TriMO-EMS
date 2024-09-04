@@ -134,6 +134,7 @@ public class CostDistr extends Problem {
     private static double avg_6_time = 0;
     private static double avg_7_time = 0;
     private static double avg_0_cmetric = 0;
+    private static double cmetric_0_against_best = 0;
     private static double avg_1_cmetric = 0;
     private static double avg_2_cmetric = 0;
     private static double avg_3_cmetric = 0;
@@ -186,10 +187,17 @@ public class CostDistr extends Problem {
 
     private static boolean createStatistics = true;
     private static boolean writeParetosToFile = true;
+<<<<<<< HEAD
     private static String writeParetoPath = "LowerLevelParetoVisual/Texperiments/";
-    private static int execution = 1;
-    private static int ULpopSize = 100;
+    private static int execution = 0;
+    private static int ULpopSize = 1000;
     private static int execPrint = 10;
+=======
+    private static String writeParetoPath = "LowerLevelParetoVisual/KnowledgeTransfer/";
+    private static int ULpopSize = 1000;
+    private static int execution = 1;
+    int execPrint = 10;
+>>>>>>> 33dbbb3... Minor fixes
 
   public CostDistr(String renewableFileName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName, String costsName) {
 	  this.setMaxmized_(false); // this problem is not to be maximized
@@ -427,7 +435,6 @@ public class CostDistr extends Problem {
             pareto3 = new SolutionSet(popSize);
             pareto4 = new SolutionSet(popSize);
 
-            /*
             pareto1.add(bestSelfSol);
             pareto2.add(bestSelfSol);
             pareto3.add(bestSelfSol);
@@ -437,8 +444,6 @@ public class CostDistr extends Problem {
             pareto2.add(bestDesSol);
             pareto3.add(bestDesSol);
             pareto4.add(bestDesSol);
-
-
 
             for (int s = 0; s < lsize; s++) {
                 Solution lowerLevelSol = lowerLevelSolutions.get(s);
@@ -455,21 +460,19 @@ public class CostDistr extends Problem {
                 }
             }
 
-             */
-
-            for (int i = 0; i < popSize; i = i + 25) {
+            for (int i = 0; i < popSize; i = i + 50) {
                 Solution lowerLevelSol = archive.get(i);
                 pareto1.add(lowerLevelSol);
             }
-            for (int i = 0; i < popSize; i = i + 12) {
+            for (int i = 0; i < popSize; i = i + 25) {
                 Solution lowerLevelSol = archive.get(i);
                 pareto2.add(lowerLevelSol);
             }
-            for (int i = 0; i < popSize; i = i + 5) {
+            for (int i = 0; i < popSize; i = i + 13) {
                 Solution lowerLevelSol = archive.get(i);
                 pareto3.add(lowerLevelSol);
             }
-            for (int i = 0; i < popSize; i = i + 2) {
+            for (int i = 0; i < popSize; i = i + 5) {
                 Solution lowerLevelSol = archive.get(i);
                 pareto4.add(lowerLevelSol);
             }
@@ -511,51 +514,112 @@ public class CostDistr extends Problem {
             solution.setLL_Reverse_pop(pareto3);
             solution.setLL_Random_pop(pareto4);
         } else if (execType == 0 && solution.isMarked() == false){
+<<<<<<< HEAD
+            execution++;
+            if (solution.getReferencePop() != null){
+                int problem = 1111;
+            } else {
+                solution.setReferencePop(lowerLevelSolutions);
 
-            if (writeParetosToFile)
-                lowerLevelSolutions.printObjectivesToFile(writeParetoPathFull + execType);
+                if (writeParetosToFile)
+                    lowerLevelSolutions.printObjectivesToFile(writeParetoPath + (execution) + "_FUN_" + execType);
 
-            if (createStatistics) {
-                best_hyp = -100;
-                best_hyp_ind = -1;
-                best_spr = 100;
-                best_spr_ind = -1;
-                best_nds = -1;
-                best_nds_ind = -1;
-                best_time = 100000;
-                best_time_ind = -1;
-                best_cmetric = -1;
-                best_cmetric_ind = -1;
-                try {
-                    double hypervolume = indicators.getHypervolume(lowerLevelSolutions);
-                    hypWriter_0.write(hypervolume + "\n");
-                    avg_0_hyp += hypervolume;
-                    if (hypervolume > best_hyp) {
-                        best_hyp = hypervolume;
-                        best_hyp_ind = execType;
+                if (createStatistics) {
+                    best_hyp = -100;
+                    best_hyp_ind = -1;
+                    best_spr = 100;
+                    best_spr_ind = -1;
+                    best_nds = -1;
+                    best_nds_ind = -1;
+                    best_time = 100000;
+                    best_time_ind = -1;
+                    best_cmetric = -1;
+                    best_cmetric_ind = -1;
+                    try {
+                        double hypervolume = indicators.getHypervolume(lowerLevelSolutions);
+                        hypWriter_0.write(hypervolume + "\n");
+                        avg_0_hyp += hypervolume;
+                        if (hypervolume > best_hyp) {
+                            best_hyp = hypervolume;
+                            best_hyp_ind = execType;
+                        }
+                        double spread = indicators.getSpread(lowerLevelSolutions);
+                        sprWriter_0.write(spread + "\n");
+                        avg_0_spr += spread;
+                        if (spread < best_spr) {
+                            best_spr = spread;
+                            best_spr_ind = execType;
+=======
+            if (this.lowerLevelAlgorithmName.equals("MOEAD")) {
+                if (solution.getReferencePop() != null){
+                    int problem = 1111;
+                } else {
+                    solution.setReferencePop(lowerLevelSolutions);
+
+                    if (writeParetosToFile)
+                        lowerLevelSolutions.printObjectivesToFile(writeParetoPathFull + execType);
+
+                    if (createStatistics) {
+                        best_hyp = -100;
+                        best_hyp_ind = -1;
+                        best_spr = 100;
+                        best_spr_ind = -1;
+                        best_nds = -1;
+                        best_nds_ind = -1;
+                        best_time = 100000;
+                        best_time_ind = -1;
+                        best_cmetric = -1;
+                        best_cmetric_ind = -1;
+                        try {
+                            double hypervolume = indicators.getHypervolume(lowerLevelSolutions);
+                            hypWriter_0.write(hypervolume + "\n");
+                            avg_0_hyp += hypervolume;
+                            if (hypervolume > best_hyp) {
+                                best_hyp = hypervolume;
+                                best_hyp_ind = execType;
+                            }
+                            double spread = indicators.getSpread(lowerLevelSolutions);
+                            sprWriter_0.write(spread + "\n");
+                            avg_0_spr += spread;
+                            if (spread < best_spr) {
+                                best_spr = spread;
+                                best_spr_ind = execType;
+                            }
+                            int nds = lsize;
+                            ndsWriter_0.write(nds + "\n");
+                            avg_0_nds += nds;
+                            if (nds < best_nds) {
+                                best_nds = nds;
+                                best_nds_ind = execType;
+                            }
+                            timWriter_0.write(estimatedTime + "\n");
+                            avg_0_time += estimatedTime;
+                            if (estimatedTime < best_time) {
+                                best_time = estimatedTime;
+                                best_time_ind = execType;
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+>>>>>>> 33dbbb3... Minor fixes
+                        }
+                        int nds = lsize;
+                        ndsWriter_0.write(nds + "\n");
+                        avg_0_nds += nds;
+                        if (nds < best_nds) {
+                            best_nds = nds;
+                            best_nds_ind = execType;
+                        }
+                        timWriter_0.write(estimatedTime + "\n");
+                        avg_0_time += estimatedTime;
+                        if (estimatedTime < best_time) {
+                            best_time = estimatedTime;
+                            best_time_ind = execType;
+                        }
+                        //System.out.println("val:" + hypervolume);
+                        //lowerLevelSolutions.printObjectivesToFile("LowerLevelParetoEvolution/" + execution + "_FUN_" + execType);
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                    double spread = indicators.getSpread(lowerLevelSolutions);
-                    sprWriter_0.write(spread + "\n");
-                    avg_0_spr += spread;
-                    if (spread < best_spr) {
-                        best_spr = spread;
-                        best_spr_ind = execType;
-                    }
-                    int nds = lsize;
-                    ndsWriter_0.write(nds + "\n");
-                    avg_0_nds += nds;
-                    if (nds < best_nds) {
-                        best_nds = nds;
-                        best_nds_ind = execType;
-                    }
-                    timWriter_0.write(estimatedTime + "\n");
-                    avg_0_time += estimatedTime;
-                    if (estimatedTime < best_time) {
-                        best_time = estimatedTime;
-                        best_time_ind = execType;
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
             }
         } else if (solution.isMarked() == false){
@@ -610,22 +674,39 @@ public class CostDistr extends Problem {
                     best_time = estimatedTime;
                     best_time_ind = execType;
                 }
-
-                int enemy = -1;
-                if (execType >=4 && execType <=7)
-                    enemy = execType - 4;
-
-                double cMetric = 0;
-                double cMetricReverse = 0;
-                if (enemy != -1) {
-                    C_Metric epf = new C_Metric(writeParetoPathFull + execType,
-                            writeParetoPathFull + enemy, 2);
-                    cMetric = (float) epf.num_of_dominated_B / (float) epf.nds_B;
-
-                    C_Metric epfReverse = new C_Metric(writeParetoPathFull + enemy,
+<<<<<<< HEAD
+                lowerLevelSolutions.printObjectivesToFile("LowerLevelParetoEvolution/FUN_1");
+                solution.getReferencePop().printObjectivesToFile("LowerLevelParetoEvolution/FUN_2");
+                C_Metric epf = new C_Metric("LowerLevelParetoEvolution/FUN_1",
+                        "LowerLevelParetoEvolution/FUN_2", 2);
+                double cMetric = (float) epf.num_of_dominated_B / (float) epf.nds_B;
+                if (cMetric > best_cmetric) {
+                    best_cmetric = cMetric;
+                    C_Metric epfReverse = new C_Metric("LowerLevelParetoEvolution/FUN_2",
+                            "LowerLevelParetoEvolution/FUN_1", 2);
+=======
+                C_Metric epf = new C_Metric(writeParetoPathFull + execType,
+                        writeParetoPathFull + 0, 2);
+                double cMetric = (float) epf.num_of_dominated_B / (float) epf.nds_B;
+                if (cMetric > best_cmetric) {
+                    best_cmetric = cMetric;
+                    C_Metric epfReverse = new C_Metric(writeParetoPathFull + 0,
                             writeParetoPathFull + execType, 2);
-                    cMetricReverse = (float) epfReverse.num_of_dominated_B / (float) epfReverse.nds_B;
+>>>>>>> 33dbbb3... Minor fixes
+                    double cMetricReverse = (float) epfReverse.num_of_dominated_B / (float) epfReverse.nds_B;
+                    cmetric_0_against_best = cMetricReverse;
+                    if (cMetricReverse > cMetric)
+                        best_cmetric_ind = 0;
+                    else best_cmetric_ind = execType;
+
                 }
+<<<<<<< HEAD
+                File file1 = new File("LowerLevelParetoEvolution/FUN_1");
+                file1.delete();
+                File file2 = new File("LowerLevelParetoEvolution/FUN_2");
+                file2.delete();
+=======
+>>>>>>> 33dbbb3... Minor fixes
 
                 try {
                     switch (execType) {
@@ -634,30 +715,36 @@ public class CostDistr extends Problem {
                             avg_1_spr += spread;
                             avg_1_nds += nds;
                             avg_1_time += estimatedTime;
+                            avg_1_cmetric += cMetric;
                             hypWriter_1.write(hypervolume + "\n");
                             sprWriter_1.write(spread + "\n");
                             ndsWriter_1.write(nds + "\n");
                             timWriter_1.write(estimatedTime + "\n");
+                            cmeWriter_1.write(cMetric + "\n");
                             break;
                         case 2:
                             avg_2_hyp += hypervolume;
                             avg_2_spr += spread;
                             avg_2_nds += nds;
                             avg_2_time += estimatedTime;
+                            avg_2_cmetric += cMetric;
                             hypWriter_2.write(hypervolume + "\n");
                             sprWriter_2.write(spread + "\n");
                             ndsWriter_2.write(nds + "\n");
                             timWriter_2.write(estimatedTime + "\n");
+                            cmeWriter_2.write(cMetric + "\n");
                             break;
                         case 3:
                             avg_3_hyp += hypervolume;
                             avg_3_spr += spread;
                             avg_3_nds += nds;
                             avg_3_time += estimatedTime;
+                            avg_3_cmetric += cMetric;
                             hypWriter_3.write(hypervolume + "\n");
                             sprWriter_3.write(spread + "\n");
                             ndsWriter_3.write(nds + "\n");
                             timWriter_3.write(estimatedTime + "\n");
+                            cmeWriter_3.write(cMetric + "\n");
                             break;
                         case 4:
                             avg_4_hyp += hypervolume;
@@ -665,13 +752,11 @@ public class CostDistr extends Problem {
                             avg_4_nds += nds;
                             avg_4_time += estimatedTime;
                             avg_4_cmetric += cMetric;
-                            avg_0_cmetric += cMetricReverse;
                             hypWriter_4.write(hypervolume + "\n");
                             sprWriter_4.write(spread + "\n");
                             ndsWriter_4.write(nds + "\n");
                             timWriter_4.write(estimatedTime + "\n");
                             cmeWriter_4.write(cMetric + "\n");
-                            cmeWriter_0.write(cMetricReverse + "\n");
                             break;
                         case 5:
                             avg_5_hyp += hypervolume;
@@ -679,13 +764,11 @@ public class CostDistr extends Problem {
                             avg_5_nds += nds;
                             avg_5_time += estimatedTime;
                             avg_5_cmetric += cMetric;
-                            avg_1_cmetric += cMetricReverse;
                             hypWriter_5.write(hypervolume + "\n");
                             sprWriter_5.write(spread + "\n");
                             ndsWriter_5.write(nds + "\n");
                             timWriter_5.write(estimatedTime + "\n");
                             cmeWriter_5.write(cMetric + "\n");
-                            cmeWriter_1.write(cMetricReverse + "\n");
                             break;
                         case 6:
                             avg_6_hyp += hypervolume;
@@ -693,13 +776,11 @@ public class CostDistr extends Problem {
                             avg_6_nds += nds;
                             avg_6_time += estimatedTime;
                             avg_6_cmetric += cMetric;
-                            avg_2_cmetric += cMetricReverse;
                             hypWriter_6.write(hypervolume + "\n");
                             sprWriter_6.write(spread + "\n");
                             ndsWriter_6.write(nds + "\n");
                             timWriter_6.write(estimatedTime + "\n");
                             cmeWriter_6.write(cMetric + "\n");
-                            cmeWriter_2.write(cMetricReverse + "\n");
                             break;
                         case 7:
                             avg_7_hyp += hypervolume;
@@ -707,13 +788,11 @@ public class CostDistr extends Problem {
                             avg_7_nds += nds;
                             avg_7_time += estimatedTime;
                             avg_7_cmetric += cMetric;
-                            avg_3_cmetric += cMetricReverse;
                             hypWriter_7.write(hypervolume + "\n");
                             sprWriter_7.write(spread + "\n");
                             ndsWriter_7.write(nds + "\n");
                             timWriter_7.write(estimatedTime + "\n");
                             cmeWriter_7.write(cMetric + "\n");
-                            cmeWriter_3.write(cMetricReverse + "\n");
                             break;
                         default:
                             break;
@@ -836,6 +915,12 @@ public class CostDistr extends Problem {
                         default:
                             break;
                     }
+                    try {
+                        cmeWriter_0.write(cmetric_0_against_best + "\n");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    avg_0_cmetric += cmetric_0_against_best;
                     switch (best_cmetric_ind) {
                         case 0:
                             wins_0_cmetric++;
