@@ -398,7 +398,7 @@ public class Utils {
 	}
 
 	public static SolutionSet readFileIntoSolutionSet(Problem lowerLevelProblem, String filename) throws FileNotFoundException, ClassNotFoundException {
-		SolutionSet set = new SolutionSet(300);
+		SolutionSet set = new SolutionSet(700);
 
 		// load content of file based on specific delimiter
 		Scanner sc = new Scanner(new FileReader(filename))
