@@ -115,21 +115,25 @@ public class PartiallyMappedHUXCrossover extends Crossover{
                   coveredReverse0[covered0_current] = -1;
                   coveredReverse1[covered1_current] = -1;
 
-                  //i0: cover new and delete any other spot covering the new
+                  //i0: cover new and redirect any other spot covering the new to the old
                   covered0[i] = covered1_current;
                   if (coveredReverse0[covered1_current] != -1) {
                     int previousCoverer = coveredReverse0[covered1_current];
-                    covered0[previousCoverer] = -1;
-                    offSpring0.set(previousCoverer, false);
+                    //covered0[previousCoverer] = -1;
+                    //offSpring0.set(previousCoverer, false);
+                    covered0[previousCoverer] = covered0_current;
+                    coveredReverse0[covered0_current] = previousCoverer;
                   }
                   coveredReverse0[covered1_current] = i;
 
-                  //i1: cover new and delete other spot covering the new
+                  //i1: cover new and redirect any other spot covering the new to the old
                   covered1[i] = covered0_current;
                   if (coveredReverse1[covered0_current] != -1) {
                     int previousCoverer = coveredReverse1[covered0_current];
-                    covered1[previousCoverer] = -1;
-                    offSpring1.set(previousCoverer, false);
+                    //covered1[previousCoverer] = -1;
+                    //offSpring1.set(previousCoverer, false);
+                    covered1[previousCoverer] = covered1_current;
+                    coveredReverse1[covered1_current] = previousCoverer;
                   }
                   coveredReverse1[covered0_current] = i;
                 }
@@ -146,6 +150,7 @@ public class PartiallyMappedHUXCrossover extends Crossover{
 
                   //i1:
                   offSpring1.set(i, true);
+                  //i1: cover new and delete any other spot covering the new
                   covered1[i] = covered0_current;
                   if (coveredReverse1[covered0_current] != -1) {
                     int previousCoverer = coveredReverse1[covered0_current];
