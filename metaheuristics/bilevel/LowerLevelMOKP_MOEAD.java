@@ -102,15 +102,11 @@ public class LowerLevelMOKP_MOEAD {
         //algorithm.setInputParameter("finalSize", 300) ; // used by MOEAD_DRA
 
         //thalis
-        algorithm.setInputParameter("T", 50) ; // number of neighbours per individual
+        algorithm.setInputParameter("T", 11) ; // number of neighbours per individual
         algorithm.setInputParameter("delta", 1.0) ; // 1 = parents always from neighbourhood = MOEAD
         algorithm.setInputParameter("nr", 10) ; // maximal number of solutions that can be updated in "updateProblem"
         //theta_ = 5.0; // used in PBI
         //algorithm.setInputParameter("theta", theta_) ;
-        //thalis comment
-        //algorithm.setInputParameter("T", 20) ;
-        //algorithm.setInputParameter("delta", 0.9) ;
-        //algorithm.setInputParameter("nr", 2) ;
 
         // Crossover operator
         //thalis
