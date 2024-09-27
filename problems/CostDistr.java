@@ -219,6 +219,7 @@ public class CostDistr extends Problem {
                 }
             }
 
+            /*
             specialPareto.add(bestSelfSol);
             specialPareto.add(bestDesSol);
 
@@ -234,7 +235,9 @@ public class CostDistr extends Problem {
                 }
             }
 
-            for (int i = 0; i < lsize; i = i + 25) {
+             */
+
+            for (int i = 0; i < lsize; i = i + 5) {
                 Solution lowerLevelSol = lowerLevelSolutions.get(i);
                 specialPareto.add(lowerLevelSol);
             }
