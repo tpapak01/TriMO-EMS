@@ -489,21 +489,20 @@ public class CostDistr extends Problem {
                 Solution currentArchiveSol = newSol;
                 exIdx++;
                 externalToAdd = newExternal.get(exIdx);
-                for (int i = 1; i < popSize; i++) {
-
+                int i = 0;
+                while (archive.size() < popSize){
                     double f1 = algo.fitnessFunction(currentArchiveSol, lambda[i]);
                     double f2 = algo.fitnessFunction(externalToAdd, lambda[i]);
                     // if f2 smaller than f1, f2 (externalToAdd) is better
-                    if (f2 <= f1) {
-                        newSol = new Solution(externalToAdd, lambda[i]);
-                        archive.add(newSol);
+                    if (f2 < f1 || (f2 == f1 && exIdx < lsize)) {
                         currentArchiveSol = externalToAdd;
                         exIdx++;
-                        if (exIdx < newExternal.size())
+                        if (exIdx < lsize)
                             externalToAdd = newExternal.get(exIdx);
                     } else {
                         newSol = new Solution(currentArchiveSol, lambda[i]);
                         archive.add(newSol);
+                        i++;
                     }
                 }
 
@@ -549,19 +548,19 @@ public class CostDistr extends Problem {
                 }
                 */
 
-                for (int i = 0; i < popSize; i = i + 25) {
+                for (i = 0; i < popSize; i = i + 25) {
                     Solution lowerLevelSol = archive.get(i);
                     specialPareto.add(lowerLevelSol);
                 }
-                for (int i = 0; i < popSize; i = i + 12) {
+                for (i = 0; i < popSize; i = i + 12) {
                     Solution lowerLevelSol = archive.get(i);
                     reversePareto.add(lowerLevelSol);
                 }
-                for (int i = 0; i < popSize; i = i + 5) {
+                for (i = 0; i < popSize; i = i + 5) {
                     Solution lowerLevelSol = archive.get(i);
                     randomPareto.add(lowerLevelSol);
                 }
-                for (int i = 0; i < popSize; i = i + 2) {
+                for (i = 0; i < popSize; i = i + 2) {
                     Solution lowerLevelSol = archive.get(i);
                     referencePareto.add(lowerLevelSol);
                 }
