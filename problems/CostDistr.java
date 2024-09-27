@@ -201,21 +201,20 @@ public class CostDistr extends Problem {
             Solution currentArchiveSol = newSol;
             exIdx++;
             externalToAdd = newExternal.get(exIdx);
-            for (int i = 1; i < popSize; i++) {
-
+            int i = 0;
+            while (archive.size() < popSize){
                 double f1 = algo.fitnessFunction(currentArchiveSol, lambda[i]);
                 double f2 = algo.fitnessFunction(externalToAdd, lambda[i]);
                 // if f2 smaller than f1, f2 (externalToAdd) is better
-                if (f2 <= f1) {
-                    newSol = new Solution(externalToAdd, lambda[i]);
-                    archive.add(newSol);
+                if (f2 < f1 || (f2 == f1 && exIdx < lsize)) {
                     currentArchiveSol = externalToAdd;
                     exIdx++;
-                    if (exIdx < newExternal.size())
+                    if (exIdx < lsize)
                         externalToAdd = newExternal.get(exIdx);
                 } else {
                     newSol = new Solution(currentArchiveSol, lambda[i]);
                     archive.add(newSol);
+                    i++;
                 }
             }
 
@@ -237,7 +236,7 @@ public class CostDistr extends Problem {
 
              */
 
-            for (int i = 0; i < lsize; i = i + 5) {
+            for (i = 0; i < lsize; i = i + 5) {
                 Solution lowerLevelSol = lowerLevelSolutions.get(i);
                 specialPareto.add(lowerLevelSol);
             }
