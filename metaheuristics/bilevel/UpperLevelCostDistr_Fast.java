@@ -13,6 +13,7 @@ import jmetal.operators.selection.Selection;
 import jmetal.problems.CostDistr;
 import jmetal.problems.MOKP_Problem;
 import jmetal.util.JMException;
+import jmetal.util.Ranking;
 import jmetal.util.comparators.ObjectiveComparator;
 
 import java.io.FileWriter;
@@ -185,6 +186,9 @@ public class UpperLevelCostDistr_Fast {
         FileWriter timeWriter = new FileWriter("TIME", true);
         timeWriter.write(estimatedTime + "\n");
         timeWriter.close();
+
+        SolutionSet lowerLevelSolutions = population.get(0).getLL_ND_pop();
+        lowerLevelSolutions.printObjectivesToFile("LowerLevelParetoVisual/" + "0_FUN"); //check
 
 
     } //main

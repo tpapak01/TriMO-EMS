@@ -112,6 +112,7 @@ public class MOEAD extends Algorithm {
     private static FileWriter spreadWriter;
     private static FileWriter hypervolumeWriter;
     private static FileWriter ndsWriter;
+    private static double conv = 0.000001;  //0.000001;  0.001
 
   public SolutionSet execute() throws JMException, ClassNotFoundException {
     int maxEvaluations;
@@ -305,7 +306,7 @@ public class MOEAD extends Algorithm {
         extPopulation.sort(lambdaComparator);
         double hypervolume = indicators.getHypervolume(extPopulation);
         double diff = hypervolume - prevHypervolume;
-        if (diff < 0.000001){
+        if (diff < conv){
           converged = true;
         }
         prevHypervolume = hypervolume;
