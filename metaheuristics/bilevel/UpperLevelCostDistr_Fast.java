@@ -170,11 +170,14 @@ public class UpperLevelCostDistr_Fast {
         population.printObjectivesToFile("FUN");
         System.out.println("Variables values have been writen to file VAR");
         population.printVariablesToFile("VAR");
+        population.printVariablesToFile("C:\\Users\\emine\\source\\repos\\SmartHome3\\SmartHome3\\results\\Winner\\Prices");
 
         population.printSelfConsumptionToFile("SELF_CONSU");
+        population.printSelfConsumptionToFile("C:\\Users\\emine\\source\\repos\\SmartHome3\\SmartHome3\\results\\Winner\\SELF_CONSU");
         population.printNonREPaidToFile("NON_RE_PAID");
         population.printLowerLevelVarsToFile("LL_VAR");
         population.printLowerLevelObjToFile("LL_FUN");
+        population.printLowerLevelObjToFile("C:\\Users\\emine\\source\\repos\\SmartHome3\\SmartHome3\\results\\Winner\\LL_FUN");
         population.printMappingToFile("LL_MAPPING");
 
         population.printSpentEnergyToFile("SPENT");
@@ -187,8 +190,16 @@ public class UpperLevelCostDistr_Fast {
         timeWriter.write(estimatedTime + "\n");
         timeWriter.close();
 
-        SolutionSet lowerLevelSolutions = population.get(0).getLL_ND_pop();
-        lowerLevelSolutions.printObjectivesToFile("LowerLevelParetoVisual/" + "0_FUN"); //check
+        SolutionSet specialPareto = population.get(0).getLL_ND_pop();
+        specialPareto.printObjectivesToFile("LowerLevelParetoVisual/" + "0_FUN"); //check
+
+        //Platform
+        SolutionSet lowerLevelSolutions = population.get(0).getLL_Pareto_pop();
+        lowerLevelSolutions.printParetoToFile("C:\\Users\\emine\\source\\repos\\SmartHome3\\SmartHome3\\results\\Winner\\Pareto");
+        lowerLevelSolutions.printSpentsToFile("C:\\Users\\emine\\source\\repos\\SmartHome3\\SmartHome3\\results\\Spents\\");
+        lowerLevelSolutions.printSelfsToFile("C:\\Users\\emine\\source\\repos\\SmartHome3\\SmartHome3\\results\\Selfs\\");
+        //population.printSpentEnergyToFile("C:\\Users\\emine\\source\\repos\\SmartHome3\\SmartHome3\\results\\Winner\\SPENT");
+
 
 
     } //main

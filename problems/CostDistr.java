@@ -16,6 +16,7 @@ import jmetal.metaheuristics.bilevel.LowerLevelMOKP_MOEAD;
 import jmetal.metaheuristics.bilevel.LowerLevelMOKP_NSGAII;
 import jmetal.metaheuristics.moead.MOEAD;
 import jmetal.util.JMException;
+import jmetal.util.RankingOnlyFirst;
 import jmetal.util.Utils;
 import jmetal.util.comparators.ObjectiveComparator;
 import jmetal.util.wrapper.XReal;
@@ -27,8 +28,10 @@ import java.util.Comparator;
 public class CostDistr extends Problem {
 
 	private static final long serialVersionUID = 1L;
-    private String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data - multi user - bilevel/"; // The path of the files
-    private static String costsPath = "/Users/emine/IdeaProjects/JMETALHOME/Costs_data/";
+    //private String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data - multi user - bilevel/"; // The path of the files
+    //private static String costsPath = "/Users/emine/IdeaProjects/JMETALHOME/Costs_data/";
+    private String problemPath = "/Users/emine/source/repos/SmartHome3/SmartHome3/data/"; // The path of the files
+    private static String costsPath = "/Users/emine/source/repos/SmartHome3/SmartHome3/data/";
 
     private MOKP_Problem lowerLevelProblem;
     private String lowerLevelAlgorithmName;
@@ -156,6 +159,11 @@ public class CostDistr extends Problem {
                 best_self = result;
                 best_solution_index = s;
             }
+
+            ////register Deviation from Produced - used for Platform only
+            double deviation = calculateEnergyDeviationFromProduced(energySpent);
+            lowerLevelSol.setEnergyDeviationFromProduced(deviation);
+
             double desirability;
             if (lowerLevelSol.getLambda() == null){
                 double position = s / (double) lsize;
@@ -287,6 +295,8 @@ public class CostDistr extends Problem {
         solution.setDeviceToPreferenceMapping(chosenlowerLevelSol.getDeviceToPreferenceMapping());
         solution.setReverseDeviceToPreferenceMapping(chosenlowerLevelSol.getReverseDeviceToPreferenceMapping());
         solution.setLL_ND_pop(specialPareto);
+        //platform only
+        solution.setLL_Pareto_pop(lowerLevelSolutions);
 
         if (best_upper_level_result > best_self) {
             best_upper_level_result = best_self;
@@ -317,20 +327,24 @@ public class CostDistr extends Problem {
 
         }
 
-        /*
+
         if (UL_evaluations % 100 == 0) {
+            /*
             SolutionSet chosenSolutionSet = new SolutionSet(1);
             chosenSolutionSet.add(chosenlowerLevelSol);
             chosenSolutionSet.printObjectivesToFile("LowerLevelParetoVisual/" + (fileID) + "_CHOSEN");
 
-            Ranking finalRanking = new Ranking(lowerLevelSolutions);
+             */
+
+            RankingOnlyFirst finalRanking = new RankingOnlyFirst(lowerLevelSolutions);
             SolutionSet finalParetoFront = finalRanking.getSubfront(0);
-            finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/" + (fileID) + "_FUN"); //check
+            //finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/" + (fileID) + "_FUN"); //check
+            finalParetoFront.printParetoToFile("C:\\Users\\emine\\source\\repos\\SmartHome3\\SmartHome3\\results\\Paretos\\PARETO_" + (fileID-1));
             fileID++;
         }
         UL_evaluations++;
         
-         */
+
 
 
         //System.out.println(best_result);

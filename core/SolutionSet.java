@@ -599,6 +599,81 @@ public class SolutionSet implements Serializable {
       e.printStackTrace();
     }       
   }
+
+  public void printParetoToFile(String path){
+    try {
+      /* Open the file */
+      FileOutputStream fos   = new FileOutputStream(path, false)     ;
+      OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
+      BufferedWriter bw      = new BufferedWriter(osw)        ;
+
+      for (Solution aSolutionsList_ : solutionsList_) {
+        //if (this.vector[i].getFitness()<1.0) {
+        bw.write(aSolutionsList_.toString());
+        bw.newLine();
+        //}
+      }
+
+      /* Close the file */
+      bw.close();
+    }catch (IOException e) {
+      Configuration.logger_.severe("Error acceding to the file");
+      e.printStackTrace();
+    }
+  }
+
+  // Purpose: bar graphs, to show energy spent per hour compared to availability
+  public void printSpentsToFile(String path){
+    int i=-1;
+    for (Solution aSolutionsList_ : solutionsList_) {
+      i++;
+      String fullpath = path + "SPENT_" + i;
+
+      try {
+        /* Open the file */
+
+        FileOutputStream fos = new FileOutputStream(fullpath, false);
+        OutputStreamWriter osw = new OutputStreamWriter(fos);
+        BufferedWriter bw = new BufferedWriter(osw);
+
+
+        bw.write(Arrays.toString(aSolutionsList_.getSpentEnergy()));
+        bw.newLine();
+
+        /* Close the file */
+        bw.close();
+      } catch (IOException e) {
+        Configuration.logger_.severe("Error acceding to the file");
+        e.printStackTrace();
+      }
+    }
+  }
+
+
+  public void printSelfsToFile(String path){
+    int i=-1;
+    for (Solution aSolutionsList_ : solutionsList_) {
+      i++;
+      String fullpath = path + "SELF_" + i;
+
+      try {
+        /* Open the file */
+
+        FileOutputStream fos = new FileOutputStream(fullpath, false);
+        OutputStreamWriter osw = new OutputStreamWriter(fos);
+        BufferedWriter bw = new BufferedWriter(osw);
+
+        bw.write(String.valueOf(aSolutionsList_.getEnergyDeviationFromProduced()));
+        bw.newLine();
+
+        /* Close the file */
+        bw.close();
+      } catch (IOException e) {
+        Configuration.logger_.severe("Error acceding to the file");
+        e.printStackTrace();
+      }
+    }
+  }
   
   /** 
    * Empties the SolutionSet

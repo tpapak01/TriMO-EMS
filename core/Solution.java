@@ -120,6 +120,13 @@ public class Solution implements Serializable {
     this.LL_ND_pop = LL_ND_pop;
   }
 
+  //platform only
+  private SolutionSet LL_Pareto_pop;
+  public SolutionSet getLL_Pareto_pop(){ return LL_Pareto_pop; }
+  public void setLL_Pareto_pop(SolutionSet LL_Pareto_pop){
+    this.LL_Pareto_pop = LL_Pareto_pop;
+  }
+
 	/**
 	 * Stores the problem 
 	 */
@@ -340,6 +347,9 @@ public class Solution implements Serializable {
     if (solution.getLL_ND_pop() != null) {
       setLL_ND_pop(solution.getLL_ND_pop());
     }
+    if (solution.getLL_Pareto_pop() != null) {
+      setLL_Pareto_pop(solution.getLL_Pareto_pop());
+    }
   } // Solution
 
   public Solution(Solution solution) {
@@ -395,6 +405,9 @@ public class Solution implements Serializable {
     }
     if (solution.getLL_ND_pop() != null) {
       setLL_ND_pop(solution.getLL_ND_pop());
+    }
+    if (solution.getLL_Pareto_pop() != null) {
+      setLL_Pareto_pop(solution.getLL_Pareto_pop());
     }
   } // Solution
 

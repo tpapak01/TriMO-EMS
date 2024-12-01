@@ -322,7 +322,7 @@ public class MOEAD extends Algorithm {
 
     //thalis
 
-    //register Spent Energy of top solutions
+    //register Spent Energy of top solutions - used for both algorithm and Platform
     for (int i = 0; i < extPopulation.size(); i++) {
       problemMOKP.calculateSpentEnergy(extPopulation.get(i));
     }

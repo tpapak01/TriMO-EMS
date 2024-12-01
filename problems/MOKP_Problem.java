@@ -23,8 +23,10 @@ import jmetal.util.wrapper.XReal;
 public class MOKP_Problem extends Problem {
 
 	private static final long serialVersionUID = 1L;
-    private String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data - multi user - bilevel/"; // The path of the files
-    private String userPreferencePath = "/Users/emine/IdeaProjects/JMETALHOME/Userpreference_data/"; // The path of the files
+    //private String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data - multi user - bilevel/"; // The path of the files
+    //private String userPreferencePath = "/Users/emine/IdeaProjects/JMETALHOME/Userpreference_data/"; // The path of the files
+    private String problemPath = "/Users/emine/source/repos/SmartHome3/SmartHome3/data/"; // The path of the files
+    private String userPreferencePath = "/Users/emine/source/repos/SmartHome3/SmartHome3/data/"; // The path of the files
     public static String fileName; //
     public static String userPreferencefileName; //
     private int numberOfItems;
