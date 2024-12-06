@@ -26,6 +26,7 @@ import jmetal.encodings.variable.ArrayReal;
 import jmetal.problems.CostDistr;
 import jmetal.util.EuclideanDist;
 import jmetal.util.JMException;
+import jmetal.util.RankingOnlyFirst;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -98,13 +99,22 @@ public class Fast_CostDistr extends Algorithm {
 
     int iterations = populationSize/2;
     int stop = 0;
+    int generation = 0;
 
     while (evaluations < maxEvaluations && converged != 0) {
 
+      Solution winner = population.get(0);
+      SolutionSet winnerPareto = winner.getLL_Pareto_pop();
+      winnerPareto.printParetoToFile("C:\\Users\\emine\\source\\repos\\SmartHome3\\SmartHome3\\results\\Paretos\\PARETO_" + (generation));
+      SolutionSet onlyWinner = new SolutionSet(1);
+      onlyWinner.add(winner);
+      onlyWinner.printSelfConsumptionToFile("C:\\Users\\emine\\source\\repos\\SmartHome3\\SmartHome3\\results\\SelfsInProgress\\SELF_" + (generation));
+      generation++;
+
       SolutionSet offspringPopulation = new SolutionSet(populationSize) ;
 
-      double diff = Math.abs(population.get(0).getObjective(0) - population.get(populationSize-1).getObjective(0));
-      if (diff <= 5 ) {
+      double diff = Math.abs(winner.getObjective(0) - population.get(populationSize-1).getObjective(0));
+      if (diff <= 10 ) {
         int a = 2;
       }
 
@@ -172,11 +182,12 @@ public class Fast_CostDistr extends Algorithm {
         break;
       }
 
+      winner = population.get(0);
       //check for convergence
-      if (population.get(0).getObjective(0) >= best_solution){
+      if (winner.getObjective(0) >= best_solution){
         converged--;
       } else {
-        best_solution = population.get(0).getObjective(0);
+        best_solution = winner.getObjective(0);
         System.out.println("BEST SOL at " + evaluations + ": " + best_solution);
         converged = generations_left_for_convergence;
       }
