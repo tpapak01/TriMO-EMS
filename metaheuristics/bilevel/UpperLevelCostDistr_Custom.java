@@ -52,18 +52,24 @@ public class UpperLevelCostDistr_Custom {
         String problemName = args[0];
         String problemUserPreferences = args[1];
         String lowerLevelAlgorithmName = args[2];
-        String costsName = "";
+        String costsName = "-";
         if (args.length > 3)
             costsName = args[3];
+        String dataPath = "-";
+        if (args.length > 4)
+            dataPath = args[4];
+        String paretoFileName = "-";
+        if (args.length > 5)
+            paretoFileName = args[5];
         //initialize Lower Level algorithm
-        MOKP_Problem lowerLevelProblem = new MOKP_Problem(problemName, problemUserPreferences);
+        MOKP_Problem lowerLevelProblem = new MOKP_Problem(problemName, problemUserPreferences, dataPath);
         if (lowerLevelAlgorithmName.equals("MOEAD"))
-            LowerLevelMOKP_MOEAD.initializeAlgorithm(lowerLevelProblem);
+            LowerLevelMOKP_MOEAD.initializeAlgorithm(lowerLevelProblem, dataPath, paretoFileName);
         else
-            LowerLevelMOKP_NSGAII.initializeAlgorithm(lowerLevelProblem);
+            LowerLevelMOKP_NSGAII.initializeAlgorithm(lowerLevelProblem, dataPath, paretoFileName);
 
         //thalis
-        problem = new CostDistr(problemName, lowerLevelProblem, lowerLevelAlgorithmName, costsName);
+        problem = new CostDistr(problemName, lowerLevelProblem, lowerLevelAlgorithmName, costsName, dataPath);
 
         algorithm = new Custom_CostDistr(problem); // Generational GA
 
@@ -72,7 +78,7 @@ public class UpperLevelCostDistr_Custom {
         //algorithm.setInputParameter("populationSize",4); //must be even number
         //algorithm.setInputParameter("maxEvaluations", 2500);
         algorithm.setInputParameter("populationSize", 20); //must be even number
-        if (costsName.equals(""))
+        if (costsName.equals("-"))
             algorithm.setInputParameter("maxEvaluations", 1000000);
         else
             algorithm.setInputParameter("maxEvaluations", 100);

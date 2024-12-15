@@ -55,18 +55,24 @@ public class UpperLevelCostDistr_Fast {
         String problemUserPreferences = args[1];
         String renewableName = args[2];
         String lowerLevelAlgorithmName = args[3];
-        String costsName = "";
+        String costsName = "-";
         if (args.length > 4)
             costsName = args[4];
+        String dataPath = "-";
+        if (args.length > 5)
+            dataPath = args[5];
+        String paretoFileName = "-";
+        if (args.length > 6)
+            paretoFileName = args[6];
         //initialize Lower Level algorithm
-        MOKP_Problem lowerLevelProblem = new MOKP_Problem(problemName, problemUserPreferences);
+        MOKP_Problem lowerLevelProblem = new MOKP_Problem(problemName, problemUserPreferences, dataPath);
         if (lowerLevelAlgorithmName.equals("MOEAD"))
-            LowerLevelMOKP_MOEAD.initializeAlgorithm(lowerLevelProblem);
+            LowerLevelMOKP_MOEAD.initializeAlgorithm(lowerLevelProblem, dataPath, paretoFileName);
         else
-            LowerLevelMOKP_NSGAII.initializeAlgorithm(lowerLevelProblem);
+            LowerLevelMOKP_NSGAII.initializeAlgorithm(lowerLevelProblem, dataPath, paretoFileName);
 
         //thalis
-        problem = new CostDistr(renewableName, lowerLevelProblem, lowerLevelAlgorithmName, costsName);
+        problem = new CostDistr(renewableName, lowerLevelProblem, lowerLevelAlgorithmName, costsName, dataPath);
         //thalis comment
         //int bits = 512 ;
         //problem = new OneMax("Binary", bits);
@@ -84,7 +90,7 @@ public class UpperLevelCostDistr_Fast {
         //algorithm.setInputParameter("populationSize",4); //must be even number
         //algorithm.setInputParameter("maxEvaluations", 2500);
         algorithm.setInputParameter("populationSize", 100); //must be even number
-        if (costsName.equals(""))
+        if (costsName.equals("-"))
             algorithm.setInputParameter("maxEvaluations", 1000000);
         else
             algorithm.setInputParameter("maxEvaluations", 100);
@@ -182,8 +188,10 @@ public class UpperLevelCostDistr_Fast {
 
         population.printSpentEnergyToFile("SPENT");
         population.printUserDissatisfactionToFile("USER_DISSAT");
+        population.printUserDissatisfactionToFile("C:\\Users\\emine\\source\\repos\\SmartHome3\\SmartHome3\\results\\Winner\\USER_DISSAT");
         population.printStdDevUserDissatisfactionToFile("STDDEV_USER_DISSAT");
         population.printUserEnergyToFile("USER_ENERGY");
+        population.printUserEnergyToFile("C:\\Users\\emine\\source\\repos\\SmartHome3\\SmartHome3\\results\\Winner\\USER_COSTS");
         population.printStdDevUserEnergyToFile("STDDEV_USER_ENERGY");
 
         FileWriter timeWriter = new FileWriter("TIME", true);

@@ -28,10 +28,8 @@ import java.util.Comparator;
 public class CostDistr extends Problem {
 
 	private static final long serialVersionUID = 1L;
-    //private String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data - multi user - bilevel/"; // The path of the files
-    //private static String costsPath = "/Users/emine/IdeaProjects/JMETALHOME/Costs_data/";
-    private String problemPath = "/Users/emine/source/repos/SmartHome3/SmartHome3/data/"; // The path of the files
-    private static String costsPath = "/Users/emine/source/repos/SmartHome3/SmartHome3/data/";
+    private String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data - multi user - bilevel/"; // The path of the files
+    private static String costsPath = "/Users/emine/IdeaProjects/JMETALHOME/Costs_data/";
 
     private MOKP_Problem lowerLevelProblem;
     private String lowerLevelAlgorithmName;
@@ -44,7 +42,7 @@ public class CostDistr extends Problem {
     private static Comparator comparator;
 
 
-  public CostDistr(String renewableFileName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName, String costsName) {
+  public CostDistr(String renewableFileName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName, String costsName, String dataPath) {
 	  this.setMaxmized_(false); // this problem is not to be maximized
 	  this.problemName_ = renewableFileName;
 	  this.lowerLevelAlgorithmName = lowerLevelAlgorithmName;
@@ -57,10 +55,11 @@ public class CostDistr extends Problem {
       producedRE = new double[numberOfVariables_];
       this.lowerLevelProblem = lowerLevelProblem;
 
+      if (!dataPath.equals("-")) { problemPath = dataPath; costsPath = dataPath; }
       String fileName = problemPath + this.problemName_ + ".txt";
       System.out.println(fileName);
-      String costsFileName = "";
-      if (!costsName.equals("")) costsFileName = costsPath + costsName + ".txt";
+      String costsFileName = "-";
+      if (!costsName.equals("-")) costsFileName = costsPath + costsName + ".txt";
 
       //fills up numberOfItems, p, w, sackCapacity
       //simply read the input textfile
@@ -88,7 +87,7 @@ public class CostDistr extends Problem {
 
           ////////////////////////////////////////////////////////////////
 
-          if (!costsFileName.equals("")) {
+          if (!costsFileName.equals("-")) {
               inputCosts = new double[this.numberOfVariables_];
               in = new BufferedReader(new FileReader(costsFileName));
 
