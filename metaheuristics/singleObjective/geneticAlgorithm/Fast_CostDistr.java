@@ -41,6 +41,7 @@ public class Fast_CostDistr extends Algorithm {
   private int populationSize;
   private SolutionSet population;
   int evaluations;
+  private static String problemPath = "C:\\Users\\emine\\source\\repos\\SmartHome3\\SmartHome3\\wwwroot\\";
 
  /**
   *
@@ -48,9 +49,10 @@ public class Fast_CostDistr extends Algorithm {
   * Create a new GGA instance.
   * @param problem Problem to solve.
   */
-  public Fast_CostDistr(Problem problem){
+  public Fast_CostDistr(Problem problem, String dataPath){
     super(problem);
     problemCostDistr = (CostDistr) problem;
+    if (!dataPath.equals("-")) { problemPath = dataPath; }
   } // GGA
   
  /**
@@ -105,10 +107,10 @@ public class Fast_CostDistr extends Algorithm {
 
       Solution winner = population.get(0);
       SolutionSet winnerPareto = winner.getLL_Pareto_pop();
-      winnerPareto.printParetoToFile("C:\\Users\\emine\\source\\repos\\SmartHome3\\SmartHome3\\results\\Paretos\\PARETO_" + (generation));
+      winnerPareto.printParetoToFile(problemPath + "results\\Paretos\\PARETO_" + (generation));
       SolutionSet onlyWinner = new SolutionSet(1);
       onlyWinner.add(winner);
-      onlyWinner.printSelfConsumptionToFile("C:\\Users\\emine\\source\\repos\\SmartHome3\\SmartHome3\\results\\SelfsInProgress\\SELF_" + (generation));
+      onlyWinner.printSelfConsumptionToFile(problemPath + "results\\SelfsInProgress\\SELF_" + (generation));
       generation++;
 
       SolutionSet offspringPopulation = new SolutionSet(populationSize) ;
