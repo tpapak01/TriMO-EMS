@@ -27,14 +27,16 @@ public class LowerLevelMOKP_NSGAII {
     public static MOKP_Problem problemMOKP;         // The problem to solve
     public static Algorithm algorithm ;         // The algorithm to use
     public static int popSize;
+    private static String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/HV_Optimal/"; // The path of the files
 
     // statistical analysis
     private static int execution = 0;
     private static double time_mean = 0;
     private static FileWriter timeWriter;
 
-    public static void initializeAlgorithm(Problem lowerLevelProblem) throws SecurityException, IOException {
+    public static void initializeAlgorithm(Problem lowerLevelProblem, String dataPath, String paretoFileName) throws SecurityException, IOException {
 
+        if (!dataPath.equals("-")) { problemPath = dataPath; }
 
         Operator crossover ;         // Crossover operator
         Operator  mutation  ;         // Mutation operator
@@ -52,7 +54,10 @@ public class LowerLevelMOKP_NSGAII {
         //thalis
         problemMOKP = (MOKP_Problem) lowerLevelProblem;
 
-        indicators = new QualityIndicator(problemMOKP, "OPTIMAL_PARETO") ;
+        String paretoName = "OPTIMAL_PARETO";
+        if (!paretoFileName.equals("-")) { paretoName = paretoFileName; }
+        indicators = new QualityIndicator(problemMOKP,
+                problemPath + paretoName) ;
 
         algorithm = new NSGAII(problemMOKP);
 
