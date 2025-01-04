@@ -98,13 +98,17 @@ public class Fast_CostDistr extends Algorithm {
 
     int iterations = populationSize/2;
     int stop = 0;
+    int generation = 0;
 
     while (evaluations < maxEvaluations && converged != 0) {
 
+      Solution winner = population.get(0);
+      generation++;
+
       SolutionSet offspringPopulation = new SolutionSet(populationSize) ;
 
-      double diff = Math.abs(population.get(0).getObjective(0) - population.get(populationSize-1).getObjective(0));
-      if (diff <= 5 ) {
+      double diff = Math.abs(winner.getObjective(0) - population.get(populationSize-1).getObjective(0));
+      if (diff <= 10 ) {
         int a = 2;
       }
 

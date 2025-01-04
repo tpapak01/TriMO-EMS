@@ -44,8 +44,6 @@ public class CostDistr extends Problem {
     private double ULObjectiveDesirability = 1.0;
 
     private static double best_upper_level_result = Double.MAX_VALUE;
-    private static int fileID = 1;
-    private static int UL_evaluations = 0;
     private static QualityIndicator indicators;
     private static Comparator comparator;
 
@@ -1118,22 +1116,6 @@ public class CostDistr extends Problem {
              */
 
         }
-
-        /*
-        if (UL_evaluations % 100 == 0) {
-            SolutionSet chosenSolutionSet = new SolutionSet(1);
-            chosenSolutionSet.add(chosenlowerLevelSol);
-            chosenSolutionSet.printObjectivesToFile("LowerLevelParetoVisual/" + (fileID) + "_CHOSEN");
-
-            Ranking finalRanking = new Ranking(lowerLevelSolutions);
-            SolutionSet finalParetoFront = finalRanking.getSubfront(0);
-            finalParetoFront.printObjectivesToFile("LowerLevelParetoVisual/" + (fileID) + "_FUN"); //check
-            fileID++;
-        }
-        UL_evaluations++;
-        
-         */
-
 
         //System.out.println(best_result);
         //System.out.println(solution.getDecisionVariables()[0]);
