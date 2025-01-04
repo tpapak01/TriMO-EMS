@@ -112,7 +112,7 @@ public class MOEAD extends Algorithm {
     private static FileWriter spreadWriter;
     private static FileWriter hypervolumeWriter;
     private static FileWriter ndsWriter;
-    private static double conv = 0.000001;  //0.000001;  0.001
+    public static double conv = 0.01;  //0.000001;  0.001
 
   public SolutionSet execute() throws JMException, ClassNotFoundException {
     int maxEvaluations;

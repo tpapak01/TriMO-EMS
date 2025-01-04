@@ -23,6 +23,7 @@ package jmetal.metaheuristics.singleObjective.geneticAlgorithm;
 
 import jmetal.core.*;
 import jmetal.encodings.variable.ArrayReal;
+import jmetal.metaheuristics.moead.MOEAD;
 import jmetal.problems.CostDistr;
 import jmetal.util.EuclideanDist;
 import jmetal.util.JMException;
@@ -117,7 +118,10 @@ public class Fast_CostDistr extends Algorithm {
 
       double diff = Math.abs(winner.getObjective(0) - population.get(populationSize-1).getObjective(0));
       if (diff <= 10 ) {
-        int a = 2;
+        MOEAD.conv = 0.001;
+      }
+      if (diff <= 5 ) {
+        MOEAD.conv = 0.00001;
       }
 
       // Reproductive cycle: keep adding 2 offspring to the offspring population until it reaches the max size
