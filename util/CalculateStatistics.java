@@ -157,7 +157,8 @@ public class CalculateStatistics {
 
         String problemName = args[0];
         String problemUserPreferences = args[1];
-        MOKP_Problem lowerLevelProblem = new MOKP_Problem(problemName, problemUserPreferences);
+        String datapath = args[2];
+        MOKP_Problem lowerLevelProblem = new MOKP_Problem(problemName, problemUserPreferences, datapath);
         indicators = new QualityIndicator(lowerLevelProblem, "OPTIMAL_PARETO");
 
         try {

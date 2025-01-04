@@ -189,7 +189,7 @@ public class CostDistr extends Problem {
     private static int ULpopSize = 100;
     private static int execPrint = 10;
 
-  public CostDistr(String renewableFileName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName, String costsName, String dataPath) {
+  public CostDistr(String renewableFileName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName, String costsName, String dataPath, String paretoFileName) {
 	  this.setMaxmized_(false); // this problem is not to be maximized
 	  this.problemName_ = renewableFileName;
 	  this.lowerLevelAlgorithmName = lowerLevelAlgorithmName;
@@ -212,7 +212,12 @@ public class CostDistr extends Problem {
       //simply read the input textfile
       this.loadProblem(fileName, costsFileName);
       this.solutionType_ = new ArrayRealSolutionType(this);
-      indicators = new QualityIndicator(this.lowerLevelProblem, "OPTIMAL_PARETO") ;
+
+      String paretoName = "OPTIMAL_PARETO";
+      if (!paretoFileName.equals("-")) { paretoName = paretoFileName; }
+      indicators = new QualityIndicator(this.lowerLevelProblem,
+              problemPath + paretoName) ;
+      
       if (this.lowerLevelProblem.isMaxmized())
           comparator = new ObjectiveComparator(0, false) ; // Single objective comparator
       else comparator = new ObjectiveComparator(0, true) ; // Single objective comparator
