@@ -82,7 +82,8 @@ public class MOKP_Problem extends Problem {
               for (int i = 0; i < numberOfItems; i++) {
                   // Read weight for the j-th item
                   line = in.readLine();
-                  w[u][i] = Double.parseDouble(line);
+                  String[] split = line.split(" ");
+                  w[u][i] = Double.parseDouble(split[0]);
 		          max_shift[i] = this.numberOfConstraints_;
               }
               //empty line
