@@ -228,6 +228,7 @@ public class CostDistr extends Problem {
             }
 
             /*
+            DISREGARD 2D DECISION MAKING SPACE
             specialPareto.add(bestSelfSol);
             specialPareto.add(bestDesSol);
 
@@ -245,11 +246,14 @@ public class CostDistr extends Problem {
 
              */
 
-            for (i = 0; i < lsize; i = i + 5) {
-                Solution lowerLevelSol = lowerLevelSolutions.get(i);
+            // d = 5: The standard case in the paper
+            int d = 5;
+            for (i = 0; i < lsize; i = i + d) {
+                Solution lowerLevelSol = archive.get(i);
                 specialPareto.add(lowerLevelSol);
             }
         } else {
+            //NSGAII
             specialPareto = lowerLevelSolutions;
         }
 
