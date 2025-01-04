@@ -106,6 +106,11 @@ public class Fast_CostDistr extends Algorithm {
 
       SolutionSet offspringPopulation = new SolutionSet(populationSize) ;
 
+      double diff = Math.abs(population.get(0).getObjective(0) - population.get(populationSize-1).getObjective(0));
+      if (diff <= 5 ) {
+        int a = 2;
+      }
+
       // Reproductive cycle: keep adding 2 offspring to the offspring population until it reaches the max size
       for (int i = 0 ; i < iterations; i++) {
         // Selection
