@@ -489,17 +489,21 @@ public class CostDistr extends Problem {
                 Solution currentArchiveSol = newSol;
                 exIdx++;
                 externalToAdd = newExternal.get(exIdx);
-                int i = 0;
+                int i = 1;
                 while (archive.size() < popSize){
                     double f1 = algo.fitnessFunction(currentArchiveSol, lambda[i]);
                     double f2 = algo.fitnessFunction(externalToAdd, lambda[i]);
                     // if f2 smaller than f1, f2 (externalToAdd) is better
+                    // so select that solution x for TP consideration (for the same λ) in the next round
+                    // and move to the next solution from the EP
+                    // almost certainly, x will be added to the TP in the very next round...
                     if (f2 < f1 || (f2 == f1 && exIdx < lsize)) {
                         currentArchiveSol = externalToAdd;
                         exIdx++;
                         if (exIdx < lsize)
                             externalToAdd = newExternal.get(exIdx);
                     } else {
+                        //copy same solution as before (but next λ) to the next TP position
                         newSol = new Solution(currentArchiveSol, lambda[i]);
                         archive.add(newSol);
                         i++;
