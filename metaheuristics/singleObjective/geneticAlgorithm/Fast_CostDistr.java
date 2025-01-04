@@ -41,6 +41,7 @@ public class Fast_CostDistr extends Algorithm {
   private SolutionSet population;
   private SolutionSet populationNSGAII;
   int evaluations;
+  private static String problemPath = "C:\\Users\\emine\\source\\repos\\SmartHome3\\SmartHome3\\wwwroot\\";
 
  /**
   *
@@ -48,9 +49,10 @@ public class Fast_CostDistr extends Algorithm {
   * Create a new GGA instance.
   * @param problem Problem to solve.
   */
-  public Fast_CostDistr(Problem problem){
+  public Fast_CostDistr(Problem problem, String dataPath){
     super(problem);
     problemCostDistr = (CostDistr) problem;
+    if (!dataPath.equals("-")) { problemPath = dataPath; }
   } // GGA
   
  /**

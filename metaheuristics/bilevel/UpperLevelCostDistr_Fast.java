@@ -27,6 +27,7 @@ public class UpperLevelCostDistr_Fast {
 
     public static Logger logger_;      // Logger object
     public static FileHandler fileHandler_; // FileHandler object
+    private static String problemPath = "C:\\Users\\emine\\source\\repos\\SmartHome3\\SmartHome3\\wwwroot\\";
 
     /**
      * @param args Command line arguments. The first (optional) argument specifies
@@ -58,8 +59,10 @@ public class UpperLevelCostDistr_Fast {
         if (args.length > 4)
             costsName = args[4];
         String dataPath = "-";
-        if (args.length > 5)
+        if (args.length > 5) {
             dataPath = args[5];
+            if (!dataPath.equals("-")) { problemPath = dataPath; dataPath += "data\\"; }
+        }
         String paretoFileName = "-";
         if (args.length > 6)
             paretoFileName = args[6];
@@ -78,7 +81,7 @@ public class UpperLevelCostDistr_Fast {
         //problem = new Easom("Real") ;
         //problem = new Griewank("Real", 10) ;
 
-        algorithm = new Fast_CostDistr(problem); // Generational GA
+        algorithm = new Fast_CostDistr(problem, problemPath); // Generational GA
         //algorithm = new ssGA(problem); // Steady-state GA
         //algorithm = new scGA(problem) ; // Synchronous cGA
         //algorithm = new acGA(problem) ;   // Asynchronous cGA
