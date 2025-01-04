@@ -69,7 +69,7 @@ public class UpperLevelCostDistr_Custom {
             LowerLevelMOKP_NSGAII.initializeAlgorithm(lowerLevelProblem, dataPath, paretoFileName);
 
         //thalis
-        problem = new CostDistr(problemName, lowerLevelProblem, lowerLevelAlgorithmName, costsName, dataPath);
+        problem = new CostDistr(problemName, lowerLevelProblem, lowerLevelAlgorithmName, costsName, dataPath, paretoFileName);
 
         algorithm = new Custom_CostDistr(problem); // Generational GA
 

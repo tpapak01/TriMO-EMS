@@ -70,7 +70,7 @@ public class UpperLevelCostDistr_gGA {
             LowerLevelMOKP_NSGAII.initializeAlgorithm(lowerLevelProblem, dataPath, paretoFileName);
 
         //thalis
-        problem = new CostDistr(renewableName, lowerLevelProblem, lowerLevelAlgorithmName, costsName, dataPath);
+        problem = new CostDistr(renewableName, lowerLevelProblem, lowerLevelAlgorithmName, costsName, dataPath, paretoFileName);
         //thalis comment
         //int bits = 512 ;
         //problem = new OneMax("Binary", bits);
