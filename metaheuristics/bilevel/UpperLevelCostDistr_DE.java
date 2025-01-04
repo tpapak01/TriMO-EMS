@@ -52,24 +52,30 @@ public class UpperLevelCostDistr_DE {
         String problemUserPreferences = args[1];
         String renewableName = args[2];
         String lowerLevelAlgorithmName = args[3];
-        String costsName = "";
+        String costsName = "-";
         if (args.length > 4)
             costsName = args[4];
+        String dataPath = "-";
+        if (args.length > 5)
+            dataPath = args[5];
+        String paretoFileName = "-";
+        if (args.length > 6)
+            paretoFileName = args[6];
         //initialize Lower Level algorithm
-        MOKP_Problem lowerLevelProblem = new MOKP_Problem(problemName, problemUserPreferences);
+        MOKP_Problem lowerLevelProblem = new MOKP_Problem(problemName, problemUserPreferences, dataPath);
         if (lowerLevelAlgorithmName.equals("MOEAD"))
-            LowerLevelMOKP_MOEAD.initializeAlgorithm(lowerLevelProblem);
+            LowerLevelMOKP_MOEAD.initializeAlgorithm(lowerLevelProblem, dataPath, paretoFileName);
         else
-            LowerLevelMOKP_NSGAII.initializeAlgorithm(lowerLevelProblem);
+            LowerLevelMOKP_NSGAII.initializeAlgorithm(lowerLevelProblem, dataPath, paretoFileName);
 
         //thalis
-        problem = new CostDistr(renewableName, lowerLevelProblem, lowerLevelAlgorithmName, costsName);
+        problem = new CostDistr(renewableName, lowerLevelProblem, lowerLevelAlgorithmName, costsName, dataPath);
 
         algorithm = new DE_CostDistr(problem);
 
         /* Algorithm parameters*/
         algorithm.setInputParameter("populationSize", 100); //must be even number
-        if (costsName.equals(""))
+        if (costsName.equals("-"))
             algorithm.setInputParameter("maxEvaluations", 10000);
         else
             algorithm.setInputParameter("maxEvaluations", 100);

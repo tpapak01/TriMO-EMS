@@ -360,7 +360,7 @@ public class SolutionSet implements Serializable {
   public void printUserDissatisfactionToFile(String path){
     try {
       /* Open the file */
-      FileOutputStream fos   = new FileOutputStream(path, true)     ;
+      FileOutputStream fos   = new FileOutputStream(path, false)     ;
       OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
       BufferedWriter bw      = new BufferedWriter(osw)        ;
 
@@ -406,7 +406,7 @@ public class SolutionSet implements Serializable {
   public void printUserEnergyToFile(String path){
     try {
       /* Open the file */
-      FileOutputStream fos   = new FileOutputStream(path, true)     ;
+      FileOutputStream fos   = new FileOutputStream(path, false)     ;
       OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
       BufferedWriter bw      = new BufferedWriter(osw)        ;
 

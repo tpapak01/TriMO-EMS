@@ -38,7 +38,10 @@ public class MOKP_Problem extends Problem {
     private double[] nadirObjectiveValue;
     private double objectiveDesirability = 0;
 
-  public MOKP_Problem(String problemName,String userPreferenceName) {
+  public MOKP_Problem(String problemName,String userPreferenceName, String dataPath) {
+
+      if (!dataPath.equals("-")) { problemPath = dataPath; userPreferencePath = dataPath; }
+
 	  this.setMaxmized_(false); // this problem is not to be maximized
 	  this.problemName_ = problemName;
       this.numberOfVariables_ = 1;

@@ -242,7 +242,7 @@ public class CostDistr extends Problem {
     private static int execution = 1;
     int execPrint = 10;
 
-  public CostDistr(String renewableFileName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName, String costsName) {
+  public CostDistr(String renewableFileName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName, String costsName, String dataPath) {
 	  this.setMaxmized_(false); // this problem is not to be maximized
 	  this.problemName_ = renewableFileName;
 	  this.lowerLevelAlgorithmName = lowerLevelAlgorithmName;
@@ -255,10 +255,11 @@ public class CostDistr extends Problem {
       producedRE = new double[numberOfVariables_];
       this.lowerLevelProblem = lowerLevelProblem;
 
+      if (!dataPath.equals("-")) { problemPath = dataPath; costsPath = dataPath; }
       String fileName = problemPath + this.problemName_ + ".txt";
       System.out.println(fileName);
-      String costsFileName = "";
-      if (!costsName.equals("")) costsFileName = costsPath + costsName + ".txt";
+      String costsFileName = "-";
+      if (!costsName.equals("-")) costsFileName = costsPath + costsName + ".txt";
 
       //fills up numberOfItems, p, w, sackCapacity
       //simply read the input textfile
@@ -358,7 +359,7 @@ public class CostDistr extends Problem {
 
           ////////////////////////////////////////////////////////////////
 
-          if (!costsFileName.equals("")) {
+          if (!costsFileName.equals("-")) {
               inputCosts = new double[this.numberOfVariables_];
               in = new BufferedReader(new FileReader(costsFileName));
 
