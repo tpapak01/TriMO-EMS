@@ -100,6 +100,7 @@ public class Fast_CostDistr extends Algorithm {
     System.out.println("BEST SOL: " + best_solution);
 
     int iterations = populationSize/2;
+    int stop = 0;
 
     while (evaluations < maxEvaluations && converged != 0) {
 
@@ -231,6 +232,10 @@ public class Fast_CostDistr extends Algorithm {
         //                population
         offspringPopulation.add(offspring[0]) ;
         offspringPopulation.add(offspring[1]) ;
+
+        if (stop == 1){
+          break;
+        }
 
       } // for
       
