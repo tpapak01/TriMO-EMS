@@ -201,7 +201,7 @@ public class UpperLevelCostDistr_Fast {
         timeWriter.write(estimatedTime + "\n");
         timeWriter.close();
 
-        //SolutionSet specialPareto = population.get(0).getLL_ND_pop();
+        //SolutionSet specialPareto = population.get(0).getLL_Transfer_pop();
         //specialPareto.printObjectivesToFile("LowerLevelParetoVisual/" + "0_FUN"); //check
 
         //Platform

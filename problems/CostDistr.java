@@ -161,6 +161,9 @@ public class CostDistr extends Problem {
             double deviation = calculateEnergyDeviationFromProduced(energySpent);
             lowerLevelSol.setEnergyDeviationFromProduced(deviation);
 
+            // LL-DECISION-MAKING: identity solution that is closest to the desired.
+            // 0.0: Poor: Full dissatisfaction, zero costs
+            // 1.0: Rich: Zero dissatisfaction, full costs
             double desirability;
             if (lowerLevelSol.getLambda() == null){
                 double position = s / (double) lsize;
@@ -173,19 +176,21 @@ public class CostDistr extends Problem {
             }
         }
 
-        //Identify set of best solutions in 2D space using limits "worst_self" and "worst_des"
-        //and add them to the special Pareto, along with the UL and LL preferred solution
+        // LL-DECISION-MAKING: Create limits "worst_self" and "worst_des" to later identify set of best solutions in 2D space
         Solution bestSelfSol = lowerLevelSolutions.get(best_solution_index);
         Solution bestDesSol = lowerLevelSolutions.get(best_desirability_index);
+        //how much is the S of the best-DESIRABILITY-solution?
         double worst_self = bestDesSol.getSelfConsumption();
+        //how much is the DESIRABILITY of the best-S-solution?
         double worst_des = Utils.AchievementScalarizationTcheby(bestSelfSol, bestDesSol, target_desirability, nadirObjectiveValue);
 
-        SolutionSet specialPareto;
+        SolutionSet transferPareto;
+        SolutionSet decisionPareto = new SolutionSet(lsize);
         if (this.lowerLevelAlgorithmName.equals("MOEAD")) {
 
             MOEAD algo = (MOEAD) LowerLevelMOKP_MOEAD.algorithm;
             int popSize = LowerLevelMOKP_MOEAD.popSize;
-            specialPareto = new SolutionSet(popSize);
+            transferPareto = new SolutionSet(popSize);
 
             //create temporary external that is sorted by objective
             SolutionSet newExternal = new SolutionSet(lsize);
@@ -227,11 +232,9 @@ public class CostDistr extends Problem {
                 }
             }
 
-            /*
-            DISREGARD 2D DECISION MAKING SPACE
-            specialPareto.add(bestSelfSol);
-            specialPareto.add(bestDesSol);
-
+            // LL-DECISION-MAKING: 2D DECISION MAKING SPACE
+            decisionPareto.add(bestSelfSol);
+            decisionPareto.add(bestDesSol);
             for (int s = 0; s < lsize; s++) {
                 Solution lowerLevelSol = lowerLevelSolutions.get(s);
                 double DIM1 = lowerLevelSol.getSelfConsumption();
@@ -240,24 +243,24 @@ public class CostDistr extends Problem {
                 //Use below to find solutions of 2D decision-making space
                 if (DIM1 < worst_self &&
                         DIM2_norm < worst_des) {
-                    specialPareto.add(lowerLevelSol);
+                    decisionPareto.add(lowerLevelSol);
                 }
             }
 
-             */
-
-            // d = 5: The standard case in the paper
+            // TRANSFER: d = 5: The standard case in the paper
             int d = 5;
             for (i = 0; i < lsize; i = i + d) {
                 Solution lowerLevelSol = archive.get(i);
-                specialPareto.add(lowerLevelSol);
+                transferPareto.add(lowerLevelSol);
             }
         } else {
             //NSGAII
-            specialPareto = lowerLevelSolutions;
+            transferPareto = lowerLevelSolutions;
         }
 
-        //find best solution given UL and LL preferences (optimistic OR pessimistic OR in between)
+        // find best solution given UL preferences (optimistic OR pessimistic OR in between)
+        // 0.0: Full care for residents
+        // 1.0: Full care for self-consumption S
         Solution chosenlowerLevelSol = null;
         if (ULObjectiveDesirability == 1.0) {
             solution.setObjective(0, best_self);
@@ -266,12 +269,15 @@ public class CostDistr extends Problem {
             solution.setObjective(0, worst_self);
             chosenlowerLevelSol = bestDesSol;
         } else {
-            //find best solution given UL and LL preferences (non-optimistic and non-pessimistic)
+            // UL-DECISION-MAKING: find best solution from 2D space given UL preferences (non-optimistic and non-pessimistic)
             double best_overall = Double.MAX_VALUE;
             int best_overall_index = -1;
-            for (int s=0; s<specialPareto.size(); s++) {
-                Solution lowerLevelSol = specialPareto.get(s);
-                double DIM1_norm = (lowerLevelSol.getSelfConsumption() - best_self) / (worst_self - best_self);
+            for (int s=0; s<decisionPareto.size(); s++) {
+                Solution lowerLevelSol = decisionPareto.get(s);
+                double DIM1_norm = 0;
+                double DIM1_denominator = worst_self - best_self;
+                if (DIM1_denominator != 0)
+                    DIM1_norm = (lowerLevelSol.getSelfConsumption() - best_self) / DIM1_denominator;
                 double DIM2_norm = Utils.AchievementScalarizationTcheby(lowerLevelSol, bestDesSol, target_desirability, nadirObjectiveValue);
 
                 double evaluation = (ULObjectiveDesirability * DIM1_norm) + ((1-ULObjectiveDesirability)*DIM2_norm);
@@ -280,7 +286,7 @@ public class CostDistr extends Problem {
                     best_overall_index = s;
                 }
             }
-            chosenlowerLevelSol = specialPareto.get(best_overall_index);
+            chosenlowerLevelSol = decisionPareto.get(best_overall_index);
             solution.setObjective(0, chosenlowerLevelSol.getSelfConsumption());
         }
 
@@ -299,7 +305,7 @@ public class CostDistr extends Problem {
         solution.setNonREpaid(nonREpaid);
         solution.setDeviceToPreferenceMapping(chosenlowerLevelSol.getDeviceToPreferenceMapping());
         solution.setReverseDeviceToPreferenceMapping(chosenlowerLevelSol.getReverseDeviceToPreferenceMapping());
-        solution.setLL_ND_pop(specialPareto);
+        solution.setLL_Transfer_pop(transferPareto);
         //platform only
         solution.setLL_Pareto_pop(lowerLevelSolutions);
 

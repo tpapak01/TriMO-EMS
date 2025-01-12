@@ -155,7 +155,7 @@ public class Fast_CostDistr extends Algorithm {
               min_index = j;
             }
           }
-          offspring[o].setLL_ND_pop(population.get(min_index).getLL_ND_pop());
+          offspring[o].setLL_Transfer_pop(population.get(min_index).getLL_Transfer_pop());
         }
 
         // Evaluation of the new individuals

@@ -119,7 +119,7 @@ public class LowerLevelMOKP_NSGAII {
         problemMOKP.setCostOfUsage(y);
         if (solution.isMarked())
             algorithm.setInputParameter("initPopSolution", null);
-        else algorithm.setInputParameter("initPopSolution", solution.getLL_ND_pop());
+        else algorithm.setInputParameter("initPopSolution", solution.getLL_Transfer_pop());
 
         // Execute the Algorithm
         long initTime = System.currentTimeMillis();
