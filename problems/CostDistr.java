@@ -249,7 +249,7 @@ public class CostDistr extends Problem {
 
             // TRANSFER: d = 5: The standard case in the paper
             int d = 5;
-            for (i = 0; i < lsize; i = i + d) {
+            for (i = 0; i < popSize; i = i + d) {
                 Solution lowerLevelSol = archive.get(i);
                 transferPareto.add(lowerLevelSol);
             }

@@ -322,7 +322,7 @@ public class MOKP_Problem extends Problem {
 
                 int k = 0;
                 for (int j = startingIndex; j < startingIndex + numberOfItems; j++) { // for each bit
-                    if (bin.getIth(j) == true) {
+                    if (bin.getIth(j)) {
                         sum = sum + w[u][k] * costOfUsage.getValue(l);
                     }
                     k++;
