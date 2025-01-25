@@ -204,8 +204,10 @@ public class UpperLevelCostDistr_Fast {
         //SolutionSet specialPareto = population.get(0).getLL_Transfer_pop();
         //specialPareto.printObjectivesToFile("LowerLevelParetoVisual/" + "0_FUN"); //check
 
-        //Platform
+
         SolutionSet lowerLevelSolutions = population.get(0).getLL_Pareto_pop();
+        lowerLevelSolutions.printParetoToFile("LL_PARETO");
+        //Platform
         lowerLevelSolutions.printParetoToFile(problemPath + "results\\Winner\\Pareto");
         lowerLevelSolutions.printSpentsToFile(problemPath + "results\\Spents\\");
         lowerLevelSolutions.printSelfsToFile(problemPath + "results\\Selfs\\");

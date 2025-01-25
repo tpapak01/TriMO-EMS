@@ -133,9 +133,11 @@ public class CostDistr extends Problem {
 
         int lsize = lowerLevelSolutions.size();
 
-        //Identify optimistic and pessimistic solution
+        //Identify optimistic,pessimistic and LL-desirable solution
         double best_self = Double.MAX_VALUE;
-        int best_solution_index = -1;
+        int optimistic_index = -1;
+        double pessimistic_self = Double.MIN_VALUE;
+        int pessimistic_index = -1;
         double[] target_desirability = new double[this.lowerLevelProblem.getNumberOfObjectives()];
         target_desirability[0] = this.lowerLevelProblem.getObjectiveDesirability();
         target_desirability[1] = 1 - target_desirability[0];
@@ -154,7 +156,11 @@ public class CostDistr extends Problem {
             //double selfConsumption = upperLevel_evaluate_XOR_distance(energySpent);
             if (result < best_self){
                 best_self = result;
-                best_solution_index = s;
+                optimistic_index = s;
+            }
+            if (result > pessimistic_self){
+                pessimistic_self = result;
+                pessimistic_index = s;
             }
 
             ////register Deviation from Produced - used for Platform only
@@ -177,12 +183,13 @@ public class CostDistr extends Problem {
         }
 
         // LL-DECISION-MAKING: Create limits "worst_self" and "worst_des" to later identify set of best solutions in 2D space
-        Solution bestSelfSol = lowerLevelSolutions.get(best_solution_index);
+        Solution optimisticSol = lowerLevelSolutions.get(optimistic_index);
+        Solution pessimisticSol = lowerLevelSolutions.get(pessimistic_index);
         Solution bestDesSol = lowerLevelSolutions.get(best_desirability_index);
         //how much is the S of the best-DESIRABILITY-solution?
         double worst_self = bestDesSol.getSelfConsumption();
         //how much is the DESIRABILITY of the best-S-solution?
-        double worst_des = Utils.AchievementScalarizationTcheby(bestSelfSol, bestDesSol, target_desirability, nadirObjectiveValue);
+        double worst_des = Utils.AchievementScalarizationTcheby(optimisticSol, bestDesSol, target_desirability, nadirObjectiveValue);
 
         SolutionSet transferPareto;
         SolutionSet decisionPareto = new SolutionSet(lsize);
@@ -233,7 +240,7 @@ public class CostDistr extends Problem {
             }
 
             // LL-DECISION-MAKING: 2D DECISION MAKING SPACE
-            decisionPareto.add(bestSelfSol);
+            decisionPareto.add(optimisticSol);
             decisionPareto.add(bestDesSol);
             for (int s = 0; s < lsize; s++) {
                 Solution lowerLevelSol = lowerLevelSolutions.get(s);
@@ -258,18 +265,21 @@ public class CostDistr extends Problem {
             transferPareto = lowerLevelSolutions;
         }
 
-        // find best solution given UL preferences (optimistic OR pessimistic OR in between)
+        // find best solution given UL preferences (optimistic OR LL-desirable OR in between)
         // 0.0: Full care for residents
         // 1.0: Full care for self-consumption S
         Solution chosenlowerLevelSol = null;
         if (ULObjectiveDesirability == 1.0) {
             solution.setObjective(0, best_self);
-            chosenlowerLevelSol = bestSelfSol;
+            chosenlowerLevelSol = optimisticSol;
         } else if (ULObjectiveDesirability == 0.0){
             solution.setObjective(0, worst_self);
             chosenlowerLevelSol = bestDesSol;
+        } else if (ULObjectiveDesirability == -1.0) {
+            solution.setObjective(0, pessimistic_self);
+            chosenlowerLevelSol = pessimisticSol;
         } else {
-            // UL-DECISION-MAKING: find best solution from 2D space given UL preferences (non-optimistic and non-pessimistic)
+            // UL-DECISION-MAKING: find best solution from 2D space given UL preferences (non-optimistic and non-LL-desirable)
             double best_overall = Double.MAX_VALUE;
             int best_overall_index = -1;
             for (int s=0; s<decisionPareto.size(); s++) {
