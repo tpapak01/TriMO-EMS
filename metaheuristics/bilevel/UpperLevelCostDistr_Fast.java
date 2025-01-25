@@ -207,6 +207,7 @@ public class UpperLevelCostDistr_Fast {
 
         SolutionSet lowerLevelSolutions = population.get(0).getLL_Pareto_pop();
         lowerLevelSolutions.printParetoToFile("LL_PARETO");
+        System.out.println(population.get(0).getUL_Optimism());
         //Platform
         lowerLevelSolutions.printParetoToFile(problemPath + "results\\Winner\\Pareto");
         lowerLevelSolutions.printSpentsToFile(problemPath + "results\\Spents\\");

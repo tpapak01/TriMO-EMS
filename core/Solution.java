@@ -127,6 +127,12 @@ public class Solution implements Serializable {
     this.LL_Pareto_pop = LL_Pareto_pop;
   }
 
+  private double UL_Optimism = -1;
+  public double getUL_Optimism(){ return UL_Optimism; }
+  public void setUL_Optimism(double UL_Optimism){
+    this.UL_Optimism = UL_Optimism;
+  }
+
 	/**
 	 * Stores the problem 
 	 */
@@ -350,6 +356,9 @@ public class Solution implements Serializable {
     if (solution.getLL_Pareto_pop() != null) {
       setLL_Pareto_pop(solution.getLL_Pareto_pop());
     }
+    if (solution.getUL_Optimism() != -1){
+      setUL_Optimism(solution.getUL_Optimism());
+    }
   } // Solution
 
   public Solution(Solution solution) {
@@ -408,6 +417,9 @@ public class Solution implements Serializable {
     }
     if (solution.getLL_Pareto_pop() != null) {
       setLL_Pareto_pop(solution.getLL_Pareto_pop());
+    }
+    if (solution.getUL_Optimism() != -1){
+      setUL_Optimism(solution.getUL_Optimism());
     }
   } // Solution
 

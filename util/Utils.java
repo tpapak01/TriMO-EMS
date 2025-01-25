@@ -324,10 +324,13 @@ public class Utils {
 
 		int numOfObjectives = individual.getNumberOfObjectives();
 		for (int n = 0; n < numOfObjectives; n++) {
-			double diff = Math.abs(
+			double diff = 0;
+			double denom = nadirObjectiveValue[n] - z_.getObjective(n);
+			if (denom != 0)
+				diff = Math.abs(
 					(individual.getObjective(n) - z_.getObjective(n)) /
 					(nadirObjectiveValue[n] - z_.getObjective(n))
-			);
+				);
 
 			double feval;
 			// make sure the multiplication with λ doesn't result in an absolute zero
