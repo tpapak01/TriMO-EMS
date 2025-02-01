@@ -36,7 +36,8 @@ public class CostDistr extends Problem {
     private double[] producedRE;
     private double[] inputCosts = null;
     private double totalProducedRE;
-    private double ULObjectiveDesirability = 1.0;
+    private double ULObjectiveDesirability = 0.5;
+    private boolean fixedTrust = true;
 
     private static double best_upper_level_result = Double.MAX_VALUE;
     private static Comparator comparator;
@@ -141,7 +142,7 @@ public class CostDistr extends Problem {
         double[] target_desirability = new double[this.lowerLevelProblem.getNumberOfObjectives()];
         target_desirability[0] = this.lowerLevelProblem.getObjectiveDesirability();
         target_desirability[1] = 1 - target_desirability[0];
-        double[] nadirObjectiveValue = this.lowerLevelProblem.getNadirObjectiveValue();
+        //double[] nadirObjectiveValue = this.lowerLevelProblem.getNadirObjectiveValue();
         double best_desirability = 100;
         int best_desirability_index = -1;
 
@@ -189,7 +190,7 @@ public class CostDistr extends Problem {
         //how much is the S of the best-DESIRABILITY-solution?
         double worst_self = bestDesSol.getSelfConsumption();
         //how much is the DESIRABILITY of the best-S-solution?
-        double worst_des = Utils.AchievementScalarizationTcheby(optimisticSol, bestDesSol, target_desirability, nadirObjectiveValue);
+        double worst_des = Utils.ASF(optimisticSol, bestDesSol, target_desirability);
 
         SolutionSet transferPareto;
         SolutionSet decisionPareto = new SolutionSet(lsize);
@@ -240,16 +241,14 @@ public class CostDistr extends Problem {
             }
 
             // LL-DECISION-MAKING: 2D DECISION MAKING SPACE
-            decisionPareto.add(optimisticSol);
-            decisionPareto.add(bestDesSol);
             for (int s = 0; s < lsize; s++) {
                 Solution lowerLevelSol = lowerLevelSolutions.get(s);
                 double DIM1 = lowerLevelSol.getSelfConsumption();
-                double DIM2_norm = Utils.AchievementScalarizationTcheby(lowerLevelSol, bestDesSol, target_desirability, nadirObjectiveValue);
+                double DIM2_norm = Utils.ASF(lowerLevelSol, bestDesSol, target_desirability);
 
                 //Use below to find solutions of 2D decision-making space
-                if (DIM1 < worst_self &&
-                        DIM2_norm < worst_des) {
+                if (DIM1 <= worst_self &&
+                        DIM2_norm <= worst_des) {
                     decisionPareto.add(lowerLevelSol);
                 }
             }
@@ -279,23 +278,146 @@ public class CostDistr extends Problem {
             solution.setObjective(0, pessimistic_self);
             chosenlowerLevelSol = pessimisticSol;
         } else {
-            // UL-DECISION-MAKING: find best solution from 2D space given UL preferences (non-optimistic and non-LL-desirable)
-            double best_overall = Double.MAX_VALUE;
-            int best_overall_index = -1;
-            for (int s=0; s<decisionPareto.size(); s++) {
-                Solution lowerLevelSol = decisionPareto.get(s);
-                double DIM1_norm = 0;
-                double DIM1_denominator = worst_self - best_self;
-                if (DIM1_denominator != 0)
-                    DIM1_norm = (lowerLevelSol.getSelfConsumption() - best_self) / DIM1_denominator;
-                double DIM2_norm = Utils.AchievementScalarizationTcheby(lowerLevelSol, bestDesSol, target_desirability, nadirObjectiveValue);
 
-                double evaluation = (ULObjectiveDesirability * DIM1_norm) + ((1-ULObjectiveDesirability)*DIM2_norm);
-                if (evaluation < best_overall){
-                    best_overall = evaluation;
-                    best_overall_index = s;
+            int best_overall_index = -1;
+            if (fixedTrust) {
+                if (solution.getUL_Optimism() == -1)
+                    solution.setUL_Optimism(ULObjectiveDesirability);
+                double q = solution.getUL_Optimism();
+                best_overall_index = bestFromDecisionPareto(decisionPareto, q,
+                        worst_self, best_self, bestDesSol, target_desirability, optimisticSol);
+            } else {
+
+                if (solution.getUL_Optimism() == -1)
+                    solution.setUL_Optimism(0.0);
+
+                double difference = 0.01;
+                boolean skipOther = false;
+
+                //----------------------------------------------------
+
+                {
+                    double q = solution.getUL_Optimism();
+                    int previousBestIndex = bestFromDecisionPareto(decisionPareto, q,
+                            worst_self, best_self, bestDesSol, target_desirability, optimisticSol);
+                    double previousDIM1 = get_DIM1_norm(worst_self, best_self, decisionPareto.get(previousBestIndex));
+                    double previousDIM2 = Utils.AchievementScalarizationTcheby(decisionPareto.get(previousBestIndex), bestDesSol, target_desirability, optimisticSol);
+
+                    double q_left = q + difference;
+                    int leftIndex = -1;
+                    do {
+                        if (q_left >= 1) {
+                            q_left = 1.0;
+                            break;
+                        }
+                        leftIndex = bestFromDecisionPareto(decisionPareto, q_left,
+                                worst_self, best_self, bestDesSol, target_desirability, optimisticSol);
+                        q_left = q_left + difference;
+                    } while (leftIndex == previousBestIndex);
+
+                    if (leftIndex != -1) {
+                        double leftDIM1 = get_DIM1_norm(worst_self, best_self, decisionPareto.get(leftIndex));
+                        double leftDIM2 = Utils.AchievementScalarizationTcheby(decisionPareto.get(leftIndex), bestDesSol, target_desirability, optimisticSol);
+
+                        double leftDiffDIM1 = previousDIM1 - leftDIM1;
+                        double leftDiffDIM2 = previousDIM2 - leftDIM2;
+
+                        if (leftDiffDIM2 > 0) {
+                            int impossible = 1;
+                        }
+
+                        if (Math.abs(leftDiffDIM2) < leftDiffDIM1)
+                            skipOther = true;
+
+                        while (Math.abs(leftDiffDIM2) < leftDiffDIM1 || leftIndex == previousBestIndex) {
+                            previousDIM1 = leftDIM1;
+                            previousDIM2 = leftDIM2;
+                            previousBestIndex = leftIndex;
+
+                            q = q_left;
+                            q_left = q_left + difference;
+                            if (q_left > 1) {
+                                break;
+                            }
+                            leftIndex = bestFromDecisionPareto(decisionPareto, q_left,
+                                    worst_self, best_self, bestDesSol, target_desirability, optimisticSol);
+                            leftDIM1 = get_DIM1_norm(worst_self, best_self, decisionPareto.get(leftIndex));
+                            leftDIM2 = Utils.AchievementScalarizationTcheby(decisionPareto.get(leftIndex), bestDesSol, target_desirability, optimisticSol);
+
+                            leftDiffDIM1 = previousDIM1 - leftDIM1;
+                            leftDiffDIM2 = previousDIM2 - leftDIM2;
+                        }
+                        if (skipOther)
+                            solution.setUL_Optimism(q);
+                    }
                 }
+
+                //----------------------------------------------------------------------------------
+
+                if (skipOther == false)
+                {
+                    double q = solution.getUL_Optimism();
+                    int previousBestIndex = bestFromDecisionPareto(decisionPareto, q,
+                            worst_self, best_self, bestDesSol, target_desirability, optimisticSol);
+                    double previousDIM1 = get_DIM1_norm(worst_self, best_self, decisionPareto.get(previousBestIndex));
+                    double previousDIM2 = Utils.AchievementScalarizationTcheby(decisionPareto.get(previousBestIndex), bestDesSol, target_desirability, optimisticSol);
+
+                    double q_right = q - difference;
+                    int rightIndex = -1;
+                    do {
+                        if (q_right <= 0) {
+                            q_right = 0.0;
+                            break;
+                        }
+                        rightIndex = bestFromDecisionPareto(decisionPareto, q_right,
+                                worst_self, best_self, bestDesSol, target_desirability, optimisticSol);
+                        q_right = q_right - difference;
+                    } while (rightIndex == previousBestIndex);
+
+                    if (rightIndex != -1) {
+                        double rightDIM1 = get_DIM1_norm(worst_self, best_self, decisionPareto.get(rightIndex));
+                        double rightDIM2 = Utils.AchievementScalarizationTcheby(decisionPareto.get(rightIndex), bestDesSol, target_desirability, optimisticSol);
+
+                        double rightDiffDIM1 = previousDIM1 - rightDIM1;
+                        double rightDiffDIM2 = previousDIM2 - rightDIM2;
+
+                        if (rightDiffDIM1 > 0) {
+                            int impossible = 1;
+                        }
+
+                        while (Math.abs(rightDiffDIM1) < rightDiffDIM2 || rightIndex == previousBestIndex) {
+                            previousDIM1 = rightDIM1;
+                            previousDIM2 = rightDIM2;
+                            previousBestIndex = rightIndex;
+                            q = q_right;
+                            q_right = q_right - difference;
+                            if (q_right < 0) {
+                                break;
+                            }
+                            rightIndex = bestFromDecisionPareto(decisionPareto, q_right,
+                                    worst_self, best_self, bestDesSol, target_desirability, optimisticSol);
+                            rightDIM1 = get_DIM1_norm(worst_self, best_self, decisionPareto.get(rightIndex));
+                            rightDIM2 = Utils.AchievementScalarizationTcheby(decisionPareto.get(rightIndex), bestDesSol, target_desirability, optimisticSol);
+
+                            rightDiffDIM1 = previousDIM1 - rightDIM1;
+                            rightDiffDIM2 = previousDIM2 - rightDIM2;
+                        }
+                        solution.setUL_Optimism(q);
+                    }
+                }
+
+                //----------------------------------------------------------------------------------
+
+
+                //if (q < 1)
+                //    System.out.println("-----q: " + q);
+                //solution.setUL_Optimism(q);
+
+                // UL-DECISION-MAKING: find best solution from 2D space given UL preferences (non-optimistic and non-LL-desirable)
+                best_overall_index = bestFromDecisionPareto(decisionPareto, solution.getUL_Optimism(),
+                        worst_self, best_self, bestDesSol, target_desirability, optimisticSol);
             }
+
             chosenlowerLevelSol = decisionPareto.get(best_overall_index);
             solution.setObjective(0, chosenlowerLevelSol.getSelfConsumption());
         }
@@ -352,6 +474,33 @@ public class CostDistr extends Problem {
         //System.out.println(solution.getDecisionVariables()[0]);
 
 	} // evaluate
+
+    private int bestFromDecisionPareto(SolutionSet decisionPareto, double q,
+                                          double worst_self, double best_self, Solution bestDesSol, double[] target_desirability, Solution optimisticSol){
+
+      double best_overall = Double.MAX_VALUE;
+        int best_overall_index = -1;
+        for (int s=0; s<decisionPareto.size(); s++) {
+            Solution sol = decisionPareto.get(s);
+            double DIM1_norm = get_DIM1_norm(worst_self, best_self, sol);
+            double DIM2_norm = Utils.AchievementScalarizationTcheby(sol, bestDesSol, target_desirability, optimisticSol);
+            //System.out.println("DIM: " + DIM1_norm + " " + DIM2_norm);
+
+            double evaluation = (q * DIM1_norm) + ((1-q)*DIM2_norm);
+            if (evaluation < best_overall){
+                best_overall = evaluation;
+                best_overall_index = s;
+            }
+        }
+        return best_overall_index;
+    }
+
+    private double get_DIM1_norm(double worst_self, double best_self, Solution sol){
+        double DIM1_denominator = worst_self - best_self;
+        if (DIM1_denominator == 0)
+            return 0;
+        return (sol.getSelfConsumption() - best_self) / DIM1_denominator;
+    }
 
     public double upperLevel_evaluate_XOR_distance(double[] spentEnergy) {
 

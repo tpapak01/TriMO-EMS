@@ -317,20 +317,45 @@ public class Utils {
 		return null;
 	}
 
+	public static double ASF(Solution individual, Solution z_, double[] weight) {
+		double fitness = 0.0;
+		double maxFun = -1.0e+30;
+
+		int numOfObjectives = individual.getNumberOfObjectives();
+		for (int n = 0; n < numOfObjectives; n++) {
+			double diff = Math.abs(individual.getObjective(n) - z_.getObjective(n));
+
+			double feval;
+			// make sure the multiplication with λ doesn't result in an absolute zero
+			if (weight[n] == 0) {
+				feval = 0.0001 * diff;
+			} else {
+				feval = weight[n] * diff;
+			}
+
+			//is this the maximum difference found so far?
+			if (feval > maxFun) {
+				maxFun = feval;
+			}
+		} // for
+
+		fitness = maxFun;
+
+		return fitness;
+	} // fitnessEvaluation
+
 	public static double AchievementScalarizationTcheby(Solution individual, Solution z_, double[] weight,
-												 double[] nadirObjectiveValue) {
+														Solution optimisticSol) {
 		double fitness = 0.0;
 		double maxFun = -1.0e+30;
 
 		int numOfObjectives = individual.getNumberOfObjectives();
 		for (int n = 0; n < numOfObjectives; n++) {
 			double diff = 0;
-			double denom = nadirObjectiveValue[n] - z_.getObjective(n);
+			double denom = optimisticSol.getObjective(n) - z_.getObjective(n);
 			if (denom != 0)
 				diff = Math.abs(
-					(individual.getObjective(n) - z_.getObjective(n)) /
-					(nadirObjectiveValue[n] - z_.getObjective(n))
-				);
+					(individual.getObjective(n) - z_.getObjective(n)) / denom );
 
 			double feval;
 			// make sure the multiplication with λ doesn't result in an absolute zero
