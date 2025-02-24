@@ -467,6 +467,7 @@ public class CostDistr extends Problem {
         SolutionSet referencePareto = null;
         //SolutionSet replacePareto = new SolutionSet(lsize);
 
+        // marked = true ==> parent. calculate the PF so that the future-offspring can use it to transfer
         if (solution.isMarked()) {
 
             if (this.lowerLevelAlgorithmName.equals("MOEAD")) {
@@ -603,6 +604,10 @@ public class CostDistr extends Problem {
             }
 
         }
+        // marked = false ==> child. do not calculate PF for future, you should use the one your parent calculated
+        else {
+
+        }
 
         //find best solution given UL and LL preferences (optimistic OR pessimistic OR in between)
         Solution chosenlowerLevelSol = null;
@@ -633,6 +638,8 @@ public class CostDistr extends Problem {
         solution.setReverseDeviceToPreferenceMapping(chosenlowerLevelSol.getReverseDeviceToPreferenceMapping());
 
         String writeParetoPathFull = writeParetoPath + (execution) + "_FUN_";
+        // marked = true ==> save the PF so that the future-offspring can use it to transfer
+        //               ==> non-evaluated, parent solution
         if (solution.isMarked()) {
             if (this.lowerLevelAlgorithmName.equals("MOEAD")) {
                 solution.setLL_ND_pop(lowerLevelSolutions);
@@ -640,11 +647,15 @@ public class CostDistr extends Problem {
                 solution.setLL_Reverse_pop(reversePareto);
                 solution.setLL_Random_pop(randomPareto);
                 solution.setReferencePop(referencePareto);
-            } else {
+            }
+            else {
                 solution.setLL_ND_pop(lowerLevelSolutions);
                 //solution.setLL_Special_pop(specialPareto);
             }
-        } else if (execType == 0 && solution.isMarked() == false){
+
+        }
+        // marked = false ==> you have already used the PF to perform transfer, now evaluate results
+        else if (execType == 0 && solution.isMarked() == false){
             if (this.lowerLevelAlgorithmName.equals("MOEAD")) {
 
                 if (writeParetosToFile)
