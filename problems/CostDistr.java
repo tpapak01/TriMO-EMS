@@ -269,25 +269,32 @@ public class CostDistr extends Problem {
         // 1.0: Full care for self-consumption S
         Solution chosenlowerLevelSol = null;
         if (ULObjectiveDesirability == 1.0) {
+            // OPTIMISTIC APPROACH
             solution.setObjective(0, best_self);
             chosenlowerLevelSol = optimisticSol;
         } else if (ULObjectiveDesirability == 0.0){
+            // RESIDENT-AWARE APPROACH
             solution.setObjective(0, worst_self);
             chosenlowerLevelSol = bestDesSol;
         } else if (ULObjectiveDesirability == -1.0) {
+            // PESSIMISTIC APPROACH
             solution.setObjective(0, pessimistic_self);
             chosenlowerLevelSol = pessimisticSol;
         } else {
 
             int best_overall_index = -1;
+            // FIXED COOP APPROACH
             if (fixedTrust) {
                 if (solution.getUL_Optimism() == -1)
                     solution.setUL_Optimism(ULObjectiveDesirability);
                 double q = solution.getUL_Optimism();
                 best_overall_index = bestFromDecisionPareto(decisionPareto, q,
                         worst_self, best_self, bestDesSol, target_desirability, optimisticSol);
-            } else {
+            }
+            // DYNAMIC COOP APPROACH
+            else {
 
+                //if not an offspring (inheriting q), then start at q = 0
                 if (solution.getUL_Optimism() == -1)
                     solution.setUL_Optimism(0.0);
 
@@ -298,12 +305,14 @@ public class CostDistr extends Problem {
 
                 {
                     double q = solution.getUL_Optimism();
+                    // retrieve best solution given q, then find UL and LL score
                     int previousBestIndex = bestFromDecisionPareto(decisionPareto, q,
                             worst_self, best_self, bestDesSol, target_desirability, optimisticSol);
                     double previousDIM1 = get_DIM1_norm(worst_self, best_self, decisionPareto.get(previousBestIndex));
                     double previousDIM2 = Utils.AchievementScalarizationTcheby(decisionPareto.get(previousBestIndex), bestDesSol, target_desirability, optimisticSol);
 
                     double q_left = q + difference;
+                    // keep moving q up until new best solution (leftIndex) is found
                     int leftIndex = -1;
                     do {
                         if (q_left >= 1) {
@@ -315,38 +324,53 @@ public class CostDistr extends Problem {
                         q_left = q_left + difference;
                     } while (leftIndex == previousBestIndex);
 
+                    // if new solution was found (q was not already at 1+)...
                     if (leftIndex != -1) {
+                        // get UL and LL score of new solution
                         double leftDIM1 = get_DIM1_norm(worst_self, best_self, decisionPareto.get(leftIndex));
                         double leftDIM2 = Utils.AchievementScalarizationTcheby(decisionPareto.get(leftIndex), bestDesSol, target_desirability, optimisticSol);
 
+                        // find UL gain and LL loss
                         double leftDiffDIM1 = previousDIM1 - leftDIM1;
                         double leftDiffDIM2 = previousDIM2 - leftDIM2;
 
                         if (leftDiffDIM2 > 0) {
-                            int impossible = 1;
+                            int impossible = 1; // you can't move q up and have a better LL score than before
                         }
 
+                        // fairness principle: LL loss < UL gain
+                        // if fairness principle holds, you won't go the other direction next (q down)
                         if (Math.abs(leftDiffDIM2) < leftDiffDIM1)
                             skipOther = true;
 
+                        // while fairness principle holds or while moving q has not resulted in a new best solution
                         while (Math.abs(leftDiffDIM2) < leftDiffDIM1 || leftIndex == previousBestIndex) {
+                            // set currently best solution as the previous "new best"
                             previousDIM1 = leftDIM1;
                             previousDIM2 = leftDIM2;
                             previousBestIndex = leftIndex;
 
+                            // save current q for extraction later (to set it)
                             q = q_left;
+                            // and quit if q goes above 1 (the saved q is definitely below <= 1)
                             q_left = q_left + difference;
                             if (q_left > 1) {
                                 break;
                             }
+
+                            // get new best solution (might be same as before) based on new q
                             leftIndex = bestFromDecisionPareto(decisionPareto, q_left,
                                     worst_self, best_self, bestDesSol, target_desirability, optimisticSol);
+                            // get UL and LL score
                             leftDIM1 = get_DIM1_norm(worst_self, best_self, decisionPareto.get(leftIndex));
                             leftDIM2 = Utils.AchievementScalarizationTcheby(decisionPareto.get(leftIndex), bestDesSol, target_desirability, optimisticSol);
 
+                            // find UL gain and LL loss
                             leftDiffDIM1 = previousDIM1 - leftDIM1;
                             leftDiffDIM2 = previousDIM2 - leftDIM2;
                         }
+
+                        // if you won't go the other direction next, set q of examined solution
                         if (skipOther)
                             solution.setUL_Optimism(q);
                     }
@@ -354,9 +378,11 @@ public class CostDistr extends Problem {
 
                 //----------------------------------------------------------------------------------
 
+                // if the previous checks decided you WILL go the other direction (q down)...
                 if (skipOther == false)
                 {
                     double q = solution.getUL_Optimism();
+                    // retrieve best solution given q, then find UL and LL score
                     int previousBestIndex = bestFromDecisionPareto(decisionPareto, q,
                             worst_self, best_self, bestDesSol, target_desirability, optimisticSol);
                     double previousDIM1 = get_DIM1_norm(worst_self, best_self, decisionPareto.get(previousBestIndex));
@@ -364,6 +390,7 @@ public class CostDistr extends Problem {
 
                     double q_right = q - difference;
                     int rightIndex = -1;
+                    // keep moving q down until new best solution (rightIndex) is found
                     do {
                         if (q_right <= 0) {
                             q_right = 0.0;
@@ -374,34 +401,47 @@ public class CostDistr extends Problem {
                         q_right = q_right - difference;
                     } while (rightIndex == previousBestIndex);
 
+                    // if new solution was found (q was not already at 0-)...
                     if (rightIndex != -1) {
+                        // get UL and LL score of new solution
                         double rightDIM1 = get_DIM1_norm(worst_self, best_self, decisionPareto.get(rightIndex));
                         double rightDIM2 = Utils.AchievementScalarizationTcheby(decisionPareto.get(rightIndex), bestDesSol, target_desirability, optimisticSol);
 
+                        // find UL loss and LL gain
                         double rightDiffDIM1 = previousDIM1 - rightDIM1;
                         double rightDiffDIM2 = previousDIM2 - rightDIM2;
 
                         if (rightDiffDIM1 > 0) {
-                            int impossible = 1;
+                            int impossible = 1; // you can't move q down and have a better UL score than before
                         }
 
+                        // fairness principle: LL gain > UL loss
+                        // while fairness principle holds or while moving q has not resulted in a new best solution
                         while (Math.abs(rightDiffDIM1) < rightDiffDIM2 || rightIndex == previousBestIndex) {
+                            // set currently best solution as the previous "new best"
                             previousDIM1 = rightDIM1;
                             previousDIM2 = rightDIM2;
                             previousBestIndex = rightIndex;
+
+                            // save current q for extraction later (to set it)
                             q = q_right;
+                            // and quit if q goes below 0 (the saved q is definitely above >= 0)
                             q_right = q_right - difference;
                             if (q_right < 0) {
                                 break;
                             }
+                            // get new best solution (might be same as before) based on new q
                             rightIndex = bestFromDecisionPareto(decisionPareto, q_right,
                                     worst_self, best_self, bestDesSol, target_desirability, optimisticSol);
+                            // get UL and LL score
                             rightDIM1 = get_DIM1_norm(worst_self, best_self, decisionPareto.get(rightIndex));
                             rightDIM2 = Utils.AchievementScalarizationTcheby(decisionPareto.get(rightIndex), bestDesSol, target_desirability, optimisticSol);
 
+                            // find UL loss and LL gain
                             rightDiffDIM1 = previousDIM1 - rightDIM1;
                             rightDiffDIM2 = previousDIM2 - rightDIM2;
                         }
+                        // set q of examined solution
                         solution.setUL_Optimism(q);
                     }
                 }
@@ -475,6 +515,9 @@ public class CostDistr extends Problem {
 
 	} // evaluate
 
+    /*
+     * Retrieve best solution from decision-making reaction set given the cooperation index q
+     */
     private int bestFromDecisionPareto(SolutionSet decisionPareto, double q,
                                           double worst_self, double best_self, Solution bestDesSol, double[] target_desirability, Solution optimisticSol){
 
