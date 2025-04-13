@@ -24,6 +24,7 @@
 package jmetal.core;
 
 import jmetal.encodings.variable.Binary;
+import jmetal.util.wrapper.XReal;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -88,6 +89,14 @@ public class Solution implements Serializable {
   }
   public void setEnergyDeviationFromProduced(double energyDeviationFromProduced){
     this.energyDeviationFromProduced = energyDeviationFromProduced;
+  }
+
+  private double[] energyDeviationFromProducedArray = null;
+  public double[] getEnergyDeviationFromProducedArray(){
+    return energyDeviationFromProducedArray;
+  }
+  public void setEnergyDeviationFromProducedArray(double[] energyDeviationFromProducedArray){
+    this.energyDeviationFromProducedArray = energyDeviationFromProducedArray;
   }
 
   private double nonREpaid = -1;
@@ -340,6 +349,9 @@ public class Solution implements Serializable {
     if (solution.getEnergyDeviationFromProduced() != -1){
       setEnergyDeviationFromProduced(solution.getEnergyDeviationFromProduced());
     }
+    if (solution.getEnergyDeviationFromProducedArray() != null){
+      setEnergyDeviationFromProducedArray(solution.getEnergyDeviationFromProducedArray());
+    }
     if (solution.getNonREpaid() != -1){
       setNonREpaid(solution.getNonREpaid());
     }
@@ -402,6 +414,9 @@ public class Solution implements Serializable {
     }
     if (solution.getEnergyDeviationFromProduced() != -1){
       setEnergyDeviationFromProduced(solution.getEnergyDeviationFromProduced());
+    }
+    if (solution.getEnergyDeviationFromProducedArray() != null){
+      setEnergyDeviationFromProducedArray(solution.getEnergyDeviationFromProducedArray());
     }
     if (solution.getNonREpaid() != -1){
       setNonREpaid(solution.getNonREpaid());

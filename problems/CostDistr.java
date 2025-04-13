@@ -12,8 +12,7 @@ import jmetal.core.SolutionSet;
 import jmetal.core.Variable;
 import jmetal.encodings.solutionType.ArrayRealSolutionType;
 import jmetal.encodings.variable.Binary;
-import jmetal.metaheuristics.bilevel.LowerLevelMOKP_MOEAD;
-import jmetal.metaheuristics.bilevel.LowerLevelMOKP_NSGAII;
+import jmetal.metaheuristics.trilevel.LowerLevelMOKP_MOEAD;
 import jmetal.metaheuristics.moead.MOEAD;
 import jmetal.util.JMException;
 import jmetal.util.RankingOnlyFirst;
@@ -36,12 +35,33 @@ public class CostDistr extends Problem {
     private double[] producedRE;
     private double[] inputCosts = null;
     private double totalProducedRE;
-    private double ULObjectiveDesirability = 0.5;
+    private double ULObjectiveDesirability = 1.0;
     private boolean fixedTrust = true;
+
+    private XReal costOfBuying ; // capacity of each  knapsack .
 
     private static double best_upper_level_result = Double.MAX_VALUE;
     private static Comparator comparator;
 
+    public MOKP_Problem getLowerLevelProblem(){
+        return lowerLevelProblem;
+    }
+
+    public double[] getProducedRE(){
+        return producedRE;
+    }
+
+    public double[] getInputCosts(){
+        return inputCosts;
+    }
+
+    public double getTotalProducedRE(){
+        return totalProducedRE;
+    }
+
+    public void setCostOfBuying(XReal cost) {
+        costOfBuying = cost;
+    }
 
   public CostDistr(String renewableFileName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName, String costsName, String dataPath) {
 	  this.setMaxmized_(false); // this problem is not to be maximized
@@ -106,18 +126,6 @@ public class CostDistr extends Problem {
 
   }
 
-    public double[] getProducedRE(){
-        return producedRE;
-    }
-
-    public double[] getInputCosts(){
-      return inputCosts;
-    }
-
-    public double getTotalProducedRE(){
-        return totalProducedRE;
-    }
-
 	@Override
 	public void evaluate(Solution solution) throws JMException {
 
@@ -127,7 +135,6 @@ public class CostDistr extends Problem {
         try {
             if (this.lowerLevelAlgorithmName.equals("MOEAD"))
                 lowerLevelSolutions = LowerLevelMOKP_MOEAD.evaluate(costs, solution);
-            else lowerLevelSolutions = LowerLevelMOKP_NSGAII.evaluate(costs, solution);
         } catch (ClassNotFoundException e){
             System.out.println("Exception at LowerLevelMOKP.evaluate: " + e.getMessage());
         }
@@ -137,7 +144,7 @@ public class CostDistr extends Problem {
         //Identify optimistic,pessimistic and LL-desirable solution
         double best_self = Double.MAX_VALUE;
         int optimistic_index = -1;
-        double pessimistic_self = Double.MIN_VALUE;
+        double pessimistic_self = -Double.MAX_VALUE;
         int pessimistic_index = -1;
         double[] target_desirability = new double[this.lowerLevelProblem.getNumberOfObjectives()];
         target_desirability[0] = this.lowerLevelProblem.getObjectiveDesirability();
@@ -146,15 +153,19 @@ public class CostDistr extends Problem {
         double best_desirability = 100;
         int best_desirability_index = -1;
 
+        if (lsize == 0){
+            int a = 0;
+        }
+
         for (int s=0; s<lsize; s++) {
             Solution lowerLevelSol = lowerLevelSolutions.get(s);
 
             // do upper-level evaluation = finding deviation from available RE
-            //double result = upperLevel_evaluate_distance_from_produced(spentEnergy);
             double[] energySpent = lowerLevelSol.getSpentEnergy();
-            double result = upperLevel_evaluate_XOR_distance_plus_weight(energySpent, costs);
+            XReal costOfBuying = this.costOfBuying;
+            double result = upperLevel_evaluate_profit(energySpent, costs, costOfBuying);
+            //double result = upperLevel_evaluate_XOR_distance_plus_weight(energySpent, costs);
             lowerLevelSol.setSelfConsumption(result);
-            //double selfConsumption = upperLevel_evaluate_XOR_distance(energySpent);
             if (result < best_self){
                 best_self = result;
                 optimistic_index = s;
@@ -165,8 +176,8 @@ public class CostDistr extends Problem {
             }
 
             ////register Deviation from Produced - used for Platform only
-            double deviation = calculateEnergyDeviationFromProduced(energySpent);
-            lowerLevelSol.setEnergyDeviationFromProduced(deviation);
+            //double deviation = calculateEnergyDeviationFromProduced(energySpent);
+            //lowerLevelSol.setEnergyDeviationFromProduced(deviation);
 
             // LL-DECISION-MAKING: identity solution that is closest to the desired.
             // 0.0: Poor: Full dissatisfaction, zero costs
@@ -464,8 +475,8 @@ public class CostDistr extends Problem {
 
         Variable[] vars = chosenlowerLevelSol.getDecisionVariables();
         Binary bin = (Binary) vars[0];
-        double[] energySpent = chosenlowerLevelSol.getSpentEnergy();
 
+        double[] energySpent = chosenlowerLevelSol.getSpentEnergy();
         solution.setSpentEnergy(energySpent);
         solution.setLowerLevelVars(bin);
         solution.setLowerLevelObj(new double[] {chosenlowerLevelSol.getObjective(0), chosenlowerLevelSol.getObjective(1)});
@@ -473,6 +484,10 @@ public class CostDistr extends Problem {
         solution.setEnergyAllocatedPerUser(chosenlowerLevelSol.getEnergyAllocatedPerUser());
         double deviation = calculateEnergyDeviationFromProduced(energySpent);
         solution.setEnergyDeviationFromProduced(deviation);
+
+        double[] deviationArray = calculateEnergyDeviationFromProducedArray(energySpent);
+        solution.setEnergyDeviationFromProducedArray(deviationArray);
+
         double nonREpaid = calculateNonREPaid(energySpent, costs);
         solution.setNonREpaid(nonREpaid);
         solution.setDeviceToPreferenceMapping(chosenlowerLevelSol.getDeviceToPreferenceMapping());
@@ -571,31 +586,18 @@ public class CostDistr extends Problem {
         return sum;
     }
 
-
-    public double upperLevel_evaluate_maximize_usage_of_produced(double[] spentEnergy) {
+    public double upperLevel_evaluate_profit(double[] spentEnergy, XReal costs, XReal costOfBuying) throws JMException {
 
         double sum = 0;
+
         for (int i=0; i<producedRE.length; i++) {
-            double diff = producedRE[i] - spentEnergy[i];
-            if (diff > 0)
-                sum += diff;
+            double buyingCosts = costOfBuying.getValue(i) * spentEnergy[i];
+            double sellingCosts = costs.getValue(i) * spentEnergy[i];
+            double loss = buyingCosts - sellingCosts;
+            sum += loss;
         }
 
         return sum;
-    }
-
-    public double upperLevel_evaluate_distance_from_produced_complex(double[] spentEnergy) {
-
-        double sum_extra = 0;
-        double sum_less = 0;
-        for (int i=0; i<producedRE.length; i++) {
-            double sum = spentEnergy[i] - producedRE[i];
-            if (sum < 0)
-                sum_less += sum * (-1);
-            else sum_extra += sum;
-        }
-
-        return 0.5 * sum_extra + 0.5 * sum_less;
     }
 
     ////////////////////////////////    HELPER FUNCTIONS       ////////////////////////////////////////
@@ -605,6 +607,15 @@ public class CostDistr extends Problem {
         for (int i=0; i<producedRE.length; i++) {
             double difference = Math.abs(spentEnergy[i] - producedRE[i]);
             energyDeviationFromProduced += difference;
+        }
+        return energyDeviationFromProduced;
+    }
+
+    public double[] calculateEnergyDeviationFromProducedArray(double[] spentEnergy) {
+        double[] energyDeviationFromProduced = new double[producedRE.length];
+        for (int i=0; i<producedRE.length; i++) {
+            double difference = Math.abs(spentEnergy[i] - producedRE[i]);
+            energyDeviationFromProduced[i] = difference;
         }
         return energyDeviationFromProduced;
     }

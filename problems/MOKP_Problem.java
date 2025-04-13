@@ -37,8 +37,13 @@ public class MOKP_Problem extends Problem {
     private int[] requestedDevicesPerUser;
     private double[] nadirObjectiveValue;
     private double objectiveDesirability = 0;
+    private double[] requestedEnergy;
 
-  public MOKP_Problem(String problemName,String userPreferenceName, String dataPath) {
+    public double[] getRequestedEnergy(){
+        return requestedEnergy;
+    }
+
+  public MOKP_Problem(String problemName, String userPreferenceName, String dataPath) {
 
       if (!dataPath.equals("-")) { problemPath = dataPath; userPreferencePath = dataPath; }
 
@@ -105,7 +110,7 @@ public class MOKP_Problem extends Problem {
           pref = new boolean[numberOfUsers][this.numberOfConstraints_][numberOfItems];
           pref_vector = new boolean[numberOfUsers*this.numberOfConstraints_*numberOfItems];
           //--------
-          double[] requestedEnergy = new double[this.numberOfConstraints_];
+          requestedEnergy = new double[this.numberOfConstraints_];
           requestedDevicesPerUser = new int[numberOfUsers];
           double[] requestedEnergyPerUser = new double[numberOfUsers];
           double[][] requestedEnergyPerUserPerTime = new double[numberOfUsers][this.numberOfConstraints_];

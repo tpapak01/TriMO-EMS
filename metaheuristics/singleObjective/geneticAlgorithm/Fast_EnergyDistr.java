@@ -24,10 +24,9 @@ package jmetal.metaheuristics.singleObjective.geneticAlgorithm;
 import jmetal.core.*;
 import jmetal.encodings.variable.ArrayReal;
 import jmetal.metaheuristics.moead.MOEAD;
-import jmetal.problems.CostDistr;
+import jmetal.problems.EnergyDistr;
 import jmetal.util.EuclideanDist;
 import jmetal.util.JMException;
-import jmetal.util.RankingOnlyFirst;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -36,9 +35,9 @@ import java.util.Comparator;
 /** 
  * Class implementing a generational genetic algorithm
  */
-public class Fast_CostDistr extends Algorithm {
+public class Fast_EnergyDistr extends Algorithm {
 
-  private CostDistr problemCostDistr;
+  private EnergyDistr problemEnergyDistr;
   private int populationSize;
   private SolutionSet population;
   int evaluations;
@@ -50,9 +49,9 @@ public class Fast_CostDistr extends Algorithm {
   * Create a new GGA instance.
   * @param problem Problem to solve.
   */
-  public Fast_CostDistr(Problem problem, String dataPath){
+  public Fast_EnergyDistr(Problem problem, String dataPath){
     super(problem);
-    problemCostDistr = (CostDistr) problem;
+    problemEnergyDistr = (EnergyDistr) problem;
     if (!dataPath.equals("-")) { problemPath = dataPath; }
   } // GGA
   
@@ -88,8 +87,8 @@ public class Fast_CostDistr extends Algorithm {
     selectionOperator = this.operators_.get("selection");  
 
     initPopulation();
-    //double[] producedRE = problemCostDistr.getProducedRE();
-    //initPopulationCostDistr(producedRE);
+    //double[] producedRE = problemEnergyDistr.getProducedRE();
+    //initPopulationEnergyDistr(producedRE);
 
     // Sort population
     population.sort(comparator) ;
@@ -118,16 +117,6 @@ public class Fast_CostDistr extends Algorithm {
       generation++;
 
       SolutionSet offspringPopulation = new SolutionSet(populationSize) ;
-
-      /*
-      double diff = Math.abs(winner.getObjective(0) - population.get(populationSize-1).getObjective(0));
-      if (diff <= 10 ) {
-        MOEAD.conv = 0.001;
-      }
-      if (diff <= 5 ) {
-        MOEAD.conv = 0.0001;
-      }
-       */
 
       // Reproductive cycle: keep adding 2 offspring to the offspring population until it reaches the max size
       for (int i = 0 ; i < iterations; i++) {
@@ -226,7 +215,7 @@ public class Fast_CostDistr extends Algorithm {
    *
    */
   public void initPopulation() throws JMException, ClassNotFoundException {
-    if (problemCostDistr.getInputCosts() == null) {
+    if (problemEnergyDistr.getInputCosts() == null) {
       for (int i = 0; i < populationSize; i++) {
         Solution newSolution = new Solution(problem_, true);
 
@@ -237,7 +226,7 @@ public class Fast_CostDistr extends Algorithm {
     } else {
       for (int i = 0; i < populationSize; i++) {
         Solution newSolution = new Solution(problem_, true);
-        newSolution.setDecisionVariables(updateSolution(problemCostDistr.getInputCosts()));
+        newSolution.setDecisionVariables(updateSolution(problemEnergyDistr.getInputCosts()));
         problem_.evaluate(newSolution);
         evaluations++;
         population.add(newSolution);
