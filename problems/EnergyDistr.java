@@ -72,7 +72,7 @@ public class EnergyDistr extends Problem {
         XReal costOfBuying = new XReal(solution);
 
         try {
-            upperLevelSolutions = UpperLevelCostDistr_Fast.evaluate(costOfBuying);
+            upperLevelSolutions = UpperLevelCostDistr_Fast.evaluate(costOfBuying, solution);
         } catch (ClassNotFoundException e){
             System.out.println("Exception at LowerLevelMOKP.evaluate: " + e.getMessage());
         }
@@ -103,6 +103,12 @@ public class EnergyDistr extends Problem {
         solution.setSelfConsumption(selfDeviation);
 
         solution.setObjective(0, result);
+
+        Variable[] vars = upperLevelSolutions.get(0).getDecisionVariables();
+        solution.setUpperLevelVars(vars[0]);
+        solution.setUpperLevelObj(upperLevelSolutions.get(0).getObjective(0));
+        SolutionSet transferPop = upperLevelSolutions;
+        solution.setUL_Transfer_pop(transferPop);
 
 
 	} // evaluate

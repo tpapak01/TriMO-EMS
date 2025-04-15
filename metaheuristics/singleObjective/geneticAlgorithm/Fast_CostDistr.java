@@ -43,6 +43,7 @@ public class Fast_CostDistr extends Algorithm {
   private SolutionSet population;
   int evaluations;
   private static String problemPath = "C:\\Users\\emine\\source\\repos\\SmartHome3\\SmartHome3\\wwwroot\\";
+  SolutionSet initPopSolution_;
 
  /**
   *
@@ -79,7 +80,9 @@ public class Fast_CostDistr extends Algorithm {
     // Initialize the variables
     population          = new SolutionSet(populationSize) ;
     
-    evaluations  = 0;                
+    evaluations  = 0;
+
+    initPopSolution_ = ((SolutionSet) this.getInputParameter("initPopSolution"));
 
     // Read the operators
     comparator = (Comparator) this.getInputParameter("comparator");
@@ -119,15 +122,16 @@ public class Fast_CostDistr extends Algorithm {
 
       SolutionSet offspringPopulation = new SolutionSet(populationSize) ;
 
-      /*
+
       double diff = Math.abs(winner.getObjective(0) - population.get(populationSize-1).getObjective(0));
-      if (diff <= 10 ) {
-        MOEAD.conv = 0.001;
-      }
+      //if (diff <= 10 ) {
+      //  MOEAD.conv = 0.001;
+      //}
       if (diff <= 5 ) {
-        MOEAD.conv = 0.0001;
+        break;
+        //MOEAD.conv = 0.0001;
       }
-       */
+
 
       // Reproductive cycle: keep adding 2 offspring to the offspring population until it reaches the max size
       for (int i = 0 ; i < iterations; i++) {
@@ -227,13 +231,22 @@ public class Fast_CostDistr extends Algorithm {
    */
   public void initPopulation() throws JMException, ClassNotFoundException {
     if (problemCostDistr.getInputCosts() == null) {
-      for (int i = 0; i < populationSize; i++) {
-        Solution newSolution = new Solution(problem_, true);
+      if (initPopSolution_ == null) {
+        for (int i = 0; i < populationSize; i++) {
+          Solution newSolution = new Solution(problem_, true);
 
+          problem_.evaluate(newSolution);
+          evaluations++;
+          population.add(newSolution);
+        } // for
+      } else {
+        Solution toAdd = initPopSolution_.get(0);
+        Solution newSolution = new Solution(toAdd);
+        //problemCostDistr.repair(toAdd); //not needed
         problem_.evaluate(newSolution);
         evaluations++;
         population.add(newSolution);
-      } // for
+      }
     } else {
       for (int i = 0; i < populationSize; i++) {
         Solution newSolution = new Solution(problem_, true);

@@ -96,7 +96,7 @@ public class TopLevelEnergyDistr {
         /* Algorithm parameters*/
         //algorithm.setInputParameter("populationSize",4); //must be even number
         //algorithm.setInputParameter("maxEvaluations", 2500);
-        algorithm.setInputParameter("populationSize", 100); //must be even number
+        algorithm.setInputParameter("populationSize", 5); //must be even number
         if (costsName.equals("-"))
             algorithm.setInputParameter("maxEvaluations", 1000000);
         else
@@ -183,22 +183,22 @@ public class TopLevelEnergyDistr {
         population.printObjectivesToFile("FUN");
         System.out.println("Variables values have been writen to file VAR");
         population.printVariablesToFile("VAR");
-        population.printVariablesToFile(problemPath + "results\\Winner\\Prices");
+        //population.printVariablesToFile(problemPath + "results\\Winner\\Prices");
 
         population.printSelfConsumptionToFile("SELF_CONSU");
-        population.printSelfConsumptionToFile(problemPath + "results\\Winner\\SELF_CONSU");
+        //population.printSelfConsumptionToFile(problemPath + "results\\Winner\\SELF_CONSU");
         population.printNonREPaidToFile("NON_RE_PAID");
         population.printLowerLevelVarsToFile("LL_VAR");
         population.printLowerLevelObjToFile("LL_FUN");
-        population.printLowerLevelObjToFile(problemPath + "results\\Winner\\LL_FUN");
+        //population.printLowerLevelObjToFile(problemPath + "results\\Winner\\LL_FUN");
         population.printMappingToFile("LL_MAPPING");
 
         population.printSpentEnergyToFile("SPENT");
         population.printUserDissatisfactionToFile("USER_DISSAT");
-        population.printUserDissatisfactionToFile(problemPath + "results\\Winner\\USER_DISSAT");
+        //population.printUserDissatisfactionToFile(problemPath + "results\\Winner\\USER_DISSAT");
         population.printStdDevUserDissatisfactionToFile("STDDEV_USER_DISSAT");
         population.printUserEnergyToFile("USER_ENERGY");
-        population.printUserEnergyToFile(problemPath + "results\\Winner\\USER_COSTS");
+        //population.printUserEnergyToFile(problemPath + "results\\Winner\\USER_COSTS");
         population.printStdDevUserEnergyToFile("STDDEV_USER_ENERGY");
 
         FileWriter timeWriter = new FileWriter("TIME", true);
@@ -209,13 +209,13 @@ public class TopLevelEnergyDistr {
         //specialPareto.printObjectivesToFile("LowerLevelParetoVisual/" + "0_FUN"); //check
 
 
-        SolutionSet lowerLevelSolutions = population.get(0).getLL_Pareto_pop();
-        lowerLevelSolutions.printParetoToFile("LL_PARETO");
-        System.out.println(population.get(0).getUL_Optimism());
+        //SolutionSet lowerLevelSolutions = population.get(0).getLL_Pareto_pop();
+        //lowerLevelSolutions.printParetoToFile("LL_PARETO");
+        //System.out.println(population.get(0).getUL_Optimism());
         //Platform
-        lowerLevelSolutions.printParetoToFile(problemPath + "results\\Winner\\Pareto");
-        lowerLevelSolutions.printSpentsToFile(problemPath + "results\\Spents\\");
-        lowerLevelSolutions.printSelfsToFile(problemPath + "results\\Selfs\\");
+        //lowerLevelSolutions.printParetoToFile(problemPath + "results\\Winner\\Pareto");
+        //lowerLevelSolutions.printSpentsToFile(problemPath + "results\\Spents\\");
+        //lowerLevelSolutions.printSelfsToFile(problemPath + "results\\Selfs\\");
         //population.printSpentEnergyToFile(platformPath + "Winner\\SPENT");
 
 

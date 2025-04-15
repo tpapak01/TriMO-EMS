@@ -136,7 +136,7 @@ public class Fast_EnergyDistr extends Algorithm {
         mutationOperator.execute(offspring[0]);
         mutationOperator.execute(offspring[1]);
 
-        //attach to offspring the LL ND of the closest UL solution
+        //attach to offspring the UL solution of the closest TL solution
         double min_dist = Double.MAX_VALUE;
         int min_index = -1;
         for (int o = 0; o<2; o++) {
@@ -149,7 +149,7 @@ public class Fast_EnergyDistr extends Algorithm {
               min_index = j;
             }
           }
-          offspring[o].setLL_Transfer_pop(population.get(min_index).getLL_Transfer_pop());
+          offspring[o].setUL_Transfer_pop(population.get(min_index).getUL_Transfer_pop());
         }
 
         // Evaluation of the new individuals

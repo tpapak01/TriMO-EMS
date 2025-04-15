@@ -55,6 +55,14 @@ public class Solution implements Serializable {
     this.lowerLevelVars = new Binary(vars);
   }
 
+  private Variable upperLevelVars;
+  public Variable getUpperLevelVars(){
+    return upperLevelVars;
+  }
+  public void setUpperLevelVars(Variable vars){
+    this.upperLevelVars = vars;
+  }
+
   private double[] lowerLevelObj;
   public double[] getLowerLevelObj(){
     return lowerLevelObj;
@@ -62,6 +70,15 @@ public class Solution implements Serializable {
   public void setLowerLevelObj(double[] lowerLevelObj){
     this.lowerLevelObj = Arrays.copyOf(lowerLevelObj, lowerLevelObj.length);
   }
+
+  private double upperLevelObj;
+  public double getUpperLevelObj(){
+    return upperLevelObj;
+  }
+  public void setUpperLevelObj(double upperLevelObj){
+    this.upperLevelObj = upperLevelObj;
+  }
+
   private double[] dissatisfactionPerUser;
   public double[] getDissatisfactionPerUser(){
     return dissatisfactionPerUser;
@@ -127,6 +144,12 @@ public class Solution implements Serializable {
   public SolutionSet getLL_Transfer_pop(){ return LL_Transfer_pop; }
   public void setLL_Transfer_pop(SolutionSet LL_Transfer_pop){
     this.LL_Transfer_pop = LL_Transfer_pop;
+  }
+
+  private SolutionSet UL_Transfer_pop;
+  public SolutionSet getUL_Transfer_pop(){ return UL_Transfer_pop; }
+  public void setUL_Transfer_pop(SolutionSet UL_Transfer_pop){
+    this.UL_Transfer_pop = UL_Transfer_pop;
   }
 
   //platform only
@@ -365,6 +388,9 @@ public class Solution implements Serializable {
     if (solution.getLL_Transfer_pop() != null) {
       setLL_Transfer_pop(solution.getLL_Transfer_pop());
     }
+    if (solution.getUL_Transfer_pop() != null) {
+      setUL_Transfer_pop(solution.getUL_Transfer_pop());
+    }
     if (solution.getLL_Pareto_pop() != null) {
       setLL_Pareto_pop(solution.getLL_Pareto_pop());
     }
@@ -429,6 +455,9 @@ public class Solution implements Serializable {
     }
     if (solution.getLL_Transfer_pop() != null) {
       setLL_Transfer_pop(solution.getLL_Transfer_pop());
+    }
+    if (solution.getUL_Transfer_pop() != null) {
+      setUL_Transfer_pop(solution.getUL_Transfer_pop());
     }
     if (solution.getLL_Pareto_pop() != null) {
       setLL_Pareto_pop(solution.getLL_Pareto_pop());
