@@ -209,9 +209,11 @@ public class Fast_CostDistr extends Algorithm {
 
     } // while
     
-    // Return a population with the best individual
-    SolutionSet resultPopulation = new SolutionSet(1) ;
-    resultPopulation.add(population.get(0)) ;
+    // Return the population
+    SolutionSet resultPopulation = new SolutionSet(populationSize) ;
+    for (int i = 0; i < (populationSize * 3 / 4); i++) {
+      resultPopulation.add(population.get(i)) ;
+    }
     
     System.out.println("Evaluations: " + evaluations ) ;
     FileWriter evalsWriter = null;
@@ -240,12 +242,21 @@ public class Fast_CostDistr extends Algorithm {
           population.add(newSolution);
         } // for
       } else {
-        Solution toAdd = initPopSolution_.get(0);
-        Solution newSolution = new Solution(toAdd);
-        //problemCostDistr.repair(toAdd); //not needed
-        problem_.evaluate(newSolution);
-        evaluations++;
-        population.add(newSolution);
+        for (int i = 0; i < initPopSolution_.size(); i++) {
+          Solution toAdd = initPopSolution_.get(i);
+          Solution newSolution = new Solution(toAdd);
+          //problemCostDistr.repair(toAdd); //not needed
+          problem_.evaluate(newSolution);
+          evaluations++;
+          population.add(newSolution);
+        }
+        for (int i = initPopSolution_.size(); i < populationSize; i++) {
+          Solution newSolution = new Solution(problem_, true);
+
+          problem_.evaluate(newSolution);
+          evaluations++;
+          population.add(newSolution);
+        }
       }
     } else {
       for (int i = 0; i < populationSize; i++) {

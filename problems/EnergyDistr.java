@@ -78,12 +78,14 @@ public class EnergyDistr extends Problem {
         }
 
         int u_size = upperLevelSolutions.size();
-        double[] selfConsDeviation = null;
         double[] producedRE = upperLevelProblem.getProducedRE();
         double[] demand = upperLevelProblem.getLowerLevelProblem().getRequestedEnergy();
-        for (int i=0; i<u_size; i++){
-            Solution upperLevelSol = upperLevelSolutions.get(i);
-            selfConsDeviation = upperLevelSol.getEnergyDeviationFromProducedArray();
+        Solution chosenUpperLevelSol = upperLevelSolutions.get(0);
+        double[] selfConsDeviation = chosenUpperLevelSol.getEnergyDeviationFromProducedArray();
+
+        //for (int i=0; i<u_size; i++){
+            //Solution upperLevelSol = upperLevelSolutions.get(i);
+            //selfConsDeviation = upperLevelSol.getEnergyDeviationFromProducedArray();
             /*
             double[] prices = new double[selfConsDeviation.length];
             for (int j=0; j<selfConsDeviation.length; j++){
@@ -97,16 +99,23 @@ public class EnergyDistr extends Problem {
             }
             solution.setCostOfBuyingEnergy(prices);
             */
-        }
+        //}
+
         double result = topLevel_evaluate_objective(selfConsDeviation, producedRE, demand, costOfBuying);
         double selfDeviation = calculateSelfConsDeviation(selfConsDeviation);
         solution.setSelfConsumption(selfDeviation);
 
         solution.setObjective(0, result);
 
-        Variable[] vars = upperLevelSolutions.get(0).getDecisionVariables();
+        Variable[] vars = chosenUpperLevelSol.getDecisionVariables();
         solution.setUpperLevelVars(vars[0]);
-        solution.setUpperLevelObj(upperLevelSolutions.get(0).getObjective(0));
+        solution.setUpperLevelObj(chosenUpperLevelSol.getObjective(0));
+
+        Binary LLvars = chosenUpperLevelSol.getLowerLevelVars();
+        solution.setLowerLevelVars(LLvars);
+        double[] LLresult = chosenUpperLevelSol.getLowerLevelObj();
+        solution.setLowerLevelObj(LLresult);
+
         SolutionSet transferPop = upperLevelSolutions;
         solution.setUL_Transfer_pop(transferPop);
 
