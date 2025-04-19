@@ -152,8 +152,8 @@ public class EnergyDistr extends Problem {
             double abs_difference = Math.abs(difference);
             double cost = costOfBuying.getValue(i);
             if (difference < 0)
-                sum += abs_difference * ((1.0 + lowerLimit_[i]) + cost);
-            else sum += abs_difference * ((1.0 + upperLimit_[i]) - cost);
+                sum += abs_difference * (1.0 + (cost - lowerLimit_[i]));
+            else sum += abs_difference * (1.0 + (upperLimit_[i] - cost));
         }
 
         return sum;
