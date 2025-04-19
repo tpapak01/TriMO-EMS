@@ -82,7 +82,7 @@ public class EnergyDistr extends Problem {
         //double[] demand = upperLevelProblem.getLowerLevelProblem().getRequestedEnergy();
         Solution chosenUpperLevelSol = upperLevelSolutions.get(0);
         double[] spentEnergy = chosenUpperLevelSol.getSpentEnergy();
-        double[] selfConsDeviation = chosenUpperLevelSol.getEnergyDeviationFromProducedArray();
+        //double[] selfConsDeviation = chosenUpperLevelSol.getEnergyDeviationFromProducedArray();
 
         //for (int i=0; i<u_size; i++){
             //Solution upperLevelSol = upperLevelSolutions.get(i);
@@ -103,7 +103,7 @@ public class EnergyDistr extends Problem {
         //}
 
         double result = topLevel_evaluate_objective(producedRE, spentEnergy, costOfBuying);
-        double selfDeviation = calculateSelfConsDeviation(selfConsDeviation);
+        double selfDeviation = calculateSelfConsDeviation(producedRE, spentEnergy);
         solution.setSelfConsumption(selfDeviation);
 
         solution.setObjective(0, result);
@@ -112,12 +112,10 @@ public class EnergyDistr extends Problem {
         solution.setUpperLevelVars(vars[0]);
         solution.setUpperLevelObj(chosenUpperLevelSol.getObjective(0));
 
-        Binary LLvars = chosenUpperLevelSol.getLowerLevelVars();
-        solution.setLowerLevelVars(LLvars);
-        double[] LLresult = chosenUpperLevelSol.getLowerLevelObj();
-        solution.setLowerLevelObj(LLresult);
-        int[] mapping = chosenUpperLevelSol.getDeviceToPreferenceMapping();
-        solution.setDeviceToPreferenceMapping(mapping);
+        solution.setLowerLevelVars(chosenUpperLevelSol.getLowerLevelVars());
+        solution.setLowerLevelObj(chosenUpperLevelSol.getLowerLevelObj());
+        //solution.setDeviceToPreferenceMapping(chosenUpperLevelSol.getDeviceToPreferenceMapping());
+        //solution.setReverseDeviceToPreferenceMapping(chosenUpperLevelSol.getReverseDeviceToPreferenceMapping());
 
         SolutionSet transferPop = upperLevelSolutions;
         solution.setUL_Transfer_pop(transferPop);
@@ -125,16 +123,15 @@ public class EnergyDistr extends Problem {
 
 	} // evaluate
 
-    private double calculateSelfConsDeviation(double[] selfConsDeviation){
+    private double calculateSelfConsDeviation(double[] producedRE, double[] spentEnergy){
+
         double sum = 0;
-
-        for (int i=0; i<selfConsDeviation.length; i++) {
-           sum += selfConsDeviation[i];
+        for (int i=0; i<producedRE.length; i++) {
+            double difference = Math.abs(spentEnergy[i] - producedRE[i]);
+            sum += difference;
         }
-
         return sum;
     }
-
 
     private double topLevel_evaluate_objective(double[] producedRE, double[] spentEnergy, XReal costOfBuying) throws JMException {
 

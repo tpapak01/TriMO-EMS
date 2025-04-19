@@ -314,7 +314,7 @@ public class MOKP_Problem extends Problem {
 
         Variable[] vars = solution.getDecisionVariables();
         Binary bin = (Binary) vars[0];
-        double[] energyAllocatedPerUser = new double[numberOfUsers];
+        //double[] energyAllocatedPerUser = new double[numberOfUsers];
 
         for (int u = 0; u < numberOfUsers; u++) { // for each user
 
@@ -335,12 +335,12 @@ public class MOKP_Problem extends Problem {
                 l++;
             } // for i
 
-            energyAllocatedPerUser[u] = sum;
-            energyAllocatedPerUser[u] = Math.round(energyAllocatedPerUser[u]*100.0) / 100.0;
+            //energyAllocatedPerUser[u] = sum;
+            //energyAllocatedPerUser[u] = Math.round(energyAllocatedPerUser[u]*100.0) / 100.0;
 
         } // for u
 
-        solution.setEnergyAllocatedPerUser(energyAllocatedPerUser);
+        //solution.setEnergyAllocatedPerUser(energyAllocatedPerUser);
 
         return sum;
     }
@@ -383,7 +383,7 @@ public class MOKP_Problem extends Problem {
         //remove if filling up extra data is no longer needed
         Variable[] vars = solution.getDecisionVariables();
         Binary bin = (Binary) vars[0];
-        double[] energyAllocatedPerUser = new double[numberOfUsers];
+        //double[] energyAllocatedPerUser = new double[numberOfUsers];
 
         for (int u = 0; u < numberOfUsers; u++) { // for each user
             double sum = 0;
@@ -405,12 +405,12 @@ public class MOKP_Problem extends Problem {
                 highest_cost = sum;
             }
 
-            energyAllocatedPerUser[u] = sum;
-            energyAllocatedPerUser[u] = Math.round(energyAllocatedPerUser[u]*100.0) / 100.0;
+            //energyAllocatedPerUser[u] = sum;
+            //energyAllocatedPerUser[u] = Math.round(energyAllocatedPerUser[u]*100.0) / 100.0;
 
         } // for u
 
-        solution.setEnergyAllocatedPerUser(energyAllocatedPerUser);
+        //solution.setEnergyAllocatedPerUser(energyAllocatedPerUser);
 
         return highest_cost;
     }
@@ -481,7 +481,7 @@ public class MOKP_Problem extends Problem {
         //remove if filling up extra data is no longer needed
         Variable[] vars = solution.getDecisionVariables();
         Binary bin = (Binary) vars[0];
-        double[] dissatisfactionPerUser = new double[numberOfUsers];
+        //double[] dissatisfactionPerUser = new double[numberOfUsers];
         int[] covered = solution.getDeviceToPreferenceMapping();
 
         for (int u = 0; u < numberOfUsers; u++) { // for each user
@@ -518,12 +518,12 @@ public class MOKP_Problem extends Problem {
                 user_dissatisfaction = 1.0 - (satisfaction_nominator / (double) dissatisfaction_denominator);
             total_dissatisfaction += user_dissatisfaction;
 
-            dissatisfactionPerUser[u] = user_dissatisfaction;
-            dissatisfactionPerUser[u] = Math.round(dissatisfactionPerUser[u]*100.0) / 100.0;
+            //dissatisfactionPerUser[u] = user_dissatisfaction;
+            //dissatisfactionPerUser[u] = Math.round(dissatisfactionPerUser[u]*100.0) / 100.0;
 
         } //for u
 
-        solution.setDissatisfactionPerUser(dissatisfactionPerUser);
+        //solution.setDissatisfactionPerUser(dissatisfactionPerUser);
 
         return total_dissatisfaction;
     }

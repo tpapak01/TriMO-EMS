@@ -217,7 +217,7 @@ public class CostDistr extends Problem {
         //how much is the DESIRABILITY of the best-S-solution?
         double worst_des = Utils.ASF(optimisticSol, bestDesSol, target_desirability);
 
-        SolutionSet transferPareto;
+        SolutionSet transferPareto = null;
         SolutionSet decisionPareto = new SolutionSet(lsize);
         if (this.lowerLevelAlgorithmName.equals("MOEAD")) {
 
@@ -284,9 +284,6 @@ public class CostDistr extends Problem {
                 Solution lowerLevelSol = archive.get(i);
                 transferPareto.add(lowerLevelSol);
             }
-        } else {
-            //NSGAII
-            transferPareto = lowerLevelSolutions;
         }
 
         // find best solution given UL preferences (optimistic OR LL-desirable OR in between)
@@ -494,32 +491,26 @@ public class CostDistr extends Problem {
         solution.setSpentEnergy(energySpent);
         solution.setLowerLevelVars(bin);
         solution.setLowerLevelObj(new double[] {chosenlowerLevelSol.getObjective(0), chosenlowerLevelSol.getObjective(1)});
-        solution.setDissatisfactionPerUser(chosenlowerLevelSol.getDissatisfactionPerUser());
-        solution.setEnergyAllocatedPerUser(chosenlowerLevelSol.getEnergyAllocatedPerUser());
-        double deviation = calculateEnergyDeviationFromProduced(energySpent);
-        solution.setEnergyDeviationFromProduced(deviation);
+        //solution.setDissatisfactionPerUser(chosenlowerLevelSol.getDissatisfactionPerUser());
+        //solution.setEnergyAllocatedPerUser(chosenlowerLevelSol.getEnergyAllocatedPerUser());
+        //double deviation = calculateEnergyDeviationFromProduced(energySpent);
+        //solution.setEnergyDeviationFromProduced(deviation);
 
-        double[] deviationArray = calculateEnergyDeviationFromProducedArray(energySpent);
-        solution.setEnergyDeviationFromProducedArray(deviationArray);
+        //double[] deviationArray = calculateEnergyDeviationFromProducedArray(energySpent);
+        //solution.setEnergyDeviationFromProducedArray(deviationArray);
 
-        double nonREpaid = calculateNonREPaid(energySpent, costs);
-        solution.setNonREpaid(nonREpaid);
-        solution.setDeviceToPreferenceMapping(chosenlowerLevelSol.getDeviceToPreferenceMapping());
-        solution.setReverseDeviceToPreferenceMapping(chosenlowerLevelSol.getReverseDeviceToPreferenceMapping());
+        //double nonREpaid = calculateNonREPaid(energySpent, costs);
+        //solution.setNonREpaid(nonREpaid);
+        //solution.setDeviceToPreferenceMapping(chosenlowerLevelSol.getDeviceToPreferenceMapping());
+        //solution.setReverseDeviceToPreferenceMapping(chosenlowerLevelSol.getReverseDeviceToPreferenceMapping());
         solution.setLL_Transfer_pop(transferPareto);
         //platform only
-        solution.setLL_Pareto_pop(lowerLevelSolutions);
+        //solution.setLL_Pareto_pop(lowerLevelSolutions);
 
         if (best_upper_level_result > best_self) {
             best_upper_level_result = best_self;
-            int[] covered = solution.getDeviceToPreferenceMapping();
-            int count = 0;
-            for (int i=0; i<covered.length; i++){
-                if (covered[i] != -1 && covered[i] != i){
-                    count++;
-                }
-            }
-            System.out.println(best_upper_level_result + " " + count);
+
+            System.out.println(best_upper_level_result);
 
             /*
             SolutionSet chosenSolutionSet = new SolutionSet(1);
@@ -637,15 +628,6 @@ public class CostDistr extends Problem {
         for (int i=0; i<producedRE.length; i++) {
             double difference = Math.abs(spentEnergy[i] - producedRE[i]);
             energyDeviationFromProduced += difference;
-        }
-        return energyDeviationFromProduced;
-    }
-
-    public double[] calculateEnergyDeviationFromProducedArray(double[] spentEnergy) {
-        double[] energyDeviationFromProduced = new double[producedRE.length];
-        for (int i=0; i<producedRE.length; i++) {
-            double difference = Math.abs(spentEnergy[i] - producedRE[i]);
-            energyDeviationFromProduced[i] = difference;
         }
         return energyDeviationFromProduced;
     }

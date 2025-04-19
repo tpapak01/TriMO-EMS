@@ -185,21 +185,21 @@ public class TopLevelEnergyDistr {
         population.printVariablesToFile("VAR");
         //population.printVariablesToFile(problemPath + "results\\Winner\\Prices");
 
-        population.printSelfConsumptionToFile("SELF_CONSU");
+        //population.printSelfConsumptionToFile("SELF_CONSU");
         //population.printSelfConsumptionToFile(problemPath + "results\\Winner\\SELF_CONSU");
-        population.printNonREPaidToFile("NON_RE_PAID");
+        //population.printNonREPaidToFile("NON_RE_PAID");
         population.printLowerLevelVarsToFile("LL_VAR");
         population.printLowerLevelObjToFile("LL_FUN");
         //population.printLowerLevelObjToFile(problemPath + "results\\Winner\\LL_FUN");
-        population.printMappingToFile("LL_MAPPING");
+        //population.printMappingToFile("LL_MAPPING");
 
         population.printSpentEnergyToFile("SPENT");
-        population.printUserDissatisfactionToFile("USER_DISSAT");
+        //population.printUserDissatisfactionToFile("USER_DISSAT");
         //population.printUserDissatisfactionToFile(problemPath + "results\\Winner\\USER_DISSAT");
-        population.printStdDevUserDissatisfactionToFile("STDDEV_USER_DISSAT");
-        population.printUserEnergyToFile("USER_ENERGY");
+        //population.printStdDevUserDissatisfactionToFile("STDDEV_USER_DISSAT");
+        //population.printUserEnergyToFile("USER_ENERGY");
         //population.printUserEnergyToFile(problemPath + "results\\Winner\\USER_COSTS");
-        population.printStdDevUserEnergyToFile("STDDEV_USER_ENERGY");
+        //population.printStdDevUserEnergyToFile("STDDEV_USER_ENERGY");
 
         FileWriter timeWriter = new FileWriter("TIME", true);
         timeWriter.write(estimatedTime + "\n");
