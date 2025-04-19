@@ -11,6 +11,7 @@ import jmetal.core.Solution;
 import jmetal.core.SolutionSet;
 import jmetal.core.Variable;
 import jmetal.encodings.solutionType.ArrayRealSolutionType;
+import jmetal.encodings.variable.ArrayReal;
 import jmetal.encodings.variable.Binary;
 import jmetal.metaheuristics.trilevel.LowerLevelMOKP_MOEAD;
 import jmetal.metaheuristics.moead.MOEAD;
@@ -61,6 +62,11 @@ public class CostDistr extends Problem {
 
     public void setCostOfBuying(XReal cost) {
         costOfBuying = cost;
+    }
+
+    public void setCostLowerLimit(XReal cost) throws JMException {
+        for (int i=0; i<cost.size(); i++)
+            this.lowerLimit_[i] = cost.getValue(i);
     }
 
   public CostDistr(String renewableFileName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName, String costsName, String dataPath) {
@@ -125,6 +131,14 @@ public class CostDistr extends Problem {
       }
 
   }
+    public void repair(Solution solution) throws JMException {
+        ArrayReal costs = ((ArrayReal)(solution.getDecisionVariables()[0]));
+        for (int i=0; i<costs.getLength(); i++){
+            if (costs.getValue(i) < lowerLimit_[i]) {
+                costs.setValue(i, lowerLimit_[i]);
+            }
+        }
+    }
 
 	@Override
 	public void evaluate(Solution solution) throws JMException {
@@ -162,8 +176,8 @@ public class CostDistr extends Problem {
 
             // do upper-level evaluation = finding deviation from available RE
             double[] energySpent = lowerLevelSol.getSpentEnergy();
-            XReal costOfBuying = this.costOfBuying;
-            double result = upperLevel_evaluate_profit(energySpent, costs, costOfBuying);
+            //XReal costOfBuying = this.costOfBuying;
+            double result = upperLevel_evaluate_profit(energySpent, costs);
             //double result = upperLevel_evaluate_XOR_distance_plus_weight(energySpent, costs);
             lowerLevelSol.setSelfConsumption(result);
             if (result < best_self){
@@ -586,7 +600,7 @@ public class CostDistr extends Problem {
         return sum;
     }
 
-    public double upperLevel_evaluate_profit(double[] spentEnergy, XReal costs, XReal costOfBuying) throws JMException {
+    public double upperLevel_evaluate_profit_simple(double[] spentEnergy, XReal costs, XReal costOfBuying) throws JMException {
 
         double sum = 0;
 
@@ -598,6 +612,22 @@ public class CostDistr extends Problem {
         }
 
         return sum;
+    }
+
+    public double upperLevel_evaluate_profit(double[] spentEnergy, XReal costs) throws JMException {
+
+        double sum = 0;
+
+        for (int i=0; i<producedRE.length; i++) {
+            double difference = costs.getValue(i) - lowerLimit_[i];
+            if (difference < 0){
+                int a = 2;
+            }
+            double profit = spentEnergy[i] * difference;
+            sum += profit;
+        }
+
+        return -sum;
     }
 
     ////////////////////////////////    HELPER FUNCTIONS       ////////////////////////////////////////

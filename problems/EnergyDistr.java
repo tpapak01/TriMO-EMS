@@ -79,8 +79,9 @@ public class EnergyDistr extends Problem {
 
         int u_size = upperLevelSolutions.size();
         double[] producedRE = upperLevelProblem.getProducedRE();
-        double[] demand = upperLevelProblem.getLowerLevelProblem().getRequestedEnergy();
+        //double[] demand = upperLevelProblem.getLowerLevelProblem().getRequestedEnergy();
         Solution chosenUpperLevelSol = upperLevelSolutions.get(0);
+        double[] spentEnergy = chosenUpperLevelSol.getSpentEnergy();
         double[] selfConsDeviation = chosenUpperLevelSol.getEnergyDeviationFromProducedArray();
 
         //for (int i=0; i<u_size; i++){
@@ -101,7 +102,7 @@ public class EnergyDistr extends Problem {
             */
         //}
 
-        double result = topLevel_evaluate_objective(selfConsDeviation, producedRE, demand, costOfBuying);
+        double result = topLevel_evaluate_objective(producedRE, spentEnergy, costOfBuying);
         double selfDeviation = calculateSelfConsDeviation(selfConsDeviation);
         solution.setSelfConsumption(selfDeviation);
 
@@ -115,6 +116,8 @@ public class EnergyDistr extends Problem {
         solution.setLowerLevelVars(LLvars);
         double[] LLresult = chosenUpperLevelSol.getLowerLevelObj();
         solution.setLowerLevelObj(LLresult);
+        int[] mapping = chosenUpperLevelSol.getDeviceToPreferenceMapping();
+        solution.setDeviceToPreferenceMapping(mapping);
 
         SolutionSet transferPop = upperLevelSolutions;
         solution.setUL_Transfer_pop(transferPop);
@@ -133,10 +136,11 @@ public class EnergyDistr extends Problem {
     }
 
 
-    private double topLevel_evaluate_objective(double[] selfConsDeviation, double[] producedRE, double[] demand, XReal costOfBuying) throws JMException {
+    private double topLevel_evaluate_objective(double[] producedRE, double[] spentEnergy, XReal costOfBuying) throws JMException {
 
         double sum = 0;
 
+        /*
         for (int t=0; t<selfConsDeviation.length; t++){
             double selfConstPerc = selfConsPercentage(selfConsDeviation[t], producedRE[t], demand[t]);
             double costPart1 = selfConstPerc * (this.upperLimit_[t] - costOfBuying.getValue(t));
@@ -144,11 +148,16 @@ public class EnergyDistr extends Problem {
             sum += costPart1 + costPart2;
         }
 
-        /*
-        for (int i=0; i<selfConsDeviation.length; i++) {
-           sum += selfConsDeviation[i];
+        */
+
+        for (int i=0; i<producedRE.length; i++) {
+            double difference = spentEnergy[i] - producedRE[i];
+            double abs_difference = Math.abs(difference);
+            double cost = costOfBuying.getValue(i);
+            if (difference < 0)
+                sum += abs_difference * ((1.0 + lowerLimit_[i]) + cost);
+            else sum += abs_difference * ((1.0 + upperLimit_[i]) - cost);
         }
-         */
 
         return sum;
     }

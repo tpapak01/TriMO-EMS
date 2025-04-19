@@ -148,6 +148,7 @@ public class UpperLevelCostDistr_Fast {
     public static SolutionSet evaluate(XReal costOfBuying, Solution solution) throws JMException, SecurityException, ClassNotFoundException {
 
         problemCostDistr.setCostOfBuying(costOfBuying);
+        problemCostDistr.setCostLowerLimit(costOfBuying);
         if (solution.isMarked())
             algorithm.setInputParameter("initPopSolution", null);
         else algorithm.setInputParameter("initPopSolution", solution.getUL_Transfer_pop());

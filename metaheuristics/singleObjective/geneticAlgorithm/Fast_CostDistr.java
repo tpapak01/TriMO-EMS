@@ -110,7 +110,7 @@ public class Fast_CostDistr extends Algorithm {
     while (evaluations < maxEvaluations && converged != 0) {
 
       Solution winner = population.get(0);
-      System.out.println("q: " + winner.getUL_Optimism());
+      //System.out.println("q: " + winner.getUL_Optimism());
       /*
       SolutionSet winnerPareto = winner.getLL_Pareto_pop();
       winnerPareto.printParetoToFile(problemPath + "results\\Paretos\\PARETO_" + (generation));
@@ -245,7 +245,7 @@ public class Fast_CostDistr extends Algorithm {
         for (int i = 0; i < initPopSolution_.size(); i++) {
           Solution toAdd = initPopSolution_.get(i);
           Solution newSolution = new Solution(toAdd);
-          //problemCostDistr.repair(toAdd); //not needed
+          problemCostDistr.repair(newSolution);
           problem_.evaluate(newSolution);
           evaluations++;
           population.add(newSolution);

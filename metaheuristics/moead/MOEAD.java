@@ -537,7 +537,7 @@ public class MOEAD extends Algorithm {
       for (int i = 0; i < populationSize; i++) {
         if (!emptiedInitPopSolution && lambda_[i][0] == lambda[0] && lambda_[i][1] == lambda[1]){
           newSolution = new Solution(toAdd, lambda);
-          //problemMOKP.repair(toAdd); //not needed
+          //problemMOKP.repair(newSolution); //not needed
           problem_.evaluate(newSolution);
           evaluations_++;
           population.add(newSolution);
