@@ -256,31 +256,6 @@ public class SolutionSet implements Serializable {
   }
 } // printObjectivesToFile
 
-
-  public void printObjectivesAndSelfToFile(String path){
-    try {
-      /* Open the file */
-      FileOutputStream fos   = new FileOutputStream(path, true)     ;
-      OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
-      BufferedWriter bw      = new BufferedWriter(osw)        ;
-
-      for (Solution aSolutionsList_ : solutionsList_) {
-        //if (this.vector[i].getFitness()<1.0) {
-        bw.write(aSolutionsList_.toString());
-        bw.write(String.valueOf(aSolutionsList_.getSelfConsumption()));
-        bw.newLine();
-        //}
-      }
-
-      /* Close the file */
-      bw.close();
-    }catch (IOException e) {
-      Configuration.logger_.severe("Error acceding to the file");
-      e.printStackTrace();
-    }
-  } // printObjectivesToFile
-
-
   /**
    * Writes the decision encodings.variable values of the <code>Solution</code>
    * solutions objects into the set in a file.

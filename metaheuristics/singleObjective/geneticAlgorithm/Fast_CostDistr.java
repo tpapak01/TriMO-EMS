@@ -98,7 +98,7 @@ public class Fast_CostDistr extends Algorithm {
     population.sort(comparator) ;
 
     //Convergence
-    int generations_left_for_convergence = 10;
+    int generations_left_for_convergence = 5;
     int converged = generations_left_for_convergence;
     double best_solution = population.get(0).getObjective(0);
     System.out.println("BEST SOL: " + best_solution);
@@ -127,7 +127,7 @@ public class Fast_CostDistr extends Algorithm {
       //if (diff <= 10 ) {
       //  MOEAD.conv = 0.001;
       //}
-      if (diff <= 5 ) {
+      if (diff <= 3 ) {
         break;
         //MOEAD.conv = 0.0001;
       }
