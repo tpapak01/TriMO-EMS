@@ -212,6 +212,8 @@ public class UpperLevelCostDistr_Fast {
         lowerLevelSolutions.printParetoToFile(problemPath + "results\\Winner\\Pareto");
         lowerLevelSolutions.printSpentsToFile(problemPath + "results\\Spents\\");
         lowerLevelSolutions.printSelfsToFile(problemPath + "results\\Selfs\\");
+        lowerLevelSolutions.printUserDissatsToFile(problemPath + "results\\UserDissats\\");
+        lowerLevelSolutions.printUserCostsToFile(problemPath + "results\\UserCosts\\");
         //population.printSpentEnergyToFile(platformPath + "Winner\\SPENT");
 
 

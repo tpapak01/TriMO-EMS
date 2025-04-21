@@ -36,7 +36,7 @@ public class CostDistr extends Problem {
     private double[] producedRE;
     private double[] inputCosts = null;
     private double totalProducedRE;
-    private double ULObjectiveDesirability = 0.5;
+    private double ULObjectiveDesirability = 1.0;
     private boolean fixedTrust = true;
 
     private static double best_upper_level_result = Double.MAX_VALUE;

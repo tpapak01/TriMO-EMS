@@ -379,6 +379,31 @@ public class SolutionSet implements Serializable {
     }
   }
 
+  public void printUserDissatsToFile(String path){
+    int i=-1;
+    for (Solution aSolutionsList_ : solutionsList_) {
+      i++;
+      String fullpath = path + "USER_DISSAT_" + i;
+
+      try {
+        /* Open the file */
+
+        FileOutputStream fos = new FileOutputStream(fullpath, false);
+        OutputStreamWriter osw = new OutputStreamWriter(fos);
+        BufferedWriter bw = new BufferedWriter(osw);
+
+        bw.write(Arrays.toString(aSolutionsList_.getDissatisfactionPerUser()));
+        bw.newLine();
+
+        /* Close the file */
+        bw.close();
+      } catch (IOException e) {
+        Configuration.logger_.severe("Error acceding to the file");
+        e.printStackTrace();
+      }
+    }
+  }
+
   // Purpose: to calculate fairness of satisfaction (standard deviation among users)
   public void printStdDevUserDissatisfactionToFile(String path){
     try {
@@ -422,6 +447,31 @@ public class SolutionSet implements Serializable {
     }catch (IOException e) {
       Configuration.logger_.severe("Error acceding to the file");
       e.printStackTrace();
+    }
+  }
+
+  public void printUserCostsToFile(String path){
+    int i=-1;
+    for (Solution aSolutionsList_ : solutionsList_) {
+      i++;
+      String fullpath = path + "USER_COSTS_" + i;
+
+      try {
+        /* Open the file */
+
+        FileOutputStream fos = new FileOutputStream(fullpath, false);
+        OutputStreamWriter osw = new OutputStreamWriter(fos);
+        BufferedWriter bw = new BufferedWriter(osw);
+
+        bw.write(Arrays.toString(aSolutionsList_.getEnergyAllocatedPerUser()));
+        bw.newLine();
+
+        /* Close the file */
+        bw.close();
+      } catch (IOException e) {
+        Configuration.logger_.severe("Error acceding to the file");
+        e.printStackTrace();
+      }
     }
   }
 
