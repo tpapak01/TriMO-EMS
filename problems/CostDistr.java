@@ -158,7 +158,7 @@ public class CostDistr extends Problem {
         //Identify optimistic,pessimistic and LL-desirable solution
         double best_res = Double.MAX_VALUE;
         int optimistic_index = -1;
-        double pessimistic_self = -Double.MAX_VALUE;
+        double pessimistic_res = -Double.MAX_VALUE;
         int pessimistic_index = -1;
         double[] target_desirability = new double[this.lowerLevelProblem.getNumberOfObjectives()];
         target_desirability[0] = this.lowerLevelProblem.getObjectiveDesirability();
@@ -184,8 +184,8 @@ public class CostDistr extends Problem {
                 best_res = result;
                 optimistic_index = s;
             }
-            if (result > pessimistic_self){
-                pessimistic_self = result;
+            if (result > pessimistic_res){
+                pessimistic_res = result;
                 pessimistic_index = s;
             }
 
@@ -300,7 +300,7 @@ public class CostDistr extends Problem {
             chosenlowerLevelSol = bestDesSol;
         } else if (ULObjectiveDesirability == -1.0) {
             // PESSIMISTIC APPROACH
-            solution.setObjective(0, pessimistic_self);
+            solution.setObjective(0, pessimistic_res);
             chosenlowerLevelSol = pessimisticSol;
         } else {
 
