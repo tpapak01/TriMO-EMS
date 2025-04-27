@@ -22,27 +22,31 @@ import jmetal.util.comparators.ObjectiveComparator;
 import jmetal.util.wrapper.XReal;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.Comparator;
 
 
 public class CostDistr extends Problem {
 
 	private static final long serialVersionUID = 1L;
-    private String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data - multi user - bilevel/"; // The path of the files
+    private static String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data - multi user - bilevel/"; // The path of the files
     private static String costsPath = "/Users/emine/IdeaProjects/JMETALHOME/Costs_data/";
-
-    private MOKP_Problem lowerLevelProblem;
-    private String lowerLevelAlgorithmName;
-    private double[] producedRE;
-    private double[] inputCosts = null;
-    private double totalProducedRE;
-    private double ULObjectiveDesirability = 1.0;
-    private boolean fixedTrust = true;
-
-    private XReal costOfBuying ; // capacity of each  knapsack .
 
     private static double best_upper_level_result = Double.MAX_VALUE;
     private static Comparator comparator;
+
+    private static String lowerLevelAlgorithmName;
+    private static double[] producedRE;
+    private static double totalProducedRE;
+    private static double[] inputCosts = null;
+    private static double ULObjectiveDesirability = 1.0;
+    private static boolean fixedTrust = true;
+
+    private MOKP_Problem lowerLevelProblem;
+
+    private XReal costOfBuying ; // capacity of each  knapsack .
+
+    /////////////////////////////////////////////////////////////////////////
 
     public MOKP_Problem getLowerLevelProblem(){
         return lowerLevelProblem;
@@ -69,10 +73,25 @@ public class CostDistr extends Problem {
             this.lowerLimit_[i] = cost.getValue(i);
     }
 
-  public CostDistr(String renewableFileName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmName, String costsName, String dataPath) {
+    public CostDistr(CostDistr problem){
+        this.setMaxmized_(false); // this problem is not to be maximized
+        this.problemName_ = problem.problemName_;
+        this.numberOfVariables_ = problem.numberOfVariables_;
+        this.numberOfObjectives_ = problem.numberOfObjectives_;
+        this.upperLimit_ = problem.upperLimit_;
+        this.lowerLevelProblem = problem.lowerLevelProblem;
+        this.solutionType_ = problem.solutionType_;
+
+        //copy
+        this.lowerLimit_ = Arrays.copyOf(problem.lowerLimit_, problem.lowerLimit_.length);
+        if (problem.costOfBuying != null)
+            this.costOfBuying.setArray(Arrays.copyOf(problem.costOfBuying.getArray(), problem.costOfBuying.getArray().length));
+    }
+
+  public CostDistr(String renewableFileName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmNamm, String costsName, String dataPath) {
 	  this.setMaxmized_(false); // this problem is not to be maximized
 	  this.problemName_ = renewableFileName;
-	  this.lowerLevelAlgorithmName = lowerLevelAlgorithmName;
+	  lowerLevelAlgorithmName = lowerLevelAlgorithmNamm;
       this.numberOfVariables_ = lowerLevelProblem.getNumberOfConstraints();
       this.numberOfObjectives_ = 1;
       this.lowerLimit_ = new double[numberOfVariables_];

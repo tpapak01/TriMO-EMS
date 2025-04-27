@@ -24,6 +24,7 @@
 package jmetal.core;
 
 import jmetal.encodings.variable.Binary;
+import jmetal.metaheuristics.trilevel.UpperLevelCostDistr_Fast;
 import jmetal.util.wrapper.XReal;
 
 import java.io.Serializable;
@@ -33,6 +34,18 @@ import java.util.Arrays;
  * Class representing a solution for a problem.
  */
 public class Solution implements Serializable {
+
+  public UpperLevelCostDistr_Fast ul_wrapper;
+  public UpperLevelCostDistr_Fast getUl_wrapper(){ return ul_wrapper; }
+  public void setUl_wrapper(UpperLevelCostDistr_Fast ul_wrapper){
+    this.ul_wrapper = ul_wrapper;
+  }
+
+  public Thread thread;
+  public Thread getThread(){ return thread; }
+  public void setThread(Thread thread){
+    this.thread = thread;
+  }
 
   private double selfConsumption = -1;
   public double getSelfConsumption(){

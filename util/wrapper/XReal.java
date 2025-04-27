@@ -170,4 +170,16 @@ public class XReal {
 					type_ + "+ invalid") ;		
 		return 0 ;
 	} // size
+
+	public Double[] getArray(){
+		if (type_.getClass() == ArrayRealSolutionType.class)
+			return ((ArrayReal)(solution_.getDecisionVariables()[0])).array_;
+		return null;
+	}
+
+	public void setArray(Double[] array){
+		if (type_.getClass() == ArrayRealSolutionType.class)
+			((ArrayReal)(solution_.getDecisionVariables()[0])).array_ = array;
+	}
+
 } // XReal

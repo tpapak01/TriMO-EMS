@@ -24,6 +24,7 @@ package jmetal.metaheuristics.singleObjective.geneticAlgorithm;
 import jmetal.core.*;
 import jmetal.encodings.variable.ArrayReal;
 import jmetal.metaheuristics.moead.MOEAD;
+import jmetal.metaheuristics.trilevel.UpperLevelCostDistr_Fast;
 import jmetal.problems.EnergyDistr;
 import jmetal.util.EuclideanDist;
 import jmetal.util.JMException;
@@ -150,6 +151,12 @@ public class Fast_EnergyDistr extends Algorithm {
             }
           }
           offspring[o].setUL_Transfer_pop(population.get(min_index).getUL_Transfer_pop());
+
+          UpperLevelCostDistr_Fast ul_wrapper = new UpperLevelCostDistr_Fast(i+1);
+          offspring[o].setUl_wrapper(ul_wrapper);
+          Thread thread = new Thread(ul_wrapper);
+          offspring[o].setThread(thread);
+          thread.start();
         }
 
         // Evaluation of the new individuals
@@ -218,6 +225,12 @@ public class Fast_EnergyDistr extends Algorithm {
     if (problemEnergyDistr.getInputCosts() == null) {
       for (int i = 0; i < populationSize; i++) {
         Solution newSolution = new Solution(problem_, true);
+
+        UpperLevelCostDistr_Fast ul_wrapper = new UpperLevelCostDistr_Fast(i+1);
+        newSolution.setUl_wrapper(ul_wrapper);
+        Thread thread = new Thread(ul_wrapper);
+        newSolution.setThread(thread);
+        thread.start();
 
         problem_.evaluate(newSolution);
         evaluations++;

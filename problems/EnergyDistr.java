@@ -13,6 +13,7 @@ import jmetal.core.Variable;
 import jmetal.encodings.solutionType.ArrayRealSolutionType;
 import jmetal.encodings.variable.Binary;
 import jmetal.metaheuristics.moead.MOEAD;
+import jmetal.metaheuristics.singleObjective.geneticAlgorithm.Fast_CostDistr;
 import jmetal.metaheuristics.trilevel.UpperLevelCostDistr_Fast;
 import jmetal.util.JMException;
 import jmetal.util.Utils;
@@ -28,11 +29,10 @@ import java.util.Comparator;
 public class EnergyDistr extends Problem {
 
 	private static final long serialVersionUID = 1L;
-    private String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data - multi user - bilevel/"; // The path of the files
+    private static String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data - multi user - bilevel/"; // The path of the files
     private static String costsPath = "/Users/emine/IdeaProjects/JMETALHOME/Costs_data/";
-
-    private CostDistr upperLevelProblem;
-    private double[] inputCosts = null;
+    private static double[] producedRE;
+    private static double[] inputCosts = null;
 
   public EnergyDistr(String renewableFileName, CostDistr upperLevelProblem, String costsName, String dataPath) {
       this.numberOfObjectives_ = 1;
@@ -41,8 +41,7 @@ public class EnergyDistr extends Problem {
       this.upperLimit_ = new double[numberOfVariables_];
       for (int i=0; i<upperLimit_.length; i++)
           upperLimit_[i] = 1.0;
-      this.upperLevelProblem = upperLevelProblem;
-
+      this.producedRE = upperLevelProblem.getProducedRE();
 
       if (!dataPath.equals("-")) { problemPath = dataPath; costsPath = dataPath; }
       String fileName = problemPath + this.problemName_ + ".txt";
@@ -72,13 +71,30 @@ public class EnergyDistr extends Problem {
         XReal costOfBuying = new XReal(solution);
 
         try {
-            upperLevelSolutions = UpperLevelCostDistr_Fast.evaluate(costOfBuying, solution);
-        } catch (ClassNotFoundException e){
+            UpperLevelCostDistr_Fast ul_wrapper = solution.getUl_wrapper();
+            Thread thread = solution.getThread();
+            while (ul_wrapper.getGo()){
+                Thread.sleep(100);
+            }
+            ul_wrapper.receiveParams(costOfBuying, solution);
+            ul_wrapper.setGo(true);
+
+            if (ul_wrapper.getPopulation() != null) {
+                upperLevelSolutions = ul_wrapper.getPopulation();
+            } else {
+                while (((Fast_CostDistr) ul_wrapper.getAlg_fast()).getCheckOk() == false) {
+                    Thread.sleep(100);
+                }
+
+                upperLevelSolutions = ((Fast_CostDistr) ul_wrapper.getAlg_fast()).getPopulation();
+            }
+
+            //upperLevelSolutions = ul_wrapper.getPopulation();
+        } catch (ClassNotFoundException | InterruptedException e){
             System.out.println("Exception at LowerLevelMOKP.evaluate: " + e.getMessage());
         }
 
         int u_size = upperLevelSolutions.size();
-        double[] producedRE = upperLevelProblem.getProducedRE();
         //double[] demand = upperLevelProblem.getLowerLevelProblem().getRequestedEnergy();
         Solution chosenUpperLevelSol = upperLevelSolutions.get(0);
         double[] spentEnergy = chosenUpperLevelSol.getSpentEnergy();

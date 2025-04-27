@@ -24,26 +24,40 @@ package jmetal.metaheuristics.singleObjective.geneticAlgorithm;
 import jmetal.core.*;
 import jmetal.encodings.variable.ArrayReal;
 import jmetal.metaheuristics.moead.MOEAD;
+import jmetal.operators.crossover.SBXCrossover;
+import jmetal.operators.mutation.UniformMutation;
+import jmetal.operators.selection.BinaryTournament;
+import jmetal.operators.selection.Selection;
 import jmetal.problems.CostDistr;
 import jmetal.util.EuclideanDist;
 import jmetal.util.JMException;
 import jmetal.util.RankingOnlyFirst;
+import jmetal.util.comparators.ObjectiveComparator;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Comparator;
+import java.util.HashMap;
 
 /** 
  * Class implementing a generational genetic algorithm
  */
 public class Fast_CostDistr extends Algorithm {
 
-  private CostDistr problemCostDistr;
-  private int populationSize;
-  private SolutionSet population;
-  int evaluations;
+  private static int populationSize;
   private static String problemPath = "C:\\Users\\emine\\source\\repos\\SmartHome3\\SmartHome3\\wwwroot\\";
-  SolutionSet initPopSolution_;
+
+  private CostDistr problemCostDistr;
+  private SolutionSet population;
+  public SolutionSet getPopulation(){
+    return population;
+  }
+  private boolean checkOk;
+  public boolean getCheckOk(){
+    return checkOk;
+  }
+  private int evaluations;
+  private SolutionSet initPopSolution_;
 
  /**
   *
@@ -51,6 +65,24 @@ public class Fast_CostDistr extends Algorithm {
   * Create a new GGA instance.
   * @param problem Problem to solve.
   */
+ public Fast_CostDistr(Problem problem, Algorithm algorithm){
+   super(problem);
+   problemCostDistr = (CostDistr) problem;
+
+   this.setInputParameter("populationSize", algorithm.getInputParameter("populationSize"));
+   this.setInputParameter("maxEvaluations", algorithm.getInputParameter("maxEvaluations"));
+
+   this.setInputParameter("dataDirectory",
+           "/Users/emine/IdeaProjects/JMETALHOME/data/MOEAD_parameters/Weight");
+
+   this.setInputParameter("comparator", algorithm.getInputParameter("comparator"));
+
+   /* Add the operators to the algorithm*/
+   this.addOperator("crossover", algorithm.getOperator("crossover"));
+   this.addOperator("mutation", algorithm.getOperator("mutation"));
+   this.addOperator("selection", algorithm.getOperator("selection"));
+ }
+
   public Fast_CostDistr(Problem problem, String dataPath){
     super(problem);
     problemCostDistr = (CostDistr) problem;
@@ -108,6 +140,8 @@ public class Fast_CostDistr extends Algorithm {
     int generation = 0;
 
     while (evaluations < maxEvaluations && converged != 0) {
+
+      checkOk = true;
 
       Solution winner = population.get(0);
       //System.out.println("q: " + winner.getUL_Optimism());
@@ -182,10 +216,14 @@ public class Fast_CostDistr extends Algorithm {
         }
 
       } // for
-      
+
+
       // The offspring population is added to the new current population
       SolutionSet popCombined = population.union(offspringPopulation);
       offspringPopulation.clear();
+
+      checkOk = false;
+
       population.clear();
       popCombined.sort(comparator);
       //TODO add here more than just sorting....
@@ -208,6 +246,8 @@ public class Fast_CostDistr extends Algorithm {
       }
 
     } // while
+
+    checkOk = true;
     
     // Return the population
     SolutionSet resultPopulation = new SolutionSet(populationSize) ;
