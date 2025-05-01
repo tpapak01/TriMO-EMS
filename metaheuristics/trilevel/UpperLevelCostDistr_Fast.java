@@ -32,7 +32,10 @@ public class UpperLevelCostDistr_Fast implements Runnable {
     public Algorithm getAlg_fast(){
         return alg_fast;
     }
-    public CostDistr problemCostDistr;         // The problem to solve
+    private CostDistr problemCostDistr;         // The problem to solve
+    public CostDistr getProblemCostDistr(){
+        return problemCostDistr;
+    }
 
     /**
      * @throws JMException

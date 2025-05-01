@@ -38,49 +38,61 @@ import java.util.Vector;
 public class MOEAD extends Algorithm {
 
   public static boolean JUnits = false;
+
   private MOKP_Problem problemMOKP;
+  int evaluations_;
+  SolutionSet initPopSolution_;
+
   /**
    * Z vector (ideal point)
    */
-  double[] z_;
+  static double[] z_;
   /**
    * Lambda vectors
    */
   //Vector<Vector<Double>> lambda_ ; 
-  double[][] lambda_;
+  static double[][] lambda_;
   public double[][] getLambda_(){
     return lambda_;
   }
-
-  private double[] nadirObjectiveValue;
-  /**
-   * T: neighbour size
-   */
-  int T_;
-  /**
-   * Neighborhood
-   */
-  int[][] neighborhood_;
-  /**
-   * Normalize
-   */
-  boolean normalize_;
-  SolutionSet initPopSolution_;
-  /**
-   * delta: probability that parent solutions are selected from neighbourhood
-   */
-  double delta_;
-  /**
-   * nr: maximal number of solutions replaced by each child solution
-   */
-  int nr_;
-  String functionType_;
-  int evaluations_;
-
-  String dataDirectory_;
-
-  //thalis
+  private static double[] nadirObjectiveValue;
+  static int T_;
+  static int[][] neighborhood_;
+  static boolean normalize_;
+  static double delta_;
+  static int nr_;
+  static String functionType_;
+  static String dataDirectory_;
   private static final Comparator dominance_ = new DominanceComparator();
+
+  public MOEAD(Problem problem, Algorithm algorithm){
+    super(problem);
+    problemMOKP = (MOKP_Problem) problem;
+
+    this.setInputParameter("populationSize", algorithm.getInputParameter("populationSize"));
+    this.setInputParameter("maxEvaluations", algorithm.getInputParameter("maxEvaluations"));
+
+    this.setInputParameter("dataDirectory",
+            "/Users/emine/IdeaProjects/JMETALHOME/data/MOEAD_parameters/Weight");
+
+    this.setInputParameter("T", algorithm.getInputParameter("T"));
+    this.setInputParameter("delta", algorithm.getInputParameter("delta")) ;
+    this.setInputParameter("nr", algorithm.getInputParameter("nr")) ;
+
+    this.setInputParameter("repairAfterCrossoverMutation",algorithm.getInputParameter("repairAfterCrossoverMutation"));
+
+    this.setInputParameter("rpType",algorithm.getInputParameter("rpType"));
+    this.setInputParameter("normalize",algorithm.getInputParameter("normalize"));
+
+    this.setInputParameter("comparator", algorithm.getInputParameter("comparator"));
+    this.setInputParameter("lambdaComparator", algorithm.getInputParameter("lambdaComparator"));
+
+    this.setInputParameter("indicators", algorithm.getInputParameter("indicators")) ;
+
+    /* Add the operators to the algorithm*/
+    this.addOperator("crossover", algorithm.getOperator("crossover"));
+    this.addOperator("mutation", algorithm.getOperator("mutation"));
+  }
 
   /** 
    * Constructor

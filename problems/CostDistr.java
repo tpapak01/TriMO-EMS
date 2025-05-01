@@ -41,10 +41,12 @@ public class CostDistr extends Problem {
     private static double[] inputCosts = null;
     private static double ULObjectiveDesirability = 1.0;
     private static boolean fixedTrust = true;
-
-    private MOKP_Problem lowerLevelProblem;
+    private static MOKP_Problem lowerLevelProblem;
 
     private XReal costOfBuying ; // capacity of each  knapsack .
+    public XReal getCostOfBuying() {
+        return costOfBuying;
+    }
 
     public LowerLevelMOKP_MOEAD ll_wrapper;
     public LowerLevelMOKP_MOEAD getLL_wrapper(){ return ll_wrapper; }
@@ -78,7 +80,6 @@ public class CostDistr extends Problem {
         this.numberOfVariables_ = problem.numberOfVariables_;
         this.numberOfObjectives_ = problem.numberOfObjectives_;
         this.upperLimit_ = problem.upperLimit_;
-        //this.lowerLevelProblem = problem.lowerLevelProblem;
         this.solutionType_ = problem.solutionType_;
 
         //copy

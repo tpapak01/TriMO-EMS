@@ -23,6 +23,7 @@ import jmetal.util.wrapper.XReal;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Comparator;
 
 
@@ -87,6 +88,13 @@ public class EnergyDistr extends Problem {
                 }
 
                 upperLevelSolutions = ((Fast_CostDistr) ul_wrapper.getAlg_fast()).getPopulation();
+
+                System.out.println(
+                        Arrays.toString(ul_wrapper.getProblemCostDistr().getCostOfBuying().getArray())
+                );
+                System.out.println(
+                    Arrays.toString(ul_wrapper.getProblemCostDistr().getLL_wrapper().getProblemMOKP().getCostOfUsage().getArray())
+                );
             }
 
             //upperLevelSolutions = ul_wrapper.getPopulation();

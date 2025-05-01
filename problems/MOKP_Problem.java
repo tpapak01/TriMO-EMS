@@ -23,24 +23,42 @@ import jmetal.util.wrapper.XReal;
 public class MOKP_Problem extends Problem {
 
 	private static final long serialVersionUID = 1L;
-    private String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data - multi user - bilevel/"; // The path of the files
-    private String userPreferencePath = "/Users/emine/IdeaProjects/JMETALHOME/Userpreference_data/"; // The path of the files
+    private static String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data - multi user - bilevel/"; // The path of the files
+    private static String userPreferencePath = "/Users/emine/IdeaProjects/JMETALHOME/Userpreference_data/"; // The path of the files
     public static String fileName; //
     public static String userPreferencefileName; //
-    private int numberOfItems;
-    private int numberOfUsers;
-    private double[][] w; // weight of items
-    private int[] max_shift; //max shifting of items
-    private boolean [][][] pref; // preferences of users: user x time x device
-    private boolean [] pref_vector; // preferences of users: user x time x device
-    private XReal costOfUsage ; // capacity of each  knapsack .
-    private int[] requestedDevicesPerUser;
-    private double[] nadirObjectiveValue;
-    private double objectiveDesirability = 0;
-    private double[] requestedEnergy;
+    private static int numberOfItems;
+    private static int numberOfUsers;
+    private static double[][] w; // weight of items
+    private static int[] max_shift; //max shifting of items
+    private static boolean [][][] pref; // preferences of users: user x time x device
+    private static boolean [] pref_vector; // preferences of users: user x time x device
+    private static int[] requestedDevicesPerUser;
+    private static double[] nadirObjectiveValue;
+    private static double objectiveDesirability = 0;
+    private static double[] requestedEnergy;
+
+    private XReal costOfUsage ; // capacity of each  knapsack
+    public XReal getCostOfUsage() {
+        return costOfUsage;
+    }
 
     public double[] getRequestedEnergy(){
         return requestedEnergy;
+    }
+
+    public MOKP_Problem(MOKP_Problem problem){
+        this.setMaxmized_(false); // this problem is not to be maximized
+        this.problemName_ = problem.problemName_;
+        this.numberOfVariables_ = problem.numberOfVariables_;
+        this.numberOfConstraints_ = problem.numberOfConstraints_;
+        this.numberOfObjectives_ = problem.numberOfObjectives_;
+        this.upperLimit_ = problem.upperLimit_;
+        this.solutionType_ = problem.solutionType_;
+
+        //copy
+        if (problem.costOfUsage != null)
+            this.costOfUsage.setArray(Arrays.copyOf(problem.costOfUsage.getArray(), problem.costOfUsage.getArray().length));
     }
 
   public MOKP_Problem(String problemName, String userPreferenceName, String dataPath) {

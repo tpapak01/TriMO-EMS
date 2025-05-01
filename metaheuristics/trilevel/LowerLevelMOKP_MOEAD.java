@@ -29,7 +29,10 @@ public class LowerLevelMOKP_MOEAD {
     private static String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/HV_Optimal/"; // The path of the files
 
     public Algorithm alg_moead;
-    public MOKP_Problem problemMOKP;
+    private MOKP_Problem problemMOKP;
+    public MOKP_Problem getProblemMOKP(){
+        return problemMOKP;
+    }
 
     public static void initializeAlgorithm(Problem lowerLevelProblem, String dataPath, String paretoFileName) throws SecurityException, IOException {
 
@@ -90,9 +93,7 @@ public class LowerLevelMOKP_MOEAD {
         algorithm.addOperator("crossover",crossover);
         algorithm.addOperator("mutation",mutation);
 
-        //algorithm.setInputParameter("functionType","TCHE1"); // scalar function type
         algorithm.setInputParameter("rpType","Ideal"); // reference point z_ type, Ideal (best) or Nadir (worst)
-        // Ideal by default
         algorithm.setInputParameter("normalize",false);
 
         /* Comparator */
