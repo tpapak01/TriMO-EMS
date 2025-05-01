@@ -16,7 +16,6 @@ import jmetal.core.Solution;
 import jmetal.core.Variable;
 import jmetal.encodings.variable.Binary;
 import jmetal.encodings.variable.MOKP_BinarySolution;
-import jmetal.metaheuristics.bilevel.UpperLevelCostDistr_Fast;
 import jmetal.util.JMException;
 import jmetal.util.wrapper.XReal;
 
