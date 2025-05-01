@@ -98,7 +98,7 @@ public class UpperLevelCostDistr_Fast implements Runnable {
 
     } //main
 
-    public void receiveParams(XReal costOfBuying, Solution solution) throws JMException, SecurityException, ClassNotFoundException {
+    public void receiveParams(XReal costOfBuying, Solution solution) throws JMException, SecurityException {
 
         problemCostDistr.setCostOfBuying(costOfBuying);
         problemCostDistr.setCostLowerLimit(costOfBuying);

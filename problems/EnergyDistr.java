@@ -90,7 +90,7 @@ public class EnergyDistr extends Problem {
             }
 
             //upperLevelSolutions = ul_wrapper.getPopulation();
-        } catch (ClassNotFoundException | InterruptedException e){
+        } catch (InterruptedException e){
             System.out.println("Exception at LowerLevelMOKP.evaluate: " + e.getMessage());
         }
 

@@ -46,11 +46,10 @@ public class CostDistr extends Problem {
 
     private XReal costOfBuying ; // capacity of each  knapsack .
 
-    /////////////////////////////////////////////////////////////////////////
+    public LowerLevelMOKP_MOEAD ll_wrapper;
+    public LowerLevelMOKP_MOEAD getLL_wrapper(){ return ll_wrapper; }
 
-    public MOKP_Problem getLowerLevelProblem(){
-        return lowerLevelProblem;
-    }
+    /////////////////////////////////////////////////////////////////////////
 
     public double[] getProducedRE(){
         return producedRE;
@@ -79,13 +78,15 @@ public class CostDistr extends Problem {
         this.numberOfVariables_ = problem.numberOfVariables_;
         this.numberOfObjectives_ = problem.numberOfObjectives_;
         this.upperLimit_ = problem.upperLimit_;
-        this.lowerLevelProblem = problem.lowerLevelProblem;
+        //this.lowerLevelProblem = problem.lowerLevelProblem;
         this.solutionType_ = problem.solutionType_;
 
         //copy
         this.lowerLimit_ = Arrays.copyOf(problem.lowerLimit_, problem.lowerLimit_.length);
         if (problem.costOfBuying != null)
             this.costOfBuying.setArray(Arrays.copyOf(problem.costOfBuying.getArray(), problem.costOfBuying.getArray().length));
+
+        this.ll_wrapper = new LowerLevelMOKP_MOEAD();
     }
 
   public CostDistr(String renewableFileName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmNamm, String costsName, String dataPath) {
@@ -165,12 +166,14 @@ public class CostDistr extends Problem {
         SolutionSet lowerLevelSolutions = null;
         XReal costs = new XReal(solution);
 
+        LowerLevelMOKP_MOEAD ll_wrapper = this.getLL_wrapper();
+        ll_wrapper.receiveParams(costs, solution);
         try {
-            if (this.lowerLevelAlgorithmName.equals("MOEAD"))
-                lowerLevelSolutions = LowerLevelMOKP_MOEAD.evaluate(costs, solution);
-        } catch (ClassNotFoundException e){
-            System.out.println("Exception at LowerLevelMOKP.evaluate: " + e.getMessage());
+            lowerLevelSolutions = ll_wrapper.execute();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
+
 
         int lsize = lowerLevelSolutions.size();
 
