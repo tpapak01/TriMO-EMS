@@ -251,7 +251,8 @@ public class Fast_CostDistr extends Algorithm {
     
     // Return the population
     SolutionSet resultPopulation = new SolutionSet(populationSize) ;
-    for (int i = 0; i < (populationSize * 3 / 4); i++) {
+    //for (int i = 0; i < (populationSize * 3 / 4); i++) {
+    for (int i = 0; i < populationSize; i++) {
       resultPopulation.add(population.get(i)) ;
     }
     

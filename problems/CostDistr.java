@@ -81,11 +81,12 @@ public class CostDistr extends Problem {
         this.numberOfObjectives_ = problem.numberOfObjectives_;
         this.upperLimit_ = problem.upperLimit_;
         this.solutionType_ = problem.solutionType_;
+        this.lowerLimit_ = problem.lowerLimit_;
 
         //copy
-        this.lowerLimit_ = Arrays.copyOf(problem.lowerLimit_, problem.lowerLimit_.length);
-        if (problem.costOfBuying != null)
-            this.costOfBuying.setArray(Arrays.copyOf(problem.costOfBuying.getArray(), problem.costOfBuying.getArray().length));
+        //this.lowerLimit_ = Arrays.copyOf(problem.lowerLimit_, problem.lowerLimit_.length);
+        //if (problem.costOfBuying != null)
+        //    this.costOfBuying.setArray(Arrays.copyOf(problem.costOfBuying.getArray(), problem.costOfBuying.getArray().length));
 
         this.ll_wrapper = new LowerLevelMOKP_MOEAD();
     }

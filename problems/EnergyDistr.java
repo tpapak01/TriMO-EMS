@@ -77,7 +77,7 @@ public class EnergyDistr extends Problem {
             while (ul_wrapper.getGo()){
                 Thread.sleep(100);
             }
-            ul_wrapper.receiveParams(costOfBuying, solution);
+
             ul_wrapper.setGo(true);
 
             if (ul_wrapper.getPopulation() != null) {
@@ -141,7 +141,10 @@ public class EnergyDistr extends Problem {
         //solution.setDeviceToPreferenceMapping(chosenUpperLevelSol.getDeviceToPreferenceMapping());
         //solution.setReverseDeviceToPreferenceMapping(chosenUpperLevelSol.getReverseDeviceToPreferenceMapping());
 
-        SolutionSet transferPop = upperLevelSolutions;
+        SolutionSet transferPop = new SolutionSet(u_size * 3 / 4);
+        for (int i = 0; i < transferPop.getCapacity(); i++) {
+            transferPop.add(upperLevelSolutions.get(i)) ;
+        }
         solution.setUL_Transfer_pop(transferPop);
 
 

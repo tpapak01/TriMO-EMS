@@ -101,18 +101,17 @@ public class UpperLevelCostDistr_Fast implements Runnable {
 
     } //main
 
-    public void receiveParams(XReal costOfBuying, Solution solution) throws JMException, SecurityException {
-
+    public UpperLevelCostDistr_Fast(int id, XReal costOfBuying, Solution solution) throws JMException {
+        this.id = id;
+        problemCostDistr = new CostDistr(problem);
         problemCostDistr.setCostOfBuying(costOfBuying);
         problemCostDistr.setCostLowerLimit(costOfBuying);
+
+        alg_fast = new Fast_CostDistr(problemCostDistr, algorithm);
         if (solution.isMarked())
             alg_fast.setInputParameter("initPopSolution", null);
         else alg_fast.setInputParameter("initPopSolution", solution.getUL_Transfer_pop());
 
-    }
-
-    public UpperLevelCostDistr_Fast(int id){
-        this.id = id;
     }
 
     private int id;
@@ -131,8 +130,7 @@ public class UpperLevelCostDistr_Fast implements Runnable {
     @Override
     public void run() {
 
-        problemCostDistr = new CostDistr(problem);
-        alg_fast = new Fast_CostDistr(problemCostDistr, algorithm);
+        System.out.println("Starting now");
 
         while (true){
 
@@ -143,7 +141,6 @@ public class UpperLevelCostDistr_Fast implements Runnable {
                     e.printStackTrace();
                 }
             }
-            System.out.println("Starting now");
             population = null;
 
             /* Execute the Algorithm */
