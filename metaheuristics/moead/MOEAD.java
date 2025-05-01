@@ -37,6 +37,7 @@ import java.util.Vector;
 
 public class MOEAD extends Algorithm {
 
+  public static boolean JUnits = false;
   private MOKP_Problem problemMOKP;
   /**
    * Z vector (ideal point)
@@ -325,6 +326,11 @@ public class MOEAD extends Algorithm {
     //register Spent Energy of top solutions - used for both algorithm and Platform
     for (int i = 0; i < extPopulation.size(); i++) {
       problemMOKP.calculateSpentEnergy(extPopulation.get(i));
+    }
+    if (JUnits){
+      for (int i = 0; i < extPopulation.size(); i++) {
+        problemMOKP.JUnits(extPopulation.get(i));
+      }
     }
 
     //print final Pareto Front to file, and calculate/print hypervolume and spread (Delta)

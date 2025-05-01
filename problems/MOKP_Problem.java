@@ -16,6 +16,7 @@ import jmetal.core.Solution;
 import jmetal.core.Variable;
 import jmetal.encodings.variable.Binary;
 import jmetal.encodings.variable.MOKP_BinarySolution;
+import jmetal.metaheuristics.bilevel.UpperLevelCostDistr_Fast;
 import jmetal.util.JMException;
 import jmetal.util.wrapper.XReal;
 
@@ -274,6 +275,7 @@ public class MOKP_Problem extends Problem {
 
         solution.setDeviceToPreferenceMapping(covered);
         solution.setReverseDeviceToPreferenceMapping(coveredReverse);
+
     }
 
     @Override
@@ -548,6 +550,50 @@ public class MOKP_Problem extends Problem {
         } //for u
 
         solution.setSpentEnergy(spentEnergy);
+    }
+
+    public void JUnits(Solution solution){
+        int[] covered = solution.getDeviceToPreferenceMapping();
+        Variable[] vars = solution.getDecisionVariables();
+        Binary bin = (Binary) vars[0];
+
+        // CHECK 1: EACH PREFERENCE MAPPING OCCUPIES 1 TIMESLOT MAX
+        for (int y = 0; y < numberOfItems; y++) { // 6, per appliance
+            int[] array = new int[numberOfConstraints_];
+            int count = 0;
+            for (int x = y; x < numberOfItems*numberOfConstraints_; x = x + numberOfItems) { // 24x6, per timeslot
+                int value = covered[x];
+                if (value != -1) {
+                    // check if value has been encountered at previous timeslot
+                    for (int k = 0; k < count; k++) {
+                        if (array[k] == value) {
+                            int a = 2; //problem
+                        }
+                    }
+                    // all good, assign mapping to this timeslot
+                    array[count] = covered[x];
+                    count++;
+                }
+            }
+        }
+
+        // CHECK 2: EACH PREFERENCE MAPPING CORRESPONDS TO AN ACTUAL PREFERENCE
+        for (int x=0; x<covered.length; x++){
+            if (covered[x] != -1){
+                if (!pref_vector[covered[x]]){
+                    int a = 2; // problem
+                }
+            }
+        }
+
+        // CHECK 3: EACH PREFERENCE MAPPING HAS AN OPERATIONAL DEVICE
+        for (int x=0; x<covered.length; x++){
+            if (covered[x] != -1){
+                if (!bin.getIth(x)){
+                    int a = 2; // problem
+                }
+            }
+        }
     }
 
 }

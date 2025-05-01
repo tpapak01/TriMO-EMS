@@ -28,6 +28,7 @@ import jmetal.encodings.solutionType.BinarySolutionType;
 import jmetal.encodings.solutionType.IntSolutionType;
 import jmetal.encodings.variable.Binary;
 import jmetal.encodings.variable.MOKP_BinarySolution;
+import jmetal.metaheuristics.bilevel.UpperLevelCostDistr_Fast;
 import jmetal.problems.MOKP_Problem;
 import jmetal.util.Configuration;
 import jmetal.util.JMException;
