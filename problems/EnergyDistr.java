@@ -67,42 +67,33 @@ public class EnergyDistr extends Problem {
         SolutionSet upperLevelSolutions = null;
         XReal costOfBuying = new XReal(solution);
 
-        try {
-            UpperLevelCostDistr_Fast ul_wrapper = solution.getUl_wrapper();
-            Thread thread = solution.getThread();
+        UpperLevelCostDistr_Fast ul_wrapper = solution.getUl_wrapper();
+        Thread thread = solution.getThread();
 
-            if (ul_wrapper.getPopulation() != null) {
-                upperLevelSolutions = ul_wrapper.getPopulation();
-            } else {
-                while (((Fast_CostDistr) ul_wrapper.getAlg_fast()).getCheckOk() == false) {
-                    Thread.sleep(100);
-                }
-
-                upperLevelSolutions = ((Fast_CostDistr) ul_wrapper.getAlg_fast()).getPopulation();
-            }
-
-            int id = ul_wrapper.getId();
-            System.out.println(id + ":");
-            CostDistr problemCostDistr = ul_wrapper.getProblemCostDistr();
-            System.out.println(
-                    Arrays.toString(problemCostDistr.getCostOfBuying().getArray())
-            );
-            System.out.println(
-                    Arrays.toString(problemCostDistr.getLL_wrapper().getProblemMOKP().getCostOfUsage().getArray())
-            );
-            System.out.println("TL OBJ: " + upperLevelSolutions.get(0).getUpperLevelObj());
-            System.out.println("UL OBJ (Profit): " + upperLevelSolutions.get(0).getObjective(0));
-
-
-            //upperLevelSolutions = ul_wrapper.getPopulation();
-        } catch (InterruptedException e){
-            System.out.println("Exception at LowerLevelMOKP.evaluate: " + e.getMessage());
+        if (ul_wrapper.getPopulation() != null) {
+            upperLevelSolutions = ul_wrapper.getPopulation();
+        } else {
+            Fast_CostDistr alg_fast = (Fast_CostDistr) ul_wrapper.getAlg_fast();
+            upperLevelSolutions = alg_fast.getPopulation();
         }
+
+        Solution best = upperLevelSolutions.get(0);
+
+        int id = ul_wrapper.getId();
+        System.out.println(id + ":");
+        CostDistr problemCostDistr = ul_wrapper.getProblemCostDistr();
+        System.out.println(
+                Arrays.toString(problemCostDistr.getCostOfBuying().getArray())
+        );
+        System.out.println(
+                Arrays.toString(problemCostDistr.getLL_wrapper().getProblemMOKP().getCostOfUsage().getArray())
+        );
+        System.out.println("TL OBJ: " + best.getUpperLevelObj());
+        System.out.println("UL OBJ (Profit): " + best.getObjective(0));
 
         int u_size = upperLevelSolutions.size();
         //double[] demand = upperLevelProblem.getLowerLevelProblem().getRequestedEnergy();
-        Solution chosenUpperLevelSol = upperLevelSolutions.get(0);
-        double[] spentEnergy = chosenUpperLevelSol.getSpentEnergy();
+        double[] spentEnergy = best.getSpentEnergy();
         //double[] selfConsDeviation = chosenUpperLevelSol.getEnergyDeviationFromProducedArray();
 
         //for (int i=0; i<u_size; i++){
@@ -130,12 +121,12 @@ public class EnergyDistr extends Problem {
 
         solution.setObjective(0, result);
 
-        Variable[] vars = chosenUpperLevelSol.getDecisionVariables();
+        Variable[] vars = best.getDecisionVariables();
         solution.setUpperLevelVars(vars[0]);
-        solution.setUpperLevelObj(chosenUpperLevelSol.getObjective(0));
+        solution.setUpperLevelObj(best.getObjective(0));
 
-        solution.setLowerLevelVars(chosenUpperLevelSol.getLowerLevelVars());
-        solution.setLowerLevelObj(chosenUpperLevelSol.getLowerLevelObj());
+        solution.setLowerLevelVars(best.getLowerLevelVars());
+        solution.setLowerLevelObj(best.getLowerLevelObj());
         //solution.setDeviceToPreferenceMapping(chosenUpperLevelSol.getDeviceToPreferenceMapping());
         //solution.setReverseDeviceToPreferenceMapping(chosenUpperLevelSol.getReverseDeviceToPreferenceMapping());
 

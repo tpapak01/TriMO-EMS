@@ -50,14 +50,21 @@ public class Fast_CostDistr extends Algorithm {
   private CostDistr problemCostDistr;
   private SolutionSet population;
   public SolutionSet getPopulation(){
+    SolutionSet pop = new SolutionSet(populationSize);
+    for (int x=0; x<populationSize; x++){
+      pop.add(population.get(x));
+    }
+    pop.sort(comparator);
     return population;
-  }
-  private boolean checkOk;
-  public boolean getCheckOk(){
-    return checkOk;
   }
   private int evaluations;
   private SolutionSet initPopSolution_;
+  private Comparator comparator;
+  private final Object lock = new Object();
+  public Object getLock(){
+    return lock;
+  }
+  private int id;
 
  /**
   *
@@ -65,8 +72,9 @@ public class Fast_CostDistr extends Algorithm {
   * Create a new GGA instance.
   * @param problem Problem to solve.
   */
- public Fast_CostDistr(Problem problem, Algorithm algorithm){
+ public Fast_CostDistr(Problem problem, Algorithm algorithm, int idd){
    super(problem);
+   id = idd;
    problemCostDistr = (CostDistr) problem;
 
    this.setInputParameter("populationSize", algorithm.getInputParameter("populationSize"));
@@ -97,13 +105,9 @@ public class Fast_CostDistr extends Algorithm {
 
     int maxEvaluations ;
 
-
-
     Operator    mutationOperator  ;
     Operator    crossoverOperator ;
     Operator    selectionOperator ;
-    
-    Comparator  comparator        ;
     
     // Read the params
     populationSize = ((Integer)this.getInputParameter("populationSize")).intValue();
@@ -129,6 +133,10 @@ public class Fast_CostDistr extends Algorithm {
     // Sort population
     population.sort(comparator) ;
 
+    synchronized (lock) {
+      lock.notify();
+    }
+
     //Convergence
     int generations_left_for_convergence = 5;
     int converged = generations_left_for_convergence;
@@ -140,8 +148,6 @@ public class Fast_CostDistr extends Algorithm {
     int generation = 0;
 
     while (evaluations < maxEvaluations && converged != 0) {
-
-      checkOk = true;
 
       Solution winner = population.get(0);
       //System.out.println("q: " + winner.getUL_Optimism());
@@ -221,13 +227,13 @@ public class Fast_CostDistr extends Algorithm {
       SolutionSet popCombined = population.union(offspringPopulation);
       offspringPopulation.clear();
 
-      checkOk = false;
-
-      population.clear();
       popCombined.sort(comparator);
-      for (int i = 0; i < populationSize; i++) {
-        population.add(popCombined.get(i)) ;
+      for (int i = popCombined.size()-1; i >= populationSize; i--) {
+        popCombined.remove(i);
       }
+      SolutionSet old = population;
+      population = popCombined;
+      old.clear();
 
       if (stop == 1){
         break;
@@ -244,8 +250,6 @@ public class Fast_CostDistr extends Algorithm {
       }
 
     } // while
-
-    checkOk = true;
     
     // Return the population
     SolutionSet resultPopulation = new SolutionSet(populationSize) ;

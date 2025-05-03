@@ -107,7 +107,7 @@ public class UpperLevelCostDistr_Fast implements Runnable {
         problemCostDistr.setCostOfBuying(costOfBuying);
         problemCostDistr.setCostLowerLimit(costOfBuying);
 
-        alg_fast = new Fast_CostDistr(problemCostDistr, algorithm);
+        alg_fast = new Fast_CostDistr(problemCostDistr, algorithm, id);
         if (solution.isMarked())
             alg_fast.setInputParameter("initPopSolution", null);
         else alg_fast.setInputParameter("initPopSolution", solution.getUL_Transfer_pop());

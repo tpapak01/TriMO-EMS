@@ -161,6 +161,15 @@ public class Fast_EnergyDistr extends Algorithm {
           Thread thread = new Thread(ul_wrapper);
           offspring[o].setThread(thread);
           thread.start();
+
+          Object lock = ((Fast_CostDistr) ul_wrapper.getAlg_fast()).getLock();
+          synchronized (lock) {
+            try {
+              lock.wait(); // Wait indefinitely
+            } catch (InterruptedException e) {
+              System.out.println("Waiter thread: Why did someone interrupt me?");
+            }
+          }
         }
 
         // Evaluation of the new individuals
@@ -178,19 +187,26 @@ public class Fast_EnergyDistr extends Algorithm {
         }
 
       } // for
-
-      // reevaluate population to see progress made
-      for (int i=0; i<populationSize; i++){
-        problem_.evaluate(population.get(i));
-      }
       
       // The offspring population is added to the new current population
       SolutionSet popCombined = population.union(offspringPopulation);
       offspringPopulation.clear();
       population.clear();
+
+      // reevaluate combined population to see progress made
+      for (int i=0; i<popCombined.size() ; i++){
+        problem_.evaluate(popCombined.get(i));
+      }
+
+      // sort based on objective and pick the 100 best
       popCombined.sort(comparator);
       for (int i = 0; i < populationSize; i++) {
-        population.add(popCombined.get(i)) ;
+        population.add(popCombined.get(i));
+      }
+      // terminate the remaining of the threads
+      for (int i = populationSize; i < popCombined.size(); i++) {
+        Thread toKill = popCombined.get(i).getThread();
+        toKill.stop();
       }
 
       if (stop == 1){
@@ -241,6 +257,15 @@ public class Fast_EnergyDistr extends Algorithm {
         Thread thread = new Thread(ul_wrapper);
         newSolution.setThread(thread);
         thread.start();
+
+        Object lock = ((Fast_CostDistr) ul_wrapper.getAlg_fast()).getLock();
+        synchronized (lock) {
+          try {
+            lock.wait(); // Wait indefinitely
+          } catch (InterruptedException e) {
+            System.out.println("Waiter thread: Why did someone interrupt me?");
+          }
+        }
 
         problem_.evaluate(newSolution);
         evaluations++;
