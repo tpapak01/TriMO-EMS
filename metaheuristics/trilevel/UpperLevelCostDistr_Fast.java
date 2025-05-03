@@ -115,12 +115,8 @@ public class UpperLevelCostDistr_Fast implements Runnable {
     }
 
     private int id;
-    private static boolean go;
-    public boolean getGo(){
-        return go;
-    }
-    public void setGo(boolean go){
-        this.go = go;
+    public int getId(){
+        return id;
     }
     public SolutionSet population;
     public SolutionSet getPopulation(){
@@ -130,17 +126,10 @@ public class UpperLevelCostDistr_Fast implements Runnable {
     @Override
     public void run() {
 
-        System.out.println("Starting now");
+        System.out.println("Starting now: " + id);
 
         while (true){
 
-            while (!go){
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
             population = null;
 
             /* Execute the Algorithm */
@@ -152,7 +141,6 @@ public class UpperLevelCostDistr_Fast implements Runnable {
                 e.printStackTrace();
             }
 
-            setGo(false);
             break;
 
         }

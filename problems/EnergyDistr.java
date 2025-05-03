@@ -31,35 +31,31 @@ public class EnergyDistr extends Problem {
 
 	private static final long serialVersionUID = 1L;
     private static String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data - multi user - bilevel/"; // The path of the files
-    private static String costsPath = "/Users/emine/IdeaProjects/JMETALHOME/Costs_data/";
     private static double[] producedRE;
     private static double[] inputCosts = null;
 
-  public EnergyDistr(String renewableFileName, CostDistr upperLevelProblem, String costsName, String dataPath) {
+    private static double[] lowerLimitStatic;
+    private static double[] upperLimitStatic;
+
+  public EnergyDistr(CostDistr upperLevelProblem, String dataPath) {
       this.numberOfObjectives_ = 1;
       this.numberOfVariables_ = upperLevelProblem.getNumberOfVariables();
       this.lowerLimit_ = new double[numberOfVariables_];
+      lowerLimitStatic = new double[numberOfVariables_];
       this.upperLimit_ = new double[numberOfVariables_];
-      for (int i=0; i<upperLimit_.length; i++)
+      upperLimitStatic = new double[numberOfVariables_];
+      for (int i=0; i<upperLimit_.length; i++) {
           upperLimit_[i] = 1.0;
-      this.producedRE = upperLevelProblem.getProducedRE();
+          upperLimitStatic[i] = 1.0;
+      }
+      producedRE = CostDistr.getProducedRE();
 
-      if (!dataPath.equals("-")) { problemPath = dataPath; costsPath = dataPath; }
+      if (!dataPath.equals("-")) { problemPath = dataPath; }
       String fileName = problemPath + this.problemName_ + ".txt";
       System.out.println(fileName);
-      String costsFileName = "-";
-      if (!costsName.equals("-")) costsFileName = costsPath + costsName + ".txt";
 
-      //fills up numberOfItems, p, w, sackCapacity
-      //simply read the input textfile
-      this.loadProblem(fileName, costsFileName);
       this.solutionType_ = new ArrayRealSolutionType(this);
-
-  }  // 
-
-  public void loadProblem(String renewableFileName, String costsFileName) {
-
-  }
+  }  //
 
     public double[] getInputCosts(){
         return inputCosts;
@@ -74,11 +70,6 @@ public class EnergyDistr extends Problem {
         try {
             UpperLevelCostDistr_Fast ul_wrapper = solution.getUl_wrapper();
             Thread thread = solution.getThread();
-            while (ul_wrapper.getGo()){
-                Thread.sleep(100);
-            }
-
-            ul_wrapper.setGo(true);
 
             if (ul_wrapper.getPopulation() != null) {
                 upperLevelSolutions = ul_wrapper.getPopulation();
@@ -88,14 +79,20 @@ public class EnergyDistr extends Problem {
                 }
 
                 upperLevelSolutions = ((Fast_CostDistr) ul_wrapper.getAlg_fast()).getPopulation();
-
-                System.out.println(
-                        Arrays.toString(ul_wrapper.getProblemCostDistr().getCostOfBuying().getArray())
-                );
-                System.out.println(
-                    Arrays.toString(ul_wrapper.getProblemCostDistr().getLL_wrapper().getProblemMOKP().getCostOfUsage().getArray())
-                );
             }
+
+            int id = ul_wrapper.getId();
+            System.out.println(id + ":");
+            CostDistr problemCostDistr = ul_wrapper.getProblemCostDistr();
+            System.out.println(
+                    Arrays.toString(problemCostDistr.getCostOfBuying().getArray())
+            );
+            System.out.println(
+                    Arrays.toString(problemCostDistr.getLL_wrapper().getProblemMOKP().getCostOfUsage().getArray())
+            );
+            System.out.println("TL OBJ: " + upperLevelSolutions.get(0).getUpperLevelObj());
+            System.out.println("UL OBJ (Profit): " + upperLevelSolutions.get(0).getObjective(0));
+
 
             //upperLevelSolutions = ul_wrapper.getPopulation();
         } catch (InterruptedException e){
@@ -129,6 +126,7 @@ public class EnergyDistr extends Problem {
         double result = topLevel_evaluate_objective(producedRE, spentEnergy, costOfBuying);
         double selfDeviation = calculateSelfConsDeviation(producedRE, spentEnergy);
         solution.setSelfConsumption(selfDeviation);
+        System.out.println("SELF: " + selfDeviation);
 
         solution.setObjective(0, result);
 
@@ -160,7 +158,7 @@ public class EnergyDistr extends Problem {
         return sum;
     }
 
-    private double topLevel_evaluate_objective(double[] producedRE, double[] spentEnergy, XReal costOfBuying) throws JMException {
+    public static double topLevel_evaluate_objective(double[] producedRE, double[] spentEnergy, XReal costOfBuying) throws JMException {
 
         double sum = 0;
 
@@ -179,8 +177,8 @@ public class EnergyDistr extends Problem {
             double abs_difference = Math.abs(difference);
             double cost = costOfBuying.getValue(i);
             if (difference < 0)
-                sum += abs_difference * (1.0 + (cost - lowerLimit_[i]));
-            else sum += abs_difference * (1.0 + (upperLimit_[i] - cost));
+                sum += abs_difference * (1.0 + (cost - lowerLimitStatic[i]));
+            else sum += abs_difference * (1.0 + (upperLimitStatic[i] - cost));
         }
 
         return sum;

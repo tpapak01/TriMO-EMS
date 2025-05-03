@@ -79,7 +79,7 @@ public class TopLevelEnergyDistr {
         UpperLevelCostDistr_Fast.initializeAlgorithm(upperLevelProblem, lowerLevelProblem, dataPath, paretoFileName);
 
         //thalis
-        problem = new EnergyDistr(renewableName, upperLevelProblem, costsName, dataPath);
+        problem = new EnergyDistr(upperLevelProblem, dataPath);
         //thalis comment
         //int bits = 512 ;
         //problem = new OneMax("Binary", bits);
@@ -96,7 +96,7 @@ public class TopLevelEnergyDistr {
         /* Algorithm parameters*/
         //algorithm.setInputParameter("populationSize",4); //must be even number
         //algorithm.setInputParameter("maxEvaluations", 2500);
-        algorithm.setInputParameter("populationSize", 2); //must be even number
+        algorithm.setInputParameter("populationSize", 10); //must be even number
         if (costsName.equals("-"))
             algorithm.setInputParameter("maxEvaluations", 1000000);
         else

@@ -84,7 +84,6 @@ public class MOEAD extends Algorithm {
     this.setInputParameter("rpType",algorithm.getInputParameter("rpType"));
     this.setInputParameter("normalize",algorithm.getInputParameter("normalize"));
 
-    this.setInputParameter("comparator", algorithm.getInputParameter("comparator"));
     this.setInputParameter("lambdaComparator", algorithm.getInputParameter("lambdaComparator"));
 
     this.setInputParameter("indicators", algorithm.getInputParameter("indicators")) ;
@@ -146,7 +145,6 @@ public class MOEAD extends Algorithm {
     //thalis
     String rpType = this.getInputParameter("rpType").toString();
     Comparator  lambdaComparator;
-    Comparator  comparator;
 
     dataDirectory_ = this.getInputParameter("dataDirectory").toString();
     //System.out.println("POPSIZE: "+ populationSize_) ;
@@ -169,12 +167,10 @@ public class MOEAD extends Algorithm {
     neighborhood_ = new int[populationSize][T_];
 
     z_ = new double[problem_.getNumberOfObjectives()];
-    //lambda_ = new Vector(problem_.getNumberOfObjectives()) ;
     lambda_ = new double[populationSize][problem_.getNumberOfObjectives()];
 
     //Read the operators
     lambdaComparator = (Comparator) this.getInputParameter("lambdaComparator");
-    comparator = (Comparator) this.getInputParameter("comparator");
     crossover = operators_.get("crossover"); // default: DE crossover
     mutation = operators_.get("mutation");  // default: polynomial mutation
 

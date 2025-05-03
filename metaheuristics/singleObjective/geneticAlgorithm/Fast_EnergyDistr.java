@@ -99,7 +99,7 @@ public class Fast_EnergyDistr extends Algorithm {
     int generations_left_for_convergence = 10;
     int converged = generations_left_for_convergence;
     double best_solution = population.get(0).getObjective(0);
-    System.out.println("BEST SOL: " + best_solution);
+    System.out.println("Energy: BEST SOL at init: " + best_solution);
 
     int iterations = populationSize/2;
     int stop = 0;
@@ -154,7 +154,8 @@ public class Fast_EnergyDistr extends Algorithm {
           offspring[o].setUL_Transfer_pop(population.get(min_index).getUL_Transfer_pop());
 
           XReal costOfBuying = new XReal(offspring[o]);
-          UpperLevelCostDistr_Fast ul_wrapper = new UpperLevelCostDistr_Fast(i+1, costOfBuying, offspring[o]);
+          int id = (generation*populationSize)+(i*2)+o + 1;
+          UpperLevelCostDistr_Fast ul_wrapper = new UpperLevelCostDistr_Fast(id, costOfBuying, offspring[o]);
 
           offspring[o].setUl_wrapper(ul_wrapper);
           Thread thread = new Thread(ul_wrapper);
@@ -177,13 +178,17 @@ public class Fast_EnergyDistr extends Algorithm {
         }
 
       } // for
+
+      //TODO: before union, reevaluate population to see progress made
+      for (int i=0; i<populationSize; i++){
+        problem_.evaluate(population.get(i));
+      }
       
       // The offspring population is added to the new current population
       SolutionSet popCombined = population.union(offspringPopulation);
       offspringPopulation.clear();
       population.clear();
       popCombined.sort(comparator);
-      //TODO add here more than just sorting....
       for (int i = 0; i < populationSize; i++) {
         population.add(popCombined.get(i)) ;
       }
@@ -198,7 +203,7 @@ public class Fast_EnergyDistr extends Algorithm {
         converged--;
       } else {
         best_solution = winner.getObjective(0);
-        System.out.println("BEST SOL at " + evaluations + ": " + best_solution);
+        System.out.println("Energy: BEST SOL at " + evaluations + ": " + best_solution);
         converged = generations_left_for_convergence;
       }
 

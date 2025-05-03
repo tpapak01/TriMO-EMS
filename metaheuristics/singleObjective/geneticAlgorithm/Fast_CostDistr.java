@@ -133,7 +133,7 @@ public class Fast_CostDistr extends Algorithm {
     int generations_left_for_convergence = 5;
     int converged = generations_left_for_convergence;
     double best_solution = population.get(0).getObjective(0);
-    System.out.println("BEST SOL: " + best_solution);
+    //System.out.println("BEST SOL: " + best_solution);
 
     int iterations = populationSize/2;
     int stop = 0;
@@ -217,7 +217,6 @@ public class Fast_CostDistr extends Algorithm {
 
       } // for
 
-
       // The offspring population is added to the new current population
       SolutionSet popCombined = population.union(offspringPopulation);
       offspringPopulation.clear();
@@ -226,7 +225,6 @@ public class Fast_CostDistr extends Algorithm {
 
       population.clear();
       popCombined.sort(comparator);
-      //TODO add here more than just sorting....
       for (int i = 0; i < populationSize; i++) {
         population.add(popCombined.get(i)) ;
       }
@@ -241,7 +239,7 @@ public class Fast_CostDistr extends Algorithm {
         converged--;
       } else {
         best_solution = winner.getObjective(0);
-        System.out.println("BEST SOL at " + evaluations + ": " + best_solution);
+        //System.out.println("BEST SOL at " + evaluations + ": " + best_solution);
         converged = generations_left_for_convergence;
       }
 

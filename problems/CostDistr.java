@@ -53,15 +53,15 @@ public class CostDistr extends Problem {
 
     /////////////////////////////////////////////////////////////////////////
 
-    public double[] getProducedRE(){
+    public static double[] getProducedRE(){
         return producedRE;
     }
 
-    public double[] getInputCosts(){
+    public static double[] getInputCosts(){
         return inputCosts;
     }
 
-    public double getTotalProducedRE(){
+    public static double getTotalProducedRE(){
         return totalProducedRE;
     }
 
@@ -201,15 +201,16 @@ public class CostDistr extends Problem {
             // do upper-level evaluation = finding deviation from available RE
             double[] energySpent = lowerLevelSol.getSpentEnergy();
             //XReal costOfBuying = this.costOfBuying;
-            double result = upperLevel_evaluate_profit(energySpent, costs);
+            //double result = upperLevel_evaluate_profit(energySpent, costs);
             //double result = upperLevel_evaluate_XOR_distance_plus_weight(energySpent, costs);
-            lowerLevelSol.setUpperLevelObj(result);
-            if (result < best_res){
-                best_res = result;
+            double specialResult =  EnergyDistr.topLevel_evaluate_objective(producedRE, energySpent, costOfBuying);
+            lowerLevelSol.setUpperLevelObj(specialResult);
+            if (specialResult < best_res){
+                best_res = specialResult;
                 optimistic_index = s;
             }
-            if (result > pessimistic_res){
-                pessimistic_res = result;
+            if (specialResult > pessimistic_res){
+                pessimistic_res = specialResult;
                 pessimistic_index = s;
             }
 
@@ -316,8 +317,10 @@ public class CostDistr extends Problem {
         Solution chosenlowerLevelSol = null;
         if (ULObjectiveDesirability == 1.0) {
             // OPTIMISTIC APPROACH
-            solution.setObjective(0, best_res);
             chosenlowerLevelSol = optimisticSol;
+
+            double[] energySpent = chosenlowerLevelSol.getSpentEnergy();
+            solution.setObjective(0, upperLevel_evaluate_profit(energySpent, costs));
         } else if (ULObjectiveDesirability == 0.0){
             // RESIDENT-AWARE APPROACH
             solution.setObjective(0, worst_res);
@@ -530,11 +533,12 @@ public class CostDistr extends Problem {
         solution.setLL_Transfer_pop(transferPareto);
         //platform only
         //solution.setLL_Pareto_pop(lowerLevelSolutions);
+        solution.setUpperLevelObj(chosenlowerLevelSol.getUpperLevelObj());
 
         if (best_upper_level_result > best_res) {
             best_upper_level_result = best_res;
 
-            System.out.println(best_upper_level_result);
+            //System.out.println(best_upper_level_result);
 
             /*
             SolutionSet chosenSolutionSet = new SolutionSet(1);

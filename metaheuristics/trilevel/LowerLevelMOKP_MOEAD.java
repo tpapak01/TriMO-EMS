@@ -97,11 +97,6 @@ public class LowerLevelMOKP_MOEAD {
         algorithm.setInputParameter("normalize",false);
 
         /* Comparator */
-        Comparator comparator;
-        if (problem.isMaxmized())
-            comparator = new ObjectiveComparator(0, false) ; // Single objective comparator
-        else comparator = new ObjectiveComparator(0, true) ; // Single objective comparator
-        algorithm.setInputParameter("comparator", comparator);
         Comparator lambdaComparator;
         if (problem.isMaxmized())
             lambdaComparator = new LambdaComparator(0, false) ; // Single objective comparator
@@ -122,7 +117,14 @@ public class LowerLevelMOKP_MOEAD {
         problemMOKP.setCostOfUsage(y);
         if (solution.isMarked())
             alg_moead.setInputParameter("initPopSolution", null);
-        else alg_moead.setInputParameter("initPopSolution", solution.getLL_Transfer_pop());
+        else {
+            SolutionSet chosen = solution.getLL_Transfer_pop();
+            SolutionSet transfer = new SolutionSet(chosen.size());
+            for (int x=0; x<transfer.getCapacity(); x++){
+                transfer.add(chosen.get(x));
+            }
+            alg_moead.setInputParameter("initPopSolution", transfer);
+        }
     }
 
     public SolutionSet execute() throws JMException, ClassNotFoundException {
