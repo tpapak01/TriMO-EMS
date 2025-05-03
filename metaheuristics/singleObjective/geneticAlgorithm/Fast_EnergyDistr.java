@@ -179,7 +179,7 @@ public class Fast_EnergyDistr extends Algorithm {
 
       } // for
 
-      //TODO: before union, reevaluate population to see progress made
+      // reevaluate population to see progress made
       for (int i=0; i<populationSize; i++){
         problem_.evaluate(population.get(i));
       }

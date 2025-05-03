@@ -256,7 +256,7 @@ public class CostDistr extends Problem {
                 newExternal.add(lowerLevelSolutions.get(i));
             newExternal.sort(comparator);
 
-            double[][] lambda = algo.getLambda_();
+            double[][] lambda = MOEAD.getLambda_();
 
             //create archive from temporary external
             SolutionSet archive = new SolutionSet(popSize);

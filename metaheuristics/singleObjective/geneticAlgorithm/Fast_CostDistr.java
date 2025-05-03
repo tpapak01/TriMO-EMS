@@ -254,7 +254,7 @@ public class Fast_CostDistr extends Algorithm {
       resultPopulation.add(population.get(i)) ;
     }
     
-    System.out.println("Evaluations: " + evaluations ) ;
+    //System.out.println("Evaluations: " + evaluations ) ;
     FileWriter evalsWriter = null;
     try {
       evalsWriter = new FileWriter("EVALS", true);

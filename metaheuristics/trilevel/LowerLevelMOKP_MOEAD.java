@@ -105,11 +105,13 @@ public class LowerLevelMOKP_MOEAD {
 
         // Add the indicator object to the algorithm
         algorithm.setInputParameter("indicators", indicators) ;
+
+        ((MOEAD) algorithm).initMOEAD();
     }
 
     public LowerLevelMOKP_MOEAD(){
         problemMOKP = new MOKP_Problem(problem);
-        alg_moead = new MOEAD(problemMOKP, algorithm);
+        alg_moead = new MOEAD(problemMOKP, 0);
     }
 
     public void receiveParams(XReal y, Solution solution) {
