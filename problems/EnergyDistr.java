@@ -72,6 +72,7 @@ public class EnergyDistr extends Problem {
 
         if (ul_wrapper.getPopulation() != null) {
             upperLevelSolutions = ul_wrapper.getPopulation();
+            System.out.println("Thread " + ul_wrapper.getId() + " completed");
         } else {
             Fast_CostDistr alg_fast = (Fast_CostDistr) ul_wrapper.getAlg_fast();
             upperLevelSolutions = alg_fast.getPopulation();
@@ -118,6 +119,7 @@ public class EnergyDistr extends Problem {
         double selfDeviation = calculateSelfConsDeviation(producedRE, spentEnergy);
         solution.setSelfConsumption(selfDeviation);
         System.out.println("SELF: " + selfDeviation);
+        System.out.println();
 
         solution.setObjective(0, result);
 

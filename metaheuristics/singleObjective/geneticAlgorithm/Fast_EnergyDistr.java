@@ -206,6 +206,7 @@ public class Fast_EnergyDistr extends Algorithm {
       // terminate the remaining of the threads
       for (int i = populationSize; i < popCombined.size(); i++) {
         Thread toKill = popCombined.get(i).getThread();
+        System.out.println("Thread " + popCombined.get(i).getUl_wrapper().getId() + " terminated");
         toKill.stop();
       }
 
