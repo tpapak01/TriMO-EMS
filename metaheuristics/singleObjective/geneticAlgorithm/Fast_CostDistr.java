@@ -107,14 +107,14 @@ public class Fast_CostDistr extends Algorithm {
     while (evaluations < maxEvaluations && converged != 0) {
 
       Solution winner = population.get(0);
-      System.out.println("q: " + winner.getUL_Optimism());
-      /*
+      //System.out.println("q: " + winner.getUL_Optimism());
+
       SolutionSet winnerPareto = winner.getLL_Pareto_pop();
       winnerPareto.printParetoToFile(problemPath + "results\\Paretos\\PARETO_" + (generation));
       SolutionSet onlyWinner = new SolutionSet(1);
       onlyWinner.add(winner);
       onlyWinner.printSelfConsumptionToFile(problemPath + "results\\SelfsInProgress\\SELF_" + (generation));
-       */
+
       generation++;
 
       SolutionSet offspringPopulation = new SolutionSet(populationSize) ;
