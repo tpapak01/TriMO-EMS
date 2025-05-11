@@ -646,11 +646,18 @@ public class CostDistr extends Problem {
         double sum = 0;
 
         for (int i=0; i<producedRE.length; i++) {
-            double difference = costs.getValue(i) - lowerLimit_[i];
-            if (difference < 0){
+            double freeEnergy = producedRE[i];
+            double paidEnergy = spentEnergy[i] - freeEnergy;
+            if (paidEnergy <= 0) {
+                paidEnergy = 0;
+                freeEnergy = spentEnergy[i];
+            }
+            double differencePaid = costs.getValue(i) - lowerLimit_[i];
+            double differenceFree = costs.getValue(i);
+            if (differencePaid < 0){
                 int a = 2;
             }
-            double profit = spentEnergy[i] * difference;
+            double profit = (paidEnergy * differencePaid) + (freeEnergy * differenceFree);
             sum += profit;
         }
 

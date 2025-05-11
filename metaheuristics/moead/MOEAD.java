@@ -75,7 +75,7 @@ public class MOEAD extends Algorithm {
 
   public MOEAD(Problem problem, int useless){
     super(problem);
-    problemMOKP = (MOKP_Problem) problem;
+    problemMOKP = (MOKP_Problem) problem_;
   }
 
   /** 

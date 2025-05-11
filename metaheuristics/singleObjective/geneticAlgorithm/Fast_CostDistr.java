@@ -75,7 +75,7 @@ public class Fast_CostDistr extends Algorithm {
  public Fast_CostDistr(Problem problem, Algorithm algorithm, int idd){
    super(problem);
    id = idd;
-   problemCostDistr = (CostDistr) problem;
+   problemCostDistr = (CostDistr) problem_;
 
    this.setInputParameter("populationSize", algorithm.getInputParameter("populationSize"));
    this.setInputParameter("maxEvaluations", algorithm.getInputParameter("maxEvaluations"));
@@ -93,7 +93,6 @@ public class Fast_CostDistr extends Algorithm {
 
   public Fast_CostDistr(Problem problem, String dataPath){
     super(problem);
-    problemCostDistr = (CostDistr) problem;
     if (!dataPath.equals("-")) { problemPath = dataPath; }
   } // GGA
   
