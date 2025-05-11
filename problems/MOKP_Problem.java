@@ -55,10 +55,6 @@ public class MOKP_Problem extends Problem {
         this.numberOfObjectives_ = problem.numberOfObjectives_;
         this.upperLimit_ = problem.upperLimit_;
         this.solutionType_ = problem.solutionType_;
-
-        //copy
-        if (problem.costOfUsage != null)
-            this.costOfUsage.setArray(Arrays.copyOf(problem.costOfUsage.getArray(), problem.costOfUsage.getArray().length));
     }
 
   public MOKP_Problem(String problemName, String userPreferenceName, String dataPath) {

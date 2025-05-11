@@ -103,9 +103,7 @@ public class UpperLevelCostDistr_Fast implements Runnable {
 
     public UpperLevelCostDistr_Fast(int id, XReal costOfBuying, Solution solution) throws JMException {
         this.id = id;
-        problemCostDistr = new CostDistr(problem);
-        problemCostDistr.setCostOfBuying(costOfBuying);
-        problemCostDistr.setCostLowerLimit(costOfBuying);
+        problemCostDistr = new CostDistr(problem, costOfBuying);
 
         alg_fast = new Fast_CostDistr(problemCostDistr, algorithm, id);
         if (solution.isMarked())

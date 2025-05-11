@@ -65,16 +65,7 @@ public class CostDistr extends Problem {
         return totalProducedRE;
     }
 
-    public void setCostOfBuying(XReal cost) {
-        costOfBuying = cost;
-    }
-
-    public void setCostLowerLimit(XReal cost) throws JMException {
-        for (int i=0; i<cost.size(); i++)
-            this.lowerLimit_[i] = cost.getValue(i);
-    }
-
-    public CostDistr(CostDistr problem){
+    public CostDistr(CostDistr problem, XReal costOfBuy) throws JMException {
         this.setMaxmized_(false); // this problem is not to be maximized
         this.problemName_ = problem.problemName_;
         this.numberOfVariables_ = problem.numberOfVariables_;
@@ -83,9 +74,11 @@ public class CostDistr extends Problem {
 
         //copy
         this.lowerLimit_ = Arrays.copyOf(problem.lowerLimit_, problem.lowerLimit_.length);
+        for (int i=0; i<lowerLimit_.length; i++) {
+            this.lowerLimit_[i] = costOfBuy.getValue(i);
+        }
         this.solutionType_ = new ArrayRealSolutionType(this);
-        //if (problem.costOfBuying != null)
-        //    this.costOfBuying.setArray(Arrays.copyOf(problem.costOfBuying.getArray(), problem.costOfBuying.getArray().length));
+        costOfBuying = costOfBuy;
 
         this.ll_wrapper = new LowerLevelMOKP_MOEAD();
     }
