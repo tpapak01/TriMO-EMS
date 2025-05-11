@@ -164,12 +164,12 @@ public class CostDistr extends Problem {
 
         ll_wrapper.receiveParams(costs, solution);
 
-        System.out.println(
+        /*System.out.println(
                 Arrays.toString(getCostOfBuying().getArray())
         );
         System.out.println(
                 Arrays.toString(getLL_wrapper().getProblemMOKP().getCostOfUsage().getArray())
-        );
+        );*/
 
         try {
             lowerLevelSolutions = ll_wrapper.execute();

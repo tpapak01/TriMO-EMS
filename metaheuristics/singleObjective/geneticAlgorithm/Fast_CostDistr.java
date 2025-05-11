@@ -206,6 +206,9 @@ public class Fast_CostDistr extends Algorithm {
           offspring[o].setLL_Transfer_pop(population.get(min_index).getLL_Transfer_pop());
         }
 
+        problemCostDistr.repair(offspring[0]);
+        problemCostDistr.repair(offspring[1]);
+
         // Evaluation of the new individuals
         problem_.evaluate(offspring[0]);
         problem_.evaluate(offspring[1]);
