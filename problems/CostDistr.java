@@ -80,11 +80,10 @@ public class CostDistr extends Problem {
         this.numberOfVariables_ = problem.numberOfVariables_;
         this.numberOfObjectives_ = problem.numberOfObjectives_;
         this.upperLimit_ = problem.upperLimit_;
-        this.solutionType_ = problem.solutionType_;
-        this.lowerLimit_ = problem.lowerLimit_;
 
         //copy
-        //this.lowerLimit_ = Arrays.copyOf(problem.lowerLimit_, problem.lowerLimit_.length);
+        this.lowerLimit_ = Arrays.copyOf(problem.lowerLimit_, problem.lowerLimit_.length);
+        this.solutionType_ = new ArrayRealSolutionType(this);
         //if (problem.costOfBuying != null)
         //    this.costOfBuying.setArray(Arrays.copyOf(problem.costOfBuying.getArray(), problem.costOfBuying.getArray().length));
 
@@ -169,7 +168,16 @@ public class CostDistr extends Problem {
         XReal costs = new XReal(solution);
 
         LowerLevelMOKP_MOEAD ll_wrapper = this.getLL_wrapper();
+
         ll_wrapper.receiveParams(costs, solution);
+
+        System.out.println(
+                Arrays.toString(getCostOfBuying().getArray())
+        );
+        System.out.println(
+                Arrays.toString(getLL_wrapper().getProblemMOKP().getCostOfUsage().getArray())
+        );
+
         try {
             lowerLevelSolutions = ll_wrapper.execute();
         } catch (ClassNotFoundException e) {
