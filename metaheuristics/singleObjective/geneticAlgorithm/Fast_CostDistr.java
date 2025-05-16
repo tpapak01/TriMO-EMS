@@ -163,14 +163,12 @@ public class Fast_CostDistr extends Algorithm {
 
 
       double diff = Math.abs(winner.getObjective(0) - population.get(populationSize-1).getObjective(0));
-      //if (diff <= 10 ) {
-      //  MOEAD.conv = 0.001;
-      //}
-      if (diff <= 3 ) {
-        break;
-        //MOEAD.conv = 0.0001;
+      if (diff <= 10 ) {
+        ((MOEAD) problemCostDistr.getLL_wrapper().alg_moead).setConv(0.001);
       }
-
+      if (diff <= 5 ) {
+        ((MOEAD) problemCostDistr.getLL_wrapper().alg_moead).setConv(0.0001);
+      }
 
       // Reproductive cycle: keep adding 2 offspring to the offspring population until it reaches the max size
       for (int i = 0 ; i < iterations; i++) {

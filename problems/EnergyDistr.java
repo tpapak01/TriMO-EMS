@@ -21,6 +21,7 @@ import jmetal.util.comparators.ObjectiveComparator;
 import jmetal.util.wrapper.XReal;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
@@ -31,13 +32,14 @@ public class EnergyDistr extends Problem {
 
 	private static final long serialVersionUID = 1L;
     private static String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data - multi user - bilevel/"; // The path of the files
+    private static String costsPath = "/Users/emine/IdeaProjects/JMETALHOME/Costs_data/";
     private static double[] producedRE;
     private static double[] inputCosts = null;
 
     private static double[] lowerLimitStatic;
     private static double[] upperLimitStatic;
 
-  public EnergyDistr(CostDistr upperLevelProblem, String dataPath) {
+  public EnergyDistr(CostDistr upperLevelProblem, String dataPath, String costsName) throws IOException {
       this.numberOfObjectives_ = 1;
       this.numberOfVariables_ = upperLevelProblem.getNumberOfVariables();
       this.lowerLimit_ = new double[numberOfVariables_];
@@ -53,8 +55,25 @@ public class EnergyDistr extends Problem {
       if (!dataPath.equals("-")) { problemPath = dataPath; }
       String fileName = problemPath + this.problemName_ + ".txt";
       System.out.println(fileName);
+      String costsFileName = "-";
+      if (!costsName.equals("-")) costsFileName = costsPath + costsName + ".txt";
 
       this.solutionType_ = new ArrayRealSolutionType(this);
+
+      ////////////////////////////////////////////////////////////////
+
+      if (!costsFileName.equals("-")) {
+          inputCosts = new double[this.numberOfVariables_];
+          BufferedReader in = new BufferedReader(new FileReader(costsFileName));
+          String line;
+
+          for (int i = 0; i < this.numberOfVariables_; i++) {
+              line = in.readLine();
+              inputCosts[i] = Double.parseDouble(line);
+          }
+
+          in.close();
+      }
   }  //
 
     public double[] getInputCosts(){
@@ -95,6 +114,7 @@ public class EnergyDistr extends Problem {
         int u_size = upperLevelSolutions.size();
         //double[] demand = upperLevelProblem.getLowerLevelProblem().getRequestedEnergy();
         double[] spentEnergy = best.getSpentEnergy();
+        solution.setSpentEnergy(spentEnergy);
         //double[] selfConsDeviation = chosenUpperLevelSol.getEnergyDeviationFromProducedArray();
 
         //for (int i=0; i<u_size; i++){

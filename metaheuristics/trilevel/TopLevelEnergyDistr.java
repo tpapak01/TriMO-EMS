@@ -73,13 +73,13 @@ public class TopLevelEnergyDistr {
 
         //initialize Upper Level problem
         CostDistr upperLevelProblem =
-                new CostDistr(renewableName, lowerLevelProblem, lowerLevelAlgorithmName, costsName, dataPath);
+                new CostDistr(renewableName, lowerLevelProblem, lowerLevelAlgorithmName, "-", dataPath);
 
         //initialize Upper Level algorithm
         UpperLevelCostDistr_Fast.initializeAlgorithm(upperLevelProblem, lowerLevelProblem, dataPath, paretoFileName);
 
         //thalis
-        problem = new EnergyDistr(upperLevelProblem, dataPath);
+        problem = new EnergyDistr(upperLevelProblem, dataPath, costsName);
         //thalis comment
         //int bits = 512 ;
         //problem = new OneMax("Binary", bits);

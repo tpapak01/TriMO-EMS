@@ -276,6 +276,25 @@ public class Fast_EnergyDistr extends Algorithm {
       for (int i = 0; i < populationSize; i++) {
         Solution newSolution = new Solution(problem_, true);
         newSolution.setDecisionVariables(updateSolution(problemEnergyDistr.getInputCosts()));
+
+        XReal costOfBuying = new XReal(newSolution);
+
+        UpperLevelCostDistr_Fast ul_wrapper = new UpperLevelCostDistr_Fast(i+1, costOfBuying, newSolution);
+
+        newSolution.setUl_wrapper(ul_wrapper);
+        Thread thread = new Thread(ul_wrapper);
+        newSolution.setThread(thread);
+        thread.start();
+
+        Object lock = ((Fast_CostDistr) ul_wrapper.getAlg_fast()).getLock();
+        synchronized (lock) {
+          try {
+            lock.wait(); // Wait indefinitely
+          } catch (InterruptedException e) {
+            System.out.println("Waiter thread: Why did someone interrupt me?");
+          }
+        }
+
         problem_.evaluate(newSolution);
         evaluations++;
         population.add(newSolution);

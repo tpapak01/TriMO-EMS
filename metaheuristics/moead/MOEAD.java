@@ -42,7 +42,10 @@ public class MOEAD extends Algorithm {
   private MOKP_Problem problemMOKP;
   private int evaluations_;
   private SolutionSet initPopSolution_;
-
+  public double conv = 0.01;  //0.000001;  0.001
+  public void setConv(double converg) {
+    conv = converg;
+  }
   // STATIC
   private static String dataDirectory_;
   private static double[] nadirObjectiveValue;
@@ -138,7 +141,6 @@ public class MOEAD extends Algorithm {
     private static FileWriter spreadWriter;
     private static FileWriter hypervolumeWriter;
     private static FileWriter ndsWriter;
-    public static double conv = 0.01;  //0.000001;  0.001
 
   public SolutionSet execute() throws JMException, ClassNotFoundException {
 
