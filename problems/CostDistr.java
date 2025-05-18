@@ -75,7 +75,7 @@ public class CostDistr extends Problem {
         //copy
         this.lowerLimit_ = Arrays.copyOf(problem.lowerLimit_, problem.lowerLimit_.length);
         for (int i=0; i<lowerLimit_.length; i++) {
-            this.lowerLimit_[i] = costOfBuy.getValue(i);
+            this.lowerLimit_[i] = 0;
         }
         this.solutionType_ = new ArrayRealSolutionType(this);
         costOfBuying = costOfBuy;
@@ -91,8 +91,7 @@ public class CostDistr extends Problem {
       this.numberOfObjectives_ = 1;
       this.lowerLimit_ = new double[numberOfVariables_];
       this.upperLimit_ = new double[numberOfVariables_];
-      for (int i=0; i<upperLimit_.length; i++)
-          upperLimit_[i] = 1.0;
+      Arrays.fill(upperLimit_, 1.0);
       producedRE = new double[numberOfVariables_];
       this.lowerLevelProblem = lowerLevelProblem;
 
@@ -100,7 +99,7 @@ public class CostDistr extends Problem {
       String fileName = problemPath + this.problemName_ + ".txt";
       System.out.println(fileName);
       String costsFileName = "-";
-      if (!costsName.equals("-")) costsFileName = costsPath + costsName + ".txt";
+      if (!costsName.equals("-")) costsFileName = costsPath + costsName;
 
       //fills up numberOfItems, p, w, sackCapacity
       //simply read the input textfile
@@ -130,7 +129,7 @@ public class CostDistr extends Problem {
 
           if (!costsFileName.equals("-")) {
               inputCosts = new double[this.numberOfVariables_];
-              in = new BufferedReader(new FileReader(costsFileName));
+              in = new BufferedReader(new FileReader(costsFileName + "_2" + ".txt"));
 
               for (int i = 0; i < this.numberOfVariables_; i++) {
                   line = in.readLine();
@@ -204,7 +203,7 @@ public class CostDistr extends Problem {
             //XReal costOfBuying = this.costOfBuying;
             //double result = upperLevel_evaluate_profit(energySpent, costs);
             //double result = upperLevel_evaluate_XOR_distance_plus_weight(energySpent, costs);
-            double specialResult =  EnergyDistr.topLevel_evaluate_objective(producedRE, energySpent, costOfBuying);
+            double specialResult =  EnergyDistr.calculateSelfConsDeviation(producedRE, energySpent);
             lowerLevelSol.setUpperLevelObj(specialResult);
             if (specialResult < best_res){
                 best_res = specialResult;
@@ -321,7 +320,7 @@ public class CostDistr extends Problem {
             chosenlowerLevelSol = optimisticSol;
 
             double[] energySpent = chosenlowerLevelSol.getSpentEnergy();
-            solution.setObjective(0, upperLevel_evaluate_profit(energySpent, costs));
+            solution.setObjective(0, upperLevel_evaluate_profit(energySpent, costs, costOfBuying));
         } else if (ULObjectiveDesirability == 0.0){
             // RESIDENT-AWARE APPROACH
             solution.setObjective(0, worst_res);
@@ -634,7 +633,7 @@ public class CostDistr extends Problem {
         return sum;
     }
 
-    public double upperLevel_evaluate_profit(double[] spentEnergy, XReal costs) throws JMException {
+    public double upperLevel_evaluate_profit(double[] spentEnergy, XReal costs, XReal costOfBuying) throws JMException {
 
         double sum = 0;
 
@@ -645,7 +644,7 @@ public class CostDistr extends Problem {
                 paidEnergy = 0;
                 freeEnergy = spentEnergy[i];
             }
-            double differencePaid = costs.getValue(i) - lowerLimit_[i];
+            double differencePaid = costs.getValue(i) - costOfBuying.getValue(i);
             double differenceFree = costs.getValue(i);
             if (differencePaid < 0){
                 int a = 2;

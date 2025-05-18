@@ -32,6 +32,7 @@ import jmetal.util.wrapper.XReal;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Comparator;
 
 /** 
@@ -250,6 +251,19 @@ public class Fast_EnergyDistr extends Algorithm {
     if (problemEnergyDistr.getInputCosts() == null) {
       for (int i = 0; i < populationSize; i++) {
         Solution newSolution = new Solution(problem_, true);
+
+        if (i == 0){
+          double[] ones = new double[problem_.getNumberOfVariables()];
+          Arrays.fill(ones, 1.0);
+          newSolution.setDecisionVariables(updateSolution(ones));
+        }
+
+        if (i == populationSize-1){
+          double[] ones = new double[problem_.getNumberOfVariables()];
+          Arrays.fill(ones, 0.0);
+          newSolution.setDecisionVariables(updateSolution(ones));
+        }
+
         XReal costOfBuying = new XReal(newSolution);
 
         UpperLevelCostDistr_Fast ul_wrapper = new UpperLevelCostDistr_Fast(i+1, costOfBuying, newSolution);

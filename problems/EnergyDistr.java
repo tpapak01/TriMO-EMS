@@ -56,7 +56,7 @@ public class EnergyDistr extends Problem {
       String fileName = problemPath + this.problemName_ + ".txt";
       System.out.println(fileName);
       String costsFileName = "-";
-      if (!costsName.equals("-")) costsFileName = costsPath + costsName + ".txt";
+      if (!costsName.equals("-")) costsFileName = costsPath + costsName;
 
       this.solutionType_ = new ArrayRealSolutionType(this);
 
@@ -64,7 +64,7 @@ public class EnergyDistr extends Problem {
 
       if (!costsFileName.equals("-")) {
           inputCosts = new double[this.numberOfVariables_];
-          BufferedReader in = new BufferedReader(new FileReader(costsFileName));
+          BufferedReader in = new BufferedReader(new FileReader(costsFileName + "_1" + ".txt" ));
           String line;
 
           for (int i = 0; i < this.numberOfVariables_; i++) {
@@ -135,7 +135,7 @@ public class EnergyDistr extends Problem {
             */
         //}
 
-        double result = topLevel_evaluate_objective(producedRE, spentEnergy, costOfBuying);
+        double result = calculateSelfConsDeviation(producedRE, spentEnergy);
         double selfDeviation = calculateSelfConsDeviation(producedRE, spentEnergy);
         solution.setSelfConsumption(selfDeviation);
         System.out.println("SELF: " + selfDeviation);
@@ -161,7 +161,7 @@ public class EnergyDistr extends Problem {
 
 	} // evaluate
 
-    private double calculateSelfConsDeviation(double[] producedRE, double[] spentEnergy){
+    public static double calculateSelfConsDeviation(double[] producedRE, double[] spentEnergy){
 
         double sum = 0;
         for (int i=0; i<producedRE.length; i++) {
