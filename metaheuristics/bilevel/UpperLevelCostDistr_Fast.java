@@ -84,7 +84,7 @@ public class UpperLevelCostDistr_Fast {
         //problem = new Easom("Real") ;
         //problem = new Griewank("Real", 10) ;
 
-        algorithm = new Fast_CostDistr(problem, problemPath); // Generational GA
+        algorithm = new Fast_CostDistr(problem); // Generational GA
         //algorithm = new ssGA(problem); // Steady-state GA
         //algorithm = new scGA(problem) ; // Synchronous cGA
         //algorithm = new acGA(problem) ;   // Asynchronous cGA

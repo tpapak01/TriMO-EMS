@@ -47,7 +47,6 @@ public class MOEAD extends Algorithm {
     conv = converg;
   }
   // STATIC
-  private static String dataDirectory_;
   private static double[] nadirObjectiveValue;
 
   private static int maxEvaluations;
@@ -102,7 +101,6 @@ public class MOEAD extends Algorithm {
   }
 
   public void initMOEAD(){
-    dataDirectory_ = this.getInputParameter("dataDirectory").toString();
 
     maxEvaluations = (Integer) this.getInputParameter("maxEvaluations");
     populationSize = (Integer) this.getInputParameter("populationSize");

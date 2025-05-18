@@ -24,28 +24,18 @@ package jmetal.metaheuristics.singleObjective.geneticAlgorithm;
 import jmetal.core.*;
 import jmetal.encodings.variable.ArrayReal;
 import jmetal.metaheuristics.moead.MOEAD;
-import jmetal.operators.crossover.SBXCrossover;
-import jmetal.operators.mutation.UniformMutation;
-import jmetal.operators.selection.BinaryTournament;
-import jmetal.operators.selection.Selection;
 import jmetal.problems.CostDistr;
 import jmetal.util.EuclideanDist;
 import jmetal.util.JMException;
-import jmetal.util.RankingOnlyFirst;
-import jmetal.util.comparators.ObjectiveComparator;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Comparator;
-import java.util.HashMap;
 
 /** 
  * Class implementing a generational genetic algorithm
  */
 public class Fast_CostDistr extends Algorithm {
-
-  private static int populationSize;
-  private static String problemPath = "C:\\Users\\emine\\source\\repos\\SmartHome3\\SmartHome3\\wwwroot\\";
 
   private CostDistr problemCostDistr;
   private SolutionSet population;
@@ -59,12 +49,22 @@ public class Fast_CostDistr extends Algorithm {
   }
   private int evaluations;
   private SolutionSet initPopSolution_;
-  private Comparator comparator;
+
   private final Object lock = new Object();
   public Object getLock(){
     return lock;
   }
   private int id;
+
+  //STATIC
+  private static int maxEvaluations ;
+  private static int populationSize;
+
+  private static Comparator comparator;
+
+  private static Operator    mutationOperator  ;
+  private static Operator    crossoverOperator ;
+  private static Operator    selectionOperator ;
 
  /**
   *
@@ -72,45 +72,35 @@ public class Fast_CostDistr extends Algorithm {
   * Create a new GGA instance.
   * @param problem Problem to solve.
   */
- public Fast_CostDistr(Problem problem, Algorithm algorithm, int idd){
+ public Fast_CostDistr(Problem problem, int idd){
    super(problem);
    id = idd;
    problemCostDistr = (CostDistr) problem_;
-
-   this.setInputParameter("populationSize", algorithm.getInputParameter("populationSize"));
-   this.setInputParameter("maxEvaluations", algorithm.getInputParameter("maxEvaluations"));
-
-   this.setInputParameter("dataDirectory",
-           "/Users/emine/IdeaProjects/JMETALHOME/data/MOEAD_parameters/Weight");
-
-   this.setInputParameter("comparator", algorithm.getInputParameter("comparator"));
-
-   /* Add the operators to the algorithm*/
-   this.addOperator("crossover", algorithm.getOperator("crossover"));
-   this.addOperator("mutation", algorithm.getOperator("mutation"));
-   this.addOperator("selection", algorithm.getOperator("selection"));
  }
 
-  public Fast_CostDistr(Problem problem, String dataPath){
+  public Fast_CostDistr(Problem problem){
     super(problem);
-    if (!dataPath.equals("-")) { problemPath = dataPath; }
   } // GGA
+
+
+  public void  initFastCostDistr(){
+    // Read the params
+    populationSize = ((Integer)this.getInputParameter("populationSize")).intValue();
+    maxEvaluations = ((Integer)this.getInputParameter("maxEvaluations")).intValue();
+
+    comparator = (Comparator) this.getInputParameter("comparator");
+
+    // Read the operators
+    selectionOperator = this.operators_.get("selection");
+    crossoverOperator = this.operators_.get("crossover");
+    mutationOperator  = this.operators_.get("mutation");
+  }
   
  /**
   * Execute the GGA algorithm
  * @throws JMException 
   */
   public SolutionSet execute() throws JMException, ClassNotFoundException {
-
-    int maxEvaluations ;
-
-    Operator    mutationOperator  ;
-    Operator    crossoverOperator ;
-    Operator    selectionOperator ;
-    
-    // Read the params
-    populationSize = ((Integer)this.getInputParameter("populationSize")).intValue();
-    maxEvaluations = ((Integer)this.getInputParameter("maxEvaluations")).intValue();                
    
     // Initialize the variables
     population          = new SolutionSet(populationSize) ;
@@ -118,12 +108,6 @@ public class Fast_CostDistr extends Algorithm {
     evaluations  = 0;
 
     initPopSolution_ = ((SolutionSet) this.getInputParameter("initPopSolution"));
-
-    // Read the operators
-    comparator = (Comparator) this.getInputParameter("comparator");
-    mutationOperator  = this.operators_.get("mutation");
-    crossoverOperator = this.operators_.get("crossover");
-    selectionOperator = this.operators_.get("selection");  
 
     initPopulation();
     //double[] producedRE = problemCostDistr.getProducedRE();

@@ -62,7 +62,7 @@ public class UpperLevelCostDistr_Fast implements Runnable {
         //thalis
         problem = (CostDistr) upperLevelProblem;
 
-        algorithm = new Fast_CostDistr(problem, problemPath); // Generational GA
+        algorithm = new Fast_CostDistr(problem); // Generational GA
         algorithm.setInputParameter("populationSize", 100); //must be even number
         algorithm.setInputParameter("maxEvaluations", 1000000);
 
@@ -99,13 +99,15 @@ public class UpperLevelCostDistr_Fast implements Runnable {
         algorithm.addOperator("mutation", mutation);
         algorithm.addOperator("selection", selection);
 
+        ((Fast_CostDistr) algorithm).initFastCostDistr();
+
     } //main
 
     public UpperLevelCostDistr_Fast(int id, XReal costOfBuying, Solution solution) throws JMException {
         this.id = id;
         problemCostDistr = new CostDistr(problem, costOfBuying);
 
-        alg_fast = new Fast_CostDistr(problemCostDistr, algorithm, id);
+        alg_fast = new Fast_CostDistr(problemCostDistr, id);
         if (solution.isMarked())
             alg_fast.setInputParameter("initPopSolution", null);
         else alg_fast.setInputParameter("initPopSolution", solution.getUL_Transfer_pop());
