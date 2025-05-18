@@ -73,7 +73,7 @@ public class TopLevelEnergyDistr {
 
         //initialize Upper Level problem
         CostDistr upperLevelProblem =
-                new CostDistr(renewableName, lowerLevelProblem, lowerLevelAlgorithmName, "-", dataPath);
+                new CostDistr(renewableName, lowerLevelProblem, lowerLevelAlgorithmName, costsName, dataPath);
 
         //initialize Upper Level algorithm
         UpperLevelCostDistr_Fast.initializeAlgorithm(upperLevelProblem, lowerLevelProblem, dataPath, paretoFileName);
