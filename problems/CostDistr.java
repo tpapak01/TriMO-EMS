@@ -28,6 +28,8 @@ import java.util.Comparator;
 
 public class CostDistr extends Problem {
 
+    private static double bestSelfEver = 10000;
+
 	private static final long serialVersionUID = 1L;
     private static String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data - multi user - bilevel/"; // The path of the files
     private static String costsPath = "/Users/emine/IdeaProjects/JMETALHOME/Costs_data/";
@@ -321,6 +323,12 @@ public class CostDistr extends Problem {
 
             double[] energySpent = chosenlowerLevelSol.getSpentEnergy();
             solution.setObjective(0, upperLevel_evaluate_profit(energySpent, costs, costOfBuying));
+
+            double self = EnergyDistr.calculateSelfConsDeviation(producedRE, optimisticSol.getSpentEnergy());
+            if (self < bestSelfEver) {
+                bestSelfEver = self;
+                System.out.println("BEST EVA: " + bestSelfEver + " profit: " + solution.getObjective(0) );
+            }
         } else if (ULObjectiveDesirability == 0.0){
             // RESIDENT-AWARE APPROACH
             solution.setObjective(0, worst_res);

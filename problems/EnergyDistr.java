@@ -44,6 +44,10 @@ public class EnergyDistr extends Problem {
       this.numberOfVariables_ = upperLevelProblem.getNumberOfVariables();
       this.lowerLimit_ = new double[numberOfVariables_];
       lowerLimitStatic = new double[numberOfVariables_];
+      for (int i=0; i<lowerLimit_.length; i++) {
+          lowerLimit_[i] = -1.0;
+          lowerLimitStatic[i] = -1.0;
+      }
       this.upperLimit_ = new double[numberOfVariables_];
       upperLimitStatic = new double[numberOfVariables_];
       for (int i=0; i<upperLimit_.length; i++) {
@@ -135,7 +139,7 @@ public class EnergyDistr extends Problem {
             */
         //}
 
-        double result = calculateSelfConsDeviation(producedRE, spentEnergy);
+        double result = topLevel_evaluate_objective(producedRE, spentEnergy, costOfBuying);
         double selfDeviation = calculateSelfConsDeviation(producedRE, spentEnergy);
         solution.setSelfConsumption(selfDeviation);
         System.out.println("SELF: " + selfDeviation);

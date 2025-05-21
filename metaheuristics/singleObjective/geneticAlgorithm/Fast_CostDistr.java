@@ -259,7 +259,7 @@ public class Fast_CostDistr extends Algorithm {
    *
    */
   public void initPopulation() throws JMException, ClassNotFoundException {
-    if (problemCostDistr.getInputCosts() == null) {
+    if (CostDistr.getInputCosts() == null) {
       if (initPopSolution_ == null) {
         for (int i = 0; i < populationSize; i++) {
           Solution newSolution = new Solution(problem_, true);
@@ -288,7 +288,7 @@ public class Fast_CostDistr extends Algorithm {
     } else {
       for (int i = 0; i < populationSize; i++) {
         Solution newSolution = new Solution(problem_, true);
-        newSolution.setDecisionVariables(updateSolution(problemCostDistr.getInputCosts()));
+        newSolution.setDecisionVariables(updateSolution(CostDistr.getInputCosts()));
         problem_.evaluate(newSolution);
         evaluations++;
         population.add(newSolution);
