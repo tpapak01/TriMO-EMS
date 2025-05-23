@@ -22,13 +22,14 @@ import jmetal.util.comparators.ObjectiveComparator;
 import jmetal.util.wrapper.XReal;
 
 import java.io.*;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Comparator;
 
 
 public class CostDistr extends Problem {
 
-    private static double bestSelfEver = 10000;
+    private double bestSelfEver = 10000;
 
 	private static final long serialVersionUID = 1L;
     private static String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data - multi user - bilevel/"; // The path of the files
@@ -67,17 +68,21 @@ public class CostDistr extends Problem {
         return totalProducedRE;
     }
 
-    public CostDistr(CostDistr problem, XReal costOfBuy) throws JMException {
+    private int id;
+
+    public CostDistr(CostDistr problem, XReal costOfBuy, int idd) throws JMException {
         this.setMaxmized_(false); // this problem is not to be maximized
         this.problemName_ = problem.problemName_;
         this.numberOfVariables_ = problem.numberOfVariables_;
         this.numberOfObjectives_ = problem.numberOfObjectives_;
         this.upperLimit_ = problem.upperLimit_;
+        this.id = idd;
 
         //copy
         this.lowerLimit_ = Arrays.copyOf(problem.lowerLimit_, problem.lowerLimit_.length);
         for (int i=0; i<lowerLimit_.length; i++) {
-            this.lowerLimit_[i] = 0;
+            if (costOfBuy.getValue(i) >= 0)
+                this.lowerLimit_[i] = costOfBuy.getValue(i);
         }
         this.solutionType_ = new ArrayRealSolutionType(this);
         costOfBuying = costOfBuy;
@@ -85,17 +90,17 @@ public class CostDistr extends Problem {
         this.ll_wrapper = new LowerLevelMOKP_MOEAD();
     }
 
-  public CostDistr(String renewableFileName, MOKP_Problem lowerLevelProblem, String lowerLevelAlgorithmNamm, String costsName, String dataPath) {
+  public CostDistr(String renewableFileName, MOKP_Problem lowerLevelProb, String lowerLevelAlgorithmNamm, String costsName, String dataPath) {
 	  this.setMaxmized_(false); // this problem is not to be maximized
 	  this.problemName_ = renewableFileName;
 	  lowerLevelAlgorithmName = lowerLevelAlgorithmNamm;
+      lowerLevelProblem = lowerLevelProb;
       this.numberOfVariables_ = lowerLevelProblem.getNumberOfConstraints();
       this.numberOfObjectives_ = 1;
       this.lowerLimit_ = new double[numberOfVariables_];
       this.upperLimit_ = new double[numberOfVariables_];
       Arrays.fill(upperLimit_, 1.0);
       producedRE = new double[numberOfVariables_];
-      this.lowerLevelProblem = lowerLevelProblem;
 
       if (!dataPath.equals("-")) { problemPath = dataPath; costsPath = dataPath; }
       String fileName = problemPath + this.problemName_ + ".txt";
@@ -107,7 +112,7 @@ public class CostDistr extends Problem {
       //simply read the input textfile
       this.loadProblem(fileName, costsFileName);
       this.solutionType_ = new ArrayRealSolutionType(this);
-      if (this.lowerLevelProblem.isMaxmized())
+      if (lowerLevelProblem.isMaxmized())
           comparator = new ObjectiveComparator(0, false) ; // Single objective comparator
       else comparator = new ObjectiveComparator(0, true) ; // Single objective comparator
 
@@ -205,7 +210,7 @@ public class CostDistr extends Problem {
             //XReal costOfBuying = this.costOfBuying;
             //double result = upperLevel_evaluate_profit(energySpent, costs);
             //double result = upperLevel_evaluate_XOR_distance_plus_weight(energySpent, costs);
-            double specialResult =  EnergyDistr.calculateSelfConsDeviation(producedRE, energySpent);
+            double specialResult =  upperLevel_evaluate_profit_simple(energySpent, costs, costOfBuying);
             lowerLevelSol.setUpperLevelObj(specialResult);
             if (specialResult < best_res){
                 best_res = specialResult;
@@ -322,12 +327,21 @@ public class CostDistr extends Problem {
             chosenlowerLevelSol = optimisticSol;
 
             double[] energySpent = chosenlowerLevelSol.getSpentEnergy();
-            solution.setObjective(0, upperLevel_evaluate_profit(energySpent, costs, costOfBuying));
+            solution.setObjective(0, upperLevel_evaluate_profit_simple(energySpent, costs, costOfBuying));
 
             double self = EnergyDistr.calculateSelfConsDeviation(producedRE, optimisticSol.getSpentEnergy());
             if (self < bestSelfEver) {
                 bestSelfEver = self;
-                System.out.println("BEST EVA: " + bestSelfEver + " profit: " + solution.getObjective(0) );
+                System.out.println("BEST EVA (" + (id) + "): " + bestSelfEver + " profit: " + solution.getObjective(0) );
+                System.out.println("COST: "+ Arrays.toString(costs.getArray()));
+                double[] difference = new double[24];
+                DecimalFormat df = new DecimalFormat("#.##");
+                for (int i=0; i<24; i++) {
+                    difference[i] = producedRE[i] - energySpent[i];
+                    difference[i] = Double.parseDouble(df.format(difference[i]));
+                }
+                System.out.println("SPENT: "+ Arrays.toString(difference));
+                System.out.println();
             }
         } else if (ULObjectiveDesirability == 0.0){
             // RESIDENT-AWARE APPROACH

@@ -24,6 +24,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -119,6 +120,17 @@ public class EnergyDistr extends Problem {
         //double[] demand = upperLevelProblem.getLowerLevelProblem().getRequestedEnergy();
         double[] spentEnergy = best.getSpentEnergy();
         solution.setSpentEnergy(spentEnergy);
+
+        double[] difference = new double[24];
+        DecimalFormat df = new DecimalFormat("#.##");
+        for (int i=0; i<24; i++) {
+            difference[i] = producedRE[i] - spentEnergy[i];
+            difference[i] = Double.parseDouble(df.format(difference[i]));
+        }
+        System.out.println(
+                Arrays.toString(difference)
+        );
+
         //double[] selfConsDeviation = chosenUpperLevelSol.getEnergyDeviationFromProducedArray();
 
         //for (int i=0; i<u_size; i++){

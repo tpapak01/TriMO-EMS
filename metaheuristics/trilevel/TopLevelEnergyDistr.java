@@ -97,10 +97,7 @@ public class TopLevelEnergyDistr {
         //algorithm.setInputParameter("populationSize",4); //must be even number
         //algorithm.setInputParameter("maxEvaluations", 2500);
         algorithm.setInputParameter("populationSize", 10); //must be even number
-        if (costsName.equals("-"))
-            algorithm.setInputParameter("maxEvaluations", 1000000);
-        else
-            algorithm.setInputParameter("maxEvaluations", 100);
+        algorithm.setInputParameter("maxEvaluations", 1000000);
 
 
         //thalis
