@@ -28,7 +28,7 @@ public class UpperLevelCostDistr_Fast {
 
     public static Logger logger_;      // Logger object
     public static FileHandler fileHandler_; // FileHandler object
-    private static String problemPath = "C:\\Users\\emine\\source\\repos\\SmartHome3\\SmartHome3\\wwwroot\\";
+    private static String problemPath = "C:\\Users\\emine\\IdeaProjects\\MOEAD test project\\";
 
     /**
      * @param args Command line arguments. The first (optional) argument specifies

@@ -42,7 +42,7 @@ public class Fast_CostDistr extends Algorithm {
   private int populationSize;
   private SolutionSet population;
   int evaluations;
-  private static String problemPath = "C:\\Users\\emine\\source\\repos\\SmartHome3\\SmartHome3\\wwwroot\\";
+  private static String problemPath = "C:\\Users\\emine\\IdeaProjects\\MOEAD test project\\";
 
  /**
   *
