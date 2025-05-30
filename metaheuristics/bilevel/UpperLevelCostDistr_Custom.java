@@ -131,7 +131,7 @@ public class UpperLevelCostDistr_Custom {
 
         population.printSpentEnergyToFile("SPENT");
         population.printLowerLevelVarsToFile("LL_VAR");
-        population.printLowerLevelObjToFile("LL_FUN");
+        population.printLowerLevelObjToFile("LL_FUN", true);
 
 
     } //main

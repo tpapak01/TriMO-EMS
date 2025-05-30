@@ -178,20 +178,20 @@ public class UpperLevelCostDistr_Fast {
         System.out.println("Objectives values have been writen to file FUN");
         population.printObjectivesToFile("FUN");
         System.out.println("Variables values have been writen to file VAR");
-        population.printVariablesToFile("VAR");
-        population.printVariablesToFile(problemPath + "results\\Winner\\Prices");
+        population.printMyVariablesToFile("VAR", true);
+        population.printMyVariablesToFile(problemPath + "results\\Winner\\Prices", false);
 
-        population.printSelfConsumptionToFile("SELF_CONSU");
-        population.printSelfConsumptionToFile(problemPath + "results\\Winner\\SELF_CONSU");
+        population.printSelfConsumptionToFile("SELF_CONSU", true);
+        population.printSelfConsumptionToFile(problemPath + "results\\Winner\\SELF_CONSU", false);
         population.printNonREPaidToFile("NON_RE_PAID");
         population.printLowerLevelVarsToFile("LL_VAR");
-        population.printLowerLevelObjToFile("LL_FUN");
-        population.printLowerLevelObjToFile(problemPath + "results\\Winner\\LL_FUN");
+        population.printLowerLevelObjToFile("LL_FUN", true);
+        population.printLowerLevelObjToFile(problemPath + "results\\Winner\\LL_FUN", false);
         population.printMappingToFile("LL_MAPPING");
 
         population.printSpentEnergyToFile("SPENT");
-        population.printUserDissatisfactionToFile("USER_DISSAT");
-        population.printUserDissatisfactionToFile(problemPath + "results\\Winner\\USER_DISSAT");
+        population.printUserDissatisfactionToFile("USER_DISSAT", true);
+        population.printUserDissatisfactionToFile(problemPath + "results\\Winner\\USER_DISSAT", false);
         population.printStdDevUserDissatisfactionToFile("STDDEV_USER_DISSAT");
         population.printUserEnergyToFile("USER_ENERGY");
         population.printUserEnergyToFile(problemPath + "results\\Winner\\USER_COSTS");
@@ -206,10 +206,10 @@ public class UpperLevelCostDistr_Fast {
 
 
         SolutionSet lowerLevelSolutions = population.get(0).getLL_Pareto_pop();
-        lowerLevelSolutions.printParetoToFile("LL_PARETO");
+        lowerLevelSolutions.printParetoToFile("LL_PARETO", true);
         System.out.println(population.get(0).getUL_Optimism());
         //Platform
-        lowerLevelSolutions.printParetoToFile(problemPath + "results\\Winner\\Pareto");
+        lowerLevelSolutions.printParetoToFile(problemPath + "results\\Winner\\Pareto", false);
         lowerLevelSolutions.printSpentsToFile(problemPath + "results\\Spents\\");
         lowerLevelSolutions.printSelfsToFile(problemPath + "results\\Selfs\\");
         lowerLevelSolutions.printUserDissatsToFile(problemPath + "results\\UserDissats\\");

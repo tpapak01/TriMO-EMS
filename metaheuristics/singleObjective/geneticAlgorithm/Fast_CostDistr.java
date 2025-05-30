@@ -110,10 +110,10 @@ public class Fast_CostDistr extends Algorithm {
       //System.out.println("q: " + winner.getUL_Optimism());
 
       SolutionSet winnerPareto = winner.getLL_Pareto_pop();
-      winnerPareto.printParetoToFile(problemPath + "results\\Paretos\\PARETO_" + (generation));
+      winnerPareto.printParetoToFile(problemPath + "results\\Paretos\\PARETO_" + (generation), false);
       SolutionSet onlyWinner = new SolutionSet(1);
       onlyWinner.add(winner);
-      onlyWinner.printSelfConsumptionToFile(problemPath + "results\\SelfsInProgress\\SELF_" + (generation));
+      onlyWinner.printSelfConsumptionToFile(problemPath + "results\\SelfsInProgress\\SELF_" + (generation), false);
 
       generation++;
 

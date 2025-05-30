@@ -307,14 +307,35 @@ public class SolutionSet implements Serializable {
     }
   } // printVariablesToFile
 
+  public void printMyVariablesToFile(String path, boolean append){
+    try {
+      FileOutputStream fos   = new FileOutputStream(path, append)     ;
+      OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
+      BufferedWriter bw      = new BufferedWriter(osw)        ;
+
+      if (size()>0) {
+        int numberOfVariables = solutionsList_.get(0).getDecisionVariables().length ;
+        for (Solution aSolutionsList_ : solutionsList_) {
+          for (int j = 0; j < numberOfVariables; j++)
+            bw.write(aSolutionsList_.getDecisionVariables()[j].toString() + " ");
+          bw.newLine();
+        }
+      }
+      bw.close();
+    }catch (IOException e) {
+      Configuration.logger_.severe("Error acceding to the file");
+      e.printStackTrace();
+    }
+  } // printMyVariablesToFile
+
 
   // The actual metric that defines how successful the solution is. Used a lot in the paper
   // The benefit of approaching the "RE limit" is that dissatisfaction goes down, while the
   // benefit of not exceeding the "RE limit" is that potential costs of non-RE energy stay low.
-  public void printSelfConsumptionToFile(String path){
+  public void printSelfConsumptionToFile(String path, boolean append){
     try {
       /* Open the file */
-      FileOutputStream fos   = new FileOutputStream(path, false)     ;
+      FileOutputStream fos   = new FileOutputStream(path, append)     ;
       OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
       BufferedWriter bw      = new BufferedWriter(osw)        ;
 
@@ -357,10 +378,10 @@ public class SolutionSet implements Serializable {
   }
 
   // Purpose: to calculate fairness of satisfaction (standard deviation among users)
-  public void printUserDissatisfactionToFile(String path){
+  public void printUserDissatisfactionToFile(String path, boolean append){
     try {
       /* Open the file */
-      FileOutputStream fos   = new FileOutputStream(path, false)     ;
+      FileOutputStream fos   = new FileOutputStream(path, append)     ;
       OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
       BufferedWriter bw      = new BufferedWriter(osw)        ;
 
@@ -431,7 +452,7 @@ public class SolutionSet implements Serializable {
   public void printUserEnergyToFile(String path){
     try {
       /* Open the file */
-      FileOutputStream fos   = new FileOutputStream(path, false)     ;
+      FileOutputStream fos   = new FileOutputStream(path, true)     ;
       OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
       BufferedWriter bw      = new BufferedWriter(osw)        ;
 
@@ -547,10 +568,10 @@ public class SolutionSet implements Serializable {
 
 
   // Purpose: to know the balance between dissatisfaction and costs of the chosen LL solution by the upper level
-  public void printLowerLevelObjToFile(String path){
+  public void printLowerLevelObjToFile(String path, boolean append){
     try {
       /* Open the file */
-      FileOutputStream fos   = new FileOutputStream(path, false)     ;
+      FileOutputStream fos   = new FileOutputStream(path, append)     ;
       OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
       BufferedWriter bw      = new BufferedWriter(osw)        ;
 
@@ -650,10 +671,10 @@ public class SolutionSet implements Serializable {
     }       
   }
 
-  public void printParetoToFile(String path){
+  public void printParetoToFile(String path, boolean append){
     try {
       /* Open the file */
-      FileOutputStream fos   = new FileOutputStream(path, false)     ;
+      FileOutputStream fos   = new FileOutputStream(path, append)     ;
       OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
       BufferedWriter bw      = new BufferedWriter(osw)        ;
 
