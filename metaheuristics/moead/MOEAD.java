@@ -694,9 +694,7 @@ public class MOEAD extends Algorithm {
     // id:   the id of current subproblem
     // type: update solutions in - neighborhood (1) or whole population (otherwise)
     int size;
-    int time;
-
-    time = 0;
+    //int time = 0;
 
     //if (type == 1) {
       size = neighborhood_[id].length;
@@ -740,13 +738,13 @@ public class MOEAD extends Algorithm {
 
       if (flagDominate == -1) {// indiv is better
         population.replace(k, new Solution(indiv, lambda_[k]));
-        time++;
+        //time++;
       }
 
       // the maximal number of solutions updated is not allowed to exceed 'limit'
-      if (time >= nr_) {
-        return;
-      }
+      // if (time >= nr_) {
+      //   return;
+      // }
     }
   } // updateProblem
 
