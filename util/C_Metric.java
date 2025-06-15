@@ -283,7 +283,7 @@ public class C_Metric {
 
 			// first calculate C metric of NSGAII (lower == better)
 			double cMetricMean = 0;
-			for (int i=1; i<21; i++){
+			for (int i=1; i<=100; i++){
 				String file1 = prefix1 + i + "_FUN";
 				String file2 = prefix2 + i + "_FUN";
 
@@ -293,13 +293,13 @@ public class C_Metric {
 				cMetricMean += cMetric;
 				cMetricWriterNSGAII.write(cMetric + "\n");
 			}
-			cMetricMean = cMetricMean / 20;
+			cMetricMean = cMetricMean / 100;
 			cMetricWriterNSGAII.write(cMetricMean + "\n");
 			cMetricWriterNSGAII.close();
 
 			// now for MOEAD
 			cMetricMean = 0;
-			for (int i=1; i<21; i++){
+			for (int i=1; i<=100; i++){
 				String file1 = prefix1 + i + "_FUN";
 				String file2 = prefix2 + i + "_FUN";
 
@@ -309,7 +309,7 @@ public class C_Metric {
 				cMetricMean += cMetric;
 				cMetricWriterMOEAD.write(cMetric + "\n");
 			}
-			cMetricMean = cMetricMean / 20;
+			cMetricMean = cMetricMean / 100;
 			cMetricWriterMOEAD.write(cMetricMean + "\n");
 			cMetricWriterMOEAD.close();
 

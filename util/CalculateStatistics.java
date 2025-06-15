@@ -15,6 +15,7 @@ public class CalculateStatistics {
     private static QualityIndicator indicators;
     private static String writeParetoPath = "LowerLevelParetoVisual/Texperiments/";
     private static String writeParetoPathFull = null;
+    private static String optimalParetoPath = "/Users/emine/IdeaProjects/JMETALHOME/HV_Optimal/"; // The path of the files
     private static int ULpopSize = 100;
     private static int execPrint = 10;
 
@@ -158,8 +159,12 @@ public class CalculateStatistics {
         String problemName = args[0];
         String problemUserPreferences = args[1];
         String datapath = args[2];
+        String paretoFileName = args[3];
         MOKP_Problem lowerLevelProblem = new MOKP_Problem(problemName, problemUserPreferences, datapath);
-        indicators = new QualityIndicator(lowerLevelProblem, "OPTIMAL_PARETO");
+
+        String paretoName = "OPTIMAL_PARETO";
+        if (!paretoFileName.equals("-")) { paretoName = paretoFileName; }
+        indicators = new QualityIndicator(lowerLevelProblem, optimalParetoPath + paretoName) ;
 
         try {
             hypWriter_0 = new FileWriter("LowerLevelParetoVisual/hyp0.txt");
@@ -293,8 +298,14 @@ public class CalculateStatistics {
                 }
 
                 int enemy = -1;
-                if (execType >=4 && execType <=7)
-                    enemy = execType - 4;
+                if (execType == 1)
+                    enemy = 0;
+                if (execType == 2)
+                    enemy = 1;
+                if (execType == 4)
+                    enemy = 3;
+                if (execType == 5)
+                    enemy = 4;
 
                 double cMetric = 0;
                 double cMetricReverse = 0;
@@ -315,20 +326,28 @@ public class CalculateStatistics {
                             avg_1_spr += spread;
                             avg_1_nds += nds;
                             avg_1_time += estimatedTime;
+                            avg_1_cmetric += cMetric;
+                            avg_0_cmetric += cMetricReverse;
                             hypWriter_1.write(hypervolume + "\n");
                             sprWriter_1.write(spread + "\n");
                             ndsWriter_1.write(nds + "\n");
                             timWriter_1.write(estimatedTime + "\n");
+                            cmeWriter_1.write(cMetric + "\n");
+                            cmeWriter_0.write(cMetricReverse + "\n");
                             break;
                         case 2:
                             avg_2_hyp += hypervolume;
                             avg_2_spr += spread;
                             avg_2_nds += nds;
                             avg_2_time += estimatedTime;
+                            avg_3_cmetric += cMetric;
+                            avg_2_cmetric += cMetricReverse;
                             hypWriter_2.write(hypervolume + "\n");
                             sprWriter_2.write(spread + "\n");
                             ndsWriter_2.write(nds + "\n");
                             timWriter_2.write(estimatedTime + "\n");
+                            cmeWriter_3.write(cMetric + "\n");
+                            cmeWriter_2.write(cMetricReverse + "\n");
                             break;
                         case 3:
                             avg_3_hyp += hypervolume;
@@ -345,56 +364,48 @@ public class CalculateStatistics {
                             avg_4_spr += spread;
                             avg_4_nds += nds;
                             avg_4_time += estimatedTime;
-                            avg_4_cmetric += cMetric;
-                            avg_0_cmetric += cMetricReverse;
+                            avg_5_cmetric += cMetric;
+                            avg_4_cmetric += cMetricReverse;
                             hypWriter_4.write(hypervolume + "\n");
                             sprWriter_4.write(spread + "\n");
                             ndsWriter_4.write(nds + "\n");
                             timWriter_4.write(estimatedTime + "\n");
-                            cmeWriter_4.write(cMetric + "\n");
-                            cmeWriter_0.write(cMetricReverse + "\n");
+                            cmeWriter_5.write(cMetric + "\n");
+                            cmeWriter_4.write(cMetricReverse + "\n");
                             break;
                         case 5:
                             avg_5_hyp += hypervolume;
                             avg_5_spr += spread;
                             avg_5_nds += nds;
                             avg_5_time += estimatedTime;
-                            avg_5_cmetric += cMetric;
-                            avg_1_cmetric += cMetricReverse;
+                            avg_7_cmetric += cMetric;
+                            avg_6_cmetric += cMetricReverse;
                             hypWriter_5.write(hypervolume + "\n");
                             sprWriter_5.write(spread + "\n");
                             ndsWriter_5.write(nds + "\n");
                             timWriter_5.write(estimatedTime + "\n");
-                            cmeWriter_5.write(cMetric + "\n");
-                            cmeWriter_1.write(cMetricReverse + "\n");
+                            cmeWriter_7.write(cMetric + "\n");
+                            cmeWriter_6.write(cMetricReverse + "\n");
                             break;
                         case 6:
                             avg_6_hyp += hypervolume;
                             avg_6_spr += spread;
                             avg_6_nds += nds;
                             avg_6_time += estimatedTime;
-                            avg_6_cmetric += cMetric;
-                            avg_2_cmetric += cMetricReverse;
                             hypWriter_6.write(hypervolume + "\n");
                             sprWriter_6.write(spread + "\n");
                             ndsWriter_6.write(nds + "\n");
                             timWriter_6.write(estimatedTime + "\n");
-                            cmeWriter_6.write(cMetric + "\n");
-                            cmeWriter_2.write(cMetricReverse + "\n");
                             break;
                         case 7:
                             avg_7_hyp += hypervolume;
                             avg_7_spr += spread;
                             avg_7_nds += nds;
                             avg_7_time += estimatedTime;
-                            avg_7_cmetric += cMetric;
-                            avg_3_cmetric += cMetricReverse;
                             hypWriter_7.write(hypervolume + "\n");
                             sprWriter_7.write(spread + "\n");
                             ndsWriter_7.write(nds + "\n");
                             timWriter_7.write(estimatedTime + "\n");
-                            cmeWriter_7.write(cMetric + "\n");
-                            cmeWriter_3.write(cMetricReverse + "\n");
                             break;
                         default:
                             break;
