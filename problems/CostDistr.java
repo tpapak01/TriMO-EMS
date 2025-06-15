@@ -32,6 +32,7 @@ public class CostDistr extends Problem {
 	private static final long serialVersionUID = 1L;
     private String problemPath = "/Users/emine/IdeaProjects/JMETALHOME/Knapsack_data - multi user - bilevel/"; // The path of the files
     private static String costsPath = "/Users/emine/IdeaProjects/JMETALHOME/Costs_data/";
+    private static String optimalParetoPath = "/Users/emine/IdeaProjects/JMETALHOME/HV_Optimal/"; // The path of the files
 
     private MOKP_Problem lowerLevelProblem;
     private String lowerLevelAlgorithmName;
@@ -269,7 +270,7 @@ public class CostDistr extends Problem {
       String paretoName = "OPTIMAL_PARETO";
       if (!paretoFileName.equals("-")) { paretoName = paretoFileName; }
       indicators = new QualityIndicator(this.lowerLevelProblem,
-              problemPath + paretoName) ;
+              optimalParetoPath + paretoName) ;
       
       if (this.lowerLevelProblem.isMaxmized())
           comparator = new ObjectiveComparator(0, false) ; // Single objective comparator
@@ -557,15 +558,15 @@ public class CostDistr extends Problem {
                 }
                 */
 
-                for (i = 0; i < popSize; i = i + 25) {
+                for (i = 0; i < popSize; i = i + 5) {
                     Solution lowerLevelSol = archive.get(i);
                     specialPareto.add(lowerLevelSol);
                 }
-                for (i = 0; i < popSize; i = i + 12) {
+                for (i = 0; i < popSize; i = i + 4) {
                     Solution lowerLevelSol = archive.get(i);
                     reversePareto.add(lowerLevelSol);
                 }
-                for (i = 0; i < popSize; i = i + 5) {
+                for (i = 0; i < popSize; i = i + 3) {
                     Solution lowerLevelSol = archive.get(i);
                     randomPareto.add(lowerLevelSol);
                 }
@@ -761,10 +762,18 @@ public class CostDistr extends Problem {
                 }
 
                 int enemy = -1;
-                if (execType >=4 && execType <=7)
-                    enemy = execType - 4;
-                else if (execType >=9)
-                    enemy = 8;
+                if (execType == 4)
+                    enemy = 3;
+                if (execType == 5)
+                    enemy = 4;
+
+                if (execType == 6 || execType == 7 || execType == 8)
+                    enemy = 4;
+
+                if (execType == 10)
+                    enemy = 9;
+
+
 
                 double cMetric = 0;
                 double cMetricReverse = 0;
@@ -815,13 +824,13 @@ public class CostDistr extends Problem {
                             avg_4_spr += spread;
                             avg_4_nds += nds;
                             avg_4_time += estimatedTime;
-                            avg_4_cmetric += cMetric;
+                            avg_1_cmetric += cMetric;
                             avg_0_cmetric += cMetricReverse;
                             hypWriter_4.write(hypervolume + "\n");
                             sprWriter_4.write(spread + "\n");
                             ndsWriter_4.write(nds + "\n");
                             timWriter_4.write(estimatedTime + "\n");
-                            cmeWriter_4.write(cMetric + "\n");
+                            cmeWriter_1.write(cMetric + "\n");
                             cmeWriter_0.write(cMetricReverse + "\n");
                             break;
                         case 5:
@@ -829,28 +838,28 @@ public class CostDistr extends Problem {
                             avg_5_spr += spread;
                             avg_5_nds += nds;
                             avg_5_time += estimatedTime;
-                            avg_5_cmetric += cMetric;
-                            avg_1_cmetric += cMetricReverse;
+                            avg_3_cmetric += cMetric;
+                            avg_2_cmetric += cMetricReverse;
                             hypWriter_5.write(hypervolume + "\n");
                             sprWriter_5.write(spread + "\n");
                             ndsWriter_5.write(nds + "\n");
                             timWriter_5.write(estimatedTime + "\n");
-                            cmeWriter_5.write(cMetric + "\n");
-                            cmeWriter_1.write(cMetricReverse + "\n");
+                            cmeWriter_3.write(cMetric + "\n");
+                            cmeWriter_2.write(cMetricReverse + "\n");
                             break;
                         case 6:
                             avg_6_hyp += hypervolume;
                             avg_6_spr += spread;
                             avg_6_nds += nds;
                             avg_6_time += estimatedTime;
-                            avg_6_cmetric += cMetric;
-                            avg_2_cmetric += cMetricReverse;
+                            avg_5_cmetric += cMetric;
+                            avg_4_cmetric += cMetricReverse;
                             hypWriter_6.write(hypervolume + "\n");
                             sprWriter_6.write(spread + "\n");
                             ndsWriter_6.write(nds + "\n");
                             timWriter_6.write(estimatedTime + "\n");
-                            cmeWriter_6.write(cMetric + "\n");
-                            cmeWriter_2.write(cMetricReverse + "\n");
+                            cmeWriter_5.write(cMetric + "\n");
+                            cmeWriter_4.write(cMetricReverse + "\n");
                             break;
                         case 7:
                             avg_7_hyp += hypervolume;
@@ -858,13 +867,13 @@ public class CostDistr extends Problem {
                             avg_7_nds += nds;
                             avg_7_time += estimatedTime;
                             avg_7_cmetric += cMetric;
-                            avg_3_cmetric += cMetricReverse;
+                            avg_6_cmetric += cMetricReverse;
                             hypWriter_7.write(hypervolume + "\n");
                             sprWriter_7.write(spread + "\n");
                             ndsWriter_7.write(nds + "\n");
                             timWriter_7.write(estimatedTime + "\n");
                             cmeWriter_7.write(cMetric + "\n");
-                            cmeWriter_3.write(cMetricReverse + "\n");
+                            cmeWriter_6.write(cMetricReverse + "\n");
                             break;
                         case 8:
                             avg_8_hyp += hypervolume;
@@ -881,12 +890,10 @@ public class CostDistr extends Problem {
                             avg_9_spr += spread;
                             avg_9_nds += nds;
                             avg_9_time += estimatedTime;
-                            avg_9_cmetric += cMetric;
                             hypWriter_9.write(hypervolume + "\n");
                             sprWriter_9.write(spread + "\n");
                             ndsWriter_9.write(nds + "\n");
                             timWriter_9.write(estimatedTime + "\n");
-                            cmeWriter_9.write(cMetric + "\n");
                             break;
                         case 10:
                             avg_10_hyp += hypervolume;
@@ -894,13 +901,13 @@ public class CostDistr extends Problem {
                             avg_10_nds += nds;
                             avg_10_time += estimatedTime;
                             avg_10_cmetric += cMetric;
-                            avg_8_cmetric += cMetricReverse;
+                            avg_9_cmetric += cMetricReverse;
                             hypWriter_10.write(hypervolume + "\n");
                             sprWriter_10.write(spread + "\n");
                             ndsWriter_10.write(nds + "\n");
                             timWriter_10.write(estimatedTime + "\n");
                             cmeWriter_10.write(cMetric + "\n");
-                            cmeWriter_8.write(cMetricReverse + "\n");
+                            cmeWriter_9.write(cMetricReverse + "\n");
                             break;
                         default:
                             break;
