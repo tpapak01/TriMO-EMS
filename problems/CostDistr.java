@@ -137,7 +137,7 @@ public class CostDistr extends Problem {
         //Identify optimistic,pessimistic and LL-desirable solution
         double best_self = Double.MAX_VALUE;
         int optimistic_index = -1;
-        double pessimistic_self = Double.MIN_VALUE;
+        double pessimistic_self = -Double.MAX_VALUE;
         int pessimistic_index = -1;
         double[] target_desirability = new double[this.lowerLevelProblem.getNumberOfObjectives()];
         target_desirability[0] = this.lowerLevelProblem.getObjectiveDesirability();
@@ -152,7 +152,8 @@ public class CostDistr extends Problem {
             // do upper-level evaluation = finding deviation from available RE
             //double result = upperLevel_evaluate_distance_from_produced(spentEnergy);
             double[] energySpent = lowerLevelSol.getSpentEnergy();
-            double result = upperLevel_evaluate_XOR_distance_plus_weight(energySpent, costs);
+            //double result = upperLevel_evaluate_XOR_distance_plus_weight(energySpent, costs);
+            double result = upperLevel_evaluate_profit(energySpent, costs);
             lowerLevelSol.setSelfConsumption(result);
             //double selfConsumption = upperLevel_evaluate_XOR_distance(energySpent);
             if (result < best_self){
@@ -218,7 +219,8 @@ public class CostDistr extends Problem {
 
             Solution currentArchiveSol = newSol;
             exIdx++;
-            externalToAdd = newExternal.get(exIdx);
+            if (newExternal.size() > 1)
+                externalToAdd = newExternal.get(exIdx);
             int i = 1;
             while (archive.size() < popSize){
                 double f1 = algo.fitnessFunction(currentArchiveSol, lambda[i]);
@@ -473,6 +475,7 @@ public class CostDistr extends Problem {
         solution.setEnergyAllocatedPerUser(chosenlowerLevelSol.getEnergyAllocatedPerUser());
         double deviation = calculateEnergyDeviationFromProduced(energySpent);
         solution.setEnergyDeviationFromProduced(deviation);
+        solution.setProfit(upperLevel_evaluate_profit_simple(energySpent, costs));
         double nonREpaid = calculateNonREPaid(energySpent, costs);
         solution.setNonREpaid(nonREpaid);
         solution.setDeviceToPreferenceMapping(chosenlowerLevelSol.getDeviceToPreferenceMapping());
@@ -596,6 +599,38 @@ public class CostDistr extends Problem {
         }
 
         return 0.5 * sum_extra + 0.5 * sum_less;
+    }
+
+    public double upperLevel_evaluate_profit_simple(double[] spentEnergy, XReal costs) throws JMException {
+
+        double sum = 0;
+
+        for (int i=0; i<producedRE.length; i++) {
+            double profit = costs.getValue(i) * spentEnergy[i];
+            sum += profit;
+        }
+
+        return -sum;
+    }
+
+    public double upperLevel_evaluate_profit(double[] spentEnergy, XReal costs) throws JMException {
+
+        double sum = 0;
+
+        for (int i=0; i<producedRE.length; i++) {
+            double freeEnergy = producedRE[i];
+            double paidEnergy = spentEnergy[i] - freeEnergy;
+            if (paidEnergy <= 0) {
+                paidEnergy = 0;
+                freeEnergy = spentEnergy[i];
+            }
+
+            double profit;
+            profit = (costs.getValue(i) * paidEnergy) + (freeEnergy * (1.0 - costs.getValue(i)));
+            sum += profit;
+        }
+
+        return -sum;
     }
 
     ////////////////////////////////    HELPER FUNCTIONS       ////////////////////////////////////////

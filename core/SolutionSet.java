@@ -354,6 +354,28 @@ public class SolutionSet implements Serializable {
     }
   }
 
+  public void printProfitToFile(String path, boolean append){
+    try {
+      /* Open the file */
+      FileOutputStream fos   = new FileOutputStream(path, append)     ;
+      OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
+      BufferedWriter bw      = new BufferedWriter(osw)        ;
+
+      for (Solution aSolutionsList_ : solutionsList_) {
+        //if (this.vector[i].getFitness()<1.0) {
+        bw.write(String.valueOf(aSolutionsList_.getProfit()));
+        bw.newLine();
+        //}
+      }
+
+      /* Close the file */
+      bw.close();
+    }catch (IOException e) {
+      Configuration.logger_.severe("Error acceding to the file");
+      e.printStackTrace();
+    }
+  }
+
   // Purpose: secondary metric of how successful the solution is: the amount of energy to be paid, and how much money
   public void printNonREPaidToFile(String path){
     try {

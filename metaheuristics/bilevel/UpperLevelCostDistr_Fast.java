@@ -190,6 +190,7 @@ public class UpperLevelCostDistr_Fast {
         population.printMappingToFile("LL_MAPPING");
 
         population.printSpentEnergyToFile("SPENT");
+        population.printProfitToFile("PROFIT", true);
         population.printUserDissatisfactionToFile("USER_DISSAT", true);
         population.printUserDissatisfactionToFile(problemPath + "results\\Winner\\USER_DISSAT", false);
         population.printStdDevUserDissatisfactionToFile("STDDEV_USER_DISSAT");
