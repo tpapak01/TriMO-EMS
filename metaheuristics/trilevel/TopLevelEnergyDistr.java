@@ -177,12 +177,17 @@ public class TopLevelEnergyDistr {
 
         /* Log messages */
         System.out.println("Objectives values have been writen to file FUN");
-        population.printObjectivesToFile("FUN");
+        population.printObjectivesToFile("TL_FUN");
         System.out.println("Variables values have been writen to file VAR");
-        population.printVariablesToFile("VAR");
+        population.printVariablesToFile("TL_VAR");
         //population.printVariablesToFile(problemPath + "results\\Winner\\Prices");
 
-        //population.printSelfConsumptionToFile("SELF_CONSU");
+        population.printProfitToFile("PROFIT", true);
+        population.printProfitToFile("UL_FUN", true);
+        population.printUpperLevelVarsToFile("UL_VAR");
+
+        //population.printEnergyDeviationFromProducedToFile("SELF_CONSU");
+        population.printSelfConsumptionToFile("SELF_CONSU");
         //population.printSelfConsumptionToFile(problemPath + "results\\Winner\\SELF_CONSU");
         //population.printNonREPaidToFile("NON_RE_PAID");
         population.printLowerLevelVarsToFile("LL_VAR");

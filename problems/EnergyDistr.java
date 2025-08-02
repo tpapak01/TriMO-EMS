@@ -151,18 +151,21 @@ public class EnergyDistr extends Problem {
             */
         //}
 
+        // TL objective value and self-consumption
         double result = topLevel_evaluate_objective(producedRE, spentEnergy, costOfBuying);
-        double selfDeviation = calculateSelfConsDeviation(producedRE, spentEnergy);
-        solution.setSelfConsumption(selfDeviation);
-        System.out.println("SELF: " + selfDeviation);
+        solution.setObjective(0, result);
+        double selfConsumption = calculateSelfConsDeviation(producedRE, spentEnergy);
+        solution.setSelfConsumption(selfConsumption);
+        System.out.println("SELF: " + selfConsumption);
         System.out.println();
 
-        solution.setObjective(0, result);
-
+        // UL objective value and profit
         Variable[] vars = best.getDecisionVariables();
         solution.setUpperLevelVars(vars[0]);
         solution.setUpperLevelObj(best.getObjective(0));
+        solution.setProfit(best.getObjective(0));
 
+        // LL objective value
         solution.setLowerLevelVars(best.getLowerLevelVars());
         solution.setLowerLevelObj(best.getLowerLevelObj());
         //solution.setDeviceToPreferenceMapping(chosenUpperLevelSol.getDeviceToPreferenceMapping());

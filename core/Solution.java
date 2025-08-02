@@ -129,6 +129,14 @@ public class Solution implements Serializable {
     this.energyDeviationFromProducedArray = energyDeviationFromProducedArray;
   }
 
+  private double profit = -1;
+  public double getProfit(){
+    return profit;
+  }
+  public void setProfit(double profit){
+    this.profit = profit;
+  }
+
   private double nonREpaid = -1;
   public double getNonREpaid(){
     return nonREpaid;
@@ -388,6 +396,10 @@ public class Solution implements Serializable {
     if (solution.getEnergyDeviationFromProducedArray() != null){
       setEnergyDeviationFromProducedArray(solution.getEnergyDeviationFromProducedArray());
     }
+
+    if (solution.getProfit() != -1){
+      setProfit(solution.getProfit());
+    }
     if (solution.getNonREpaid() != -1){
       setNonREpaid(solution.getNonREpaid());
     }
@@ -457,6 +469,11 @@ public class Solution implements Serializable {
     if (solution.getEnergyDeviationFromProducedArray() != null){
       setEnergyDeviationFromProducedArray(solution.getEnergyDeviationFromProducedArray());
     }
+
+    if (solution.getProfit() != -1){
+      setProfit(solution.getProfit());
+    }
+
     if (solution.getNonREpaid() != -1){
       setNonREpaid(solution.getNonREpaid());
     }

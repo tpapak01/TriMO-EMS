@@ -289,13 +289,57 @@ public class SolutionSet implements Serializable {
   public void printSelfConsumptionToFile(String path){
     try {
       /* Open the file */
-      FileOutputStream fos   = new FileOutputStream(path, false)     ;
+      FileOutputStream fos   = new FileOutputStream(path, true)     ;
+      OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
+      BufferedWriter bw      = new BufferedWriter(osw)        ;
+
+      for (Solution aSolutionsList_ : solutionsList_) {
+        //if (this.vector[i].getFitness()<1.0) {
+        bw.write(String.valueOf(aSolutionsList_.getSelfConsumption()));
+        bw.newLine();
+        //}
+      }
+
+      /* Close the file */
+      bw.close();
+    }catch (IOException e) {
+      Configuration.logger_.severe("Error acceding to the file");
+      e.printStackTrace();
+    }
+  }
+
+  public void printEnergyDeviationFromProducedToFile(String path){
+    try {
+      /* Open the file */
+      FileOutputStream fos   = new FileOutputStream(path, true)     ;
       OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
       BufferedWriter bw      = new BufferedWriter(osw)        ;
 
       for (Solution aSolutionsList_ : solutionsList_) {
         //if (this.vector[i].getFitness()<1.0) {
         bw.write(String.valueOf(aSolutionsList_.getEnergyDeviationFromProduced()));
+        bw.newLine();
+        //}
+      }
+
+      /* Close the file */
+      bw.close();
+    }catch (IOException e) {
+      Configuration.logger_.severe("Error acceding to the file");
+      e.printStackTrace();
+    }
+  }
+
+  public void printProfitToFile(String path, boolean append){
+    try {
+      /* Open the file */
+      FileOutputStream fos   = new FileOutputStream(path, append)     ;
+      OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
+      BufferedWriter bw      = new BufferedWriter(osw)        ;
+
+      for (Solution aSolutionsList_ : solutionsList_) {
+        //if (this.vector[i].getFitness()<1.0) {
+        bw.write(String.valueOf(aSolutionsList_.getProfit()));
         bw.newLine();
         //}
       }
@@ -469,7 +513,28 @@ public class SolutionSet implements Serializable {
     }
   }
 
+  // Purpose: to know exactly which device each user got and which not
+  public void printUpperLevelVarsToFile(String path){
+    try {
+      /* Open the file */
+      FileOutputStream fos   = new FileOutputStream(path, true)     ;
+      OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
+      BufferedWriter bw      = new BufferedWriter(osw)        ;
 
+      for (Solution aSolutionsList_ : solutionsList_) {
+        //if (this.vector[i].getFitness()<1.0) {
+        bw.write(aSolutionsList_.getUpperLevelVars().toString());
+        bw.newLine();
+        //}
+      }
+
+      /* Close the file */
+      bw.close();
+    }catch (IOException e) {
+      Configuration.logger_.severe("Error acceding to the file");
+      e.printStackTrace();
+    }
+  }
 
   // Purpose: to know the balance between dissatisfaction and costs of the chosen LL solution by the upper level
   public void printLowerLevelObjToFile(String path){
