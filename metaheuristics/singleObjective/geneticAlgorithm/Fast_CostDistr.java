@@ -85,15 +85,15 @@ public class Fast_CostDistr extends Algorithm {
 
   public void  initFastCostDistr(){
     // Read the params
-    populationSize = ((Integer)this.getInputParameter("populationSize")).intValue();
-    maxEvaluations = ((Integer)this.getInputParameter("maxEvaluations")).intValue();
+    populationSize = (Integer) this.getInputParameter("populationSize");
+    maxEvaluations = (Integer) this.getInputParameter("maxEvaluations");
 
     comparator = (Comparator) this.getInputParameter("comparator");
 
     // Read the operators
-    selectionOperator = this.operators_.get("selection");
-    crossoverOperator = this.operators_.get("crossover");
-    mutationOperator  = this.operators_.get("mutation");
+    selectionOperator = operators_.get("selection");
+    crossoverOperator = operators_.get("crossover");
+    mutationOperator  = operators_.get("mutation");
   }
   
  /**

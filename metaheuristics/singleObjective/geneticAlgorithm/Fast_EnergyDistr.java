@@ -129,6 +129,8 @@ public class Fast_EnergyDistr extends Algorithm {
         //selection: binary tournament
         parents[0] = (Solution)selectionOperator.execute(population);
         parents[1] = (Solution)selectionOperator.execute(population);
+        while (parents[0] == parents[1])
+          parents[1] = (Solution)selectionOperator.execute(population);
  
         // Crossover
         Solution [] offspring = (Solution []) crossoverOperator.execute(parents);
@@ -254,7 +256,7 @@ public class Fast_EnergyDistr extends Algorithm {
 
         if (i == 0){
           double[] ones = new double[problem_.getNumberOfVariables()];
-          Arrays.fill(ones, 1.0);
+          Arrays.fill(ones, EnergyDistr.TL_upperLimit);
           newSolution.setDecisionVariables(updateSolution(ones));
         }
 
@@ -267,9 +269,9 @@ public class Fast_EnergyDistr extends Algorithm {
         XReal costOfBuying = new XReal(newSolution);
 
         UpperLevelCostDistr_Fast ul_wrapper = new UpperLevelCostDistr_Fast(i+1, costOfBuying, newSolution);
+        Thread thread = new Thread(ul_wrapper);
 
         newSolution.setUl_wrapper(ul_wrapper);
-        Thread thread = new Thread(ul_wrapper);
         newSolution.setThread(thread);
         thread.start();
 

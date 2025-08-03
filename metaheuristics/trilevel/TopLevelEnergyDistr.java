@@ -141,7 +141,7 @@ public class TopLevelEnergyDistr {
          */
         //thalis
         Double perturbationIndex = 0.5;
-        Double mutationProbability = 1.0 / problem.getNumberOfVariables();
+        Double mutationProbability = 0.2; //1.0 / problem.getNumberOfVariables();
         parameters = new HashMap();
         parameters.put("probability", mutationProbability);
         parameters.put("perturbation", perturbationIndex);

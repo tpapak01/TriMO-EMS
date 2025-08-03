@@ -40,20 +40,24 @@ public class EnergyDistr extends Problem {
     private static double[] lowerLimitStatic;
     private static double[] upperLimitStatic;
 
+    public static double TL_upperLimit = 0.8;
+
   public EnergyDistr(CostDistr upperLevelProblem, String dataPath, String costsName) throws IOException {
       this.numberOfObjectives_ = 1;
       this.numberOfVariables_ = upperLevelProblem.getNumberOfVariables();
       this.lowerLimit_ = new double[numberOfVariables_];
       lowerLimitStatic = new double[numberOfVariables_];
+      /*
       for (int i=0; i<lowerLimit_.length; i++) {
           lowerLimit_[i] = -1.0;
           lowerLimitStatic[i] = -1.0;
       }
+      */
       this.upperLimit_ = new double[numberOfVariables_];
       upperLimitStatic = new double[numberOfVariables_];
       for (int i=0; i<upperLimit_.length; i++) {
-          upperLimit_[i] = 1.0;
-          upperLimitStatic[i] = 1.0;
+          upperLimit_[i] = TL_upperLimit;
+          upperLimitStatic[i] = TL_upperLimit;
       }
       producedRE = CostDistr.getProducedRE();
 
@@ -113,7 +117,7 @@ public class EnergyDistr extends Problem {
         System.out.println(
                 Arrays.toString(problemCostDistr.getLL_wrapper().getProblemMOKP().getCostOfUsage().getArray())
         );
-        System.out.println("TL OBJ: " + best.getUpperLevelObj());
+        System.out.println("UL OBJ: " + best.getUpperLevelObj());
         System.out.println("UL OBJ (Profit): " + best.getObjective(0));
 
         int u_size = upperLevelSolutions.size();
@@ -209,8 +213,8 @@ public class EnergyDistr extends Problem {
             double abs_difference = Math.abs(difference);
             double cost = costOfBuying.getValue(i);
             if (difference < 0)
-                sum += abs_difference * (1.0 + (cost - lowerLimitStatic[i]));
-            else sum += abs_difference * (1.0 + (upperLimitStatic[i] - cost));
+                sum += abs_difference * (1.0 + (upperLimitStatic[i] - cost)); //raise price if there is RE left
+            else sum += abs_difference * (1.0 + (cost - lowerLimitStatic[i])); // lower price if you spent all RE
         }
 
         return sum;

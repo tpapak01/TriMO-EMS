@@ -80,10 +80,12 @@ public class CostDistr extends Problem {
 
         //copy
         this.lowerLimit_ = Arrays.copyOf(problem.lowerLimit_, problem.lowerLimit_.length);
+        /*
         for (int i=0; i<lowerLimit_.length; i++) {
             if (costOfBuy.getValue(i) >= 0)
                 this.lowerLimit_[i] = costOfBuy.getValue(i);
         }
+         */
         this.solutionType_ = new ArrayRealSolutionType(this);
         costOfBuying = costOfBuy;
 
@@ -208,9 +210,10 @@ public class CostDistr extends Problem {
             // do upper-level evaluation = finding deviation from available RE
             double[] energySpent = lowerLevelSol.getSpentEnergy();
             //XReal costOfBuying = this.costOfBuying;
-            //double result = upperLevel_evaluate_profit(energySpent, costs);
             //double result = upperLevel_evaluate_XOR_distance_plus_weight(energySpent, costs);
-            double specialResult =  upperLevel_evaluate_profit_simple(energySpent, costs, costOfBuying);
+            //double specialResult = EnergyDistr.topLevel_evaluate_objective(producedRE, energySpent, costOfBuying);
+            //double profitResult = upperLevel_evaluate_profit(energySpent, costs);
+            double specialResult = upperLevel_evaluate_profit(energySpent, costs);
             lowerLevelSol.setUpperLevelObj(specialResult);
             if (specialResult < best_res){
                 best_res = specialResult;
@@ -327,12 +330,13 @@ public class CostDistr extends Problem {
             chosenlowerLevelSol = optimisticSol;
 
             double[] energySpent = chosenlowerLevelSol.getSpentEnergy();
-            solution.setObjective(0, upperLevel_evaluate_profit_simple(energySpent, costs, costOfBuying));
+            solution.setObjective(0, chosenlowerLevelSol.getUpperLevelObj());
 
             double self = EnergyDistr.calculateSelfConsDeviation(producedRE, optimisticSol.getSpentEnergy());
             if (self < bestSelfEver) {
                 bestSelfEver = self;
                 System.out.println("BEST EVA (" + (id) + "): " + bestSelfEver + " profit: " + solution.getObjective(0) );
+                System.out.println("BUY: "+ Arrays.toString(costOfBuying.getArray()));
                 System.out.println("COST: "+ Arrays.toString(costs.getArray()));
                 double[] difference = new double[24];
                 DecimalFormat df = new DecimalFormat("#.##");
@@ -641,7 +645,7 @@ public class CostDistr extends Problem {
         return sum;
     }
 
-    public double upperLevel_evaluate_profit_simple(double[] spentEnergy, XReal costs, XReal costOfBuying) throws JMException {
+    public double upperLevel_evaluate_profit_simple(double[] spentEnergy, XReal costs) throws JMException {
 
         double sum = 0;
 
@@ -655,7 +659,7 @@ public class CostDistr extends Problem {
         return sum;
     }
 
-    public double upperLevel_evaluate_profit(double[] spentEnergy, XReal costs, XReal costOfBuying) throws JMException {
+    public double upperLevel_evaluate_profit(double[] spentEnergy, XReal costs) throws JMException {
 
         double sum = 0;
 
@@ -666,17 +670,18 @@ public class CostDistr extends Problem {
                 paidEnergy = 0;
                 freeEnergy = spentEnergy[i];
             }
+
             double differencePaid = costs.getValue(i) - costOfBuying.getValue(i);
-            double differenceFree = costs.getValue(i);
-            if (differencePaid < 0){
-                int a = 2;
-            }
-            double profit = (paidEnergy * differencePaid) + (freeEnergy * differenceFree);
+            double differenceFree = costOfBuying.getValue(i);
+
+            double profit;
+            profit = (differencePaid * paidEnergy) + (freeEnergy * differenceFree);
             sum += profit;
         }
 
         return -sum;
     }
+
 
     ////////////////////////////////    HELPER FUNCTIONS       ////////////////////////////////////////
 
