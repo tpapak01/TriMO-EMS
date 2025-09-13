@@ -172,6 +172,8 @@ public class EnergyDistr extends Problem {
         // LL objective value
         solution.setLowerLevelVars(best.getLowerLevelVars());
         solution.setLowerLevelObj(best.getLowerLevelObj());
+        // LL platform-only
+        solution.setLL_Pareto_pop(best.getLL_Pareto_pop());
         //solution.setDeviceToPreferenceMapping(chosenUpperLevelSol.getDeviceToPreferenceMapping());
         //solution.setReverseDeviceToPreferenceMapping(chosenUpperLevelSol.getReverseDeviceToPreferenceMapping());
 

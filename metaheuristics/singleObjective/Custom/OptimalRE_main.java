@@ -75,7 +75,7 @@ public class OptimalRE_main {
         System.out.println("Variables values have been writen to file VAR");
         population.printVariablesToFile("VAR");
 
-        population.printSelfConsumptionToFile("SELF_CONSU");
+        population.printSelfConsumptionToFile("SELF_CONSU", true);
         population.printNonREPaidToFile("NON_RE_PAID");
         population.printLowerLevelVarsToFile("LL_VAR");
         population.printLowerLevelObjToFile("LL_FUN");

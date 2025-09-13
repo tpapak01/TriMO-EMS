@@ -110,13 +110,15 @@ public class Fast_EnergyDistr extends Algorithm {
 
       Solution winner = population.get(0);
       //System.out.println("q: " + winner.getUL_Optimism());
-      /*
+
+      // Platform-only
       SolutionSet winnerPareto = winner.getLL_Pareto_pop();
       winnerPareto.printParetoToFile(problemPath + "results\\Paretos\\PARETO_" + (generation));
       SolutionSet onlyWinner = new SolutionSet(1);
       onlyWinner.add(winner);
-      onlyWinner.printSelfConsumptionToFile(problemPath + "results\\SelfsInProgress\\SELF_" + (generation));
-       */
+      onlyWinner.printSelfConsumptionToFile(problemPath + "results\\SelfsInProgress\\SELF_" + (generation), false);
+      onlyWinner.printProfitToFile(problemPath + "results\\ProfitInProgress\\PROFIT_" + (generation), false);
+
       generation++;
 
       SolutionSet offspringPopulation = new SolutionSet(populationSize) ;

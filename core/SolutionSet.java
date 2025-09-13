@@ -286,10 +286,10 @@ public class SolutionSet implements Serializable {
   // The actual metric that defines how successful the solution is. Used a lot in the paper
   // The benefit of approaching the "RE limit" is that dissatisfaction goes down, while the
   // benefit of not exceeding the "RE limit" is that potential costs of non-RE energy stay low.
-  public void printSelfConsumptionToFile(String path){
+  public void printSelfConsumptionToFile(String path, boolean append){
     try {
       /* Open the file */
-      FileOutputStream fos   = new FileOutputStream(path, true)     ;
+      FileOutputStream fos   = new FileOutputStream(path, append)     ;
       OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
       BufferedWriter bw      = new BufferedWriter(osw)        ;
 
@@ -339,7 +339,7 @@ public class SolutionSet implements Serializable {
 
       for (Solution aSolutionsList_ : solutionsList_) {
         //if (this.vector[i].getFitness()<1.0) {
-        bw.write(String.valueOf(aSolutionsList_.getProfit()));
+        bw.write(String.valueOf(Math.abs(aSolutionsList_.getProfit())));
         bw.newLine();
         //}
       }

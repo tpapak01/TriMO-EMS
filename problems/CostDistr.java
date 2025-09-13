@@ -550,7 +550,8 @@ public class CostDistr extends Problem {
         //solution.setReverseDeviceToPreferenceMapping(chosenlowerLevelSol.getReverseDeviceToPreferenceMapping());
         solution.setLL_Transfer_pop(transferPareto);
         //platform only
-        //solution.setLL_Pareto_pop(lowerLevelSolutions);
+        solution.setLL_Pareto_pop(lowerLevelSolutions);
+
         solution.setUpperLevelObj(chosenlowerLevelSol.getUpperLevelObj());
 
         if (best_upper_level_result > best_res) {

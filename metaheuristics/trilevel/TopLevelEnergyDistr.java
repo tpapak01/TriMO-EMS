@@ -187,7 +187,7 @@ public class TopLevelEnergyDistr {
         population.printUpperLevelVarsToFile("UL_VAR");
 
         //population.printEnergyDeviationFromProducedToFile("SELF_CONSU");
-        population.printSelfConsumptionToFile("SELF_CONSU");
+        population.printSelfConsumptionToFile("SELF_CONSU", true);
         //population.printSelfConsumptionToFile(problemPath + "results\\Winner\\SELF_CONSU");
         //population.printNonREPaidToFile("NON_RE_PAID");
         population.printLowerLevelVarsToFile("LL_VAR");

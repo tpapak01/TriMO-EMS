@@ -181,8 +181,8 @@ public class UpperLevelCostDistr_Fast {
         population.printVariablesToFile("VAR");
         population.printVariablesToFile(problemPath + "results\\Winner\\Prices");
 
-        population.printSelfConsumptionToFile("SELF_CONSU");
-        population.printSelfConsumptionToFile(problemPath + "results\\Winner\\SELF_CONSU");
+        population.printSelfConsumptionToFile("SELF_CONSU", true);
+        population.printSelfConsumptionToFile(problemPath + "results\\Winner\\SELF_CONSU", false);
         population.printNonREPaidToFile("NON_RE_PAID");
         population.printLowerLevelVarsToFile("LL_VAR");
         population.printLowerLevelObjToFile("LL_FUN");
