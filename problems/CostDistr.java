@@ -332,25 +332,17 @@ public class CostDistr extends Problem {
             double[] energySpent = chosenlowerLevelSol.getSpentEnergy();
             solution.setObjective(0, chosenlowerLevelSol.getUpperLevelObj());
 
-            double self = EnergyDistr.calculateSelfConsDeviation(producedRE, optimisticSol.getSpentEnergy());
-            if (self < bestSelfEver) {
-                bestSelfEver = self;
-                System.out.println("BEST EVA (" + (id) + "): " + bestSelfEver + " profit: " + solution.getObjective(0) );
-                System.out.println("BUY: "+ Arrays.toString(costOfBuying.getArray()));
-                System.out.println("COST: "+ Arrays.toString(costs.getArray()));
-                double[] difference = new double[24];
-                DecimalFormat df = new DecimalFormat("#.##");
-                for (int i=0; i<24; i++) {
-                    difference[i] = producedRE[i] - energySpent[i];
-                    difference[i] = Double.parseDouble(df.format(difference[i]));
-                }
-                System.out.println("SPENT: "+ Arrays.toString(difference));
-                System.out.println();
-            }
+            printHelpfulStuff(solution, costs, energySpent);
+
         } else if (ULObjectiveDesirability == 0.0){
             // RESIDENT-AWARE APPROACH
-            solution.setObjective(0, worst_res);
+
             chosenlowerLevelSol = bestDesSol;
+            solution.setObjective(0, worst_res);
+
+            double[] energySpent = chosenlowerLevelSol.getSpentEnergy();
+            printHelpfulStuff(solution, costs, energySpent);
+
         } else if (ULObjectiveDesirability == -1.0) {
             // PESSIMISTIC APPROACH
             solution.setObjective(0, pessimistic_res);
@@ -588,6 +580,24 @@ public class CostDistr extends Problem {
         //System.out.println(solution.getDecisionVariables()[0]);
 
 	} // evaluate
+
+    private void printHelpfulStuff(Solution solution, XReal costs, double[] energySpent){
+        double self = EnergyDistr.calculateSelfConsDeviation(producedRE, energySpent);
+        if (self < bestSelfEver) {
+            bestSelfEver = self;
+            System.out.println("BEST EVA (" + (id) + "): " + bestSelfEver + " profit: " + solution.getObjective(0) );
+            System.out.println("BUY: "+ Arrays.toString(costOfBuying.getArray()));
+            System.out.println("COST: "+ Arrays.toString(costs.getArray()));
+            double[] difference = new double[producedRE.length];
+            DecimalFormat df = new DecimalFormat("#.##");
+            for (int i=0; i<producedRE.length; i++) {
+                difference[i] = producedRE[i] - energySpent[i];
+                difference[i] = Double.parseDouble(df.format(difference[i]));
+            }
+            System.out.println("SPENT: "+ Arrays.toString(difference));
+            System.out.println();
+        }
+    }
 
     /*
      * Retrieve best solution from decision-making reaction set given the cooperation index q
