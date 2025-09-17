@@ -220,7 +220,7 @@ public class TopLevelEnergyDistr {
         lowerLevelSolutions.printSelfsToFile(problemPath + "results\\Selfs\\");
         //population.printSpentEnergyToFile(platformPath + "Winner\\SPENT");
 
-
+        System.exit(0);
 
     } //main
 
