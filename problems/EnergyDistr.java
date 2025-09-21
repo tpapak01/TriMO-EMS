@@ -11,22 +11,17 @@ import jmetal.core.Solution;
 import jmetal.core.SolutionSet;
 import jmetal.core.Variable;
 import jmetal.encodings.solutionType.ArrayRealSolutionType;
-import jmetal.encodings.variable.Binary;
-import jmetal.metaheuristics.moead.MOEAD;
 import jmetal.metaheuristics.singleObjective.geneticAlgorithm.Fast_CostDistr;
 import jmetal.metaheuristics.trilevel.UpperLevelCostDistr_Fast;
 import jmetal.util.JMException;
-import jmetal.util.Utils;
-import jmetal.util.comparators.ObjectiveComparator;
 import jmetal.util.wrapper.XReal;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Arrays;
-import java.util.Comparator;
+import java.util.StringTokenizer;
 
 
 public class EnergyDistr extends Problem {
@@ -41,8 +36,19 @@ public class EnergyDistr extends Problem {
     private static double[] upperLimitStatic;
 
     public static double TL_upperLimit = 0.8;
+    public static int[] numOfActiveGeneratorsPerTime;
+    public static double baseGenerationCosts;
+    public final static int numOfGenerators = 8;
+    public final static int genDataDivisor = 10;
 
-  public EnergyDistr(CostDistr upperLevelProblem, String dataPath, String costsName) throws IOException {
+    public static double[] Pmin;
+    public static double[] Pmax;
+    public static double[] c_no_load;
+    public static double[] c_linear;
+    public static double[] c_start_hot;
+    public static double[] c_start_cold;
+
+  public EnergyDistr(CostDistr upperLevelProblem, String dataPath, String costsName, String geneName) throws IOException {
       this.numberOfObjectives_ = 1;
       this.numberOfVariables_ = upperLevelProblem.getNumberOfVariables();
       this.lowerLimit_ = new double[numberOfVariables_];
@@ -66,6 +72,8 @@ public class EnergyDistr extends Problem {
       System.out.println(fileName);
       String costsFileName = "-";
       if (!costsName.equals("-")) costsFileName = costsPath + costsName;
+      String generatorsName = "-";
+      if (!geneName.equals("-")) generatorsName = problemPath + geneName;
 
       this.solutionType_ = new ArrayRealSolutionType(this);
 
@@ -83,7 +91,37 @@ public class EnergyDistr extends Problem {
 
           in.close();
       }
-  }  //
+
+      if (!generatorsName.equals("-")) {
+          numOfActiveGeneratorsPerTime = new int[this.numberOfVariables_];
+          Pmin = new double[this.numberOfVariables_];
+          Pmax = new double[this.numberOfVariables_];
+          c_no_load = new double[this.numberOfVariables_];
+          c_linear = new double[this.numberOfVariables_];
+          c_start_hot = new double[this.numberOfVariables_];
+          c_start_cold = new double[this.numberOfVariables_];
+          for (int i=0; i<this.numberOfVariables_; i++) {
+              numOfActiveGeneratorsPerTime[i] = 2;
+          }
+
+          BufferedReader in = new BufferedReader(new FileReader(generatorsName + ".txt" ));
+          String line;
+          in.readLine();
+
+          for (int i=0; i<numOfGenerators; i++) {
+              line = in.readLine();
+              StringTokenizer tokenizer = new StringTokenizer(line, " ");
+              Pmin[i] = Double.parseDouble(tokenizer.nextToken()) / genDataDivisor;
+              Pmax[i] = Double.parseDouble(tokenizer.nextToken()) / genDataDivisor;
+              c_no_load[i] = Double.parseDouble(tokenizer.nextToken()); // genDataDivisor;
+              c_linear[i] = Double.parseDouble(tokenizer.nextToken()); // genDataDivisor;
+              c_start_hot[i] = Double.parseDouble(tokenizer.nextToken()); // genDataDivisor;
+              c_start_cold[i] = Double.parseDouble(tokenizer.nextToken()); // genDataDivisor;
+          }
+
+          baseGenerationCosts = calculateBaseGenerationCosts(numOfActiveGeneratorsPerTime, Pmin, c_no_load, c_linear);
+      }
+  }
 
     public double[] getInputCosts(){
         return inputCosts;
@@ -155,8 +193,11 @@ public class EnergyDistr extends Problem {
             */
         //}
 
+        // set constraints
+        double[] contraints = setConstraints(producedRE, spentEnergy, costOfBuying);
+
         // TL objective value and self-consumption
-        double result = topLevel_evaluate_objective(producedRE, spentEnergy, costOfBuying);
+        double result = topLevel_evaluate_objective(producedRE, spentEnergy, costOfBuying, contraints[0], contraints[1]);
         solution.setObjective(0, result);
         double selfConsumption = calculateSelfConsDeviation(producedRE, spentEnergy);
         solution.setSelfConsumption(selfConsumption);
@@ -196,7 +237,26 @@ public class EnergyDistr extends Problem {
         return sum;
     }
 
-    public static double topLevel_evaluate_objective(double[] producedRE, double[] spentEnergy, XReal costOfBuying) throws JMException {
+    public static double[] setConstraints(double[] producedRE, double[] spentEnergy, XReal costOfBuying) throws JMException {
+        double[] constraints = new double[2];
+        double realTimeGenerationCosts = calculateRealTimeGenerationCosts(numOfActiveGeneratorsPerTime, Pmin, Pmax, c_linear, producedRE, spentEnergy);
+        double requiredGenerationPayment = baseGenerationCosts + realTimeGenerationCosts;
+        double income = calculateIncome(producedRE, spentEnergy, costOfBuying);
+        double allowedReimbursement = income - requiredGenerationPayment;
+        double reimbursement = calculateReimbursement(producedRE, spentEnergy, costOfBuying);
+        double reimbuPenalty = 0;
+        if (reimbursement - allowedReimbursement > 0)
+            reimbuPenalty = reimbursement - allowedReimbursement;
+        double incomePenalty = 0;
+        if (income < requiredGenerationPayment)
+            incomePenalty = requiredGenerationPayment - income;
+        constraints[0] = reimbuPenalty;
+        constraints[1] = incomePenalty;
+        return constraints;
+    }
+
+    public static double topLevel_evaluate_objective(double[] producedRE, double[] spentEnergy, XReal costOfBuying,
+                  double reimbuPenalty, double incomePenalty) throws JMException {
 
         double sum = 0;
 
@@ -211,23 +271,71 @@ public class EnergyDistr extends Problem {
         */
 
         for (int i=0; i<producedRE.length; i++) {
-            double difference = spentEnergy[i] - producedRE[i];
-            double abs_difference = Math.abs(difference);
+            double gridEnergy = spentEnergy[i] - producedRE[i];
+            double abs_difference = Math.abs(gridEnergy);
             double cost = costOfBuying.getValue(i);
-            if (difference < 0)
+            if (gridEnergy < 0)
                 sum += abs_difference * (1.0 + (upperLimitStatic[i] - cost)); //raise price if there is RE left
             else sum += abs_difference * (1.0 + (cost - lowerLimitStatic[i])); // lower price if you spent all RE
         }
 
+        return sum + (reimbuPenalty + incomePenalty) * 100;
+    }
+
+    private static double calculateBaseGenerationCosts(int[] numOfActiveGeneratorsPerTime, double[] Pmin, double[] c_no_load, double[] c_linear) {
+        double sum = 0;
+        for (int i=0; i<numOfActiveGeneratorsPerTime.length; i++){
+            for (int j=0; j<numOfActiveGeneratorsPerTime[i]; j++) {
+                sum += c_no_load[j] + (Pmin[j] * c_linear[j]);
+            }
+        }
         return sum;
     }
 
-    private double selfConsPercentage(double selfConsDeviation, double producedRE, double demand){
-        double worstSelf = producedRE;
-        if (demand - producedRE > worstSelf)
-            worstSelf = demand - producedRE;
-        double selfConsPerc = selfConsDeviation / worstSelf;
-        return selfConsPerc;
+    private static double calculateRealTimeGenerationCosts(int[] numOfActiveGeneratorsPerTime, double[] Pmin, double[] Pmax, double[] c_linear, double[] producedRE, double[] spentEnergy) {
+      double minCosts = 0;
+        for (int i=0; i<numOfActiveGeneratorsPerTime.length; i++){
+            double gridEnergy = spentEnergy[i] - producedRE[i];
+            int lastGenIndex = numOfActiveGeneratorsPerTime[i] - 1;
+            // part 1 - calculate the non-base costs for minRequiredIncome
+            if (gridEnergy > 0) {
+                for (int j=0; j<=lastGenIndex; j++) {
+                    double nonBaseEnergyToPay = gridEnergy - Pmin[j];
+                    if (Pmax[j] - gridEnergy >= 0) {
+                        if (nonBaseEnergyToPay > 0)
+                            minCosts += nonBaseEnergyToPay * c_linear[j];
+                        break;
+                    } else {
+                        minCosts += (Pmax[j] - Pmin[j]) * c_linear[j];
+                        gridEnergy = gridEnergy - Pmax[j];
+                    }
+                }
+            }
+        }
+        return minCosts;
+    }
+
+    private static double calculateReimbursement(double[] producedRE, double[] spentEnergy, XReal costOfBuying) throws JMException {
+        double sum = 0;
+        for (int i=0; i<producedRE.length; i++){
+            double freeEnergy = producedRE[i];
+            if (spentEnergy[i] < producedRE[i]) {
+                freeEnergy = spentEnergy[i];
+            }
+            sum += freeEnergy * costOfBuying.getValue(i);
+        }
+        return sum;
+    }
+
+    private static double calculateIncome(double[] producedRE, double[] spentEnergy, XReal costOfBuying) throws JMException {
+        double sum = 0;
+        for (int i=0; i<producedRE.length; i++){
+            double gridEnergy = spentEnergy[i] - producedRE[i];
+            if (gridEnergy > 0) {
+                sum += gridEnergy * costOfBuying.getValue(i);
+            }
+        }
+        return sum;
     }
 
 }

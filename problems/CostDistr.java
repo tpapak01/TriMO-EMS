@@ -209,10 +209,12 @@ public class CostDistr extends Problem {
 
             // do upper-level evaluation = finding deviation from available RE
             double[] energySpent = lowerLevelSol.getSpentEnergy();
-            //XReal costOfBuying = this.costOfBuying;
             //double result = upperLevel_evaluate_XOR_distance_plus_weight(energySpent, costs);
-            //double specialResult = EnergyDistr.topLevel_evaluate_objective(producedRE, energySpent, costOfBuying);
+
+            //double[] contraints = EnergyDistr.setConstraints(producedRE, energySpent, costOfBuying);
+            //double specialResult = EnergyDistr.topLevel_evaluate_objective(producedRE, energySpent, costOfBuying, contraints[0], contraints[1]);
             //double profitResult = upperLevel_evaluate_profit(energySpent, costs);
+
             double specialResult = upperLevel_evaluate_profit(energySpent, costs);
             lowerLevelSol.setUpperLevelObj(specialResult);
             if (specialResult < best_res){
@@ -676,17 +678,17 @@ public class CostDistr extends Problem {
 
         for (int i=0; i<producedRE.length; i++) {
             double freeEnergy = producedRE[i];
-            double paidEnergy = spentEnergy[i] - freeEnergy;
-            if (paidEnergy <= 0) {
-                paidEnergy = 0;
+            double gridEnergy = spentEnergy[i] - freeEnergy;
+            if (gridEnergy <= 0) {
+                gridEnergy = 0;
                 freeEnergy = spentEnergy[i];
             }
 
-            double differencePaid = costs.getValue(i) - costOfBuying.getValue(i);
+            double differenceGrid = costs.getValue(i) - costOfBuying.getValue(i);
             double differenceFree = costOfBuying.getValue(i);
 
             double profit;
-            profit = (differencePaid * paidEnergy) + (freeEnergy * differenceFree);
+            profit = (differenceGrid * gridEnergy) + (freeEnergy * differenceFree);
             sum += profit;
         }
 

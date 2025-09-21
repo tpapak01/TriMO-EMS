@@ -68,6 +68,10 @@ public class TopLevelEnergyDistr {
         if (args.length > 6)
             paretoFileName = args[6];
 
+        String generatorsName = "-";
+        if (args.length > 7)
+            generatorsName = args[7];
+
         //initialize Lower Level problem
         MOKP_Problem lowerLevelProblem = new MOKP_Problem(problemName, problemUserPreferences, dataPath);
 
@@ -79,7 +83,7 @@ public class TopLevelEnergyDistr {
         UpperLevelCostDistr_Fast.initializeAlgorithm(upperLevelProblem, lowerLevelProblem, dataPath, paretoFileName);
 
         //thalis
-        problem = new EnergyDistr(upperLevelProblem, dataPath, costsName);
+        problem = new EnergyDistr(upperLevelProblem, dataPath, costsName, generatorsName);
         //thalis comment
         //int bits = 512 ;
         //problem = new OneMax("Binary", bits);
