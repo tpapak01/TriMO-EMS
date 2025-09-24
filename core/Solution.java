@@ -47,6 +47,22 @@ public class Solution implements Serializable {
     this.thread = thread;
   }
 
+  private double incomePenalty = -1;
+  public double getIncomePenalty(){
+    return incomePenalty;
+  }
+  public void setIncomePenalty(double incomePenalty){
+    this.incomePenalty = incomePenalty;
+  }
+
+  private double reimbuPenalty = -1;
+  public double getReimbuPenalty(){
+    return reimbuPenalty;
+  }
+  public void setReimbuPenalty(double reimbuPenalty){
+    this.reimbuPenalty = reimbuPenalty;
+  }
+
   private double selfConsumption = -1;
   public double getSelfConsumption(){
     return selfConsumption;
@@ -372,6 +388,12 @@ public class Solution implements Serializable {
     marked_               = false;
     rank_                 = solution.getRank();
     location_             = solution.getLocation();
+    if (solution.getIncomePenalty() != -1){
+      setIncomePenalty(solution.getIncomePenalty());
+    }
+    if (solution.getReimbuPenalty() != -1){
+      setReimbuPenalty(solution.getReimbuPenalty());
+    }
     if (solution.getSelfConsumption() != -1){
       setSelfConsumption(solution.getSelfConsumption());
     }
@@ -445,6 +467,12 @@ public class Solution implements Serializable {
     marked_               = false;
     rank_                 = solution.getRank();
     location_             = solution.getLocation();
+    if (solution.getIncomePenalty() != -1){
+      setIncomePenalty(solution.getIncomePenalty());
+    }
+    if (solution.getReimbuPenalty() != -1){
+      setReimbuPenalty(solution.getReimbuPenalty());
+    }
     if (solution.getSelfConsumption() != -1){
       setSelfConsumption(solution.getSelfConsumption());
     }

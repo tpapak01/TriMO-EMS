@@ -308,6 +308,50 @@ public class SolutionSet implements Serializable {
     }
   }
 
+  public void printReimbuPenaltyToFile(String path, boolean append){
+    try {
+      /* Open the file */
+      FileOutputStream fos   = new FileOutputStream(path, append)     ;
+      OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
+      BufferedWriter bw      = new BufferedWriter(osw)        ;
+
+      for (Solution aSolutionsList_ : solutionsList_) {
+        //if (this.vector[i].getFitness()<1.0) {
+        bw.write(String.valueOf(aSolutionsList_.getReimbuPenalty()));
+        bw.newLine();
+        //}
+      }
+
+      /* Close the file */
+      bw.close();
+    }catch (IOException e) {
+      Configuration.logger_.severe("Error acceding to the file");
+      e.printStackTrace();
+    }
+  }
+
+  public void printIncomePenaltyToFile(String path, boolean append){
+    try {
+      /* Open the file */
+      FileOutputStream fos   = new FileOutputStream(path, append)     ;
+      OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
+      BufferedWriter bw      = new BufferedWriter(osw)        ;
+
+      for (Solution aSolutionsList_ : solutionsList_) {
+        //if (this.vector[i].getFitness()<1.0) {
+        bw.write(String.valueOf(aSolutionsList_.getIncomePenalty()));
+        bw.newLine();
+        //}
+      }
+
+      /* Close the file */
+      bw.close();
+    }catch (IOException e) {
+      Configuration.logger_.severe("Error acceding to the file");
+      e.printStackTrace();
+    }
+  }
+
   public void printEnergyDeviationFromProducedToFile(String path){
     try {
       /* Open the file */

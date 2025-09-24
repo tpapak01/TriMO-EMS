@@ -195,6 +195,8 @@ public class EnergyDistr extends Problem {
 
         // set constraints
         double[] contraints = setConstraints(producedRE, spentEnergy, costOfBuying);
+        solution.setReimbuPenalty(contraints[0]);
+        solution.setIncomePenalty(contraints[1]);
 
         // TL objective value and self-consumption
         double result = topLevel_evaluate_objective(producedRE, spentEnergy, costOfBuying, contraints[0], contraints[1]);
