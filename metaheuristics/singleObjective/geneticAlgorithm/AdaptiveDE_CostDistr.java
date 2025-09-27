@@ -106,7 +106,6 @@ public class AdaptiveDE_CostDistr extends Algorithm {
     double best_solution = population.get(0).getObjective(0);
     System.out.println("BEST SOL: " + best_solution);
 
-    int iterations = populationSize/2;
     int stop = 0;
     int generation = 0;
 
@@ -143,7 +142,7 @@ public class AdaptiveDE_CostDistr extends Algorithm {
       }
 
       // Reproductive cycle: keep adding 2 offspring to the offspring population until it reaches the max size
-      for (int i = 0 ; i < iterations; i++) {
+      for (int i = 0 ; i < populationSize; i++) {
 
         Solution current = population.get(i);
 
@@ -161,28 +160,23 @@ public class AdaptiveDE_CostDistr extends Algorithm {
         //attach to offspring the LL ND of the closest UL solution
         double min_dist = Double.MAX_VALUE;
         int min_index = -1;
-        for (int o = 0; o<2; o++) {
-          Double[] offspringVar = (((ArrayReal) offspring.getDecisionVariables()[0]).array_);
-          for (int j = 0; j < populationSize; j++) {
-            Double[] popSolutionVar = (((ArrayReal) population.get(j).getDecisionVariables()[0]).array_);
-            double dist = EuclideanDist.distance(offspringVar, popSolutionVar);
-            if (dist < min_dist){
-              min_dist = dist;
-              min_index = j;
-            }
+
+        Double[] offspringVar = (((ArrayReal) offspring.getDecisionVariables()[0]).array_);
+        for (int j = 0; j < populationSize; j++) {
+          Double[] popSolutionVar = (((ArrayReal) population.get(j).getDecisionVariables()[0]).array_);
+          double dist = EuclideanDist.distance(offspringVar, popSolutionVar);
+          if (dist < min_dist){
+            min_dist = dist;
+            min_index = j;
           }
-          offspring.setLL_Transfer_pop(population.get(min_index).getLL_Transfer_pop());
         }
+        offspring.setLL_Transfer_pop(population.get(min_index).getLL_Transfer_pop());
 
         // Evaluation of the new individuals
         problem_.evaluate(offspring);
         evaluations++;
 
-        // if child better than currently-examined individual, replace him
-        if (comparator.compare(current, offspring) < 0)
-          offspringPopulation.add(current);
-        else
-          offspringPopulation.add(offspring);
+        offspringPopulation.add(offspring);
 
         if (stop == 1){
           break;
