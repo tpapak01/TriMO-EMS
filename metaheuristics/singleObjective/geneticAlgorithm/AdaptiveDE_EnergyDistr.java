@@ -73,9 +73,6 @@ public class AdaptiveDE_EnergyDistr extends Algorithm {
 
     int maxEvaluations ;
 
-
-
-    Operator    mutationOperator  ;
     Operator    crossoverOperator ;
     Operator    selectionOperator ;
     
@@ -92,7 +89,6 @@ public class AdaptiveDE_EnergyDistr extends Algorithm {
 
     // Read the operators
     comparator = (Comparator) this.getInputParameter("comparator");
-    mutationOperator  = this.operators_.get("mutation");
     crossoverOperator = this.operators_.get("crossover");
     selectionOperator = this.operators_.get("selection");  
 
@@ -109,7 +105,6 @@ public class AdaptiveDE_EnergyDistr extends Algorithm {
     double best_solution = population.get(0).getObjective(0);
     System.out.println("Energy: BEST SOL at init: " + best_solution);
 
-    int iterations = populationSize/2;
     int stop = 0;
     int generation = 0;
 
@@ -140,7 +135,7 @@ public class AdaptiveDE_EnergyDistr extends Algorithm {
       SolutionSet offspringPopulation = new SolutionSet(populationSize) ;
 
       // Reproductive cycle: keep adding 2 offspring to the offspring population until it reaches the max size
-      for (int i = 0 ; i < iterations; i++) {
+      for (int i = 0 ; i < populationSize; i++) {
         Solution current = population.get(i);
 
         // Selection: 3 random parents
@@ -162,27 +157,27 @@ public class AdaptiveDE_EnergyDistr extends Algorithm {
         for (int j = 0; j < populationSize; j++) {
           Double[] popSolutionVar = (((ArrayReal) population.get(j).getDecisionVariables()[0]).array_);
           double dist = EuclideanDist.distance(offspringVar, popSolutionVar);
-          if (dist < min_dist){
+          if (dist < min_dist) {
             min_dist = dist;
             min_index = j;
           }
-          offspring.setUL_Transfer_pop(population.get(min_index).getUL_Transfer_pop());
-          XReal costOfBuying = new XReal(offspring);
-          int id = (generation*populationSize) + i + 1;
-          UpperLevelCostDistr_Fast ul_wrapper = new UpperLevelCostDistr_Fast(id, costOfBuying, offspring);
+        }
+        offspring.setUL_Transfer_pop(population.get(min_index).getUL_Transfer_pop());
+        XReal costOfBuying = new XReal(offspring);
+        int id = (generation*populationSize) + i + 1;
+        UpperLevelCostDistr_Fast ul_wrapper = new UpperLevelCostDistr_Fast(id, costOfBuying, offspring);
 
-          offspring.setUl_wrapper(ul_wrapper);
-          Thread thread = new Thread(ul_wrapper);
-          offspring.setThread(thread);
-          thread.start();
+        offspring.setUl_wrapper(ul_wrapper);
+        Thread thread = new Thread(ul_wrapper);
+        offspring.setThread(thread);
+        thread.start();
 
-          Object lock = ((Fast_CostDistr) ul_wrapper.getAlg_fast()).getLock();
-          synchronized (lock) {
-            try {
-              lock.wait(); // Wait indefinitely
-            } catch (InterruptedException e) {
-              System.out.println("Waiter thread: Why did someone interrupt me?");
-            }
+        Object lock = ((Fast_CostDistr) ul_wrapper.getAlg_fast()).getLock();
+        synchronized (lock) {
+          try {
+            lock.wait(); // Wait indefinitely
+          } catch (InterruptedException e) {
+            System.out.println("Waiter thread: Why did someone interrupt me?");
           }
         }
 
@@ -190,11 +185,7 @@ public class AdaptiveDE_EnergyDistr extends Algorithm {
         problem_.evaluate(offspring);
         evaluations++;
 
-        // if child better than currently-examined individual, replace him
-        if (comparator.compare(current, offspring) < 0)
-          offspringPopulation.add(current);
-        else
-          offspringPopulation.add(offspring);
+        offspringPopulation.add(offspring);
 
         if (stop == 1){
           break;
