@@ -48,6 +48,12 @@ public class EnergyDistr extends Problem {
     public static double[] c_start_hot;
     public static double[] c_start_cold;
 
+    public static double[] PenPool = new double[] {100, 500, 1000};
+    private static int penaltyFlag = 0;
+    public void setPenaltyFlag(int flag){
+        penaltyFlag = flag;
+    }
+
   public EnergyDistr(CostDistr upperLevelProblem, String dataPath, String costsName, String geneName) throws IOException {
       this.numberOfObjectives_ = 1;
       this.numberOfVariables_ = upperLevelProblem.getNumberOfVariables();
@@ -286,7 +292,7 @@ public class EnergyDistr extends Problem {
             else sum += abs_difference * (1.0 + (cost - lowerLimitStatic[i])); // lower price if you spent all RE
         }
 
-        return sum + (reimbuPenalty + incomePenalty) * 100;
+        return sum + (reimbuPenalty + incomePenalty) * PenPool[penaltyFlag];
     }
 
     private static double calculateBaseGenerationCosts(int[] numOfActiveGeneratorsPerTime, double[] Pmin, double[] c_no_load, double[] c_linear) {
