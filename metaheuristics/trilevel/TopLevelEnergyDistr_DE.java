@@ -76,7 +76,7 @@ public class TopLevelEnergyDistr_DE {
         UpperLevelCostDistr_Fast.initializeAlgorithm(upperLevelProblem, lowerLevelProblem, dataPath, paretoFileName);
 
         //thalis
-        problem = new EnergyDistr(upperLevelProblem, dataPath, costsName, generatorsName);
+        problem = new EnergyDistr(upperLevelProblem, dataPath, costsName, generatorsName, false);
 
         algorithm = new AdaptiveDE_EnergyDistr(problem, problemPath, false); // Adaptive DE
 

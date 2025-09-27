@@ -227,7 +227,7 @@ public class AdaptiveDE_EnergyDistr extends Algorithm {
     // terminate the remaining of the threads
     for (int i = populationSize; i < popCombined.size(); i++) {
         Thread toKill = popCombined.get(i).getThread();
-        System.out.println("Thread " + popCombined.get(i).getUl_wrapper().getId() + " terminated");
+        System.out.println("Thread " + popCombined.get(i).getUl_wrapper_ade().getId() + " terminated");
         toKill.stop();
     }
 

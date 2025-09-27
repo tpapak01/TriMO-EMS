@@ -11,7 +11,9 @@ import jmetal.core.Solution;
 import jmetal.core.SolutionSet;
 import jmetal.core.Variable;
 import jmetal.encodings.solutionType.ArrayRealSolutionType;
+import jmetal.metaheuristics.singleObjective.differentialEvolution.AdaptiveDE_CostDistr;
 import jmetal.metaheuristics.singleObjective.geneticAlgorithm.Fast_CostDistr;
+import jmetal.metaheuristics.trilevel.UpperLevelCostDistr_AdaptiveDE;
 import jmetal.metaheuristics.trilevel.UpperLevelCostDistr_Fast;
 import jmetal.util.JMException;
 import jmetal.util.wrapper.XReal;
@@ -53,8 +55,9 @@ public class EnergyDistr extends Problem {
     public void setPenaltyFlag(int flag){
         penaltyFlag = flag;
     }
+    private static boolean useADEforUpper;
 
-  public EnergyDistr(CostDistr upperLevelProblem, String dataPath, String costsName, String geneName) throws IOException {
+  public EnergyDistr(CostDistr upperLevelProblem, String dataPath, String costsName, String geneName, boolean inputUseADEforUpper) throws IOException {
       this.numberOfObjectives_ = 1;
       this.numberOfVariables_ = upperLevelProblem.getNumberOfVariables();
       this.lowerLimit_ = new double[numberOfVariables_];
@@ -131,6 +134,8 @@ public class EnergyDistr extends Problem {
               c_linear[i] = 0.04;
           }
       }
+
+      useADEforUpper = inputUseADEforUpper;
   }
 
     public double[] getInputCosts(){
@@ -143,22 +148,34 @@ public class EnergyDistr extends Problem {
         SolutionSet upperLevelSolutions = null;
         XReal costOfBuying = new XReal(solution);
 
-        UpperLevelCostDistr_Fast ul_wrapper = solution.getUl_wrapper();
-        Thread thread = solution.getThread();
-
-        if (ul_wrapper.getPopulation() != null) {
-            upperLevelSolutions = ul_wrapper.getPopulation();
-            System.out.println("Thread " + ul_wrapper.getId() + " completed");
+        CostDistr problemCostDistr;
+        if (useADEforUpper){
+            UpperLevelCostDistr_AdaptiveDE ul_wrapper_ade = solution.getUl_wrapper_ade();
+            if (ul_wrapper_ade.getPopulation() != null) {
+                upperLevelSolutions = ul_wrapper_ade.getPopulation();
+                System.out.println("Thread " + ul_wrapper_ade.getId() + " completed");
+            } else {
+                AdaptiveDE_CostDistr alg_fast = (AdaptiveDE_CostDistr) ul_wrapper_ade.getAlg_fast();
+                upperLevelSolutions = alg_fast.getPopulation();
+            }
+            int id = ul_wrapper_ade.getId();
+            System.out.println(id + ":");
+            problemCostDistr = ul_wrapper_ade.getProblemCostDistr();
         } else {
-            Fast_CostDistr alg_fast = (Fast_CostDistr) ul_wrapper.getAlg_fast();
-            upperLevelSolutions = alg_fast.getPopulation();
+            UpperLevelCostDistr_Fast ul_wrapper = solution.getUl_wrapper();
+            if (ul_wrapper.getPopulation() != null) {
+                upperLevelSolutions = ul_wrapper.getPopulation();
+                System.out.println("Thread " + ul_wrapper.getId() + " completed");
+            } else {
+                Fast_CostDistr alg_fast = (Fast_CostDistr) ul_wrapper.getAlg_fast();
+                upperLevelSolutions = alg_fast.getPopulation();
+            }
+            int id = ul_wrapper.getId();
+            System.out.println(id + ":");
+            problemCostDistr = ul_wrapper.getProblemCostDistr();
         }
 
         Solution best = upperLevelSolutions.get(0);
-
-        int id = ul_wrapper.getId();
-        System.out.println(id + ":");
-        CostDistr problemCostDistr = ul_wrapper.getProblemCostDistr();
         System.out.println(
                 Arrays.toString(problemCostDistr.getCostOfBuying().getArray())
         );

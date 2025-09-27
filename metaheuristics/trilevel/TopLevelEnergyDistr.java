@@ -83,7 +83,7 @@ public class TopLevelEnergyDistr {
         UpperLevelCostDistr_Fast.initializeAlgorithm(upperLevelProblem, lowerLevelProblem, dataPath, paretoFileName);
 
         //thalis
-        problem = new EnergyDistr(upperLevelProblem, dataPath, costsName, generatorsName);
+        problem = new EnergyDistr(upperLevelProblem, dataPath, costsName, generatorsName, false);
         //thalis comment
         //int bits = 512 ;
         //problem = new OneMax("Binary", bits);
