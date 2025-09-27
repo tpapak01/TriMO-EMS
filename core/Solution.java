@@ -24,6 +24,7 @@
 package jmetal.core;
 
 import jmetal.encodings.variable.Binary;
+import jmetal.metaheuristics.trilevel.UpperLevelCostDistr_AdaptiveDE;
 import jmetal.metaheuristics.trilevel.UpperLevelCostDistr_Fast;
 import jmetal.util.wrapper.XReal;
 
@@ -39,6 +40,12 @@ public class Solution implements Serializable {
   public UpperLevelCostDistr_Fast getUl_wrapper(){ return ul_wrapper; }
   public void setUl_wrapper(UpperLevelCostDistr_Fast ul_wrapper){
     this.ul_wrapper = ul_wrapper;
+  }
+
+  public UpperLevelCostDistr_AdaptiveDE ul_wrapper_ade;
+  public UpperLevelCostDistr_AdaptiveDE getUl_wrapper_ade(){ return ul_wrapper_ade; }
+  public void setUl_wrapper_ade(UpperLevelCostDistr_AdaptiveDE ul_wrapper_ade){
+    this.ul_wrapper_ade = ul_wrapper_ade;
   }
 
   public Thread thread;

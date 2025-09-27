@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
-public class TopLevelEnergyDistr_DE {
+public class TopLevelEnergyDistr_DE_both {
 
 
     public static Logger logger_;      // Logger object
@@ -73,12 +73,12 @@ public class TopLevelEnergyDistr_DE {
                 new CostDistr(renewableName, lowerLevelProblem, lowerLevelAlgorithmName, costsName, dataPath);
 
         //initialize Upper Level algorithm
-        UpperLevelCostDistr_Fast.initializeAlgorithm(upperLevelProblem, lowerLevelProblem, dataPath, paretoFileName);
+        UpperLevelCostDistr_AdaptiveDE.initializeAlgorithm(upperLevelProblem, lowerLevelProblem, dataPath, paretoFileName);
 
         //thalis
         problem = new EnergyDistr(upperLevelProblem, dataPath, costsName, generatorsName);
 
-        algorithm = new AdaptiveDE_EnergyDistr(problem, problemPath, false); // Adaptive DE
+        algorithm = new AdaptiveDE_EnergyDistr(problem, problemPath, true); // Adaptive DE
 
         algorithm.setInputParameter("populationSize", 10); //must be even number
         algorithm.setInputParameter("maxEvaluations", 1000000);
@@ -97,7 +97,7 @@ public class TopLevelEnergyDistr_DE {
 
         /* Selection Operator */
         parameters = null;
-        Selection selection = SelectionFactory.getSelectionOperator("DifferentialEvolutionSelection", parameters) ;
+        Selection selection = SelectionFactory.getSelectionOperator("DifferentialEvolutionSelection", parameters);
 
         /* Comparator */
         Comparator comparator;

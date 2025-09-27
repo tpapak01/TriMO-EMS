@@ -19,12 +19,13 @@
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package jmetal.metaheuristics.singleObjective.geneticAlgorithm;
+package jmetal.metaheuristics.singleObjective.differentialEvolution;
 
 import jmetal.core.*;
 import jmetal.encodings.variable.ArrayReal;
+import jmetal.metaheuristics.singleObjective.geneticAlgorithm.Fast_CostDistr;
+import jmetal.metaheuristics.trilevel.UpperLevelCostDistr_AdaptiveDE;
 import jmetal.metaheuristics.trilevel.UpperLevelCostDistr_Fast;
-import jmetal.operators.crossover.CrossoverFactory;
 import jmetal.operators.crossover.DifferentialEvolutionCrossover;
 import jmetal.problems.EnergyDistr;
 import jmetal.util.EuclideanDist;
@@ -48,6 +49,7 @@ public class AdaptiveDE_EnergyDistr extends Algorithm {
   private SolutionSet population;
   int evaluations;
   private static String problemPath = "C:\\Users\\emine\\source\\repos\\SmartHome3\\SmartHome3\\wwwroot\\";
+  private static boolean useADEforUpper;
 
   private static double[] Fpool = new double[] {0.4, 0.5, 0.6};
   private static double[] CRpool = new double[] {0.7, 0.8, 0.9};
@@ -59,10 +61,11 @@ public class AdaptiveDE_EnergyDistr extends Algorithm {
   * Create a new GGA instance.
   * @param problem Problem to solve.
   */
-  public AdaptiveDE_EnergyDistr(Problem problem, String dataPath){
+  public AdaptiveDE_EnergyDistr(Problem problem, String dataPath, boolean inputUseADEforUpper){
     super(problem);
     problemEnergyDistr = (EnergyDistr) problem;
     if (!dataPath.equals("-")) { problemPath = dataPath; }
+    useADEforUpper = inputUseADEforUpper;
   } // GGA
   
  /**
@@ -165,14 +168,27 @@ public class AdaptiveDE_EnergyDistr extends Algorithm {
         offspring.setUL_Transfer_pop(population.get(min_index).getUL_Transfer_pop());
         XReal costOfBuying = new XReal(offspring);
         int id = (generation*populationSize) + i + 1;
-        UpperLevelCostDistr_Fast ul_wrapper = new UpperLevelCostDistr_Fast(id, costOfBuying, offspring);
-
-        offspring.setUl_wrapper(ul_wrapper);
-        Thread thread = new Thread(ul_wrapper);
+        Thread thread;
+        UpperLevelCostDistr_AdaptiveDE ul_wrapper_ade = null;
+        UpperLevelCostDistr_Fast ul_wrapper = null;
+        if (useADEforUpper) {
+          ul_wrapper_ade = new UpperLevelCostDistr_AdaptiveDE(id, costOfBuying, offspring);
+          offspring.setUl_wrapper_ade(ul_wrapper_ade);
+          thread = new Thread(ul_wrapper_ade);
+        } else {
+          ul_wrapper = new UpperLevelCostDistr_Fast(id, costOfBuying, offspring);
+          offspring.setUl_wrapper(ul_wrapper);
+          thread = new Thread(ul_wrapper);
+        }
         offspring.setThread(thread);
         thread.start();
 
-        Object lock = ((Fast_CostDistr) ul_wrapper.getAlg_fast()).getLock();
+        Object lock;
+        if (useADEforUpper) {
+          lock = ((AdaptiveDE_CostDistr) ul_wrapper_ade.getAlg_fast()).getLock();
+        } else {
+          lock = ((Fast_CostDistr) ul_wrapper.getAlg_fast()).getLock();
+        }
         synchronized (lock) {
           try {
             lock.wait(); // Wait indefinitely
@@ -272,14 +288,28 @@ public class AdaptiveDE_EnergyDistr extends Algorithm {
 
         XReal costOfBuying = new XReal(newSolution);
 
-        UpperLevelCostDistr_Fast ul_wrapper = new UpperLevelCostDistr_Fast(i+1, costOfBuying, newSolution);
-        Thread thread = new Thread(ul_wrapper);
+        Thread thread;
+        UpperLevelCostDistr_AdaptiveDE ul_wrapper_ade = null;
+        UpperLevelCostDistr_Fast ul_wrapper = null;
+        if (useADEforUpper) {
+          ul_wrapper_ade = new UpperLevelCostDistr_AdaptiveDE(i+1, costOfBuying, newSolution);
+          thread = new Thread(ul_wrapper_ade);
+          newSolution.setUl_wrapper_ade(ul_wrapper_ade);
+        } else {
+          ul_wrapper = new UpperLevelCostDistr_Fast(i+1, costOfBuying, newSolution);
+          thread = new Thread(ul_wrapper);
+          newSolution.setUl_wrapper(ul_wrapper);
+        }
 
-        newSolution.setUl_wrapper(ul_wrapper);
         newSolution.setThread(thread);
         thread.start();
 
-        Object lock = ((Fast_CostDistr) ul_wrapper.getAlg_fast()).getLock();
+        Object lock;
+        if (useADEforUpper) {
+          lock = ((AdaptiveDE_CostDistr) ul_wrapper_ade.getAlg_fast()).getLock();
+        } else {
+          lock = ((Fast_CostDistr) ul_wrapper.getAlg_fast()).getLock();
+        }
         synchronized (lock) {
           try {
             lock.wait(); // Wait indefinitely
@@ -299,14 +329,28 @@ public class AdaptiveDE_EnergyDistr extends Algorithm {
 
         XReal costOfBuying = new XReal(newSolution);
 
-        UpperLevelCostDistr_Fast ul_wrapper = new UpperLevelCostDistr_Fast(i+1, costOfBuying, newSolution);
+        Thread thread;
+        UpperLevelCostDistr_AdaptiveDE ul_wrapper_ade = null;
+        UpperLevelCostDistr_Fast ul_wrapper = null;
+        if (useADEforUpper) {
+          ul_wrapper_ade = new UpperLevelCostDistr_AdaptiveDE(i+1, costOfBuying, newSolution);
+          thread = new Thread(ul_wrapper_ade);
+          newSolution.setUl_wrapper_ade(ul_wrapper_ade);
+        } else {
+          ul_wrapper = new UpperLevelCostDistr_Fast(i+1, costOfBuying, newSolution);
+          thread = new Thread(ul_wrapper);
+          newSolution.setUl_wrapper(ul_wrapper);
+        }
 
-        newSolution.setUl_wrapper(ul_wrapper);
-        Thread thread = new Thread(ul_wrapper);
         newSolution.setThread(thread);
         thread.start();
 
-        Object lock = ((Fast_CostDistr) ul_wrapper.getAlg_fast()).getLock();
+        Object lock;
+        if (useADEforUpper) {
+          lock = ((AdaptiveDE_CostDistr) ul_wrapper_ade.getAlg_fast()).getLock();
+        } else {
+          lock = ((Fast_CostDistr) ul_wrapper.getAlg_fast()).getLock();
+        }
         synchronized (lock) {
           try {
             lock.wait(); // Wait indefinitely
