@@ -19,7 +19,7 @@
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package jmetal.metaheuristics.singleObjective.geneticAlgorithm;
+package jmetal.metaheuristics.singleObjective.differentialEvolution;
 
 import jmetal.core.*;
 import jmetal.encodings.variable.ArrayReal;

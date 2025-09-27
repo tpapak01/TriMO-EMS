@@ -4,7 +4,7 @@ import jmetal.core.Algorithm;
 import jmetal.core.Operator;
 import jmetal.core.Problem;
 import jmetal.core.SolutionSet;
-import jmetal.metaheuristics.singleObjective.geneticAlgorithm.AdaptiveDE_CostDistr;
+import jmetal.metaheuristics.singleObjective.differentialEvolution.AdaptiveDE_CostDistr;
 import jmetal.operators.crossover.CrossoverFactory;
 import jmetal.operators.selection.Selection;
 import jmetal.operators.selection.SelectionFactory;
