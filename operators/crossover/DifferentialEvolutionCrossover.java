@@ -174,9 +174,9 @@ public class DifferentialEvolutionCrossover extends Crossover {
 		int numberOfVariables = xParent0.getNumberOfDecisionVariables() ;
 		//index of the chosen position to be changed
         int jrand = PseudoRandom.randInt(0, numberOfVariables - 1);
-
-        int flag = PseudoRandom.randInt(1,3);
+        
         if (useFlag) {
+			int flag = PseudoRandom.randInt(1,3);
 			switch (flag) {
 				case 1: DE_Variant_ = "rand/1/bin"; break;
 				case 2: DE_Variant_ = "current-to-rand/1/bin"; break;

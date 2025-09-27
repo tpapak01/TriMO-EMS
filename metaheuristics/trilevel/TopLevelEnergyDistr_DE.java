@@ -80,7 +80,7 @@ public class TopLevelEnergyDistr_DE {
 
         algorithm = new AdaptiveDE_EnergyDistr(problem, problemPath); // Adaptive DE
 
-        algorithm.setInputParameter("populationSize", 4); //must be even number
+        algorithm.setInputParameter("populationSize", 10); //must be even number
         algorithm.setInputParameter("maxEvaluations", 1000000);
 
         //thalis
