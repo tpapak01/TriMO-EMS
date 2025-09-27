@@ -101,7 +101,7 @@ public class CostDistr extends Problem {
       this.numberOfObjectives_ = 1;
       this.lowerLimit_ = new double[numberOfVariables_];
       this.upperLimit_ = new double[numberOfVariables_];
-      Arrays.fill(upperLimit_, 1.0);
+      Arrays.fill(upperLimit_, 0.33);
       producedRE = new double[numberOfVariables_];
 
       if (!dataPath.equals("-")) { problemPath = dataPath; costsPath = dataPath; }
@@ -211,9 +211,13 @@ public class CostDistr extends Problem {
             double[] energySpent = lowerLevelSol.getSpentEnergy();
             //double result = upperLevel_evaluate_XOR_distance_plus_weight(energySpent, costs);
 
-            //double[] contraints = EnergyDistr.setConstraints(producedRE, energySpent, costOfBuying);
-            //double specialResult = EnergyDistr.topLevel_evaluate_objective(producedRE, energySpent, costOfBuying, contraints[0], contraints[1]);
-            //double profitResult = upperLevel_evaluate_profit(energySpent, costs);
+            /*
+            double[] contraints = EnergyDistr.setConstraints(producedRE, energySpent, costOfBuying);
+            lowerLevelSol.setReimbuPenalty(contraints[0]);
+            lowerLevelSol.setIncomePenalty(contraints[1]);
+            double specialResult = EnergyDistr.topLevel_evaluate_objective(producedRE, energySpent, costOfBuying, contraints[0], contraints[1]);
+            double profitResult = upperLevel_evaluate_profit(energySpent, costs);
+             */
 
             double specialResult = upperLevel_evaluate_profit(energySpent, costs);
             lowerLevelSol.setUpperLevelObj(specialResult);

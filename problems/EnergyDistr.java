@@ -35,7 +35,7 @@ public class EnergyDistr extends Problem {
     private static double[] lowerLimitStatic;
     private static double[] upperLimitStatic;
 
-    public static double TL_upperLimit = 0.8;
+    public static double TL_upperLimit = 0.28;
     public static int[] numOfActiveGeneratorsPerTime;
     public static double baseGenerationCosts;
     public final static int numOfGenerators = 8;
@@ -92,12 +92,12 @@ public class EnergyDistr extends Problem {
           in.close();
       }
 
+      c_linear = new double[this.numberOfVariables_];
       if (!generatorsName.equals("-")) {
           numOfActiveGeneratorsPerTime = new int[this.numberOfVariables_];
           Pmin = new double[this.numberOfVariables_];
           Pmax = new double[this.numberOfVariables_];
           c_no_load = new double[this.numberOfVariables_];
-          c_linear = new double[this.numberOfVariables_];
           c_start_hot = new double[this.numberOfVariables_];
           c_start_cold = new double[this.numberOfVariables_];
           for (int i=0; i<this.numberOfVariables_; i++) {
@@ -120,6 +120,10 @@ public class EnergyDistr extends Problem {
           }
 
           baseGenerationCosts = calculateBaseGenerationCosts(numOfActiveGeneratorsPerTime, Pmin, c_no_load, c_linear);
+      } else {
+          for (int i=0; i<this.numberOfVariables_; i++) {
+              c_linear[i] = 0.04;
+          }
       }
   }
 
@@ -241,8 +245,9 @@ public class EnergyDistr extends Problem {
 
     public static double[] setConstraints(double[] producedRE, double[] spentEnergy, XReal costOfBuying) throws JMException {
         double[] constraints = new double[2];
-        double realTimeGenerationCosts = calculateRealTimeGenerationCosts(numOfActiveGeneratorsPerTime, Pmin, Pmax, c_linear, producedRE, spentEnergy);
-        double requiredGenerationPayment = baseGenerationCosts + realTimeGenerationCosts;
+        //double realTimeGenerationCosts = calculateRealTimeGenerationCosts(numOfActiveGeneratorsPerTime, Pmin, Pmax, c_linear, producedRE, spentEnergy);
+        //double requiredGenerationPayment = baseGenerationCosts + realTimeGenerationCosts;
+        double requiredGenerationPayment = calculateMCPRequiredCosts(numOfActiveGeneratorsPerTime, c_linear, producedRE, spentEnergy);
         double income = calculateIncome(producedRE, spentEnergy, costOfBuying);
         double allowedReimbursement = income - requiredGenerationPayment;
         double reimbursement = calculateReimbursement(producedRE, spentEnergy, costOfBuying);
@@ -312,6 +317,26 @@ public class EnergyDistr extends Problem {
                         gridEnergy = gridEnergy - Pmax[j];
                     }
                 }
+            }
+        }
+        return minCosts;
+    }
+
+    private static double calculateMCPRequiredCosts(int[] numOfActiveGeneratorsPerTime, double[] c_linear, double[] producedRE, double[] spentEnergy) {
+        double minCosts = 0;
+        /*
+        for (int i=0; i<numOfActiveGeneratorsPerTime.length; i++){
+            double gridEnergy = spentEnergy[i] - producedRE[i];
+            int lastGenIndex = numOfActiveGeneratorsPerTime[i] - 1;
+            if (gridEnergy > 0) {
+                minCosts += gridEnergy * c_linear[lastGenIndex];
+            }
+        }
+        */
+        for (int i=0; i<c_linear.length; i++){
+            double gridEnergy = spentEnergy[i] - producedRE[i];
+            if (gridEnergy > 0) {
+                minCosts += gridEnergy * c_linear[i];
             }
         }
         return minCosts;
