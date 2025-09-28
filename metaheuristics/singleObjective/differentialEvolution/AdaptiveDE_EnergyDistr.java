@@ -245,7 +245,7 @@ public class AdaptiveDE_EnergyDistr extends Algorithm {
     if (winner.getObjective(0) > best_solution - 1){
       converged--;
       flag = PseudoRandom.randInt(1,3);
-      problemEnergyDistr.setPenaltyFlag(PseudoRandom.randInt(0,2));
+      //problemEnergyDistr.setPenaltyFlag(PseudoRandom.randInt(0,2));
     } else {
       best_solution = winner.getObjective(0);
       System.out.println("Energy: BEST SOL at " + evaluations + ": " + best_solution);

@@ -229,6 +229,7 @@ public class DifferentialEvolutionCrossover extends Crossover {
 					if (value > xChild.getUpperBound(j))
 						value = xChild.getUpperBound(j) ;
 
+					value = Math.round(value*100.0) / 100.0;
 					xChild.setValue(j, value) ;
 				}
 				else {
@@ -255,6 +256,7 @@ public class DifferentialEvolutionCrossover extends Crossover {
 				if (value > xChild.getUpperBound(j))
 					value = xChild.getUpperBound(j) ;
 
+				value = Math.round(value*100.0) / 100.0;
 				xChild.setValue(j, value) ;
 			} // for		
 		} // if
@@ -277,6 +279,7 @@ public class DifferentialEvolutionCrossover extends Crossover {
 					if (value > xChild.getUpperBound(j))
 						value = xChild.getUpperBound(j) ;
 
+					value = Math.round(value*100.0) / 100.0;
 					xChild.setValue(j, value) ;
 				}
 				else {
@@ -303,6 +306,7 @@ public class DifferentialEvolutionCrossover extends Crossover {
 					if (value > xChild.getUpperBound(j))
 						value = xChild.getUpperBound(j) ;
 
+					value = Math.round(value*100.0) / 100.0;
 					xChild.setValue(j, value) ;
 				}
 				else {
@@ -325,6 +329,7 @@ public class DifferentialEvolutionCrossover extends Crossover {
                     if (value > xChild.getUpperBound(j))
                         value = xChild.getUpperBound(j) ;
 
+					value = Math.round(value*100.0) / 100.0;
                     xChild.setValue(j, value) ;
                 }
                 else {
