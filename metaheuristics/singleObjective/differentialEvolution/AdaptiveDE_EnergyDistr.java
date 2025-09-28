@@ -78,6 +78,7 @@ public class AdaptiveDE_EnergyDistr extends Algorithm {
 
     Operator    crossoverOperator ;
     Operator    selectionOperator ;
+    Operator    mutationOperator ;
     
     Comparator  comparator        ;
     
@@ -93,7 +94,8 @@ public class AdaptiveDE_EnergyDistr extends Algorithm {
     // Read the operators
     comparator = (Comparator) this.getInputParameter("comparator");
     crossoverOperator = this.operators_.get("crossover");
-    selectionOperator = this.operators_.get("selection");  
+    selectionOperator = this.operators_.get("selection");
+    mutationOperator  = this.operators_.get("mutation");
 
     initPopulation();
     //double[] producedRE = problemEnergyDistr.getProducedRE();
@@ -151,6 +153,9 @@ public class AdaptiveDE_EnergyDistr extends Algorithm {
         // Crossover.
         // Two parameters are required: the current individual and the array of parents
         Solution offspring = (Solution)crossoverOperator.execute(new Object[]{current, parents}) ;
+
+        // Mutation
+        mutationOperator.execute(offspring);
 
         //attach to offspring the UL solution of the closest TL solution
         double min_dist = Double.MAX_VALUE;

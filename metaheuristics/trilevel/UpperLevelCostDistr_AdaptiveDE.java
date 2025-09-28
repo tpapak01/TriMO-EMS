@@ -3,6 +3,7 @@ package jmetal.metaheuristics.trilevel;
 import jmetal.core.*;
 import jmetal.metaheuristics.singleObjective.differentialEvolution.AdaptiveDE_CostDistr;
 import jmetal.operators.crossover.CrossoverFactory;
+import jmetal.operators.mutation.UniformMutation;
 import jmetal.operators.selection.Selection;
 import jmetal.operators.selection.SelectionFactory;
 import jmetal.problems.CostDistr;
@@ -47,6 +48,7 @@ public class UpperLevelCostDistr_AdaptiveDE implements Runnable {
                                            String dataPath, String paretoFileName) throws SecurityException, IOException, JMException {
 
         Operator crossover;         // Crossover operator
+        Operator mutation;         // Mutation operator
 
         //initialize Lower Level algorithm
         LowerLevelMOKP_MOEAD.initializeAlgorithm(lowerLevelProblem, dataPath, paretoFileName);
@@ -70,6 +72,14 @@ public class UpperLevelCostDistr_AdaptiveDE implements Runnable {
         parameters.put("DE_VARIANT", "rand/1/bin");
         crossover = CrossoverFactory.getCrossoverOperator("DifferentialEvolutionCrossover", parameters);
 
+        //thalis
+        Double perturbationIndex = 0.5;
+        Double mutationProbability = 1.0 / problem.getNumberOfVariables();
+        parameters = new HashMap();
+        parameters.put("probability", mutationProbability);
+        parameters.put("perturbation", perturbationIndex);
+        mutation = new UniformMutation(parameters);
+
         /* Selection Operator */
         parameters = null;
         Selection selection = SelectionFactory.getSelectionOperator("DifferentialEvolutionSelection", parameters);
@@ -85,6 +95,7 @@ public class UpperLevelCostDistr_AdaptiveDE implements Runnable {
         /* Add the operators to the algorithm*/
         algorithm.addOperator("crossover", crossover);
         algorithm.addOperator("selection", selection);
+        algorithm.addOperator("mutation", mutation);
 
         ((AdaptiveDE_CostDistr) algorithm).initAdaptiveDECostDistr();
 

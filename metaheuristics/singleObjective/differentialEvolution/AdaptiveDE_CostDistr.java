@@ -184,6 +184,9 @@ public class AdaptiveDE_CostDistr extends Algorithm {
         // Two parameters are required: the current individual and the array of parents
         Solution offspring = (Solution)crossoverOperator.execute(new Object[]{current, parents}) ;
 
+        // Mutation
+        mutationOperator.execute(offspring);
+
         //attach to offspring the LL ND of the closest UL solution
         double min_dist = Double.MAX_VALUE;
         int min_index = -1;
