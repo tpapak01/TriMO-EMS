@@ -279,6 +279,7 @@ public class AdaptiveDE_EnergyDistr extends Algorithm {
       for (int i = 0; i < populationSize; i++) {
         Solution newSolution = new Solution(problem_, true);
 
+        /*
         if (i == 0){
           double[] ones = new double[problem_.getNumberOfVariables()];
           Arrays.fill(ones, EnergyDistr.TL_upperLimit);
@@ -290,6 +291,7 @@ public class AdaptiveDE_EnergyDistr extends Algorithm {
           Arrays.fill(ones, 0.0);
           newSolution.setDecisionVariables(updateSolution(ones));
         }
+         */
 
         XReal costOfBuying = new XReal(newSolution);
 

@@ -221,9 +221,11 @@ public class EnergyDistr extends Problem {
         //}
 
         // set constraints
-        double[] contraints = setConstraints(producedRE, spentEnergy, costOfBuying);
+        double[] contraints = setConstraints(producedRE, spentEnergy, costOfBuying, solution);
         solution.setReimbuPenalty(contraints[0]);
         solution.setIncomePenalty(contraints[1]);
+        System.out.println("REIMBU: " + solution.getReimbu());
+        System.out.println("ALLOWED REIMBU: " + (solution.getReimbu() - solution.getReimbuPenalty()));
 
         // TL objective value and self-consumption
         double result = topLevel_evaluate_objective(producedRE, spentEnergy, costOfBuying, contraints[0], contraints[1]);
@@ -260,13 +262,14 @@ public class EnergyDistr extends Problem {
 
         double sum = 0;
         for (int i=0; i<producedRE.length; i++) {
-            double difference = Math.abs(spentEnergy[i] - producedRE[i]);
-            sum += difference;
+            double freeEnergyLeft = producedRE[i] - spentEnergy[i];
+            if (freeEnergyLeft > 0)
+                sum += freeEnergyLeft;
         }
         return sum;
     }
 
-    public static double[] setConstraints(double[] producedRE, double[] spentEnergy, XReal costOfBuying) throws JMException {
+    public static double[] setConstraints(double[] producedRE, double[] spentEnergy, XReal costOfBuying, Solution solution) throws JMException {
         double[] constraints = new double[2];
         //double realTimeGenerationCosts = calculateRealTimeGenerationCosts(numOfActiveGeneratorsPerTime, Pmin, Pmax, c_linear, producedRE, spentEnergy);
         //double requiredGenerationPayment = baseGenerationCosts + realTimeGenerationCosts;
@@ -282,6 +285,8 @@ public class EnergyDistr extends Problem {
             incomePenalty = requiredGenerationPayment - income;
         constraints[0] = reimbuPenalty;
         constraints[1] = incomePenalty;
+
+        solution.setReimbu(reimbursement);
         return constraints;
     }
 
@@ -304,12 +309,22 @@ public class EnergyDistr extends Problem {
             double gridEnergy = spentEnergy[i] - producedRE[i];
             double abs_difference = Math.abs(gridEnergy);
             double cost = costOfBuying.getValue(i);
-            if (gridEnergy < 0)
-                sum += abs_difference * (1.0 + (upperLimitStatic[i] - cost)); //raise price if there is RE left
-            else sum += abs_difference * (1.0 + (cost - lowerLimitStatic[i])); // lower price if you spent all RE
+            if (gridEnergy < 0) {
+                if (reimbuPenalty > 0)
+                    sum += ( abs_difference * (1.0 + (cost - lowerLimitStatic[i])))
+                            + ( reimbuPenalty * (cost - lowerLimitStatic[i]) ); //lower price to reduce compensation
+                else
+                    sum += abs_difference * (1.0 + (upperLimitStatic[i] - cost)); //raise price if there is RE left
+            }
+            else {
+                if (reimbuPenalty > 0 || incomePenalty > 0)
+                    sum += (upperLimitStatic[i] - cost) * (reimbuPenalty + incomePenalty); // raise price to accommodate for compensation and income costs
+                else
+                    sum += cost - lowerLimitStatic[i]; // lower price if you spent all RE
+            }
         }
 
-        return sum + (reimbuPenalty + incomePenalty) * PenPool[penaltyFlag];
+        return sum; // + (reimbuPenalty + incomePenalty) * PenPool[penaltyFlag];
     }
 
     private static double calculateBaseGenerationCosts(int[] numOfActiveGeneratorsPerTime, double[] Pmin, double[] c_no_load, double[] c_linear) {

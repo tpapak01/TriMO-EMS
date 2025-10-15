@@ -54,6 +54,14 @@ public class Solution implements Serializable {
     this.thread = thread;
   }
 
+  private double reimbu = -1;
+  public double getReimbu(){
+    return reimbu;
+  }
+  public void setReimbu(double reimbu){
+    this.reimbu = reimbu;
+  }
+
   private double incomePenalty = -1;
   public double getIncomePenalty(){
     return incomePenalty;
@@ -395,6 +403,9 @@ public class Solution implements Serializable {
     marked_               = false;
     rank_                 = solution.getRank();
     location_             = solution.getLocation();
+    if (solution.getReimbu() != -1){
+      setReimbu(solution.getReimbu());
+    }
     if (solution.getIncomePenalty() != -1){
       setIncomePenalty(solution.getIncomePenalty());
     }
@@ -474,6 +485,9 @@ public class Solution implements Serializable {
     marked_               = false;
     rank_                 = solution.getRank();
     location_             = solution.getLocation();
+    if (solution.getReimbu() != -1){
+      setReimbu(solution.getReimbu());
+    }
     if (solution.getIncomePenalty() != -1){
       setIncomePenalty(solution.getIncomePenalty());
     }

@@ -157,6 +157,7 @@ public class TopLevelEnergyDistr_DE_both {
         //population.printStdDevUserEnergyToFile("STDDEV_USER_ENERGY");
 
         population.printReimbuPenaltyToFile("REIMBU_PEN", false);
+        population.printReimbuToFile("REIMBU", false);
         population.printIncomePenaltyToFile("INCOME_PEN", false);
 
         FileWriter timeWriter = new FileWriter("TIME", true);
