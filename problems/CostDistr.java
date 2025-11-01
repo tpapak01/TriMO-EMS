@@ -46,6 +46,8 @@ public class CostDistr extends Problem {
     private static boolean fixedTrust = true;
     private static MOKP_Problem lowerLevelProblem;
 
+    private static final double costs_MAX = 0.33;
+
     private XReal costOfBuying ; // capacity of each  knapsack .
     public XReal getCostOfBuying() {
         return costOfBuying;
@@ -101,7 +103,7 @@ public class CostDistr extends Problem {
       this.numberOfObjectives_ = 1;
       this.lowerLimit_ = new double[numberOfVariables_];
       this.upperLimit_ = new double[numberOfVariables_];
-      Arrays.fill(upperLimit_, 0.33);
+      Arrays.fill(upperLimit_, costs_MAX);
       producedRE = new double[numberOfVariables_];
 
       if (!dataPath.equals("-")) { problemPath = dataPath; costsPath = dataPath; }
