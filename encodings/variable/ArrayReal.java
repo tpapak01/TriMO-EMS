@@ -89,15 +89,14 @@ public class ArrayReal extends Variable {
 
   } // Constructor
 
-  public ArrayReal(int size, Problem problem, double seed) {
+  public ArrayReal(int size, Problem problem, boolean seed) {
     problem_ = problem;
     size_ = size;
 
-
     array_ = new Double[size_];
-    PseudoRandom r = new PseudoRandom(seed);
     for (int i = 0; i < size_; i++) {
-      array_[i] = r.randDoubleSeed() * (problem_.getUpperLimit(i) -
+      double myRandom = seed ? PseudoRandom.randDoubleSeed() : PseudoRandom.randDouble();
+      array_[i] = myRandom * (problem_.getUpperLimit(i) -
               problem_.getLowerLimit(i)) +
               problem_.getLowerLimit(i);
       array_[i] = Math.round(array_[i] *100.0) / 100.0;

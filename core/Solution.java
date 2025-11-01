@@ -288,7 +288,6 @@ public class Solution implements Serializable {
     distanceToSolutionSet_ = Double.POSITIVE_INFINITY ;
     //<-
 
-    //variable_ = problem.solutionType_.createVariables() ; 
     variable_ = type_.createVariables() ; 
   } // Solution
   
