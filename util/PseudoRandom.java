@@ -39,7 +39,6 @@ public class PseudoRandom  {
    */
   private PseudoRandom() {
     if (random_ == null){
-      //this.random = new java.util.Random((long)seed);
       random_ = new RandomGenerator();
     }
   } // PseudoRandom
