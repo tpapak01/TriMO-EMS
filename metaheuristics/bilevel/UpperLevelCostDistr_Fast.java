@@ -13,6 +13,7 @@ import jmetal.operators.selection.Selection;
 import jmetal.problems.CostDistr;
 import jmetal.problems.MOKP_Problem;
 import jmetal.util.JMException;
+import jmetal.util.PseudoRandom;
 import jmetal.util.Ranking;
 import jmetal.util.comparators.ObjectiveComparator;
 
@@ -42,6 +43,8 @@ public class UpperLevelCostDistr_Fast {
      * @throws ClassNotFoundException
      */
     public static void main(String[] args) throws JMException, SecurityException, IOException, ClassNotFoundException {
+
+        new PseudoRandom(0.454545);
 
         Problem problem;         // The problem to solve
         Algorithm algorithm;         // The algorithm to use

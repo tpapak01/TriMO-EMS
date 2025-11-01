@@ -14,6 +14,7 @@ import jmetal.problems.CostDistr;
 import jmetal.problems.EnergyDistr;
 import jmetal.problems.MOKP_Problem;
 import jmetal.util.JMException;
+import jmetal.util.PseudoRandom;
 import jmetal.util.comparators.ObjectiveComparator;
 
 import java.io.FileWriter;
@@ -42,6 +43,8 @@ public class TopLevelEnergyDistr {
      * @throws ClassNotFoundException
      */
     public static void main(String[] args) throws JMException, SecurityException, IOException, ClassNotFoundException {
+
+        new PseudoRandom(0.454545);
 
         Problem problem;         // The problem to solve
         Algorithm algorithm;         // The algorithm to use
