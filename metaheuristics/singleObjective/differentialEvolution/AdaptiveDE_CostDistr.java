@@ -203,7 +203,7 @@ public class AdaptiveDE_CostDistr extends Algorithm {
 
       winner = population.get(0);
       //check for convergence
-      if (winner.getObjective(0) > best_solution - 1){
+      if (winner.getObjective(0) >= best_solution){
         converged--;
         flag = PseudoRandom.randInt(1,3);
       } else {
