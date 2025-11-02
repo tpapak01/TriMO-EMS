@@ -234,7 +234,7 @@ public class AdaptiveDE_CostDistr extends Algorithm {
 
       winner = population.get(0);
       //check for convergence
-      if (winner.getObjective(0) >= best_solution){
+      if (winner.getObjective(0) > best_solution - 1){
         converged--;
       } else {
         best_solution = winner.getObjective(0);
