@@ -76,7 +76,7 @@ public class DifferentialEvolutionCrossover extends Crossover {
 
 	private static final String CURRENT_TO_RAND_BIN_DE_VARIANT = "current-to-rand/1/bin";
 	private static final String CURRENT_TO_BEST_BIN_DE_VARIANT = "current-to-best/1/bin";
-	private static final String BEST_TO_RAND_BIN_DE_VARIANT = "best-to-rand/1/bin";
+	private static final String RAND_TO_BEST_BIN_DE_VARIANT = "rand-to-best/1/bin";
 
 	/* EXP */
 	private static final String RAND_EXP_DE_VARIANT = "rand/1/exp";
@@ -197,7 +197,7 @@ public class DifferentialEvolutionCrossover extends Crossover {
 			switch (flag) {
 				case 1: DE_Variant_ = RAND_BIN_DE_VARIANT; break;
 				case 2: DE_Variant_ = CURRENT_TO_RAND_BIN_DE_VARIANT; break;
-				case 3: DE_Variant_ = BEST_TO_RAND_BIN_DE_VARIANT; break;
+				case 3: DE_Variant_ = RAND_TO_BEST_BIN_DE_VARIANT; break;
 				default: DE_Variant_ = RAND_BIN_DE_VARIANT; break;
 			}
 		}
@@ -332,7 +332,7 @@ public class DifferentialEvolutionCrossover extends Crossover {
 		/**
 		 * FLAG == 3
 		 */
-        else if ((DE_Variant_.compareTo(BEST_TO_RAND_BIN_DE_VARIANT) == 0)) {
+        else if ((DE_Variant_.compareTo(RAND_TO_BEST_BIN_DE_VARIANT) == 0)) {
             for (int j=0; j < numberOfVariables; j++) {
                 if (PseudoRandom.randDouble(0, 1) < CR_ || j == jrand) {
                     double value = xParent2.getValue(j) + K_ * (xBest.getValue(j) - xParent2.getValue(j)) +
