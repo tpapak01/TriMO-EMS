@@ -70,7 +70,24 @@ public class DifferentialEvolutionCrossover extends Crossover {
 	 * DEFAULT_VARIANT defines the default DE variant
 	 */
 
-	private static final String DEFAULT_DE_VARIANT = "rand/1/bin";
+	/* BIN */
+	private static final String RAND_BIN_DE_VARIANT = "rand/1/bin";
+	private static final String BEST_BIN_DE_VARIANT = "best/1/bin";
+
+	private static final String CURRENT_TO_RAND_BIN_DE_VARIANT = "current-to-rand/1/bin";
+	private static final String CURRENT_TO_BEST_BIN_DE_VARIANT = "current-to-best/1/bin";
+	private static final String BEST_TO_RAND_BIN_DE_VARIANT = "best-to-rand/1/bin";
+
+	/* EXP */
+	private static final String RAND_EXP_DE_VARIANT = "rand/1/exp";
+	private static final String BEST_EXP_DE_VARIANT = "best/1/exp";
+
+	private static final String CURRENT_TO_RAND_EXP_DE_VARIANT = "current-to-rand/1/exp";
+	private static final String CURRENT_TO_BEST_EXP_DE_VARIANT = "current-to-best/1/exp";
+
+	/* 1 */
+	private static final String CURRENT_TO_RAND_DE_VARIANT = "current-to-rand/1";
+	private static final String CURRENT_TO_BEST_DE_VARIANT = "current-to-best/1";
 
   /**
    * Valid solution types to apply this operator 
@@ -94,7 +111,7 @@ public class DifferentialEvolutionCrossover extends Crossover {
 		CR_ = DEFAULT_CR ;
 		F_  = DEFAULT_F  ;
 		K_  = DEFAULT_K   ;
-		DE_Variant_ = DEFAULT_DE_VARIANT ;
+		DE_Variant_ = RAND_BIN_DE_VARIANT ;
 		
   	if (parameters.get("CR") != null)
   		CR_ = (Double) parameters.get("CR") ;  		
@@ -178,19 +195,21 @@ public class DifferentialEvolutionCrossover extends Crossover {
         if (useFlag) {
 			int flag = PseudoRandom.randInt(1,3);
 			switch (flag) {
-				case 1: DE_Variant_ = "rand/1/bin"; break;
-				case 2: DE_Variant_ = "current-to-rand/1/bin"; break;
-				case 3: DE_Variant_ = "best-to-rand/1/bin"; break;
-				default: DE_Variant_ = "rand/1/bin"; break;
+				case 1: DE_Variant_ = RAND_BIN_DE_VARIANT; break;
+				case 2: DE_Variant_ = CURRENT_TO_RAND_BIN_DE_VARIANT; break;
+				case 3: DE_Variant_ = BEST_TO_RAND_BIN_DE_VARIANT; break;
+				default: DE_Variant_ = RAND_BIN_DE_VARIANT; break;
 			}
 		}
 
 		// STEP 4. Checking the DE variant
-        // FLAG == 1
-		if ((DE_Variant_.compareTo("rand/1/bin") == 0) || 
-				(DE_Variant_.compareTo("best/1/bin") == 0)) {
+		/**
+		 * FLAG == 1
+		 */
+		if ((DE_Variant_.compareTo(RAND_BIN_DE_VARIANT) == 0) ||
+				(DE_Variant_.compareTo(BEST_BIN_DE_VARIANT) == 0)) {
             boolean chooseBest = false;
-            if (DE_Variant_.compareTo("best/1/bin") == 0)
+            if (DE_Variant_.compareTo(BEST_BIN_DE_VARIANT) == 0)
                 chooseBest = true;
 			for (int j=0; j < numberOfVariables; j++) {
 				// 50% chance to change position value, unless it is the chosen position, then 100%
@@ -212,14 +231,12 @@ public class DifferentialEvolutionCrossover extends Crossover {
 				}
 				// if 50% chance failed and not chosen position, keep original position value
 				else {
-					double value ;
-					value = xCurrent.getValue(j);
-					xChild.setValue(j, value) ;
+					xChild.setValue(j, xCurrent.getValue(j)) ;
 				}
 			} // for
 		} // if
-		else if ((DE_Variant_.compareTo("rand/1/exp") == 0) || 
-				     (DE_Variant_.compareTo("best/1/exp") == 0)) {
+		else if ((DE_Variant_.compareTo(RAND_EXP_DE_VARIANT) == 0) ||
+				     (DE_Variant_.compareTo(BEST_EXP_DE_VARIANT) == 0)) {
 			for (int j=0; j < numberOfVariables; j++) {
 				if (PseudoRandom.randDouble(0, 1) < CR_ || j == jrand) {
 					double value = xParent2.getValue(j)  + F_ * (xParent0.getValue(j) - xParent1.getValue(j)) ;
@@ -234,15 +251,14 @@ public class DifferentialEvolutionCrossover extends Crossover {
 				}
 				else {
 					CR_ = 0.0;
-					double value = xCurrent.getValue(j);
-					xChild.setValue(j, value) ;
+					xChild.setValue(j, xCurrent.getValue(j)) ;
 			  } // else
 			} // for		
 		} // if
-		else if ((DE_Variant_.compareTo("current-to-rand/1") == 0) || 
-             (DE_Variant_.compareTo("current-to-best/1") == 0)) {
+		else if ((DE_Variant_.compareTo(CURRENT_TO_RAND_DE_VARIANT) == 0) ||
+             (DE_Variant_.compareTo(CURRENT_TO_BEST_DE_VARIANT) == 0)) {
 		    boolean chooseBest = false;
-		    if (DE_Variant_.compareTo("current-to-best/1") == 0)
+		    if (DE_Variant_.compareTo(CURRENT_TO_BEST_DE_VARIANT) == 0)
                 chooseBest = true;
 			for (int j=0; j < numberOfVariables; j++) {
 				double conditionalValue = xParent2.getValue(j);
@@ -260,11 +276,13 @@ public class DifferentialEvolutionCrossover extends Crossover {
 				xChild.setValue(j, value) ;
 			} // for		
 		} // if
-        // FLAG == 2
-		else if ((DE_Variant_.compareTo("current-to-rand/1/bin") == 0) ||
-				     (DE_Variant_.compareTo("current-to-best/1/bin") == 0)) {
+		/**
+		 * FLAG == 2
+		 */
+		else if ((DE_Variant_.compareTo(CURRENT_TO_RAND_BIN_DE_VARIANT) == 0) ||
+				     (DE_Variant_.compareTo(CURRENT_TO_BEST_BIN_DE_VARIANT) == 0)) {
             boolean chooseBest = false;
-            if (DE_Variant_.compareTo("current-to-best/1/bin") == 0)
+            if (DE_Variant_.compareTo(CURRENT_TO_BEST_BIN_DE_VARIANT) == 0)
                 chooseBest = true;
 			for (int j=0; j < numberOfVariables; j++) {
 				if (PseudoRandom.randDouble(0, 1) < CR_ || j == jrand) {
@@ -283,15 +301,14 @@ public class DifferentialEvolutionCrossover extends Crossover {
 					xChild.setValue(j, value) ;
 				}
 				else {
-					double value = xCurrent.getValue(j);
-					xChild.setValue(j, value) ;
+					xChild.setValue(j, xCurrent.getValue(j)) ;
 				} // else
 			} // for
 		} // if
-		else if ((DE_Variant_.compareTo("current-to-rand/1/exp") == 0) || 
-				(DE_Variant_.compareTo("current-to-best/1/exp") == 0)) {
+		else if ((DE_Variant_.compareTo(CURRENT_TO_RAND_EXP_DE_VARIANT) == 0) ||
+				(DE_Variant_.compareTo(CURRENT_TO_BEST_EXP_DE_VARIANT) == 0)) {
             boolean chooseBest = false;
-            if (DE_Variant_.compareTo("current-to-best/1/exp") == 0)
+            if (DE_Variant_.compareTo(CURRENT_TO_BEST_EXP_DE_VARIANT) == 0)
                 chooseBest = true;
 			for (int j=0; j < numberOfVariables; j++) {
 				if (PseudoRandom.randDouble(0, 1) < CR_ || j == jrand) {
@@ -311,14 +328,15 @@ public class DifferentialEvolutionCrossover extends Crossover {
 				}
 				else {
 					CR_ = 0.0;
-					double value = xCurrent.getValue(j);
-					xChild.setValue(j, value) ;
+					xChild.setValue(j, xCurrent.getValue(j)) ;
 				} // else
 			} // for		
 		} // if
         // MY OWN DE VARIATION
-        // FLAG == 3
-        else if ((DE_Variant_.compareTo("best-to-rand/1/bin") == 0)) {
+		/**
+		 * FLAG == 3
+		 */
+        else if ((DE_Variant_.compareTo(BEST_TO_RAND_BIN_DE_VARIANT) == 0)) {
             for (int j=0; j < numberOfVariables; j++) {
                 if (PseudoRandom.randDouble(0, 1) < CR_ || j == jrand) {
                     double value = xParent2.getValue(j) + K_ * (xBest.getValue(j) - xParent2.getValue(j)) +
@@ -333,8 +351,7 @@ public class DifferentialEvolutionCrossover extends Crossover {
                     xChild.setValue(j, value) ;
                 }
                 else {
-                    double value = xCurrent.getValue(j);
-                    xChild.setValue(j, value) ;
+                    xChild.setValue(j, xCurrent.getValue(j)) ;
                 } // else
             } // for
         } // if

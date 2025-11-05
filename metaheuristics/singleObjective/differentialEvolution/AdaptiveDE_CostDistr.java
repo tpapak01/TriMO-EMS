@@ -236,6 +236,7 @@ public class AdaptiveDE_CostDistr extends Algorithm {
       //check for convergence
       if (winner.getObjective(0) > best_solution - 1){
         converged--;
+        flag = PseudoRandom.randInt(1,3);
       } else {
         best_solution = winner.getObjective(0);
         //System.out.println("BEST SOL at " + evaluations + ": " + best_solution);
