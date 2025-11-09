@@ -89,8 +89,11 @@ public class DifferentialEvolutionCrossover extends Crossover {
 	private static final String CURRENT_TO_RAND_DE_VARIANT = "current-to-rand/1";
 	private static final String CURRENT_TO_BEST_DE_VARIANT = "current-to-best/1";
 
+	/* 2 */
+    private static final String BEST_2_BIN_DE_VARIANT = "best/2/bin";
+
   /**
-   * Valid solution types to apply this operator 
+   * Valid solution types to apply this operator
    */
   private static final List VALID_TYPES = Arrays.asList(RealSolutionType.class,
   		                                            ArrayRealSolutionType.class) ;
@@ -101,26 +104,27 @@ public class DifferentialEvolutionCrossover extends Crossover {
 	private String DE_Variant_ ; // DE variant (rand/1/bin, rand/1/exp, etc.)
 
     private boolean useFlag = false;
+    private int variantFlag = 1;
 
 	/**
 	 * Constructor
 	 */
 	public DifferentialEvolutionCrossover(HashMap<String, Object> parameters) {
 		super(parameters) ;
-		
+
 		CR_ = DEFAULT_CR ;
 		F_  = DEFAULT_F  ;
 		K_  = DEFAULT_K   ;
 		DE_Variant_ = RAND_BIN_DE_VARIANT ;
-		
+
   	if (parameters.get("CR") != null)
-  		CR_ = (Double) parameters.get("CR") ;  		
+  		CR_ = (Double) parameters.get("CR") ;
   	if (parameters.get("F") != null)
-  		F_ = (Double) parameters.get("F") ;  		
+  		F_ = (Double) parameters.get("F") ;
   	if (parameters.get("K") != null)
-  		K_ = (Double) parameters.get("K") ;  		
+  		K_ = (Double) parameters.get("K") ;
   	if (parameters.get("DE_VARIANT") != null)
-  		DE_Variant_ = (String) parameters.get("DE_VARIANT") ;  		
+  		DE_Variant_ = (String) parameters.get("DE_VARIANT") ;
 
 	} // Constructor
 
@@ -135,7 +139,11 @@ public class DifferentialEvolutionCrossover extends Crossover {
 		if (parameters.get("DE_VARIANT") != null)
 			DE_Variant_ = (String) parameters.get("DE_VARIANT");
 
-        useFlag = true;
+		if (parameters.get("variantFlag") != null)
+			variantFlag = (Integer) parameters.get("variantFlag") ;
+
+		useFlag = true;
+
 
 	} // Constructor
 
@@ -162,7 +170,7 @@ public class DifferentialEvolutionCrossover extends Crossover {
 		Solution [] parent = (Solution [])parameters[1];
 
 		Solution child ;
-		
+
     if (!(VALID_TYPES.contains(parent[0].getType().getClass()) &&
           VALID_TYPES.contains(parent[1].getType().getClass()) &&
           VALID_TYPES.contains(parent[2].getType().getClass())) ) {
@@ -170,34 +178,35 @@ public class DifferentialEvolutionCrossover extends Crossover {
 			Configuration.logger_.severe("DifferentialEvolutionCrossover.execute: " +
 					" the solutions " +
 					"are not of the right type. The type should be 'Real' or 'ArrayReal', but " +
-					parent[0].getType() + " and " + 
-					parent[1].getType() + " and " + 
+					parent[0].getType() + " and " +
+					parent[1].getType() + " and " +
 					parent[2].getType() + " are obtained");
 
 			Class cls = java.lang.String.class;
-			String name = cls.getName(); 
+			String name = cls.getName();
 			throw new JMException("Exception in " + name + ".execute()") ;
 		}
 
 		child = new Solution(current);
-		
+
 		XReal xParent0 = new XReal(parent[0]);
 		XReal xParent1 = new XReal(parent[1]);
 		XReal xParent2 = new XReal(parent[2]);
-        XReal xBest = new XReal(parent[3]);
+        XReal xParent3 = new XReal(parent[3]);
+        XReal xBest = new XReal(parent[4]);
 		XReal xCurrent = new XReal(current);
 		XReal xChild   = new XReal(child);
 
 		int numberOfVariables = xParent0.getNumberOfDecisionVariables() ;
 		//index of the chosen position to be changed
         int jrand = PseudoRandom.randInt(0, numberOfVariables - 1);
-        
+
         if (useFlag) {
-			int flag = PseudoRandom.randInt(1,3);
-			switch (flag) {
+			switch (variantFlag) {
 				case 1: DE_Variant_ = RAND_BIN_DE_VARIANT; break;
 				case 2: DE_Variant_ = CURRENT_TO_RAND_BIN_DE_VARIANT; break;
 				case 3: DE_Variant_ = RAND_TO_BEST_BIN_DE_VARIANT; break;
+                case 4: DE_Variant_ = BEST_2_BIN_DE_VARIANT; break;
 				default: DE_Variant_ = RAND_BIN_DE_VARIANT; break;
 			}
 		}
@@ -206,10 +215,14 @@ public class DifferentialEvolutionCrossover extends Crossover {
 		/**
 		 * FLAG == 1
 		 */
+        /**
+         * FLAG == 4
+         */
 		if ((DE_Variant_.compareTo(RAND_BIN_DE_VARIANT) == 0) ||
-				(DE_Variant_.compareTo(BEST_BIN_DE_VARIANT) == 0)) {
+                (DE_Variant_.compareTo(BEST_BIN_DE_VARIANT) == 0) ||
+                (DE_Variant_.compareTo(BEST_2_BIN_DE_VARIANT) == 0)) {
             boolean chooseBest = false;
-            if (DE_Variant_.compareTo(BEST_BIN_DE_VARIANT) == 0)
+            if (DE_Variant_.compareTo(BEST_BIN_DE_VARIANT) == 0 || DE_Variant_.compareTo(BEST_2_BIN_DE_VARIANT) == 0)
                 chooseBest = true;
 			for (int j=0; j < numberOfVariables; j++) {
 				// 50% chance to change position value, unless it is the chosen position, then 100%
@@ -218,7 +231,11 @@ public class DifferentialEvolutionCrossover extends Crossover {
                     if (chooseBest)
                         conditionalValue = xBest.getValue(j);
                     //check DE equation
-					double value = conditionalValue + F_ * (xParent0.getValue(j) - xParent1.getValue(j));
+                    double randoms = xParent0.getValue(j) - xParent1.getValue(j);
+                    if (DE_Variant_.compareTo(BEST_2_BIN_DE_VARIANT) == 0){
+                        randoms += xParent2.getValue(j) - xParent3.getValue(j);
+                    }
+					double value = conditionalValue + F_ * (randoms);
 
 					//keep changed position value within limits
 					if (value < xChild.getLowerBound(j))

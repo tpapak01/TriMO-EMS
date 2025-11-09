@@ -136,15 +136,24 @@ public class AdaptiveDE_CostDistr extends Algorithm {
     int stop = 0;
     int generation = 0;
 
-    int flag = PseudoRandom.randInt(1,3);
+    int flag = 1;
+    int variantFlag = 1;
+    Double firstEvolDiff = null;
 
     while (evaluations < maxEvaluations && converged != 0) {
+
+      // previous population
+      SolutionSet previousPopulation = new SolutionSet(populationSize);
+      for (int i=0; i<populationSize; i++){
+        previousPopulation.add(population.get(i));
+      }
 
       HashMap parameters = new HashMap();
       parameters.put("CR", CRpool[flag-1]);
       parameters.put("F", Fpool[flag-1]);
       parameters.put("K", Kpool[flag-1]);
       //parameters.put("DE_VARIANT", "rand/1/bin");
+      parameters.put("variantFlag", variantFlag);
       ((DifferentialEvolutionCrossover) crossoverOperator).updateParameters(parameters);
 
       Solution winner = population.get(0);
@@ -176,9 +185,9 @@ public class AdaptiveDE_CostDistr extends Algorithm {
         // Selection: 3 random parents
         // Two parameters are required: the population and the index of the current individual
         Solution[] tempParents = (Solution [])selectionOperator.execute(new Object[]{population, i});
-        Solution[] parents = new Solution[4];
+        Solution[] parents = new Solution[5];
         parents[0] = tempParents[0]; parents[1] = tempParents[1]; parents[2] = tempParents[2];
-        parents[3] = winner;
+        parents[3] = tempParents[3]; parents[4] = winner;
 
         // Crossover.
         // Two parameters are required: the current individual and the array of parents
@@ -236,11 +245,32 @@ public class AdaptiveDE_CostDistr extends Algorithm {
       //check for convergence
       if (winner.getObjective(0) > best_solution - 1){
         converged--;
-        flag = PseudoRandom.randInt(1,3);
+        //flag = PseudoRandom.randInt(1,3);
       } else {
         best_solution = winner.getObjective(0);
         //System.out.println("BEST SOL at " + evaluations + ": " + best_solution);
         converged = generations_left_for_convergence;
+      }
+
+      double sum = 0;
+      for (int i=0; i<populationSize; i++){
+        sum += previousPopulation.get(i).getObjective(0) - population.get(i).getObjective(0);
+      }
+      System.out.println("EVOLUTION DIFF: " + sum);
+      if (firstEvolDiff == null){
+        firstEvolDiff = sum;
+      }
+      if (firstEvolDiff * 1.0 / 3.0 > sum && variantFlag == 1){
+        variantFlag = 3;
+        System.out.println("Change of flag: " + variantFlag);
+      } else if (firstEvolDiff * 1.0 / 3.0 > sum && variantFlag == 3) {
+        variantFlag = 4;
+        System.out.println("Change of flag: " + variantFlag);
+      }
+      else if (firstEvolDiff * 1.0 / 3.0 > sum && variantFlag == 4) {
+        variantFlag = 3;
+        System.out.println("Change of flag: " + variantFlag);
+        firstEvolDiff = sum;
       }
 
     } // while
