@@ -52,8 +52,8 @@ public class DifferentialEvolutionSelection extends Selection {
     SolutionSet population = (SolutionSet)parameters[0];
     int         index      = (Integer)parameters[1] ;
 
-    Solution[] parents = new Solution[3] ;
-    int r1, r2, r3 ;
+    Solution[] parents = new Solution[4] ;
+    int r1, r2, r3, r4 ;
 
     if (population.size() < 4)
       throw new JMException("DifferentialEvolutionSelection: the population has less than four solutions") ;
@@ -67,10 +67,14 @@ public class DifferentialEvolutionSelection extends Selection {
     do {
       r3 = (int)(PseudoRandom.randInt(0,population.size()-1));
     } while( r3==index || r3==r1 || r3==r2 );
+    do {
+      r4 = (int)(PseudoRandom.randInt(0,population.size()-1));
+    } while( r4==index || r4==r1 || r4==r2 || r4==r3);
 
     parents[0] = population.get(r1) ;
     parents[1] = population.get(r2) ;
     parents[2] = population.get(r3) ;
+    parents[3] = population.get(r4) ;
 
     return parents ;
   } // execute
