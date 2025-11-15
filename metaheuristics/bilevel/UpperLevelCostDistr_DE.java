@@ -6,11 +6,13 @@ import jmetal.core.Problem;
 import jmetal.core.SolutionSet;
 import jmetal.metaheuristics.singleObjective.differentialEvolution.DE_CostDistr;
 import jmetal.operators.crossover.CrossoverFactory;
+import jmetal.operators.mutation.UniformMutation;
 import jmetal.operators.selection.Selection;
 import jmetal.operators.selection.SelectionFactory;
 import jmetal.problems.CostDistr;
 import jmetal.problems.MOKP_Problem;
 import jmetal.util.JMException;
+import jmetal.util.PseudoRandom;
 import jmetal.util.comparators.ObjectiveComparator;
 
 import java.io.FileWriter;
@@ -25,6 +27,7 @@ public class UpperLevelCostDistr_DE {
 
     public static Logger logger_;      // Logger object
     public static FileHandler fileHandler_; // FileHandler object
+    private static String problemPath = "C:\\Users\\emine\\IdeaProjects\\MOEAD test project\\";
 
     /**
      * @param args Command line arguments. The first (optional) argument specifies
@@ -39,14 +42,12 @@ public class UpperLevelCostDistr_DE {
      */
     public static void main(String[] args) throws JMException, SecurityException, IOException, ClassNotFoundException {
 
-        CostDistr problem;         // The problem to solve
+        new PseudoRandom(0.454545);
+
+        Problem problem;         // The problem to solve
         Algorithm algorithm;         // The algorithm to use
         Operator crossover;         // Crossover operator
         Operator mutation;         // Mutation operator
-        //Operator  selection ;         // Selection operator
-
-        //int bits ; // Length of bit string in the OneMax problem
-        HashMap parameters; // Operator parameters
 
         String problemName = args[0];
         String problemUserPreferences = args[1];
@@ -56,8 +57,10 @@ public class UpperLevelCostDistr_DE {
         if (args.length > 4)
             costsName = args[4];
         String dataPath = "-";
-        if (args.length > 5)
+        if (args.length > 5) {
             dataPath = args[5];
+            if (!dataPath.equals("-")) { problemPath = dataPath; dataPath += "data\\"; }
+        }
         String paretoFileName = "-";
         if (args.length > 6)
             paretoFileName = args[6];
@@ -71,26 +74,34 @@ public class UpperLevelCostDistr_DE {
         //thalis
         problem = new CostDistr(renewableName, lowerLevelProblem, lowerLevelAlgorithmName, costsName, dataPath);
 
-        algorithm = new DE_CostDistr(problem);
+        algorithm = new DE_CostDistr(problem, problemPath); // Generational GA
 
         /* Algorithm parameters*/
         algorithm.setInputParameter("populationSize", 100); //must be even number
         if (costsName.equals("-"))
-            algorithm.setInputParameter("maxEvaluations", 10000);
+            algorithm.setInputParameter("maxEvaluations", 1000000);
         else
             algorithm.setInputParameter("maxEvaluations", 100);
+
 
         //thalis
         algorithm.setInputParameter("dataDirectory",
                 "/Users/emine/IdeaProjects/JMETALHOME/data/MOEAD_parameters/Weight");
 
-
         /* Crossover operator */
-        parameters = new HashMap() ;
-        parameters.put("CR", 0.5) ;
-        parameters.put("F", 0.5) ;
-        parameters.put("DE_VARIANT", "rand/1/bin") ;
+        HashMap parameters = new HashMap() ;
+        parameters.put("CR", 0.7);
+        parameters.put("F", 0.4);
+        parameters.put("DE_VARIANT", "rand/1/bin");
         crossover = CrossoverFactory.getCrossoverOperator("DifferentialEvolutionCrossover", parameters);
+
+        //thalis
+        Double perturbationIndex = 0.5;
+        Double mutationProbability = 1.0 / problem.getNumberOfVariables();
+        parameters = new HashMap();
+        parameters.put("probability", mutationProbability);
+        parameters.put("perturbation", perturbationIndex);
+        mutation = new UniformMutation(parameters);
 
         /* Selection Operator */
         parameters = null;
@@ -106,6 +117,7 @@ public class UpperLevelCostDistr_DE {
         /* Add the operators to the algorithm*/
         algorithm.addOperator("crossover", crossover);
         algorithm.addOperator("selection", selection);
+        algorithm.addOperator("mutation", mutation);
 
         /* Execute the Algorithm */
         long initTime = System.currentTimeMillis();
@@ -118,21 +130,40 @@ public class UpperLevelCostDistr_DE {
         population.printObjectivesToFile("FUN");
         System.out.println("Variables values have been writen to file VAR");
         population.printVariablesToFile("VAR");
+        population.printVariablesToFile(problemPath + "results\\Winner\\Prices");
 
         population.printSelfConsumptionToFile("SELF_CONSU", true);
+        population.printSelfConsumptionToFile(problemPath + "results\\Winner\\SELF_CONSU", false);
         population.printNonREPaidToFile("NON_RE_PAID");
         population.printLowerLevelVarsToFile("LL_VAR");
         population.printLowerLevelObjToFile("LL_FUN");
+        population.printLowerLevelObjToFile(problemPath + "results\\Winner\\LL_FUN");
+        population.printMappingToFile("LL_MAPPING");
 
         population.printSpentEnergyToFile("SPENT");
         population.printUserDissatisfactionToFile("USER_DISSAT");
+        population.printUserDissatisfactionToFile(problemPath + "results\\Winner\\USER_DISSAT");
         population.printStdDevUserDissatisfactionToFile("STDDEV_USER_DISSAT");
         population.printUserEnergyToFile("USER_ENERGY");
+        population.printUserEnergyToFile(problemPath + "results\\Winner\\USER_COSTS");
         population.printStdDevUserEnergyToFile("STDDEV_USER_ENERGY");
 
         FileWriter timeWriter = new FileWriter("TIME", true);
         timeWriter.write(estimatedTime + "\n");
         timeWriter.close();
+
+        //SolutionSet specialPareto = population.get(0).getLL_Transfer_pop();
+        //specialPareto.printObjectivesToFile("LowerLevelParetoVisual/" + "0_FUN"); //check
+
+
+        SolutionSet lowerLevelSolutions = population.get(0).getLL_Pareto_pop();
+        lowerLevelSolutions.printParetoToFile("LL_PARETO");
+        System.out.println(population.get(0).getUL_Optimism());
+        //Platform
+        lowerLevelSolutions.printParetoToFile(problemPath + "results\\Winner\\Pareto");
+        lowerLevelSolutions.printSpentsToFile(problemPath + "results\\Spents\\");
+        lowerLevelSolutions.printSelfsToFile(problemPath + "results\\Selfs\\");
+        //population.printSpentEnergyToFile(platformPath + "Winner\\SPENT");
 
 
     } //main
