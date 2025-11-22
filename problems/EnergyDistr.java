@@ -221,14 +221,13 @@ public class EnergyDistr extends Problem {
         //}
 
         // set constraints
-        double[] contraints = setConstraints(producedRE, spentEnergy, costOfBuying, solution);
-        solution.setReimbuPenalty(contraints[0]);
-        solution.setIncomePenalty(contraints[1]);
+        double contraint = setConstraint(producedRE, spentEnergy, costOfBuying, solution);
+        solution.setReimbuPenalty(contraint);
         System.out.println("REIMBU: " + solution.getReimbu());
         System.out.println("ALLOWED REIMBU: " + (solution.getReimbu() - solution.getReimbuPenalty()));
 
         // TL objective value and self-consumption
-        double result = topLevel_evaluate_objective(producedRE, spentEnergy, costOfBuying, contraints[0], contraints[1]);
+        double result = topLevel_evaluate_objective(producedRE, spentEnergy, costOfBuying, contraint);
         solution.setObjective(0, result);
         double selfConsumption = calculateSelfConsDeviation(producedRE, spentEnergy);
         solution.setSelfConsumption(selfConsumption);
@@ -269,29 +268,27 @@ public class EnergyDistr extends Problem {
         return sum;
     }
 
-    public static double[] setConstraints(double[] producedRE, double[] spentEnergy, XReal costOfBuying, Solution solution) throws JMException {
-        double[] constraints = new double[2];
+    public static double setConstraint(double[] producedRE, double[] spentEnergy, XReal costOfBuying, Solution solution) throws JMException {
         //double realTimeGenerationCosts = calculateRealTimeGenerationCosts(numOfActiveGeneratorsPerTime, Pmin, Pmax, c_linear, producedRE, spentEnergy);
         //double requiredGenerationPayment = baseGenerationCosts + realTimeGenerationCosts;
+        double penalty = 0;
+        double allowedReimbursement = 0;
         double requiredGenerationPayment = calculateMCPRequiredCosts(numOfActiveGeneratorsPerTime, c_linear, producedRE, spentEnergy);
         double income = calculateIncome(producedRE, spentEnergy, costOfBuying);
-        double allowedReimbursement = income - requiredGenerationPayment;
-        double reimbursement = calculateReimbursement(producedRE, spentEnergy, costOfBuying);
-        double reimbuPenalty = 0;
-        if (reimbursement - allowedReimbursement > 0)
-            reimbuPenalty = reimbursement - allowedReimbursement;
-        double incomePenalty = 0;
         if (income < requiredGenerationPayment)
-            incomePenalty = requiredGenerationPayment - income;
-        constraints[0] = reimbuPenalty;
-        constraints[1] = incomePenalty;
+            penalty = requiredGenerationPayment - income;
+        else
+            allowedReimbursement = income - requiredGenerationPayment;
+        double reimbursement = calculateReimbursement(producedRE, spentEnergy, costOfBuying);
+        if (reimbursement - allowedReimbursement > 0)
+            penalty = penalty + (reimbursement - allowedReimbursement);
 
         solution.setReimbu(reimbursement);
-        return constraints;
+        return penalty;
     }
 
     public static double topLevel_evaluate_objective(double[] producedRE, double[] spentEnergy, XReal costOfBuying,
-                  double reimbuPenalty, double incomePenalty) throws JMException {
+                  double penalty) throws JMException {
 
         double sum = 0;
 
@@ -306,19 +303,18 @@ public class EnergyDistr extends Problem {
         */
 
         for (int i=0; i<producedRE.length; i++) {
-            double gridEnergy = spentEnergy[i] - producedRE[i];
-            double abs_difference = Math.abs(gridEnergy);
+            double freeEnergyLeft = producedRE[i] - spentEnergy[i];
             double cost = costOfBuying.getValue(i);
-            if (gridEnergy < 0) {
-                if (reimbuPenalty > 0)
-                    sum += ( abs_difference * (1.0 + (cost - lowerLimitStatic[i])))
-                            + ( reimbuPenalty * (cost - lowerLimitStatic[i]) ); //lower price to reduce compensation
+            if (freeEnergyLeft > 0) {
+                if (penalty > 0)
+                    sum += ( freeEnergyLeft * (1.0 + (cost - lowerLimitStatic[i])))
+                            + ( penalty * (cost - lowerLimitStatic[i]) ); //lower price to reduce compensation
                 else
-                    sum += abs_difference * (1.0 + (upperLimitStatic[i] - cost)); //raise price if there is RE left
+                    sum += freeEnergyLeft * (1.0 + (upperLimitStatic[i] - cost)); //raise price if there is RE left
             }
             else {
-                if (reimbuPenalty > 0 || incomePenalty > 0)
-                    sum += (upperLimitStatic[i] - cost) * (reimbuPenalty + incomePenalty); // raise price to accommodate for compensation and income costs
+                if (penalty > 0)
+                    sum += (upperLimitStatic[i] - cost) * penalty; // raise price to accommodate for compensation and income costs
                 else
                     sum += cost - lowerLimitStatic[i]; // lower price if you spent all RE
             }
