@@ -159,8 +159,9 @@ public class TopLevelEnergyDistr_DE {
         population.printUserEnergyToFile(problemPath + "results\\Winner\\USER_COSTS");
         //population.printStdDevUserEnergyToFile("STDDEV_USER_ENERGY");
 
-        population.printReimbuPenaltyToFile("REIMBU_PEN", false);
-        population.printIncomePenaltyToFile("INCOME_PEN", false);
+        population.printReimbuPenaltyToFile("REIMBU_PEN", true);
+        population.printReimbuToFile("REIMBU", true);
+        population.printIncomePenaltyToFile("INCOME_PEN", true);
 
         FileWriter timeWriter = new FileWriter("TIME", true);
         timeWriter.write(estimatedTime + "\n");
