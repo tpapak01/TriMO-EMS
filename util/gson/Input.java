@@ -8,6 +8,7 @@ public class Input {
     public statusList[] statusList;
     public energyList[] energyList;
     public costList[] costList;
+    public costBuyList[] costBuyList;
     public producedREList[] producedREList;
     public applianceList[] applianceList;
     public preferenceList[] preferenceList;
