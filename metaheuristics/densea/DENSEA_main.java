@@ -95,7 +95,7 @@ public class DENSEA_main {
     logger_.info("Objectives values have been writen to file FUN");
     population.printObjectivesToFile("FUN");
     logger_.info("Variables values have been writen to file VAR");
-    population.printVariablesToFile("VAR");           
+    population.printVariablesToFile("VAR", true);
   }//main
 }
 

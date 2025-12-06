@@ -147,7 +147,7 @@ public class SMSEMOA_main {
     // Result messages
     logger_.info("Total execution time: " + estimatedTime + "ms");
     logger_.info("Variables values have been written to file VAR");
-    population.printVariablesToFile("VAR");
+    population.printVariablesToFile("VAR", true);
     logger_.info("Objectives values have been written to file FUN");
     population.printObjectivesToFile("FUN");
 

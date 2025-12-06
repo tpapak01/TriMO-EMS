@@ -119,7 +119,7 @@ public class PAES_main {
     // STEP 8. Print the results
     logger_.info("Total execution time: "+estimatedTime + "ms");
     logger_.info("Variables values have been writen to file VAR");
-    population.printVariablesToFile("VAR");    
+    population.printVariablesToFile("VAR", true);
     logger_.info("Objectives values have been writen to file FUN");
     population.printObjectivesToFile("FUN");
   

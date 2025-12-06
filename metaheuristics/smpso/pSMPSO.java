@@ -409,7 +409,7 @@ public class pSMPSO extends Algorithm {
       
       if ((iteration_ % 1) == 0) {
         leaders_.printObjectivesToFile("FUN"+iteration_) ;
-        leaders_.printVariablesToFile("VAR"+iteration_) ;
+        leaders_.printVariablesToFile("VAR"+iteration_, true) ;
       }
 
     }

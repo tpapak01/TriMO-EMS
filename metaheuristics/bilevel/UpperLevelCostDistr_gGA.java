@@ -173,12 +173,12 @@ public class UpperLevelCostDistr_gGA {
         System.out.println("Objectives values have been writen to file FUN");
         population.printObjectivesToFile("FUN");
         System.out.println("Variables values have been writen to file VAR");
-        population.printVariablesToFile("VAR");
+        population.printVariablesToFile("VAR", true);
 
-        population.printSelfConsumptionToFile("SELF_CONSU", false);
+        population.printSelfConsumptionToFile("SELF_CONSU", true);
         population.printNonREPaidToFile("NON_RE_PAID");
         population.printLowerLevelVarsToFile("LL_VAR");
-        population.printLowerLevelObjToFile("LL_FUN");
+        population.printLowerLevelObjToFile("LL_FUN", true);
         population.printMappingToFile("LL_MAPPING");
 
         population.printSpentEnergyToFile("SPENT");

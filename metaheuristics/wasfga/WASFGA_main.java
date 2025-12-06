@@ -167,7 +167,7 @@ public class WASFGA_main {
     // Result messages 
     logger_.info("Total execution time: "+estimatedTime + "ms");
     logger_.info("Variables values have been writen to file VAR_WASFGA");
-    population.printVariablesToFile("VAR_WASFGA");    
+    population.printVariablesToFile("VAR_WASFGA", true);
     logger_.info("Objectives values have been writen to file FUN_WASFGA");
     population.printObjectivesToFile("FUN_WASFGA");
   

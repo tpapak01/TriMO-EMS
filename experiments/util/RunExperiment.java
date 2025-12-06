@@ -168,7 +168,7 @@ public class RunExperiment extends Thread {
 
 				// STEP 8: put the results in the output directory
 				resultFront.printObjectivesToFile(directory + "/" + outputParetoFrontFile_ + "." + runs);
-				resultFront.printVariablesToFile(directory + "/" + outputParetoSetFile_ + "." + runs);
+				resultFront.printVariablesToFile(directory + "/" + outputParetoSetFile_ + "." + runs, true);
 				if(!finished){
 					if(experiment_.finished_){
 						finished = true;						

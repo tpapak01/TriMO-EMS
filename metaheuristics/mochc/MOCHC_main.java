@@ -92,7 +92,7 @@ public class MOCHC_main {
       System.out.println("Total execution time: "+estimatedTime);
 
       // Print results
-      population.printVariablesToFile("VAR");
+      population.printVariablesToFile("VAR", true);
       population.printObjectivesToFile("FUN");
     } //try           
     catch (Exception e) {

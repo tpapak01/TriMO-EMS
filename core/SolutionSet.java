@@ -261,9 +261,9 @@ public class SolutionSet implements Serializable {
    * solutions objects into the set in a file.
    * @param path The output file name
    */
-  public void printVariablesToFile(String path){
+  public void printVariablesToFile(String path, boolean append){
     try {
-      FileOutputStream fos   = new FileOutputStream(path, false)     ;
+      FileOutputStream fos   = new FileOutputStream(path, append);
       OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
       BufferedWriter bw      = new BufferedWriter(osw)        ;
 
@@ -603,10 +603,10 @@ public class SolutionSet implements Serializable {
   }
 
   // Purpose: to know the balance between dissatisfaction and costs of the chosen LL solution by the upper level
-  public void printLowerLevelObjToFile(String path){
+  public void printLowerLevelObjToFile(String path, boolean append){
     try {
       /* Open the file */
-      FileOutputStream fos   = new FileOutputStream(path, false)     ;
+      FileOutputStream fos   = new FileOutputStream(path, append)     ;
       OutputStreamWriter osw = new OutputStreamWriter(fos)    ;
       BufferedWriter bw      = new BufferedWriter(osw)        ;
 

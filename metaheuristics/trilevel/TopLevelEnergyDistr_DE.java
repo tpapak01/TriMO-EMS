@@ -135,8 +135,8 @@ public class TopLevelEnergyDistr_DE {
         System.out.println("Objectives values have been writen to file FUN");
         population.printObjectivesToFile("TL_FUN");
         System.out.println("Variables values have been writen to file VAR");
-        population.printVariablesToFile("TL_VAR");
-        population.printVariablesToFile(problemPath + "results\\Winner\\Prices");
+        population.printVariablesToFile("TL_VAR", true);
+        population.printVariablesToFile(problemPath + "results\\Winner\\Prices", false);
 
         population.printProfitToFile("PROFIT", true);
         population.printProfitToFile("UL_FUN", true);
@@ -147,8 +147,8 @@ public class TopLevelEnergyDistr_DE {
         population.printSelfConsumptionToFile(problemPath + "results\\Winner\\SELF_CONSU", false);
         //population.printNonREPaidToFile("NON_RE_PAID");
         population.printLowerLevelVarsToFile("LL_VAR");
-        population.printLowerLevelObjToFile("LL_FUN");
-        population.printLowerLevelObjToFile(problemPath + "results\\Winner\\LL_FUN");
+        population.printLowerLevelObjToFile("LL_FUN", true);
+        population.printLowerLevelObjToFile(problemPath + "results\\Winner\\LL_FUN", false);
         //population.printMappingToFile("LL_MAPPING");
 
         population.printSpentEnergyToFile("SPENT");

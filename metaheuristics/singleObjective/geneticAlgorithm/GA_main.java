@@ -143,6 +143,6 @@ public class GA_main {
     System.out.println("Objectives values have been writen to file FUN");
     population.printObjectivesToFile("FUN");
     System.out.println("Variables values have been writen to file VAR");
-    population.printVariablesToFile("VAR");          
+    population.printVariablesToFile("VAR", true);
   } //main
 } // GA_main

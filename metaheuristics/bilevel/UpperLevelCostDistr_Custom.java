@@ -127,11 +127,11 @@ public class UpperLevelCostDistr_Custom {
         System.out.println("Objectives values have been writen to file FUN");
         population.printObjectivesToFile("FUN");
         System.out.println("Variables values have been writen to file VAR");
-        population.printVariablesToFile("VAR");
+        population.printVariablesToFile("VAR", true);
 
         population.printSpentEnergyToFile("SPENT");
         population.printLowerLevelVarsToFile("LL_VAR");
-        population.printLowerLevelObjToFile("LL_FUN");
+        population.printLowerLevelObjToFile("LL_FUN", true);
 
 
     } //main
