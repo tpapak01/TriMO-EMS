@@ -233,7 +233,15 @@ public class Fast_EnergyDistr extends Algorithm {
     
     // Return a population with the best individual
     SolutionSet resultPopulation = new SolutionSet(1) ;
-    resultPopulation.add(population.get(0)) ;
+    int index = 0;
+    while (population.get(index).getReimbuPenalty() > 1){
+      index++;
+      if (index >= populationSize){
+        index = 0;
+        break;
+      }
+    }
+    resultPopulation.add(population.get(index));
     
     System.out.println("Evaluations: " + evaluations ) ;
     FileWriter evalsWriter = null;
