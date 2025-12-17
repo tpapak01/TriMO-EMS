@@ -76,7 +76,7 @@ public class EnergyDistr extends Problem {
       }
       producedRE = CostDistr.getProducedRE();
 
-      if (!dataPath.equals("-")) { problemPath = dataPath; }
+      if (!dataPath.equals("-")) { problemPath = dataPath; costsPath = dataPath; }
       String fileName = problemPath + this.problemName_ + ".txt";
       System.out.println(fileName);
       String costsFileName = "-";
