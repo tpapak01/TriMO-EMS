@@ -78,7 +78,10 @@ public class TopLevelEnergyDistr_DE {
                 new CostDistr(renewableName, lowerLevelProblem, lowerLevelAlgorithmName, costsName, dataPath);
 
         //initialize Upper Level algorithm
-        UpperLevelCostDistr_Fast.initializeAlgorithm(upperLevelProblem, lowerLevelProblem, dataPath, paretoFileName);
+        UpperLevelCostDistr_Fast.initializeAlgorithm(upperLevelProblem);
+
+        //initialize Lower Level algorithm
+        LowerLevelMOKP_MOEAD.initializeAlgorithm(lowerLevelProblem, dataPath, paretoFileName);
 
         //thalis
         problem = new EnergyDistr(upperLevelProblem, dataPath, costsName, generatorsName, false);

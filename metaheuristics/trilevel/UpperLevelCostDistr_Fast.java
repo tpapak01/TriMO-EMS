@@ -46,8 +46,7 @@ public class UpperLevelCostDistr_Fast implements Runnable {
      *                                - jmetal.metaheuristics.moead.MOEAD_main problemName ParetoFrontFile
      * @throws ClassNotFoundException
      */
-    public static void initializeAlgorithm(Problem upperLevelProblem, Problem lowerLevelProblem,
-                                           String dataPath, String paretoFileName) throws SecurityException, IOException {
+    public static void initializeAlgorithm(Problem upperLevelProblem) throws SecurityException {
 
         Operator crossover;         // Crossover operator
         Operator mutation;         // Mutation operator
@@ -55,9 +54,6 @@ public class UpperLevelCostDistr_Fast implements Runnable {
 
         //int bits ; // Length of bit string in the OneMax problem
         HashMap parameters; // Operator parameters
-
-        //initialize Lower Level algorithm
-        LowerLevelMOKP_MOEAD.initializeAlgorithm(lowerLevelProblem, dataPath, paretoFileName);
 
         //thalis
         problem = (CostDistr) upperLevelProblem;
