@@ -559,9 +559,6 @@ public class CostDistr extends Problem {
         solution.setLL_Transfer_pop(transferPareto);
         //platform only
         solution.setLL_Pareto_pop(lowerLevelSolutions);
-        // constraints
-        solution.setReimbuPenalty(chosenlowerLevelSol.getReimbuPenalty());
-        solution.setIncomePenalty(chosenlowerLevelSol.getIncomePenalty());
 
         solution.setUpperLevelObj(chosenlowerLevelSol.getUpperLevelObj());
 
