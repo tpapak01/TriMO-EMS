@@ -6,10 +6,8 @@ The main class file (executed class) is TopLevelEnergyDistr.
 To execute the Java code, first compile it, which should result in .class binaries generated under default path "\<local project repo path\>\out\production\JMETALHOME\\".
 
 Another requirement is that you have your dataset files ready under path "\<local project repo path\>\data\\".
-Three dataset files are required: APP_ENERGY, APP_PREFERENCES and RENEWABLE, as mentioned in the IEEE DataPort dataset repository:
-
-https://ieee-dataport.org/documents/household-appliance-usage-preferences-appliance-energy-consumption-and-hourly-renewable
-
+Three dataset files are required: APP_ENERGY, APP_PREFERENCES and RENEWABLE, as mentioned in the IEEE DataPort dataset repository: \
+https://ieee-dataport.org/documents/household-appliance-usage-preferences-appliance-energy-consumption-and-hourly-renewable \
 Please note that this implementation merges the PARAMS_VALUES dataset file into the beginning of the APP_ENERGY dataset file, i.e., the first 3 lines in the APP_ENERGY dataset file should consist of the 3 mandatory lines of the PARAMS_VALUES dataset file, followed by an empty line.
 
 Finally, run the following command in the cmd terminal, having the appropriate Java version installed (e.g., jdk1.8.0_221) and (in addition) the gson JAR/library (e.g., gson-2.10.1.jar):
