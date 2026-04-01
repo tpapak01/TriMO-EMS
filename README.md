@@ -4,7 +4,9 @@ Use the master branch.
 The main class file (executed class) is TopLevelEnergyDistr.
 
 To execute the Java code, first compile it, which should result in .class binaries generated under default path \
-"\<local project repo path\>\out\production\JMETALHOME\\".
+"\<local project repo path\>\out\production\JMETALHOME\\". \
+Since this code is an extension of the existing code of the JMetal framework, information regarding the compilation can also be found in \
+https://jmetal.sourceforge.net/
 
 Another requirement is that you have your dataset files ready under path "\<local project repo path\>\data\\".
 Three dataset files are required: APP_ENERGY, APP_PREFERENCES and RENEWABLE, as mentioned in the IEEE DataPort dataset repository: \
