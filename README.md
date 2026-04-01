@@ -16,13 +16,17 @@ Finally, run the following command in the cmd terminal, having the appropriate J
 
 <mark>
 "C:\Program Files\Java\jdk1.8.0_221\bin\java.exe"
-
+</mark>
+<mark>
 -Xms8192m -Xmx12288m
-
+</mark>
+<mark>
 -Dfile.encoding=UTF-8 
-
+</mark>
+<mark>
 -classpath "C:\Program Files\Java\jdk1.8.0_221\jre\lib\\*;C:\Users\\<local project repo path\>\out\production\JMETALHOME;C:\Users\\<local project repo path\>\gson-2.10.1.jar"
-
+</mark>
+<mark>
 jmetal.metaheuristics.trilevel.TopLevelEnergyDistr \<APP_ENERGY dataset filename\> \<APP_PREFERENCES dataset filename\> \<RENEWABLE dataset filename\> MOEAD - C:\Users\\<local project repo path\>\ -
 </mark>
 
